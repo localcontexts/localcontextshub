@@ -127,7 +127,7 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': '/cloudsql/' + os.environ.get('DB_HOST')
         }
     }
-    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
+    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'local-contexts-hub-sandbox.appspot.com')
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         os.path.join(BASE_DIR, 'django-storages-gcs-key.json')
     )
