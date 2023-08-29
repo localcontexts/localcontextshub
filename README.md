@@ -33,7 +33,7 @@ pyenv virtualenv 3.8.3 envi
 
 Activate virtualenvironment:
 ```
-source /Users/jdeck/.pyenv/versions/envi/bin/activate
+source /Users/user/.pyenv/versions/envi/bin/activate
 ```
 
 ## Install or Update Dependencies
