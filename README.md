@@ -52,7 +52,7 @@ This will set local environment variables accessible via PYTHON
 ```
 python manage.py makemigrations
 python manage.py migrate # sets up database
-python manage.py createsuperuser # so you can start using database)
+python manage.py createsuperuser # so you can start using database
   Username: <Fill in your username>
   Email address: *<INSERT SITE_ADMIN_EMAIL> that is specified in the previous step, 'Initialize Environment Variables'*
 ```
