@@ -10,6 +10,10 @@ steps:
         chmod +x ./env.sh
     secretEnv: ["APP_ENGINE_ENVS", "DJANGO_STORAGES_GCS_KEY"]
     waitFor: ["-"]
+  - name: 'gcr.io/cloud-builders/bash'
+    id: 'debug-list-files'
+    args: ['ls', '-l']
+    waitFor: ['setup-envs']
   - name: "python:3.8-slim-buster"
     id: "install-deps"
     entrypoint: "python3"
