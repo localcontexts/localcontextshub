@@ -7,5 +7,5 @@
 # and then starts the gunicorn server.
 #
 
-# . ./env.sh
+. ./env.sh
 gunicorn -b :$PORT -w 2 --timeout 90 localcontexts.wsgi:application
