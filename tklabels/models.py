@@ -18,21 +18,21 @@ class TKLabel(models.Model):
         ('family', 'family'),
         ('outreach', 'outreach'),
         ('tk_multiple_community', 'tk_multiple_community'),
-        ('non_verified', 'non_verified'),  
-        ('verified', 'verified'),  
-        ('non_commercial', 'non_commercial'),  
-        ('commercial', 'commercial'),  
-        ('culturally_sensitive', 'culturally_sensitive'),  
-        ('community_voice', 'community_voice'),  
-        ('community_use_only', 'community_use_only'),  
-        ('seasonal', 'seasonal'),  
-        ('women_general', 'women_general'),  
-        ('men_general', 'men_general'),  
-        ('men_restricted', 'men_restricted'),  
-        ('women_restricted', 'women_restricted'),  
-        ('secret_sacred', 'secret_sacred'),  
-        ('open_to_collaboration', 'open_to_collaboration'),  
-        ('creative', 'creative'),  
+        ('non_verified', 'non_verified'),
+        ('verified', 'verified'),
+        ('non_commercial', 'non_commercial'),
+        ('commercial', 'commercial'),
+        ('culturally_sensitive', 'culturally_sensitive'),
+        ('community_voice', 'community_voice'),
+        ('community_use_only', 'community_use_only'),
+        ('seasonal', 'seasonal'),
+        ('women_general', 'women_general'),
+        ('men_general', 'men_general'),
+        ('men_restricted', 'men_restricted'),
+        ('women_restricted', 'women_restricted'),
+        ('secret_sacred', 'secret_sacred'),
+        ('open_to_collaboration', 'open_to_collaboration'),
+        ('creative', 'creative'),
     )
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=True)
     version = models.SmallIntegerField(blank=True, null=True)
@@ -64,7 +64,8 @@ class TKLabel(models.Model):
         json_data = open('./localcontexts/static/json/Labels.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/labels/tklabels/'
         for key, values in data.items():
             if key == 'tkLabels':
                 if(isinstance(values, list)):
@@ -75,12 +76,12 @@ class TKLabel(models.Model):
                         elif self.label_type == 'placeholder':
                             self.img_url = None
                             self.svg_url = None
-                            
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.community} - {self.name}"
-    
+
     class Meta:
         indexes = [models.Index(fields=['unique_id', 'created_by', 'community', 'is_approved', 'approved_by', 'audiofile'])]
         verbose_name = 'TK Label'

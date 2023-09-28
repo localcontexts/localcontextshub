@@ -16,7 +16,7 @@ def restricted_view(request, exception=None):
 @login_required(login_url='login')
 def delete_member_invite(request, pk):
     invite = InviteMember.objects.get(id=pk)
-    
+
     # Delete relevant UserNotification
     if UserNotification.objects.filter(to_user=invite.receiver, from_user=invite.sender, notification_type='invitation', reference_id=pk).exists():
         notification = UserNotification.objects.get(to_user=invite.receiver, notification_type='invitation', reference_id=pk)
@@ -28,7 +28,7 @@ def delete_member_invite(request, pk):
         return redirect('member-requests', invite.community.id)
     else:
         return redirect('institution-member-requests', invite.institution.id)
-    
+
 
 @login_required(login_url='login')
 def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None):
@@ -60,7 +60,8 @@ def download_collections_care_notices(request, institution_id, perm):
 @login_required(login_url='login')
 def download_community_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
+        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -74,7 +75,8 @@ def download_community_support_letter(request):
 @login_required(login_url='login')
 def download_institution_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
+        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:

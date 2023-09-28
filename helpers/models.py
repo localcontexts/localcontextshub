@@ -31,7 +31,7 @@ class Notice(models.Model):
     def set_translation(self, language_tag):
         with open('./localcontexts/static/json/NoticeTranslations.json', encoding="utf8") as json_file:
             translations_data = json.load(json_file)
-            
+
         translation = None
         for item in translations_data:
             if item['noticeType'] == self.notice_type and item['languageTag'] == language_tag:
@@ -53,14 +53,15 @@ class Notice(models.Model):
         json_data = open('./localcontexts/static/json/Notices.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/labels/notices/'
         for item in data:
             if item['noticeType'] == self.notice_type:
                 self.name = item['noticeName']
                 self.img_url = baseURL + item['imgFileName']
                 self.svg_url = baseURL + item['svgFileName']
                 self.default_text = item['noticeDefaultText']
-        
+
         if language_tag:
             self.set_translation(language_tag)
 
@@ -68,7 +69,7 @@ class Notice(models.Model):
 
     def __str__(self):
         return str(self.project.title)
-    
+
     class Meta:
         indexes = [models.Index(fields=['project', 'researcher', 'institution'])]
         verbose_name = 'Notice'
@@ -90,7 +91,7 @@ class NoticeTranslation(models.Model):
 
     def __str__(self):
         return f"{self.notice} - {self.language}"
-    
+
     class Meta:
         verbose_name = 'Notice Translation'
         verbose_name_plural = 'Notice Translations'
@@ -105,7 +106,7 @@ class OpenToCollaborateNoticeURL(models.Model):
 
     def __str__(self):
         return str(self.name)
-    
+
     class Meta:
         indexes = [models.Index(fields=['institution', 'researcher'])]
         verbose_name = 'Open To Collaborate Notice URL'
@@ -135,7 +136,7 @@ class EntitiesNotified(models.Model):
 
     def __str__(self):
         return str(self.project.title)
-    
+
     class Meta:
         indexes = [models.Index(fields=['project'])]
         verbose_name = "Entities Notified"
@@ -161,7 +162,7 @@ class LabelTranslation(models.Model):
 
     def __str__(self):
         return str(self.translated_name)
-    
+
     class Meta:
         indexes = [models.Index(fields=['bclabel', 'tklabel'])]
         verbose_name = "Label Translation"
@@ -229,7 +230,7 @@ class LabelVersion(models.Model):
 
     def __str__(self):
         return f"{self.bclabel} - {self.tklabel} - {self.version}"
-    
+
     class Meta:
         verbose_name = 'Label Version'
         verbose_name_plural = 'Label Versions'
@@ -244,7 +245,7 @@ class LabelTranslationVersion(models.Model):
 
     def __str__(self):
         return f"{self.version_instance}"
-    
+
     class Meta:
         verbose_name = 'Label Translation Version'
         verbose_name_plural = 'Label Translation Versions'
@@ -259,7 +260,7 @@ class NoticeDownloadTracker(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
-    
+
     class Meta:
         verbose_name = 'Notice Download Tracker'
         verbose_name_plural = 'Notice Download Tracker'
@@ -272,7 +273,7 @@ class CollectionsCareNoticePolicy(models.Model):
 
     def __str__(self):
         return str(self.institution.institution_name)
-    
+
     class Meta:
         verbose_name = 'Collections Care Notice Policy'
         verbose_name_plural = 'Collections Care Notice Policy'

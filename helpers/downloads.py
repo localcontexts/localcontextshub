@@ -64,7 +64,7 @@ def download_labels_zip(community):
         get_svg = requests.get(tklabel.svg_url)
         files.append((tklabel.name + '.png', get_image.content))
         files.append((tklabel.name + '.svg', get_svg.content))
-        
+
         # Default Label text
         text_content = tklabel.name + '\n' + tklabel.label_text
         text_addon = []
@@ -75,7 +75,7 @@ def download_labels_zip(community):
             files.append((tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((tklabel.name + '.txt', text_content))
-    
+
     # Create Readme
     readme_text = "The Traditional Knowledge (TK) and Biocultural (BC) Labels reinforce the cultural authority and rights of Indigenous communities.\nThe TK and BC Labels are intended to be displayed prominently on public-facing Indigenous community, researcher and institutional websites, metadata and digital collection's pages.\n\nThis folder contains the following files:\n"
     file_names = []
@@ -84,7 +84,7 @@ def download_labels_zip(community):
     readme_content = readme_text + '\n'.join(file_names) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Labels for your community.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
     files.append(('README.txt', readme_content))
 
-    # Generate zip file 
+    # Generate zip file
     full_zip_in_memory = generate_zip(files)
 
     response = HttpResponse(full_zip_in_memory, content_type='application/force-download')
@@ -94,7 +94,8 @@ def download_labels_zip(community):
 
 # Download Project
 def download_project_zip(project):
-    baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/'
+    baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/'
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
     project_creator = project.project_creator_project.first()
@@ -139,7 +140,7 @@ def download_project_zip(project):
                     files.append(('Traditional_Knowledge_Notice' + '.png', get_img.content))
                     files.append(('Traditional_Knowledge_Notice' + '.svg', get_svg.content))
                     files.append(('Traditional_Knowledge_Notice' + '.txt', notice.default_text))
-                
+
                 if notice.notice_type == 'attribution_incomplete':
                     get_img = requests.get(notice.img_url)
                     get_svg = requests.get(baseURL + 'labels/notices/ci-attribution-incomplete.svg')
@@ -175,7 +176,7 @@ def download_project_zip(project):
         get_svg = requests.get(tklabel.svg_url)
         files.append((tklabel.name + '.png', get_image.content))
         files.append((tklabel.name + '.svg', get_svg.content))
-        
+
         # Default Label text
         text_content = tklabel.name + '\n' + tklabel.label_text
         text_addon = []
@@ -186,7 +187,7 @@ def download_project_zip(project):
             files.append((tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((tklabel.name + '.txt', text_content))
-    
+
     # Create Readme
     file_names = []
     for f in files:
@@ -194,7 +195,7 @@ def download_project_zip(project):
     readme_content = readme_text + '\n'.join(file_names) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Notices or Labels for your Project.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
     files.append(('README.txt', readme_content))
 
-    # Generate zip file 
+    # Generate zip file
     full_zip_in_memory = generate_zip(files)
 
     zipfile_name = f"LC-Project-{project.title}.zip"

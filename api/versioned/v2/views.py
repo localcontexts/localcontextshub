@@ -29,9 +29,12 @@ class OpenToCollaborateNotice(APIView):
             'notice_type': 'open_to_collaborate',
             'name': 'Open to Collaborate Notice',
             'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-            'img_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.png',
-            'svg_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.svg',
-            'usage_guide_ci_notices': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
+            'img_url': 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/labels/notices/ci-open-to-collaborate.png',
+            'svg_url': 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/labels/notices/ci-open-to-collaborate.svg',
+            'usage_guide_ci_notices': 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
         }
         return Response(api_urls)
 
@@ -58,7 +61,7 @@ class ProjectDetail(generics.RetrieveAPIView):
             return ProjectSerializer
         else:
             return ProjectNoNoticeSerializer
-    
+
     def get_object(self):
         try:
             unique_id = self.kwargs.get('unique_id')
@@ -75,7 +78,7 @@ class ProjectsByIdViewSet(ViewSet):
             projects = Project.objects.filter(project_creator=useracct).exclude(project_privacy='Private')
             serializer = ProjectOverviewSerializer(projects, many=True)
             return Response(serializer.data)
-            
+
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -92,7 +95,7 @@ class ProjectsByIdViewSet(ViewSet):
             else:
                 for x in creators:
                     projects.append(x.project)
-            
+
             serializer = ProjectOverviewSerializer(projects, many=True)
             return Response(serializer.data)
         except:
@@ -122,13 +125,13 @@ class ProjectsByIdViewSet(ViewSet):
                     serializer = ProjectSerializer(project, many=False)
                 else:
                     serializer = ProjectNoNoticeSerializer(project, many=False)
-                
+
                 return Response(serializer.data)
             else:
                 raise PermissionDenied({"message":"You don't have permission to view this project", "providers_id": providers_id})
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
 class MultiProjectListDetail(ViewSet):
     permission_classes = [HasAPIKey | IsAuthenticated]
 
@@ -141,9 +144,9 @@ class MultiProjectListDetail(ViewSet):
                 query= Q()
                 for x in unique_id:
                     q = Q(unique_id=x)
-                    query |= q  
+                    query |= q
                 project=project.filter(query).exclude(project_privacy='Private')
-            notices = project.filter(Q(project_notice__isnull=False) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True))) 
+            notices = project.filter(Q(project_notice__isnull=False) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True)))
             labels = project.filter(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)).distinct()
             no_notice_labels = project.filter(Q(project_notice__isnull=True) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True))).distinct()
 
@@ -158,7 +161,7 @@ class MultiProjectListDetail(ViewSet):
             })
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    
+
     def multisearch_date(self, request, unique_id):
         try:
             project = Project.objects.all()
@@ -168,7 +171,7 @@ class MultiProjectListDetail(ViewSet):
                 query= Q()
                 for x in unique_id:
                     q = Q(unique_id=x)
-                    query |= q  
+                    query |= q
                 project=project.filter(query).exclude(project_privacy='Private')
 
             serializer = ProjectDateModified(project, many=True)

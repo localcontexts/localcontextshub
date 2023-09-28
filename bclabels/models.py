@@ -15,14 +15,14 @@ class BCLabel(models.Model):
     TYPES = (
         ('provenance', 'provenance'),
         ('commercialization', 'commercialization'),
-        ('non_commercial', 'non_commercial'),  
+        ('non_commercial', 'non_commercial'),
         ('collaboration', 'collaboration'),
         ('consent_verified', 'consent_verified'),
         ('consent_non_verified', 'consent_non_verified'),
         ('multiple_community', 'multiple_community'),
-        ('research', 'research'),  
+        ('research', 'research'),
         ('clan', 'clan'),
-        ('outreach', 'outreach'),  
+        ('outreach', 'outreach'),
     )
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=True)
     version = models.SmallIntegerField(blank=True, null=True)
@@ -54,7 +54,8 @@ class BCLabel(models.Model):
         json_data = open('./localcontexts/static/json/Labels.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/bclabels/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
+/labels/bclabels/'
         for key, values in data.items():
             if key == 'bcLabels':
                 if(isinstance(values, list)):
@@ -70,7 +71,7 @@ class BCLabel(models.Model):
 
     def __str__(self):
         return f"{self.community} - {self.name}"
-    
+
     class Meta:
         indexes = [models.Index(fields=['unique_id', 'created_by', 'community', 'is_approved', 'approved_by', 'audiofile'])]
         verbose_name = 'BC Label'
