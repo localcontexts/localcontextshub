@@ -8,16 +8,17 @@ steps:
         printf "%s" "$$APP_ENGINE_ENVS" > ./env.sh
         printf "%s" "$$DJANGO_STORAGES_GCS_KEY" > ./django-storages-gcs-key.json
         chmod +x ./env.sh
+        ls -l
     secretEnv: ["APP_ENGINE_ENVS", "DJANGO_STORAGES_GCS_KEY"]
     waitFor: ["-"]
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    id: 'debug-list-files'
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        ls -l
-    waitFor: ['setup-envs']
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  #   id: 'debug-list-files'
+  #   entrypoint: "bash"
+  #   args:
+  #     - "-c"
+  #     - |
+  #       ls -l
+  #   waitFor: ['setup-envs']
   - name: "python:3.8-slim-buster"
     id: "install-deps"
     entrypoint: "python3"
