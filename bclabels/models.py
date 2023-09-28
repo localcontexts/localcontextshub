@@ -54,8 +54,7 @@ class BCLabel(models.Model):
         json_data = open('./localcontexts/static/json/Labels.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/labels/bclabels/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/labels/bclabels/'
         for key, values in data.items():
             if key == 'bcLabels':
                 if(isinstance(values, list)):

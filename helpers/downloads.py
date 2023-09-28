@@ -94,8 +94,7 @@ def download_labels_zip(community):
 
 # Download Project
 def download_project_zip(project):
-    baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/'
+    baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/'
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
     project_creator = project.project_creator_project.first()

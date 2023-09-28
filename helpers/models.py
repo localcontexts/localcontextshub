@@ -53,8 +53,7 @@ class Notice(models.Model):
         json_data = open('./localcontexts/static/json/Notices.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/labels/notices/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/labels/notices/'
         for item in data:
             if item['noticeType'] == self.notice_type:
                 self.name = item['noticeName']

@@ -64,8 +64,7 @@ class TKLabel(models.Model):
         json_data = open('./localcontexts/static/json/Labels.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/labels/tklabels/'
+        baseURL = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/labels/tklabels/'
         for key, values in data.items():
             if key == 'tkLabels':
                 if(isinstance(values, list)):

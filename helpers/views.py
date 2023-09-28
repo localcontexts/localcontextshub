@@ -60,8 +60,7 @@ def download_collections_care_notices(request, institution_id, perm):
 @login_required(login_url='login')
 def download_community_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
+        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -75,8 +74,7 @@ def download_community_support_letter(request):
 @login_required(login_url='login')
 def download_institution_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com
-/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
+        url = 'https://storage.googleapis.com/local-contexts-hub-sandbox.appspot.com/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
