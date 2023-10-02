@@ -7,7 +7,13 @@ steps:
       - |
         printf "%s" "$$APP_ENGINE_ENVS" > ./env.sh
         printf "%s" "$$DJANGO_STORAGES_GCS_KEY" > ./django-storages-gcs-key.json
+        printf "export DB_NAME=\"%s\"\n" "$$DB_NAME" > ./db_env.sh
+        printf "export DB_USER=\"%s\"\n" "$$DB_USER" >> ./db_env.sh
+        printf "export DB_PASS=\"%s\"\n" "$$DB_PASS" >> ./db_env.sh
+        printf "export DB_HOST=\"%s\"\n" "$$DB_HOST" >> ./db_env.sh
+        printf "export CSRF_COOKIE_DOMAIN=\"%s\"\n" "$$CSRF_COOKIE_DOMAIN" >> ./db_env.sh
         chmod +x ./env.sh
+        chmod +x ./db_env.sh
     secretEnv: ["APP_ENGINE_ENVS", "DJANGO_STORAGES_GCS_KEY"]
     waitFor: ["-"]
   - name: "python:3.8-slim-buster"
@@ -25,28 +31,28 @@ steps:
         python3 ./manage.py collectstatic --noinput
     waitFor: ["setup-envs", "install-deps"]
 
-#  - name: "gcr.io/cloud-builders/wget"
-#  - id: "install-proxy"
-#    entrypoint: "bash"
-#    args:
-#      - "-c"
-#      - |
-#        wget -O /workspace/cloud_sql_proxy \
-#          "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
-#          && chmod +x /workspace/cloud_sql_proxy
-#    waitFor: ["-"]
-#  - name: "python:3.8-slim-buster"
-#    id: "migrate-db"
-#    entrypoint: "bash"
-#    args:
-#      - "-c"
-#      - |
-#        source .env.sh
-#        /workspace/cloud_sql_proxy -dir=/workspace -instances=$_SQL_DB=tcp:5432 \
-#          & sleep 2 \
-#          && python3 ./manage.py makemigrations \
-#          && python3 ./manage.py migrate
-#    waitFor: ["setup-envs", "install-deps", "install-proxy"]
+  - name: "gcr.io/cloud-builders/wget"
+    id: "install-proxy"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        wget -O /workspace/cloud_sql_proxy \
+          "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
+          && chmod +x /workspace/cloud_sql_proxy
+    waitFor: ["-"]
+  - name: "python:3.8-slim-buster"
+    id: "migrate-db"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        source ./env.sh
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
+          & sleep 2 \
+          && python3 ./manage.py makemigrations \
+          && python3 ./manage.py migrate
+    waitFor: ["setup-envs", "install-deps", "install-proxy"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: "deploy"
     entrypoint: "bash"
@@ -55,10 +61,7 @@ steps:
       - |
         source ./env.sh
         gcloud app deploy
-    waitFor: ["collect-statics"]
-
-#substitutions:
-#  _SQL_DB: ""
+    waitFor: ["collect-statics", "migrate-db"]
 availableSecrets:
   secretManager:
     - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
