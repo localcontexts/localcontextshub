@@ -127,7 +127,7 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': '/workspace/local-context-hub-staging:us-central1:localcontextshubdb'
         }
     }
-    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
+    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'local-context-hub-staging.appspot.com')
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         os.path.join(BASE_DIR, 'django-storages-gcs-key.json')
     )
