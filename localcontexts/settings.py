@@ -124,7 +124,7 @@ if os.getenv('GAE_APPLICATION', None):
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': '/workspace/local-context-hub-staging:us-central1:localcontextshubdb'
+            'HOST': '/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb/.s.PGSQL.5432'
         }
     }
     GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'local-context-hub-staging.appspot.com')
