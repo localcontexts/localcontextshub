@@ -37,7 +37,7 @@ SITE_ADMIN_NAME = os.environ['SITE_ADMIN_NAME']
 SITE_ADMIN_EMAIL = os.environ['SITE_ADMIN_EMAIL']
 ADMINS = [(SITE_ADMIN_NAME, SITE_ADMIN_EMAIL)]
 
-# reCAPTCHA 
+# reCAPTCHA
 GOOGLE_RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 
 # Application definition
@@ -124,7 +124,7 @@ if os.getenv('GAE_APPLICATION', None):
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': '/cloudsql/' + os.environ.get('DB_HOST')
+            'HOST': '/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
         }
     }
     GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
@@ -140,7 +140,7 @@ else:
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': os.environ.get('DB_HOST'),
+            'HOST': 'google',
             'PORT': os.environ.get('DB_PORT')
         }
     }
