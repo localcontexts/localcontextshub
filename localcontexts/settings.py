@@ -120,11 +120,11 @@ if os.getenv('GAE_APPLICATION', None):
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': '/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
+            'HOST': '104.198.151.212'
         }
     }
     GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
