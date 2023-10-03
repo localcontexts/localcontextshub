@@ -6,6 +6,8 @@ entrypoint: ./run.sh
 automatic_scaling:
   max_instances: 3
 
+beta_settings:
+  cloud_sql_instances: "local-context-hub-staging:us-central1:localcontextshubdb"
 
 handlers:
   # This configures Google App Engine to serve the files in the app's static
