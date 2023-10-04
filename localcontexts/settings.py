@@ -121,7 +121,7 @@ if os.getenv('GAE_APPLICATION', None):
     if os.environ.get('DB_TEST') == "deploy":
         HOST = 'cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
     else:
-        HOST = os.environ.get('DB_HOST')
+        HOST = 'cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
 
     DATABASES = {
         'default': {
