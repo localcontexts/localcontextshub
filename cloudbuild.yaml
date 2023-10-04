@@ -48,10 +48,13 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST & \
-          & sleep 2 \
-          && python3 ./manage.py makemigrations \
-          && python3 ./manage.py migrate
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST &
+        proxy_pid=$!  # Capture the PID (Process ID) of the proxy
+        sleep 2
+        python3 ./manage.py makemigrations
+        python3 ./manage.py migrate
+        # Optionally, you can wait for the proxy to exit, but it's not necessary in most cases.
+        # wait $proxy_pid
     waitFor: ["setup-envs", "install-deps", "install-proxy"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: "deploy"
