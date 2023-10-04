@@ -30,6 +30,17 @@ steps:
         python3 ./manage.py collectstatic --noinput
     waitFor: ["setup-envs", "install-deps"]
 
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    id: "deploy"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        source ./env.sh
+        printenv
+        gcloud app deploy
+    waitFor: ["collect-statics"]
+
   - name: "gcr.io/cloud-builders/wget"
     id: "install-proxy"
     entrypoint: "bash"
@@ -52,17 +63,7 @@ steps:
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
-    waitFor: ["setup-envs", "install-deps", "install-proxy"]
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
-    id: "deploy"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        source ./env.sh
-        printenv
-        gcloud app deploy
-    waitFor: ["collect-statics", "migrate-db"]
+    waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
 availableSecrets:
   secretManager:
     - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
