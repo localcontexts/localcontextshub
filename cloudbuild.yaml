@@ -46,6 +46,7 @@ steps:
     args:
       - "-c"
       - |
+        export DB_HOST="/workspace/local-context-hub-staging:us-central1:localcontextshubdb"
         source ./env.sh
         /workspace/cloud_sql_proxy -dir=/workspace -instances=local-context-hub-staging:us-central1:localcontextshubdb \
           & sleep 2 \
@@ -59,7 +60,6 @@ steps:
       - "-c"
       - |
         export DB_HOST="/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb"
-        echo $$DB_HOST
         source ./env.sh
         gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
