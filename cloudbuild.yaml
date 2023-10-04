@@ -59,9 +59,10 @@ steps:
     args:
       - "-c"
       - |
+        printf "export DB_HOST=\"/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb\"\n" > ./env.sh
         source ./env.sh
         gcloud app deploy
-    waitFor: ["collect-statics"]
+    waitFor: ["collect-statics", "migrate-db"]
 availableSecrets:
   secretManager:
     - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
