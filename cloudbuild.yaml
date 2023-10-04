@@ -46,7 +46,6 @@ steps:
     args:
       - "-c"
       - |
-        printf "export DB_TEST=\"deploy\"\n" >> ./env.sh
         source ./env.sh
         /workspace/cloud_sql_proxy -dir=/workspace -instances=local-context-hub-staging:us-central1:localcontextshubdb \
           & sleep 2 \
@@ -61,6 +60,7 @@ steps:
       - |
         printf "export DB_TEST=\"deploy\"\n" >> ./env.sh
         source ./env.sh
+        printenv
         DB_TEST="deploy" gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
 availableSecrets:
