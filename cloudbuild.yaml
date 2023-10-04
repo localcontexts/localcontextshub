@@ -59,6 +59,7 @@ steps:
       - "-c"
       - |
         export DB_HOST="/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb"
+        echo $$DB_HOST
         source ./env.sh
         gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
