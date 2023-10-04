@@ -48,7 +48,7 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /workspace/cloud-sql-proxy -dir=/workspace --unix-socket /cloudsql $$DB_HOST \;
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
