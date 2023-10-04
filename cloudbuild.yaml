@@ -48,7 +48,7 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=local-context-hub-staging:us-central1:localcontextshubdb \
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
