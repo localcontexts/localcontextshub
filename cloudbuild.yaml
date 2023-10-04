@@ -58,7 +58,7 @@ steps:
     args:
       - "-c"
       - |
-        export DB_TEST="deploy"
+        printf "export DB_TEST=\"deploy\"\n" > ./env.sh
         source ./env.sh
         gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
