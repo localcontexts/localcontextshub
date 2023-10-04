@@ -37,11 +37,10 @@ steps:
     args:
       - "-c"
       - |
-        wget -O /cloud_sql_proxy \
+        wget -O /workspace/cloud_sql_proxy \
           "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
-          && chmod +x /cloud_sql_proxy
+          && chmod +x /workspace/cloud_sql_proxy
     waitFor: ["-"]
-
   - name: "python:3.8-slim-buster"
     id: "migrate-db"
     entrypoint: "bash"
@@ -49,8 +48,7 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /cloud_sql_proxy -instances=$$DB_HOST &
-        proxy_pid=$!
+        /workspace/cloud_sql_proxy -instances=$$DB_HOST &
         sleep 2
         python3 ./manage.py makemigrations
         python3 ./manage.py migrate
