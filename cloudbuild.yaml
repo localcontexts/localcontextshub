@@ -10,7 +10,6 @@ steps:
         printf "export DB_NAME=\"%s\"\n" "$$DB_NAME" > ./db_env.sh
         printf "export DB_USER=\"%s\"\n" "$$DB_USER" >> ./db_env.sh
         printf "export DB_PASS=\"%s\"\n" "$$DB_PASS" >> ./db_env.sh
-        printf "export DB_HOST=\"%s\"\n" "$$DB_HOST" >> ./db_env.sh
         printf "export CSRF_COOKIE_DOMAIN=\"%s\"\n" "$$CSRF_COOKIE_DOMAIN" >> ./db_env.sh
         chmod +x ./env.sh
         chmod +x ./db_env.sh
@@ -59,7 +58,7 @@ steps:
     args:
       - "-c"
       - |
-        printf "export DB_HOST=\"/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb\"\n" > ./env.sh
+        export DB_HOST="/cloudsql/local-context-hub-staging:us-central1:localcontextshubdb"
         source ./env.sh
         gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
