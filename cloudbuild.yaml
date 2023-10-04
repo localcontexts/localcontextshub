@@ -39,7 +39,7 @@ steps:
       - |
         wget -O cloud_sql_proxy \
           "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
-          && chmod +x /cloudsql/cloud_sql_proxy
+          && chmod +x cloud_sql_proxy
     waitFor: ["-"]
   - name: "python:3.8-slim-buster"
     id: "migrate-db"
