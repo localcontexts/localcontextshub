@@ -140,7 +140,7 @@ else:
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': 'google',
+            'HOST': '/workspace/local-context-hub-staging:us-central1:localcontextshubdb',
             'PORT': os.environ.get('DB_PORT')
         }
     }
