@@ -60,7 +60,7 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        & gcloud app deploy
+        gcloud app deploy
     waitFor: ["collect-statics"]
 availableSecrets:
   secretManager:
