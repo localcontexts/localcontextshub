@@ -48,12 +48,11 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /workspace/cloud_sql_proxy -instances=$$DB_HOST &
-        sleep 2
-        python3 ./manage.py makemigrations
-        python3 ./manage.py migrate
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
+          & sleep 2 \
+          && python3 ./manage.py makemigrations \
+          && python3 ./manage.py migrate
     waitFor: ["setup-envs", "install-deps", "install-proxy"]
-
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: "deploy"
     entrypoint: "bash"
