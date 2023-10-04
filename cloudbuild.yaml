@@ -37,7 +37,7 @@ steps:
     args:
       - "-c"
       - |
-        wget -O /cloudsql/cloud_sql_proxy \
+        wget -O cloud_sql_proxy \
           "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
           && chmod +x /cloudsql/cloud_sql_proxy
     waitFor: ["-"]
@@ -48,7 +48,7 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        /cloudsql/cloud_sql_proxy -dir=/cloudsql -instances=$$DB_HOST \
+        cloud_sql_proxy -instances=$$DB_HOST \
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
