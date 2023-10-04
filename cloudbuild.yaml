@@ -60,7 +60,8 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        gcloud app deploy
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST -ip_address_types=PRIVATE \
+        & gcloud app deploy
     waitFor: ["collect-statics", "migrate-db"]
 availableSecrets:
   secretManager:
