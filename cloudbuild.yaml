@@ -46,7 +46,6 @@ steps:
     args:
       - "-c"
       - |
-        export DB_HOST="/workspace/local-context-hub-staging:us-central1:localcontextshubdb"
         source ./env.sh
         /workspace/cloud_sql_proxy -dir=/workspace -instances=local-context-hub-staging:us-central1:localcontextshubdb \
           & sleep 2 \
