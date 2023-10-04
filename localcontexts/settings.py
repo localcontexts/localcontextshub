@@ -119,7 +119,7 @@ if os.getenv('GAE_APPLICATION', None):
     from google.oauth2 import service_account
 
     if os.environ.get('DB_TEST') == "deploy":
-        HOST = 'cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
+        HOST = 'workspace/local-context-hub-staging:us-central1:localcontextshubdb'
     else:
         HOST = os.environ.get('DB_HOST')
 
