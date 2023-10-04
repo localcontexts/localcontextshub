@@ -118,13 +118,18 @@ if os.getenv('GAE_APPLICATION', None):
 
     from google.oauth2 import service_account
 
+    if os.environ.get('DB_TEST'):
+        HOST = 'cloudsql/local-context-hub-staging:us-central1:localcontextshubdb'
+    else:
+        HOST = os.environ.get('DB_HOST')
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': os.environ.get('DB_HOST')
+            'HOST': HOST
         }
     }
     GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'local-context-hub-staging.appspot.com')
