@@ -41,6 +41,7 @@ steps:
           "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
           && chmod +x /cloud_sql_proxy
     waitFor: ["-"]
+
   - name: "python:3.8-slim-buster"
     id: "migrate-db"
     entrypoint: "bash"
@@ -49,13 +50,12 @@ steps:
       - |
         source ./env.sh
         /cloud_sql_proxy -instances=$$DB_HOST &
-        proxy_pid=$!  # Capture the PID (Process ID) of the proxy
+        proxy_pid=$!
         sleep 2
         python3 ./manage.py makemigrations
         python3 ./manage.py migrate
-        # Optionally, you can wait for the proxy to exit, but it's not necessary in most cases.
-        # wait $proxy_pid
     waitFor: ["setup-envs", "install-deps", "install-proxy"]
+
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: "deploy"
     entrypoint: "bash"
