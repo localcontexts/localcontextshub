@@ -61,7 +61,7 @@ steps:
       - |
         source ./env.sh
         & gcloud app deploy
-    waitFor: ["collect-statics", "migrate-db"]
+    waitFor: ["collect-statics"]
 availableSecrets:
   secretManager:
     - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
