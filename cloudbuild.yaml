@@ -57,9 +57,9 @@ steps:
     args:
       - "-c"
       - |
-        export DB_TEST="deploy"
         source ./env.sh
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=local-context-hub-staging:us-central1:localcontextshubdb \
+        export DB_HOST=$$DB_SQL_PROXY
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
