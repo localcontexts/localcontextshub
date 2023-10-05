@@ -7,14 +7,10 @@ steps:
       - |
         printf "%s" "$$APP_ENGINE_ENVS" > ./env.sh
         printf "%s" "$$DJANGO_STORAGES_GCS_KEY" > ./django-storages-gcs-key.json
-        printf "export DB_NAME=\"%s\"\n" "$$DB_NAME" > ./db_env.sh
-        printf "export DB_USER=\"%s\"\n" "$$DB_USER" >> ./db_env.sh
-        printf "export DB_PASS=\"%s\"\n" "$$DB_PASS" >> ./db_env.sh
-        printf "export CSRF_COOKIE_DOMAIN=\"%s\"\n" "$$CSRF_COOKIE_DOMAIN" >> ./db_env.sh
         chmod +x ./env.sh
-        chmod +x ./db_env.sh
     secretEnv: ["APP_ENGINE_ENVS", "DJANGO_STORAGES_GCS_KEY"]
     waitFor: ["-"]
+
   - name: "python:3.8-slim-buster"
     id: "install-deps"
     entrypoint: "python3"
@@ -51,6 +47,7 @@ steps:
           "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
           && chmod +x /workspace/cloud_sql_proxy
     waitFor: ["-"]
+    
   - name: "python:3.8-slim-buster"
     id: "migrate-db"
     entrypoint: "bash"
@@ -58,8 +55,8 @@ steps:
       - "-c"
       - |
         source ./env.sh
-        export DB_HOST=$$DB_SQL_PROXY
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_HOST \
+        export DB_HOST=$DB_SQL_PROXY
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$DB_CONNECTION_NAME \
           & sleep 2 \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
