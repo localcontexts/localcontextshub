@@ -10,6 +10,7 @@ steps:
         chmod +x ./env.sh
     secretEnv: ["APP_ENGINE_ENVS", "DJANGO_STORAGES_GCS_KEY"]
     waitFor: ["-"]
+
   - name: "python:3.8-slim-buster"
     id: "install-deps"
     entrypoint: "python3"
@@ -25,28 +26,6 @@ steps:
         python3 ./manage.py collectstatic --noinput
     waitFor: ["setup-envs", "install-deps"]
 
-#  - name: "gcr.io/cloud-builders/wget"
-#  - id: "install-proxy"
-#    entrypoint: "bash"
-#    args:
-#      - "-c"
-#      - |
-#        wget -O /workspace/cloud_sql_proxy \
-#          "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
-#          && chmod +x /workspace/cloud_sql_proxy
-#    waitFor: ["-"]
-#  - name: "python:3.8-slim-buster"
-#    id: "migrate-db"
-#    entrypoint: "bash"
-#    args:
-#      - "-c"
-#      - |
-#        source .env.sh
-#        /workspace/cloud_sql_proxy -dir=/workspace -instances=$_SQL_DB=tcp:5432 \
-#          & sleep 2 \
-#          && python3 ./manage.py makemigrations \
-#          && python3 ./manage.py migrate
-#    waitFor: ["setup-envs", "install-deps", "install-proxy"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: "deploy"
     entrypoint: "bash"
@@ -57,8 +36,30 @@ steps:
         gcloud app deploy
     waitFor: ["collect-statics"]
 
-#substitutions:
-#  _SQL_DB: ""
+  - name: "gcr.io/cloud-builders/wget"
+    id: "install-proxy"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        wget -O /workspace/cloud_sql_proxy \
+          "https://storage.googleapis.com/cloudsql-proxy/v1.19.1/cloud_sql_proxy.linux.386" \
+          && chmod +x /workspace/cloud_sql_proxy
+    waitFor: ["-"]
+
+  - name: "python:3.8-slim-buster"
+    id: "migrate-db"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        source ./env.sh
+        export DB_HOST=$$DB_SQL_PROXY
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_CONNECTION_NAME \
+          & sleep 2 \
+          && python3 ./manage.py makemigrations \
+          && python3 ./manage.py migrate
+    waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
 availableSecrets:
   secretManager:
     - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
