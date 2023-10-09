@@ -1,6 +1,7 @@
 import json
 import requests
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
@@ -53,7 +54,7 @@ class Notice(models.Model):
         json_data = open('./localcontexts/static/json/Notices.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/'
+        baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/'
         for item in data:
             if item['noticeType'] == self.notice_type:
                 self.name = item['noticeName']

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
+from django.conf import settings
 from communities.models import InviteMember
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
@@ -60,7 +61,7 @@ def download_collections_care_notices(request, institution_id, perm):
 @login_required(login_url='login')
 def download_community_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
+        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -74,7 +75,7 @@ def download_community_support_letter(request):
 @login_required(login_url='login')
 def download_institution_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
+        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
