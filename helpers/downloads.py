@@ -8,6 +8,7 @@ from .utils import generate_zip, render_to_pdf
 import requests
 import os
 from django.shortcuts import render
+from django.conf import settings
 
 # Open to Collaborate Notice
 def download_otc_notice(request):
@@ -94,7 +95,7 @@ def download_labels_zip(community):
 
 # Download Project
 def download_project_zip(project):
-    baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/'
+    baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/'
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
     project_creator = project.project_creator_project.first()

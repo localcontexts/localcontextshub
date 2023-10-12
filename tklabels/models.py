@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from communities.models import Community
 from django.contrib.auth.models import User
+from django.conf import settings
 import os
 import requests
 
@@ -64,7 +65,7 @@ class TKLabel(models.Model):
         json_data = open('./localcontexts/static/json/Labels.json')
         data = json.load(json_data) #deserialize
 
-        baseURL = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/tklabels/'
+        baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/tklabels/'
         for key, values in data.items():
             if key == 'tkLabels':
                 if(isinstance(values, list)):

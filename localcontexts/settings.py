@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STORAGE_BUCKET = os.environ.get('GCS_BUCKET')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -127,7 +128,7 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': os.environ.get('DB_HOST')
         }
     }
-    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
+    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET')
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         os.path.join(BASE_DIR, 'django-storages-gcs-key.json')
     )

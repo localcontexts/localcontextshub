@@ -12,6 +12,7 @@ from projects.models import Project
 from helpers.models import Notice
 from projects.models import ProjectCreator
 from django.http import Http404
+from django.conf import settings
 
 @api_view(['GET'])
 def apiOverview(request, format=None):
@@ -35,8 +36,8 @@ def openToCollaborateNotice(request):
         'notice_type': 'open_to_collaborate',
         'name': 'Open to Collaborate Notice',
         'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-        'img_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.png',
-        'svg_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.svg',
+        'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
+        'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
         'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
     }
     return Response(api_urls)
