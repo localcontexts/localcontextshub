@@ -38,17 +38,12 @@
 </style>
 
 <script>
-    function agentHas(keyword) {
-      return navigator.userAgent.toLowerCase().search(keyword.toLowerCase()) > -1;
-    }
-
     function isIE() {
-        console.log("andar")
-        return agentHas("MSIE") || agentHas("Trident");
+        return 'ActiveXObject' in window;
     }
 
     function isSafari() {
-        return (!!window.ApplePaySetupFeature || !!window.safari) && agentHas("Safari") && !agentHas("Chrome") && !agentHas("CriOS");
+        return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     }
 
     var browserSupportContainer = document.querySelector('.browser-support-container');
@@ -56,15 +51,14 @@
 
     browserSupportBtn.addEventListener('click', function() {
         browserSupportContainer.classList.remove('active');
-        localStorage.setItem('ssupportBannerDisplayed', 'true')
+        localStorage.setItem('supportBannerDisplayed', 'true');
     });
 
     if (isIE() || isSafari()) {
-        console.log("andar")
-      setTimeout( () => {
-        if (!localStorage.getItem('ssupportBannerDisplayed')){
-            browserSupportContainer.classList.add('active');
-        }
-      }, 2000)
+        setTimeout(function() {
+            if (!localStorage.getItem('supportBannerDisplayed')) {
+                browserSupportContainer.classList.add('active');
+            }
+        }, 2000);
     }
 </script>
