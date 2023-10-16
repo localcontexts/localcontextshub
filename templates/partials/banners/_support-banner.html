@@ -43,7 +43,7 @@
     }
 
     function isIE() {
-        return !!document.documentMode;
+        return agentHas("MSIE") || agentHas("Trident");
     }
 
     function isSafari() {
