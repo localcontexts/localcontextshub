@@ -47,16 +47,16 @@
 
 <script>
     var cookieContainer = document.querySelector('.cookie-container')
-    var cookieBtn = document.querySelector('.cookie-btn')
+    var cookieBtn = document.querySelector('.cookie-btn');
 
-    cookieBtn.addEventListener('click', () => {
-        cookieContainer.classList.remove('active')
-        localStorage.setItem('cookieBannerDisplayed', 'true')
-    })
+    cookieBtn.addEventListener('click', function() {
+        cookieContainer.classList.remove('active');
+        localStorage.setItem('cookieBannerDisplayed', 'true');
+    });
 
-    setTimeout( () => {
-        if (!localStorage.getItem('cookieBannerDisplayed')){
-            cookieContainer.classList.add('active')
+    setTimeout(function() {
+        if (!localStorage.getItem('cookieBannerDisplayed')) {
+            cookieContainer.classList.add('active');
         }
-    }, 2000)
+    }, 2000);
 </script>
