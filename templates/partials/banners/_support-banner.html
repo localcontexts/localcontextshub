@@ -38,12 +38,17 @@
 </style>
 
 <script>
+    function agentHas(keyword) {
+      return navigator.userAgent.toLowerCase().search(keyword.toLowerCase()) > -1;
+    }
+
     function isIE() {
-        return 'ActiveXObject' in window;
+        console.log("andar")
+        return agentHas("MSIE") || agentHas("Trident");
     }
 
     function isSafari() {
-        return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        return (!!window.ApplePaySetupFeature || !!window.safari) && agentHas("Safari") && !agentHas("Chrome") && !agentHas("CriOS");
     }
 
     var browserSupportContainer = document.querySelector('.browser-support-container');
