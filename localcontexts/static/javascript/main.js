@@ -29,7 +29,7 @@ function disableSubmitRegistrationBtn() {
     })
 } 
 
-if (window.location.href.includes('anth-ja77-lc-dev-42d5')) {
+if (window.location.href.includes('sandbox.localcontextshub')) {
     let regHeader = document.getElementById('reg-header')
     let authHeader = document.getElementById('auth-header')
     let svgHeader = document.getElementById('svg-header')

@@ -85,7 +85,7 @@ def create_institution(request):
                 data = form.save(commit=False)
                 data.institution_creator = request.user
                 # If in test site, approve immediately, skip confirmation step
-                if dev_prod_or_local(request.get_host()) == 'DEV':
+                if dev_prod_or_local(request.get_host()) == 'SANDBOX':
                     data.is_approved = True
                     data.save()
                     
@@ -148,7 +148,7 @@ def confirm_institution(request, institution_id):
         if form.is_valid():
             data = form.save(commit=False)
             # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == 'DEV':
+            if dev_prod_or_local(request.get_host()) == 'SANDBOX':
                 data.is_approved = True
                 data.save()
                 return redirect('dashboard')
@@ -284,7 +284,7 @@ def institution_notices(request, pk):
     cc_policy_form = CollectionsCareNoticePolicyForm(request.POST or None, request.FILES)
     
     # sets permission to download OTC Notice
-    if dev_prod_or_local(request.get_host()) == 'DEV':
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
         otc_download_perm = 0
         ccn_download_perm = 0

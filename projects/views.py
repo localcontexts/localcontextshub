@@ -71,7 +71,7 @@ def download_project(request, unique_id):
         project = Project.objects.get(unique_id=unique_id)
         can_download = can_download_project(request, project.project_creator_project.first())
 
-        if project.project_privacy == "Private" or dev_prod_or_local(request.get_host()) == 'DEV' or not can_download:
+        if project.project_privacy == "Private" or dev_prod_or_local(request.get_host()) == 'SANDBOX' or not can_download:
             return redirect('restricted')
         else:
             return download_project_zip(project)
