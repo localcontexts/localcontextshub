@@ -2,6 +2,7 @@ envi/
 
 env.sh
 env-localdev.sh
+env-localstage.sh
 env-localprod.sh
 env-local.sh
 
