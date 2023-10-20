@@ -35,7 +35,7 @@ def delete_member_invite(request, pk):
 def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None):
     # perm will be a 1 or 0
     has_permission = bool(perm)
-    if dev_prod_or_local(request.get_host()) == 'DEV' or not has_permission:
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX' or not has_permission:
         return redirect('restricted')
     else:
         if researcher_id:
@@ -52,7 +52,7 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
 def download_collections_care_notices(request, institution_id, perm):
     # perm will be a 1 or 0
     has_permission = bool(perm)
-    if dev_prod_or_local(request.get_host()) == 'DEV' or not has_permission:
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX' or not has_permission:
         return redirect('restricted')
     else:
         NoticeDownloadTracker.objects.create(institution=Institution.objects.get(id=institution_id), user=request.user, collections_care_notices=True)
