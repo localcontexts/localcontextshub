@@ -67,7 +67,7 @@
         localStorage.setItem('disclaimerBannerDisplayed', 'true');
     });
 
-    if (isIE() || isSafari() || isEdge()) {
+    if (true) {
         setTimeout(function() {
             if (!localStorage.getItem('disclaimerBannerDisplayed')) {
                 if (sandboxContainer) {
