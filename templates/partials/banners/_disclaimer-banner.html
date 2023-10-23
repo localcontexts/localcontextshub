@@ -54,7 +54,7 @@
     }
 
     function isEdge() {
-        return agentHas("Edge");
+        return agentHas("Edge") || agentHas("Edg");
     }
 
     var sandboxContainer = document.querySelector('.sandbox-container');
@@ -67,7 +67,7 @@
         localStorage.setItem('disclaimerBannerDisplayed', 'true');
     });
 
-    if (true) {
+    if (isIE() || isSafari() || isEdge()) {
         setTimeout(function() {
             if (!localStorage.getItem('disclaimerBannerDisplayed')) {
                 if (sandboxContainer) {
