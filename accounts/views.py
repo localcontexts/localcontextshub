@@ -1,11 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
-from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.views.generic import View
 from django.contrib.auth.views import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from itertools import chain
 
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
@@ -25,16 +23,12 @@ from django.contrib.auth.models import User
 from communities.models import Community, InviteMember
 from institutions.models import Institution
 from researchers.models import Researcher
-from bclabels.models import BCLabel
-from tklabels.models import TKLabel
-from helpers.models import Notice, OpenToCollaborateNoticeURL, HubActivity
-from notifications.models import UserNotification
-from projects.models import Project, ProjectCreator
+from helpers.models import HubActivity
+from projects.models import Project
 
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
-from projects.utils import paginate
 
 from helpers.emails import *
 from .models import *
@@ -128,6 +122,7 @@ def verify(request):
                 return redirect('verify')
     return render(request, 'accounts/verify.html', {'form': form})
 
+
 @unauthenticated_user
 def login(request):
     envi = dev_prod_or_local(request.get_host())
@@ -136,6 +131,7 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(request, username=username, password=password)
+        next_path = get_next_path(request, default_path='dashboard')
 
         # If user is found, log in the user.
         if user is not None:
@@ -146,7 +142,7 @@ def login(request):
                 return redirect('create-profile')
             else:
                 auth.login(request, user)
-                return redirect('dashboard')
+                return redirect(next_path)
         else:
             messages.error(request, 'Your username or password does not match an account')
             return redirect('login')
@@ -313,27 +309,35 @@ def delete_member_invitation(request, pk):
 
 @login_required(login_url='login')
 def invite_user(request):
+    # use internally referred path, otherwise use the default path
+    default_path = 'invite'
+    referred_path = request.headers.get('Referer', default_path)
+    selected_path = urllib.parse.urlparse(referred_path).path
+
     invite_form = SignUpInvitationForm(request.POST or None)
     if request.method == "POST":
         if invite_form.is_valid():
             data = invite_form.save(commit=False)
             data.sender = request.user
-            email_exists = User.objects.filter(email=data.email).exists()
 
-            if email_exists:
-                messages.add_message(request, messages.INFO, 'This email is already in use')
-                return redirect('invite')
+            if User.objects.filter(email=data.email).exists():
+                messages.add_message(request, messages.ERROR, 'This user is already in the Hub')
+                return redirect(selected_path)
             else: 
-                messages.add_message(request, messages.SUCCESS, 'Invitation Sent!')
-                send_invite_user_email(request, data)
-                # Save invitation instance
-                data.save()
-                HubActivity.objects.create(
-                    action_user_id=data.sender.id,
-                    action_type="Sign-Up Invitation",
-                    recipient_email=data.email
-                )
-                return redirect('invite')
+                if SignUpInvitation.objects.filter(email=data.email).exists():
+                    messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email')
+                    return redirect(selected_path)
+                else:
+                    messages.add_message(request, messages.SUCCESS, 'Invitation Sent')
+                    send_invite_user_email(request, data)
+                    data.save()
+                    return redirect(selected_path)
+
+    # when validation fails and selected_path is not the default
+    # redirect to selected path
+    if selected_path.strip('/') != default_path:
+        return redirect(selected_path)
+
     return render(request, 'accounts/invite.html', {'invite_form': invite_form})
 
 def registry(request, filtertype=None):
@@ -410,7 +414,7 @@ def projects_board(request, filtertype=None):
             q = unidecode(q) #removes accents from search query
 
             # Filter's accounts by the search query, showing results that match with or without accents
-            results = projects.filter(title__unaccent__icontains=q)
+            results = projects.filter(Q(title__unaccent__icontains=q) | Q(description__unaccent__icontains=q))
 
             p = Paginator(results, 10)
         else:
