@@ -23,7 +23,7 @@ from accounts.models import UserAffiliation
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm, CollectionsCareNoticePolicyForm
 from communities.forms import InviteMemberForm, JoinRequestForm
-from accounts.forms import ContactOrganizationForm
+from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 from .forms import *
 
 from helpers.emails import *
@@ -328,11 +328,11 @@ def institution_notices(request, pk):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
-def delete_otc_notice(request, institution_id, notice_id):
+def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
         otc.delete()
-    return redirect('institution-notices', institution_id)
+    return redirect('institution-notices', pk)
 
 # Members
 @login_required(login_url='login')
@@ -407,6 +407,7 @@ def institution_members(request, pk):
         'member_role': member_role,
         'join_requests_count': join_requests_count,
         'users': users,
+        'invite_form': SignUpInvitationForm(),
     }    
     return render(request, 'institutions/members.html', context)
 
@@ -675,8 +676,8 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
-def edit_project(request, institution_id, project_uuid):
-    institution = get_institution(institution_id)
+def edit_project(request, pk, project_uuid):
+    institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
 
     member_role = check_member_role(request.user, institution)
@@ -707,7 +708,7 @@ def edit_project(request, institution_id, project_uuid):
                 action_type="Project Edited",
                 project_id=data.id,
                 action_account_type = 'institution',
-                institution_id=institution_id
+                institution_id=pk
             )
 
             instances = formset.save(commit=False)
@@ -892,22 +893,22 @@ def project_actions(request, pk, project_uuid):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
-def archive_project(request, institution_id, project_uuid):
-    if not ProjectArchived.objects.filter(institution_id=institution_id, project_uuid=project_uuid).exists():
-        ProjectArchived.objects.create(institution_id=institution_id, project_uuid=project_uuid, archived=True)
+def archive_project(request, pk, project_uuid):
+    if not ProjectArchived.objects.filter(institution_id=pk, project_uuid=project_uuid).exists():
+        ProjectArchived.objects.create(institution_id=pk, project_uuid=project_uuid, archived=True)
     else:
-        archived_project = ProjectArchived.objects.get(institution_id=institution_id, project_uuid=project_uuid)
+        archived_project = ProjectArchived.objects.get(institution_id=pk, project_uuid=project_uuid)
         if archived_project.archived:
             archived_project.archived = False
         else:
             archived_project.archived = True
         archived_project.save()
-    return redirect('institution-project-actions', institution_id, project_uuid)
+    return redirect('institution-project-actions', pk, project_uuid)
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
-def delete_project(request, institution_id, project_uuid):
-    institution = get_institution(institution_id)
+def delete_project(request, pk, project_uuid):
+    institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
 
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
