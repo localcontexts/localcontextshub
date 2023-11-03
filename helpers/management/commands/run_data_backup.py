@@ -102,6 +102,9 @@ class Command(BaseCommand):
                 files = self.storage.list_directory(path=interval.name)
                 files.sort()
             except (Exception,):
+                self.stdout.write(
+                    self.style.ERROR('Error Getting Files')
+                )
                 files = []
 
             if self.should_save_new_file(interval, files):
