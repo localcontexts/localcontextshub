@@ -1,9 +1,11 @@
+import os.path
 import time
 from typing import List
 from pathlib import Path
 from datetime import datetime, timedelta
 from collections import namedtuple
 
+from django.conf import settings
 from django.core import management
 from django.core.management.base import BaseCommand
 
@@ -26,6 +28,7 @@ INTERVALS = [
 class Command(BaseCommand):
     help = "Runs backup code"
     storage = Storage()
+    env = 'dev' if settings.DEBUG else 'prod'
 
     @staticmethod
     def truncate_datetime(dt: datetime, interval_name: str) -> datetime:
@@ -85,7 +88,7 @@ class Command(BaseCommand):
             return
 
         oldest_file_name = files_in_folder[0]
-        oldest_file_path = f'{interval.name}/{oldest_file_name}'
+        oldest_file_path = os.path.join(self.env, interval.name, oldest_file_name)
         try:
             self.storage.delete_file(oldest_file_path)
             self.stdout.write(
@@ -99,7 +102,8 @@ class Command(BaseCommand):
     def job(self):
         for interval in INTERVALS:
             try:
-                files = self.storage.list_directory(path=interval.name)
+                path = os.path.join(self.env, interval.name)
+                files = self.storage.list_directory(path=path)
                 files.sort()
             except (Exception,):
                 self.stdout.write(
@@ -109,7 +113,7 @@ class Command(BaseCommand):
 
             if self.should_save_new_file(interval, files):
                 file_name = f'{time.strftime(TIME_FORMAT)}.psql'
-                file_path = f'{interval.name}/{file_name}'
+                file_path = os.path.join(self.env, interval.name, file_name)
                 self.stdout.write(
                     self.style.SUCCESS(f'Creating Backup For {interval.name} Named {file_name}')
                 )
