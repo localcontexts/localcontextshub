@@ -496,6 +496,7 @@ function populateTemplate(id) {
     let hiddenInput = document.getElementById('input-label-name')
     let whyUseText = document.getElementById('whyUseText')
     let labelNamePTag = document.getElementById('labelNamePTag')
+    let language = document.getElementById("id_language")
 
     fetchLabels('both').then(populate)
 
@@ -525,6 +526,44 @@ function populateTemplate(id) {
         }
     }
 
+    async function fetchLabelTranslations() {
+        const response = await fetch('/static/json/LabelTranslations.json');
+        const data = await response.json();
+        return data;
+      }
+
+      function findLabelAndSetValues(labels, id, selectedLanguage) {
+        const label = labels.find(label => id === label.labelCode && selectedLanguage === label.translated_language);
+        if (label) {
+          templateName.value = label.labelTranslatedName;
+          templateText.innerHTML = label.labelTranslatedText;
+        }
+      }
+
+      const observer = new MutationObserver(async function (mutationsList) {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+            const selectedLanguage = language.value;
+            if (selectedLanguage !== "") {
+              templateText.innerHTML = "We Only Support French, Spanish, and Māori translations at the moment.";
+              try {
+                const data = await fetchLabelTranslations();
+                if (id.startsWith('b') && data.bcLabels) {
+                  findLabelAndSetValues(data.bcLabels, id, selectedLanguage);
+                } else if (id.startsWith('t') && data.tkLabels) {
+                  findLabelAndSetValues(data.tkLabels, id, selectedLanguage);
+                } else {
+                  console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
+                }
+              } catch (error) {
+                console.error("Error fetching label translations:", error);
+              }
+            }
+          }
+        }
+      });
+      
+    observer.observe(language, { attributes: true, attributeFilter: ['value'] });
 }
   
 function expandCCNotice(noticeDiv) {
