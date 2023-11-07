@@ -1,0 +1,7 @@
+{% extends 'base.html' %} {% load static %} {% block content %} {% include 'partials/headers/_reg-header.html' %}
+
+<section id="gradient-section" class="flex-this">
+      {% block main %} {% endblock %}
+</section>
+{% include 'partials/footers/_reg-footer.html' %}
+{% endblock %}

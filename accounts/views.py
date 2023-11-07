@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 # For emails
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
+from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 
 from unidecode import unidecode
@@ -447,7 +448,7 @@ def hub_counter(request):
 def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
 
-    if environment == 'PROD' or 'localhost' in request.get_host():
+    if True:
         ''' Begin reCAPTCHA validation '''
         recaptcha_response = request.POST.get('g-recaptcha-response')
         url = 'https://www.google.com/recaptcha/api/siteverify'
@@ -474,8 +475,9 @@ def newsletter_subscription(request):
                     emailb64 = urlsafe_base64_encode(force_bytes(email))
                     variables = manage_mailing_list(request, first_name, emailb64)
                     add_to_mailing_list(str(email), str(name), str(variables))
-                    messages.add_message(request, messages.SUCCESS, 'You have been subscribed.')
-                    return redirect('newsletter-unsubscription', emailb64=emailb64)
+                    message_text = mark_safe('Thank&nbsp;you&nbsp;an&nbsp;email&nbsp;has&nbsp;been&nbsp;sent')
+                    messages.add_message(request, messages.SUCCESS, message_text)
+                    return render(request, 'accounts/newsletter-subscription.html', {'emailb64': emailb64})
                 else:
                     messages.error(request, 'Invalid reCAPTCHA. Please try again.')
 
@@ -524,21 +526,17 @@ def newsletter_unsubscription(request, emailb64):
 
             if request.method == 'POST':
                 if 'updatebtn' in request.POST:
-                    if 'topic' not in request.POST:
-                        messages.add_message(request, messages.ERROR, 'Please select at least one topic.')
+                    if 'unsubscribe' in request.POST:
+                        unsubscribe_from_mailing_list(str(email), str(name))
+                        messages.add_message(request, messages.SUCCESS, 'You unsubscribed successfully')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
-                    else:
+                    elif 'topic' in request.POST:
                         variables = manage_mailing_list(request, first_name, email)
                         add_to_mailing_list(str(email), str(name), str(variables))
                         messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated.')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
-
-                if 'unsubscribebtn' in request.POST:
-                    if 'unsubscribe' not in request.POST:
-                        messages.add_message(request, messages.ERROR, 'Please check the box below to unsubscribe.')
-                        return redirect('newsletter-unsubscription', emailb64=emailb64)
                     else:
-                        unsubscribe_from_mailing_list(str(email), str(name))
+                        messages.add_message(request, messages.ERROR, 'Please select any option')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
             return render(request, 'accounts/newsletter-unsubscription.html', context)
         except:

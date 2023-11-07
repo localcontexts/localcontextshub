@@ -275,6 +275,7 @@ input:focus {
 .w-10 { width: 10%; }
 .w-15 { width: 15%; }
 .w-20 { width: 20%; }
+.w-25 { width: 25%; }
 .w-30 { width: 30%; }
 .w-40 { width: 40%; }
 .w-50 { width: 50%; }
@@ -283,6 +284,10 @@ input:focus {
 .w-80 { width: 80%; }
 .w-90 { width: 90%; }
 .w-100 { width: 100%; }
+
+/* HEIGHTS */
+.h-25 { height: 25%; }
+.h-100 { height: 100% }
 
 /* ACTION Buttons / Register,Sign in, etc. */
 .primary-btn {
@@ -588,6 +593,16 @@ button[disabled],
     min-width: 1280px;
     border-radius: 10px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.content-card-v3 {
+    background-color: #fff;
+    margin: 8px auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: 80%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
 }
 
 .content-card-space {
@@ -1465,4 +1480,72 @@ i[data-tooltip]:hover:after {
     margin: 16px 0px;
     padding: 0px 16px;
     background-color: #f3f4f6;
+}
+
+.newsletter-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.newsletter-column {
+    display: flex;
+    flex-direction: row;
+    flex-basis: 100%;
+    flex: 1;
+}
+
+.newsletter-form {
+    height: 485px;
+    overflow-y: scroll;
+    padding: 10%;
+    width: 100%;
+}
+
+.image-container {
+    position: relative;
+    width: 100%; /* Ensure the container spans the entire width of the image */
+}
+
+.successfulicon-color {
+    color: #0c8814;
+}
+
+.centered-icon {
+    position: absolute;
+    top: 50%; /* Move the icon down by 50% of the container's height */
+    left: 50%; /* Move the icon right by 50% of the container's width */
+    transform: translate(-50%, -50%); /* Center the icon perfectly */
+    color: white;
+    z-index: 2;
+    width: 25%;
+}
+
+.centered-text {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 2;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(239, 108, 0, 0.5); /* Adjust the color and opacity as needed */
+    z-index: 1;
+}
+
+.newsletter-unsubscribe-email {
+    text-decoration: underline;
+    color: rgba(0, 115, 133, 1);
+}
+
+.newsletter-toggle {
+    accent-color: rgba(5, 143, 115, 1);
 }
