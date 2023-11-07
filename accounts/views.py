@@ -448,7 +448,7 @@ def hub_counter(request):
 def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
 
-    if True:
+    if environment == 'PROD' or 'localhost' in request.get_host():
         ''' Begin reCAPTCHA validation '''
         recaptcha_response = request.POST.get('g-recaptcha-response')
         url = 'https://www.google.com/recaptcha/api/siteverify'
