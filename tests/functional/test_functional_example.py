@@ -1,4 +1,4 @@
-# Use this to test non-unit tests
+# File with example non-unit test
 
 
 def test_placeholder():

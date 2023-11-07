@@ -1,4 +1,4 @@
-# Use this to test custom functions
+# File with example unit test
 
 
 def test_placeholder():
