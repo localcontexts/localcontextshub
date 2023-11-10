@@ -496,7 +496,8 @@ function populateTemplate(id) {
     let hiddenInput = document.getElementById('input-label-name')
     let whyUseText = document.getElementById('whyUseText')
     let labelNamePTag = document.getElementById('labelNamePTag')
-    let language = document.getElementById("id_language")
+    let language = document.getElementById('id_language')
+    let language_support = document.getElementById('languageError')
 
     fetchLabels('both').then(populate)
 
@@ -530,38 +531,49 @@ function populateTemplate(id) {
         const response = await fetch('/static/json/LabelTranslations.json');
         const data = await response.json();
         return data;
-      }
+    }
 
-      function findLabelAndSetValues(labels, id, selectedLanguage) {
+    function findLabelAndSetValues(labels, id, selectedLanguage) {
         const label = labels.find(label => id === label.labelCode && selectedLanguage === label.translated_language);
         if (label) {
           templateName.value = label.labelTranslatedName;
           templateText.innerHTML = label.labelTranslatedText;
         }
-      }
+    }
 
-      const observer = new MutationObserver(async function (mutationsList) {
+    const observer = new MutationObserver(async function (mutationsList) {
         for (const mutation of mutationsList) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
-            const selectedLanguage = language.value;
-            if (selectedLanguage !== "") {
-              templateText.innerHTML = "We Only Support French, Spanish, and Māori translations at the moment.";
-              try {
-                const data = await fetchLabelTranslations();
-                if (id.startsWith('b') && data.bcLabels) {
-                  findLabelAndSetValues(data.bcLabels, id, selectedLanguage);
-                } else if (id.startsWith('t') && data.tkLabels) {
-                  findLabelAndSetValues(data.tkLabels, id, selectedLanguage);
-                } else {
-                  console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                const selectedLanguage = language.value;
+                var supportedLanguages = ['French', 'Spanish', 'Māori'];
+                if (supportedLanguages.includes(selectedLanguage)) {
+                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
+                try {
+                    const data = await fetchLabelTranslations();
+                    if (id.startsWith('b') && data.bcLabels) {
+                    findLabelAndSetValues(data.bcLabels, id, selectedLanguage);
+                    } else if (id.startsWith('t') && data.tkLabels) {
+                    findLabelAndSetValues(data.tkLabels, id, selectedLanguage);
+                    } else {
+                    console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
+                    }
+                } catch (error) {
+                    console.error("Error fetching label translations:", error);
                 }
-              } catch (error) {
-                console.error("Error fetching label translations:", error);
-              }
+                }
+                else if (selectedLanguage == "English") {
+                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
+                    fetchLabels('both').then(populate)
+                }
+                else if (selectedLanguage != "") {
+                    const language_supportMessage = `We only support ${supportedLanguages.join(', ')} translations at the moment.`;
+                    language_support.textContent = language_supportMessage;
+                    language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
+                    fetchLabels('both').then(populate)
+                }
             }
-          }
         }
-      });
+    });
       
     observer.observe(language, { attributes: true, attributeFilter: ['value'] });
 }
