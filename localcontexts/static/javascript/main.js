@@ -566,7 +566,8 @@ function populateTemplate(id) {
                     fetchLabels('both').then(populate)
                 }
                 else if (selectedLanguage != "") {
-                    const language_supportMessage = `We only support ${supportedLanguages.join(', ')} translations at the moment.`;
+                    const lastLanguageIndex = supportedLanguages.length - 1;
+                    const language_supportMessage = `We only support ${ supportedLanguages.length > 1 ? `${supportedLanguages.slice(0, lastLanguageIndex).join(', ')} and ${supportedLanguages[lastLanguageIndex]}` : supportedLanguages[0] } translations at the moment.`;
                     language_support.textContent = language_supportMessage;
                     language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
                     fetchLabels('both').then(populate)
