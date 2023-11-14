@@ -561,7 +561,7 @@ function populateTemplate(id) {
                     console.error("Error fetching label translations:", error);
                 }
                 }
-                else if (selectedLanguage == "English") {
+                else if (selectedLanguage == "English" || selectedLanguage == "") {
                     language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
                     fetchLabels('both').then(populate)
                 }
@@ -570,6 +570,7 @@ function populateTemplate(id) {
                     const language_supportMessage = `We only support ${ supportedLanguages.length > 1 ? `${supportedLanguages.slice(0, lastLanguageIndex).join(', ')} and ${supportedLanguages[lastLanguageIndex]}` : supportedLanguages[0] } translations at the moment.`;
                     language_support.textContent = language_supportMessage;
                     language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
+                    language.value = 'English';
                     fetchLabels('both').then(populate)
                 }
             }
