@@ -1573,55 +1573,6 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
     })
 }
 
-// Embed Code customization options
-if (window.location.href.includes('projects')) {
-    var embedCode = document.getElementById('projectPageEmbedToCopy')
-    var layoutDropdown = document.getElementById('embedLayoutOptions')
-    var languageDropdown = document.getElementById('embedLanguageOptions')
-    var langArray= new Array();
-    var layoutType, languageType, customizationOptions = null
-    projectID = embedCode.dataset.projectId
-    
-    embedCode.value = '<iframe width="560" height="250" src="http://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
-
-    for (i=0;i < languageDropdown.options.length; i++) {
-        if (langArray.includes(languageDropdown.options[i].value) == false) {
-            langArray.push(languageDropdown.options[i].value)
-            languageDropdown.options[i].classList.remove("hide");
-        }
-        else {
-            languageDropdown.options[i].classList.add("hide");
-        }
-    }
-
-    if (layoutDropdown) {
-        layoutDropdown.addEventListener("change", function(e) {
-            layoutType = 'lt='+this.value
-            updateEmbedCode()
-        })
-    }
-    if (languageDropdown) {
-        languageDropdown.addEventListener("change", function(e) {
-            languageType = 'lang='+this.value
-            updateEmbedCode()
-        })
-    }
-
-    function updateEmbedCode() {
-        if (layoutType && languageType) {
-            customizationOptions = layoutType+'&'+languageType
-        }
-        else if (!(languageType)) {
-            customizationOptions = layoutType
-        }
-        else if (!(layoutType)) {
-            customizationOptions = languageType
-        }
-
-        embedCode.value = '<iframe width="560" height="250" src="http://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
-    }
-}
-
 // Share on Social Media
 var shareToSocialsBtn = document.getElementsByClassName('shareToSocialsBtn')
 if (shareToSocialsBtn) {
