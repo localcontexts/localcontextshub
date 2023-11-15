@@ -20,8 +20,11 @@
         #buttonRow{
             margin-top: 20px
         }
-    </style>
 
+        a.disabled-btn{
+            pointer-events: none;
+        }
+    </style>
     <div class="w-90">
         <h2 class="no-top-margin">Community Boundary</h2>
 
@@ -38,7 +41,7 @@
                     <fieldset>
 
                         <div class="communityBoundarySelect">
-                            <input type="radio" name="NativeLandDigital"/>
+                            <input type="radio" name="selectBoundary"/>
                             <div class="communityBoundaryLabel">
                                 <strong>Native Land Digital</strong>
                             </div>
@@ -56,7 +59,7 @@
                     <fieldset>
 
                         <div class="communityBoundarySelect">
-                            <input type="radio" name="NativeLandDigital" />
+                            <input type="radio" name="selectBoundary" />
                             <div class="communityBoundaryLabel">
                                 <strong>Shape file</strong>
                             </div>
@@ -78,7 +81,8 @@
         <div class="w-90 flex-this flex-start">
             <div>
                 <a
-                    class="primary-btn action-btn"
+                    id="community-boundary-continue-btn"
+                    class="primary-btn action-btn disabled-btn"
                     {% if community %}
                         href="{% url 'create-community' %}"
                     {% endif %}
@@ -96,5 +100,14 @@
     </div>
 
 
+    <script>
+    const selectors = document.querySelectorAll('.communityBoundarySelect input')
+    const continueButton = document.querySelector('#community-boundary-continue-btn')
 
+    selectors.forEach(function(selector) {
+        selector.addEventListener('click', () => {
+            continueButton.classList.remove('disabled-btn')
+        })
+    })
+    </script>
 {% endblock %}
