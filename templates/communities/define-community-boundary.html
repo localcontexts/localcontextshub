@@ -14,6 +14,20 @@
             font-weight: bold;
         }
 
+        #community-boundary-search {
+            position: relative;
+        }
+
+        #community-boundary-search input{
+            width: 100%;
+        }
+
+        #community-boundary-search i{
+            position: absolute;
+            right: 10px;
+            top: 12px;
+        }
+
         #buttonRow{
             margin-top: 20px
         }
@@ -39,6 +53,32 @@
         <div id="navigate-to-option">
             Or <a href="{% url 'upload-boundary-file' %}">upload shape file</a>
         </div>
+
+        <div class="country-container margin-top-8">
+            <label class="pad-top-1-5" for="country">Country of Community boundary</label><br>
+            <select name="country" id="id_country">
+            <option value="" selected="">---------</option>
+            <option value="AF">Afghanistan</option>
+            <option value="AX">Åland Islands</option>
+            <option value="AL">Albania</option>
+            <option value="DZ">Algeria</option>
+            <option value="AS">American Samoa</option>
+            <option value="AD">Andorra</option>
+            <option value="AO">Angola</option>
+            </select>
+        </div>
+
+        <div class="country-container margin-top-8">
+            <label class="pad-top-1-5" for="country">Search the Native Land Digital database</label><br>
+            <div id="community-boundary-search">
+                <input class="input-field" type="text"
+                       placeholder="Search by address, community name or town"
+                >
+                <i class="fa fa-search icon"></i>
+            </div>
+
+        </div>
+
     </div>
 
     <div class="flex-this w-90" id="buttonRow">
