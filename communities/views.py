@@ -78,6 +78,13 @@ def preparation_step(request):
     community = True
     return render(request, 'accounts/preparation.html', { 'community' : community })
 
+
+@login_required(login_url='login')
+def community_boundary(request):
+    community = True
+    return render(request, 'communities/community-boundary.html', {'community' : community})
+
+
 # Create Community
 @login_required(login_url='login')
 def create_community(request):
