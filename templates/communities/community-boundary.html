@@ -1,4 +1,4 @@
-{% extends 'register-base.html' %} {% block title %} Preparation Step {% endblock %} {% load static %} {% block card %}
+{% extends 'register-base.html' %} {% block title %} Community Boundary {% endblock %} {% load static %} {% block card %}
     <style>
         .communityBoundarySelect{
             display: flex;
@@ -24,6 +24,10 @@
         a.disabled-btn{
             pointer-events: none;
             user-select: none;
+        }
+
+        #skip-this-step{
+            margin-left: 20px;
         }
     </style>
     <div class="w-90">
@@ -94,7 +98,7 @@
                     Continue <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
-            <div class="margin-right-8">
+            <div class="margin-right-8" id="skip-this-step">
                 <a class="primary-btn white-btn" href="{% url 'dashboard' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>

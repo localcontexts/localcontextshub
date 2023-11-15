@@ -1,4 +1,4 @@
-{% extends 'register-base.html' %} {% block title %} Preparation Step {% endblock %} {% load static %} {% block card %}
+{% extends 'register-base.html' %} {% block title %} Define Community {% endblock %} {% load static %} {% block card %}
     <style>
         .communityBoundarySelect{
             display: flex;
@@ -22,6 +22,17 @@
         #define-community-top-text{
             width: 90%;
         }
+
+        #define-community-body{
+            position: relative;
+        }
+        #navigate-to-option{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-weight: bold;
+        }
+
         #buttonRow{
             margin-top: 20px
         }
@@ -30,8 +41,12 @@
             pointer-events: none;
             user-select: none;
         }
+
+        #skip-this-step{
+            margin-left: 20px;
+        }
     </style>
-    <div class="w-90">
+    <div class="w-90" id="define-community-body">
         <h2 class="no-top-margin">Define Community boundary</h2>
         <p id="define-community-top-text">
         {% if community or institution %}
@@ -40,47 +55,9 @@
             is not accurate please don’t hesitate to get in contact with Native Land Digital.
         {% endif %}
         </p>
-        <p>
-            <br><br>
-
-                <form id="radio_btn_select">
-                    <strong>Option 1: Searching the Native Land Digital Database </strong><br><br>
-                    <fieldset>
-
-                        <div class="communityBoundarySelect">
-                            <input type="radio" name="selectBoundary"/>
-                            <div class="communityBoundaryLabel">
-                                <strong>Native Land Digital</strong>
-                            </div>
-                            <div class="communityBoundaryText">
-                                Native Land Digital is an Indigenous led mapping tool that maps
-                                Indigenous territories, treaties and languages around the world.
-                                <a target="_blank" href="https://native-land.ca/">See more information here</a>
-                            </div>
-                        </div>
-
-                    </fieldset>
-
-                    <br>
-                    <strong>Option 2: Uploading a shape file </strong><br><br>
-                    <fieldset>
-
-                        <div class="communityBoundarySelect">
-                            <input type="radio" name="selectBoundary" />
-                            <div class="communityBoundaryLabel">
-                                <strong>Shape file</strong>
-                            </div>
-                            <div class="communityBoundaryText">
-                                A shapefile is a vector data file format commonly used for geospatial analysis.
-                                Shapefiles store the location, geometry, and attribution
-                                of point, line, and polygon features.
-                            </div>
-                        </div>
-
-                    </fieldset>
-                </form>
-
-        </p>
+        <div id="navigate-to-option">
+            Or <a href="{% url 'upload-boundary-file' %}">upload shape file</a>
+        </div>
     </div>
 
     <div class="flex-this w-90" id="buttonRow">
@@ -97,10 +74,10 @@
                         href="{% url 'create-institution' %}"
                     {% endif %}
                 >
-                    Continue <i class="fa fa-arrow-right"></i>
+                    Confirm location <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
-            <div class="margin-right-8">
+            <div class="margin-right-8" id="skip-this-step">
                 <a class="primary-btn white-btn" href="{% url 'dashboard' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
