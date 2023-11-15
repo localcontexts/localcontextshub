@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('preparation-step/', views.preparation_step, name="prep-community"),
     path('community-boundary/', views.community_boundary, name="community-boundary"),
+    path('define-community-boundary/', views.define_community_boundary, name="define-community-boundary"),
     path('connect-community/', views.connect_community, name="connect-community"),
     path('create-community/', views.create_community, name="create-community"),
     path('confirm-community/<str:community_id>/', views.confirm_community, name="confirm-community"),
