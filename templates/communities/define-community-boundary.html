@@ -6,6 +6,7 @@
 
         #define-community-body{
             position: relative;
+            height: 100%;
         }
         #navigate-to-option{
             position: absolute;
@@ -14,18 +15,23 @@
             font-weight: bold;
         }
 
+        #region-container{
+            margin-top: 20px;
+        }
+
         #community-boundary-search {
             position: relative;
         }
 
         #community-boundary-search input{
             width: 100%;
+            padding: 20px;
         }
 
         #community-boundary-search i{
             position: absolute;
             right: 10px;
-            top: 12px;
+            top: 14px;
         }
 
         #buttonRow{
@@ -68,7 +74,7 @@
             </select>
         </div>
 
-        <div class="country-container margin-top-8">
+        <div id="region-container">
             <label class="pad-top-1-5" for="country">Search the Native Land Digital database</label><br>
             <div id="community-boundary-search">
                 <input class="input-field" type="text"
