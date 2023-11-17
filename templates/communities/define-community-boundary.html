@@ -26,6 +26,9 @@
             overflow-y: scroll;
             position: absolute;
             width: 100%;
+            border: solid 1px #d9d1d1;
+            border-radius: 2px;
+            border-top: transparent;
         }
         .result-item{
             padding-top: 5px;
@@ -38,6 +41,13 @@
         }
         .result-item:hover {
             background: #d7e7e4;
+        }
+        #selected-title{
+            padding: 12px;
+            border: 3px solid #007385;
+            background: aliceblue;
+            border-radius: 5px;
+            user-select: none;
         }
 
         #community-boundary-search {
@@ -66,6 +76,10 @@
 
         #skip-this-step{
             margin-left: 20px;
+        }
+
+        .hidden{
+            visibility: hidden;
         }
     </style>
     <div class="w-90" id="define-community-body">
@@ -107,6 +121,13 @@
                 <div id="region-results"></div>
             </div>
 
+            <div id="selected-location" class="hidden">
+                <br>
+                <strong>
+                    <label class="pad-top-1-5" for="country">Selected Location</label>
+                </strong><br>
+                <div id="selected-title"></div>
+            </div>
 
         </div>
 
@@ -145,7 +166,7 @@
                     var html = ''
                     results.forEach(result => {
                     html += `
-                        <div class="result-item">
+                        <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
                         ${result.post_title} (territories)</br />
                         </div>
                     `
@@ -156,5 +177,32 @@
                 $('#region-results').html(html);
             })
         })
+
+        const target = document.querySelector('#region-results')
+        document.addEventListener('click', (event) => {
+            const withinBoundaries = event.composedPath().includes(target)
+            if (!withinBoundaries) {
+                hideSearchDropDown()
+            }
+        })
+        function hideSearchDropDown() {
+           $('#region-results').html('')
+        }
+        function showSelectedSlug() {
+           $('#selected-location').removeClass('hidden')
+        }
+        function enableContinueButton(){
+            $('#community-boundary-continue-btn').removeClass('disabled-btn')
+        }
+
+        function selectSlug() {
+            const title = event.target.dataset.title
+            const slug = event.target.dataset.slug
+            $('#selected-title').html(`<div onclick="${slug}">${title} (territories)</div>`)
+
+            hideSearchDropDown()
+            showSelectedSlug()
+            enableContinueButton()
+        }
     </script>
 {% endblock %}
