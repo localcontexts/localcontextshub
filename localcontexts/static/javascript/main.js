@@ -1367,16 +1367,12 @@ if (window.location.href.includes('newsletter/preferences/') ) {
                 topicChkbox[i].checked=false;
                 topicChkbox[i].disabled=true;
             }
-            updatePreferencesBtn.disabled=true;
-            unsubscribeBtn.disabled=false;
         }
 
         if (unsubscribeChkbox.checked == false) {
             for (var i = 0; i < topicChkbox.length; i++){
                 topicChkbox[i].disabled=false;
             }
-            updatePreferencesBtn.disabled=false;
-            unsubscribeBtn.disabled=true;
         }
     }
 }
