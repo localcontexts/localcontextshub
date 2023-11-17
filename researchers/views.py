@@ -191,7 +191,7 @@ def researcher_notices(request, pk):
         urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
         form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
-        if dev_prod_or_local(request.get_host()) == 'DEV':
+        if dev_prod_or_local(request.get_host()) == 'SANDBOX':
             is_sandbox = True
             otc_download_perm = 0
         else: 
@@ -524,7 +524,7 @@ def project_actions(request, pk, project_uuid):
                 sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
                 name = get_users_name(request.user)
                 label_groups = return_project_labels_by_community(project)
-                can_download = False if dev_prod_or_local(request.get_host()) == 'DEV' else True
+                can_download = False if dev_prod_or_local(request.get_host()) == 'SANDBOX' else True
 
                 # for related projects list 
                 project_ids = list(set(researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)

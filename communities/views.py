@@ -15,7 +15,7 @@ from helpers.forms import *
 from bclabels.forms import *
 from tklabels.forms import *
 from projects.forms import *
-from accounts.forms import ContactOrganizationForm
+from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
@@ -88,7 +88,7 @@ def create_community(request):
             data.community_creator = request.user
 
             # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == 'DEV':
+            if dev_prod_or_local(request.get_host()) == 'SANDBOX':
                 data.is_approved = True
                 data.save()
 
@@ -314,6 +314,7 @@ def community_members(request, pk):
         'form': form,
         'join_requests_count': join_requests_count,
         'users': users,
+        'invite_form': SignUpInvitationForm()
     }
     return render(request, 'communities/members.html', context)
 
@@ -389,8 +390,8 @@ def select_label(request, pk):
     tklabels = TKLabel.objects.select_related('created_by').prefetch_related('tklabel_translation', 'tklabel_note').filter(community=community)
 
     member_role = check_member_role(request.user, community)
-    can_download = community.is_approved and dev_prod_or_local(request.get_host()) != 'DEV'
-    is_sandbox = dev_prod_or_local(request.get_host()) == 'DEV'
+    can_download = community.is_approved and dev_prod_or_local(request.get_host()) != 'SANDBOX'
+    is_sandbox = dev_prod_or_local(request.get_host()) == 'SANDBOX'
 
     if request.method == "POST":
         bclabel_code = request.POST.get('bc-label-code')
@@ -1248,7 +1249,7 @@ def labels_pdf(request, pk):
 @member_required(roles=['admin', 'editor', 'viewer'])
 def download_labels(request, pk):
     community = get_community(pk)
-    if not community.is_approved or dev_prod_or_local(request.get_host()) == 'DEV':
+    if not community.is_approved or dev_prod_or_local(request.get_host()) == 'SANDBOX':
         return redirect('restricted')
     else:
         return download_labels_zip(community)

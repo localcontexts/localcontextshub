@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
+from django.conf import settings
 from communities.models import InviteMember
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
@@ -34,7 +35,7 @@ def delete_member_invite(request, pk):
 def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None):
     # perm will be a 1 or 0
     has_permission = bool(perm)
-    if dev_prod_or_local(request.get_host()) == 'DEV' or not has_permission:
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX' or not has_permission:
         return redirect('restricted')
     else:
         if researcher_id:
@@ -51,7 +52,7 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
 def download_collections_care_notices(request, institution_id, perm):
     # perm will be a 1 or 0
     has_permission = bool(perm)
-    if dev_prod_or_local(request.get_host()) == 'DEV' or not has_permission:
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX' or not has_permission:
         return redirect('restricted')
     else:
         NoticeDownloadTracker.objects.create(institution=Institution.objects.get(id=institution_id), user=request.user, collections_care_notices=True)
@@ -60,7 +61,7 @@ def download_collections_care_notices(request, institution_id, perm):
 @login_required(login_url='login')
 def download_community_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
+        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Community%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -74,7 +75,7 @@ def download_community_support_letter(request):
 @login_required(login_url='login')
 def download_institution_support_letter(request):
     try:
-        url = 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
+        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
         response = requests.get(url)
 
         if response.status_code == 200:

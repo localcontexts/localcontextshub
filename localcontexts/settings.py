@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STORAGE_BUCKET = os.environ.get('GCS_BUCKET')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -37,7 +38,7 @@ SITE_ADMIN_NAME = os.environ['SITE_ADMIN_NAME']
 SITE_ADMIN_EMAIL = os.environ['SITE_ADMIN_EMAIL']
 ADMINS = [(SITE_ADMIN_NAME, SITE_ADMIN_EMAIL)]
 
-# reCAPTCHA 
+# reCAPTCHA
 GOOGLE_RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 
 # Application definition
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     'rest_framework_api_key',
     'corsheaders',
     'debug_toolbar',
+    'dbbackup',
 ]
 
 MIDDLEWARE = [
@@ -124,10 +126,10 @@ if os.getenv('GAE_APPLICATION', None):
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASS'),
-            'HOST': '/cloudsql/' + os.environ.get('DB_HOST')
+            'HOST': os.environ.get('DB_HOST')
         }
     }
-    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET', 'anth-ja77-local-contexts-8985.appspot.com')
+    GS_BUCKET_NAME = os.environ.get('GCS_BUCKET')
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         os.path.join(BASE_DIR, 'django-storages-gcs-key.json')
     )
@@ -238,3 +240,21 @@ if DEBUG:
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+
+if os.environ.get('DBBACKUP_ACCESS_KEY') and  \
+    os.environ.get('DBBACKUP_SECRET_KEY') and \
+    os.environ.get('DBBACKUP_BUCKET_NAME') and \
+    os.environ.get('DBBACKUP_ENDPOINT_URL'):
+    # upload backups to S3 bucket
+    DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DBBACKUP_STORAGE_OPTIONS = {
+        'access_key': os.environ.get('DBBACKUP_ACCESS_KEY'),
+        'secret_key': os.environ.get('DBBACKUP_SECRET_KEY'),
+        'bucket_name': os.environ.get('DBBACKUP_BUCKET_NAME'),
+        'endpoint_url': os.environ.get('DBBACKUP_ENDPOINT_URL'),
+    }
+else:
+    # upload backups to local file system
+    DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    DBBACKUP_STORAGE_OPTIONS = {'location': 'backups/'}

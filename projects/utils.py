@@ -193,7 +193,7 @@ def return_project_labels_by_community(project):
 
 def can_download_project(request, project_creator_instance):
     can_download = True
-    if dev_prod_or_local(request.get_host()) == 'DEV':
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         can_download = False
     elif project_creator_instance.community:
         if not project_creator_instance.community.is_approved:

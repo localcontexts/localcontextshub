@@ -122,6 +122,7 @@ def verify(request):
                 return redirect('verify')
     return render(request, 'accounts/verify.html', {'form': form})
 
+
 @unauthenticated_user
 def login(request):
     envi = dev_prod_or_local(request.get_host())
@@ -130,6 +131,7 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(request, username=username, password=password)
+        next_path = get_next_path(request, default_path='dashboard')
 
         # If user is found, log in the user.
         if user is not None:
@@ -140,7 +142,7 @@ def login(request):
                 return redirect('create-profile')
             else:
                 auth.login(request, user)
-                return redirect('dashboard')
+                return redirect(next_path)
         else:
             messages.error(request, 'Your username or password does not match an account')
             return redirect('login')
@@ -307,6 +309,11 @@ def delete_member_invitation(request, pk):
 
 @login_required(login_url='login')
 def invite_user(request):
+    # use internally referred path, otherwise use the default path
+    default_path = 'invite'
+    referred_path = request.headers.get('Referer', default_path)
+    selected_path = urllib.parse.urlparse(referred_path).path
+
     invite_form = SignUpInvitationForm(request.POST or None)
     if request.method == "POST":
         if invite_form.is_valid():
@@ -315,16 +322,22 @@ def invite_user(request):
 
             if User.objects.filter(email=data.email).exists():
                 messages.add_message(request, messages.ERROR, 'This user is already in the Hub')
-                return redirect('invite')
+                return redirect(selected_path)
             else: 
                 if SignUpInvitation.objects.filter(email=data.email).exists():
                     messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email')
-                    return redirect('invite')
+                    return redirect(selected_path)
                 else:
                     messages.add_message(request, messages.SUCCESS, 'Invitation Sent')
                     send_invite_user_email(request, data)
                     data.save()
-                    return redirect('invite')
+                    return redirect(selected_path)
+
+    # when validation fails and selected_path is not the default
+    # redirect to selected path
+    if selected_path.strip('/') != default_path:
+        return redirect(selected_path)
+
     return render(request, 'accounts/invite.html', {'invite_form': invite_form})
 
 def registry(request, filtertype=None):
@@ -401,7 +414,7 @@ def projects_board(request, filtertype=None):
             q = unidecode(q) #removes accents from search query
 
             # Filter's accounts by the search query, showing results that match with or without accents
-            results = projects.filter(title__unaccent__icontains=q)
+            results = projects.filter(Q(title__unaccent__icontains=q) | Q(description__unaccent__icontains=q))
 
             p = Paginator(results, 10)
         else:

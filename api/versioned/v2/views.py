@@ -7,6 +7,8 @@ from rest_framework.viewsets import ViewSet
 from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework.permissions import IsAuthenticated
 
+from django.conf import settings
+
 class APIOverview(APIView):
     def get(self, request, format=None):
         api_urls = {
@@ -29,9 +31,9 @@ class OpenToCollaborateNotice(APIView):
             'notice_type': 'open_to_collaborate',
             'name': 'Open to Collaborate Notice',
             'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-            'img_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.png',
-            'svg_url': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/labels/notices/ci-open-to-collaborate.svg',
-            'usage_guide_ci_notices': 'https://storage.googleapis.com/anth-ja77-local-contexts-8985.appspot.com/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
+            'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
+            'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
+            'usage_guide_ci_notices': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
         }
         return Response(api_urls)
 
