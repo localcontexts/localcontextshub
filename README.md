@@ -3,7 +3,8 @@ Prod Link:
 - [Local Contexts Hub](https://localcontextshub.org/)
 
 Branches:
-- [Develop/Staging](https://local-contexts-hub-staging.uc.r.appspot.com/)
+- [Staging/Sandbox](https://sandbox.localcontextshub.org/)
+- [Develop](https://local-contexts-hub-staging.uc.r.appspot.com/)
 
 Data sources:
 - [Data used by Local Contexts Hub](https://github.com/biocodellc/localcontexts_json)
@@ -12,7 +13,7 @@ Data sources:
 ## Getting Started
 What you need to run this app:
 - virtualenv
-- Django 3.1
+- Django 3.1.14
 - PostGreSQL
 - Python 3.8.3 with the latest version of `pip`
 
@@ -30,9 +31,9 @@ psql> create database localcontextsdb # create the database
 pyenv virtualenv 3.8.3 envi
 ```
 
-Activate virtualenvironment:
+Activate virtual environment:
 ```
-source /Users/jdeck/.pyenv/versions/envi/bin/activate
+source /Users/username/.pyenv/versions/envi/bin/activate
 ```
 
 ## Install or Update Dependencies
@@ -45,13 +46,14 @@ This will set local environment variables accessible via PYTHON
 
 ```source env-local.sh``` sets up environment variables for locally hosted database
 ```source env-localprod.sh``` sets up environment variables for production database to access it locally
+```source env-localstage.sh``` sets up environment variables for staging/sandbox database to access it locally
 ```source env-localdev.sh``` sets up environment variables for development/testing database to access it locally
 
 ## Migration
 ```
 python manage.py makemigrations
 python manage.py migrate # sets up database
-python manage.py createsuperuser # so you can start using database)
+python manage.py createsuperuser # so you can start using database
   Username: <Fill in your username>
   Email address: *<INSERT SITE_ADMIN_EMAIL> that is specified in the previous step, 'Initialize Environment Variables'*
 ```
@@ -62,13 +64,13 @@ on the site letting users know site is under construction. Superuser will still 
 *Maintenance mode should be turned on for production deplyment and turned off when deployment is complete.*
 
 ## Production Deployment and Migration
-Every push to `master` will automatically trigger a new version build. Migrations should be done before pushing to `master`!!
+Every push to `develop` and `staging` will automatically trigger a new version build of either instance. Production (`master`)is a manual deployment. Migrations should be done before pushing to `master`.
 In order to make migrations or migrate the production database:
-1. `source env-localprod.sh`
+1. `source env-local<instance>.sh`
 2. CLOUD PROXY CONNECTION STRING
 3. `python manage.py makemigrations`
 4. `python manage.py migrate`
-5. Merge `develop` into `master`
+5. Merge `staging` into `master`
 
 ## Running the Server
 ```python manage.py runserver```
