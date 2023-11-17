@@ -18,6 +18,27 @@
         #region-container{
             margin-top: 20px;
         }
+        #region-results-wrapper{
+            position: relative;
+        }
+        #region-results{
+            max-height: 300px;
+            overflow-y: scroll;
+            position: absolute;
+            width: 100%;
+        }
+        .result-item{
+            padding-top: 5px;
+            padding-left: 20px;
+            padding-bottom: 5px;
+            background: white;
+            transition: 0.3s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .result-item:hover {
+            background: #d7e7e4;
+        }
 
         #community-boundary-search {
             position: relative;
@@ -77,11 +98,15 @@
         <div id="region-container">
             <label class="pad-top-1-5" for="country">Search the Native Land Digital database</label><br>
             <div id="community-boundary-search">
-                <input class="input-field" type="text"
+                <input class="input-field search" type="text"
                        placeholder="Search by address, community name or town"
                 >
                 <i class="fa fa-search icon"></i>
             </div>
+            <div id="region-results-wrapper">
+                <div id="region-results"></div>
+            </div>
+
 
         </div>
 
@@ -110,4 +135,26 @@
         </div>
     </div>
 
+    <script>
+        fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+
+            $(document).on('keyup', '#region-container input.search', function () {
+                const inputLength = $(this).val().length
+                if (inputLength >= 3) {
+                    var results = response.filter(item => item.post_title.toLowerCase().indexOf($(this).val().toLowerCase()) > -1);
+                    var html = ''
+                    results.forEach(result => {
+                    html += `
+                        <div class="result-item">
+                        ${result.post_title} (territories)</br />
+                        </div>
+                    `
+                    })
+                } else if (inputLength === 0){
+                    html = ''
+                }
+                $('#region-results').html(html);
+            })
+        })
+    </script>
 {% endblock %}
