@@ -343,6 +343,23 @@ async function fetchLabels(type) {
     if (type == 'bc') { return data.bcLabels } else if (type == 'tk') { return data.tkLabels } else if (type == 'both') { return data }
 }
 
+const supportedLanguages = ['French', 'Spanish', 'Māori', 'English'];
+
+async function fetchLabelTranslations() {
+    const response = await fetch('/static/json/LabelTranslations.json');
+    const data = await response.json();
+    return data;
+}
+
+function findLabelAndSetValues(labels, id, selectedLanguage,label_name,label_text) {
+    const label = labels.find(label => id === label.labelCode && selectedLanguage === label.translated_language);
+    if (label) {
+        label_name.value = label.labelTranslatedName;
+        label_text.innerHTML = label.labelTranslatedText;
+    }
+}
+
+
 // Expand BC Labels Card in Community: Labels -> select-labels
 function showBCLabelInfo() {
     let labelContainer = document.getElementById('expand-bclabels')
@@ -527,50 +544,32 @@ function populateTemplate(id) {
         }
     }
 
-    async function fetchLabelTranslations() {
-        const response = await fetch('/static/json/LabelTranslations.json');
-        const data = await response.json();
-        return data;
-    }
-
-    function findLabelAndSetValues(labels, id, selectedLanguage) {
-        const label = labels.find(label => id === label.labelCode && selectedLanguage === label.translated_language);
-        if (label) {
-          templateName.value = label.labelTranslatedName;
-          templateText.innerHTML = label.labelTranslatedText;
-        }
-    }
-
     const observer = new MutationObserver(async function (mutationsList) {
         for (const mutation of mutationsList) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
                 const selectedLanguage = language.value;
-                var supportedLanguages = ['French', 'Spanish', 'Māori'];
-                if (supportedLanguages.includes(selectedLanguage)) {
-                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
-                try {
-                    const data = await fetchLabelTranslations();
-                    if (id.startsWith('b') && data.bcLabels) {
-                    findLabelAndSetValues(data.bcLabels, id, selectedLanguage);
-                    } else if (id.startsWith('t') && data.tkLabels) {
-                    findLabelAndSetValues(data.tkLabels, id, selectedLanguage);
-                    } else {
-                    console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
-                    }
-                } catch (error) {
-                    console.error("Error fetching label translations:", error);
-                }
-                }
-                else if (selectedLanguage == "English" || selectedLanguage == "") {
+                if (selectedLanguage == "English" || selectedLanguage == "") {
                     language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
                     fetchLabels('both').then(populate)
-                }
-                else if (selectedLanguage != "") {
+                } else if (supportedLanguages.includes(selectedLanguage)) {
+                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
+                    try {
+                        const data = await fetchLabelTranslations();
+                        if (id.startsWith('b') && data.bcLabels) {
+                        findLabelAndSetValues(data.bcLabels, id, selectedLanguage, templateName, templateText);
+                        } else if (id.startsWith('t') && data.tkLabels) {
+                        findLabelAndSetValues(data.tkLabels, id, selectedLanguage, templateName, templateText);
+                        } else {
+                        console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching label translations:", error);
+                    }
+                } else if (selectedLanguage != "") {
                     const lastLanguageIndex = supportedLanguages.length - 1;
                     const language_supportMessage = `We only support ${ supportedLanguages.length > 1 ? `${supportedLanguages.slice(0, lastLanguageIndex).join(', ')} and ${supportedLanguages[lastLanguageIndex]}` : supportedLanguages[0] } translations at the moment.`;
                     language_support.textContent = language_supportMessage;
                     language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
-                    language.value = 'English';
                     fetchLabels('both').then(populate)
                 }
             }
@@ -579,7 +578,7 @@ function populateTemplate(id) {
       
     observer.observe(language, { attributes: true, attributeFilter: ['value'] });
 }
-  
+
 function expandCCNotice(noticeDiv) {
     let divID = noticeDiv.id
     let divToOpen = document.getElementById(`openDiv-${divID}`)
@@ -636,6 +635,8 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
     if (addTranslationBtn) { addTranslationBtn.addEventListener('click', cloneForm, false)}
 
     // h/t: https://www.brennantymrak.com/articles/django-dynamic-formsets-javascript
+    const initialTargetNodes = document.querySelectorAll('[id^="id_form-"][id$="-language"]');
+    initializeObserver(initialTargetNodes);
 
     function cloneForm(e) {
         e.stopImmediatePropagation()
@@ -654,19 +655,70 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
         formNum++
 
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-        newFormInputs = newForm.querySelectorAll('input')
+        newFormInputs = newForm.querySelectorAll('input, textarea')
         for (var i = 0; i < newFormInputs.length; i++){
             newFormInputs[i].removeAttribute('value')
             newFormInputs[i].removeAttribute('readonly')
             newFormInputs[i].classList.remove('readonly-input')
+            newFormInputs[i].innerHTML="";
         }
         newFormLangButton = newForm.querySelector('button[name="clear-language-btn"]')
         newFormLangButton.classList.add('hide')
         container.insertBefore(newForm, lastDiv)
         totalForms.setAttribute('value', `${formNum+1}`)
         languageFormValidation()
+
+        const updatedTargetNodes = document.querySelectorAll('[id^="id_form-"][id$="-language"]');
+        disconnectObserver();
+        initializeObserver(updatedTargetNodes);
+
+        languageFormValidation();
     }
 
+    function initializeObserver(targetNodes) {
+        const config = { attributes: true, attributeFilter: ['value'] };
+        observer = new MutationObserver(handleValueChange);
+
+        targetNodes.forEach(targetNode => {
+            observer.observe(targetNode, config);
+        });
+    }
+
+    function disconnectObserver() {
+        if (observer) {
+            observer.disconnect();
+        }
+    }
+
+    async function handleValueChange(mutationsList) {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                const idMatches = mutation.target.id.match(/id_form-(\d+)-language/);
+                if (idMatches) {
+                    const formNumber = idMatches[1];
+                    const required_language = mutation.target.value;
+                    const translatedNameElement = document.querySelector(`#id_form-${formNumber}-translated_name`);
+                    const translatedTextElement = document.querySelector(`#id_form-${formNumber}-translated_text`);
+                    if (supportedLanguages.includes(required_language)) {
+                        try {
+                            const data = await fetchLabelTranslations();
+                            if (image.id.startsWith('b') && data.bcLabels) {
+                            findLabelAndSetValues(data.bcLabels, image.id, required_language, translatedNameElement, translatedTextElement);
+                            } else if (image.id.startsWith('t') && data.tkLabels) {
+                            findLabelAndSetValues(data.tkLabels, image.id, required_language, translatedNameElement, translatedTextElement);
+                            }
+                        } catch (error) {
+                            console.error("Error fetching label translations:", error);
+                        }
+                    }
+                    else if (required_language === ""){
+                        translatedNameElement.value = " ";
+                        translatedTextElement.innerHTML= " ";
+                    }    
+                }
+            }
+        }
+    }
     languageFormValidation()
 
     // adds input event for translation name and text to make sure language is also selected
