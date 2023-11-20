@@ -46,7 +46,7 @@
                     <fieldset>
 
                         <div class="communityBoundarySelect">
-                            <input type="radio" name="selectBoundary"/>
+                            <input type="radio" name="selectBoundary" data-next="{% url 'define-community-boundary' %}"/>
                             <div class="communityBoundaryLabel">
                                 <strong>Native Land Digital</strong>
                             </div>
@@ -64,7 +64,7 @@
                     <fieldset>
 
                         <div class="communityBoundarySelect">
-                            <input type="radio" name="selectBoundary" />
+                            <input type="radio" name="selectBoundary" data-next="{% url 'upload-boundary-file' %}"/>
                             <div class="communityBoundaryLabel">
                                 <strong>Shape file</strong>
                             </div>
@@ -88,12 +88,6 @@
                 <a
                     id="community-boundary-continue-btn"
                     class="primary-btn action-btn disabled-btn"
-                    {% if community %}
-                        href="{% url 'define-community-boundary' %}"
-                    {% endif %}
-                    {% if institution %}
-                        href="{% url 'create-institution' %}"
-                    {% endif %}
                 >
                     Continue <i class="fa fa-arrow-right"></i>
                 </a>
@@ -112,6 +106,8 @@
     selectors.forEach(function(selector) {
         selector.addEventListener('click', () => {
             continueButton.classList.remove('disabled-btn')
+            const nextUrl = event.target.dataset.next
+            $('#community-boundary-continue-btn').attr('href', nextUrl)
         })
     })
     </script>
