@@ -359,7 +359,6 @@ function findLabelAndSetValues(labels, id, selectedLanguage,label_name,label_tex
     }
 }
 
-
 // Expand BC Labels Card in Community: Labels -> select-labels
 function showBCLabelInfo() {
     let labelContainer = document.getElementById('expand-bclabels')
