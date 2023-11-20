@@ -566,8 +566,7 @@ function populateTemplate(id) {
                         console.error("Error fetching label translations:", error);
                     }
                 } else if (selectedLanguage != "") {
-                    const lastLanguageIndex = supportedLanguages.length - 1;
-                    const language_supportMessage = `We only support ${ supportedLanguages.length > 1 ? `${supportedLanguages.slice(0, lastLanguageIndex).join(', ')} and ${supportedLanguages[lastLanguageIndex]}` : supportedLanguages[0] } translations at the moment.`;
+                    const language_supportMessage = `We do not have translated Label template text in ${selectedLanguage} at this time.`;
                     language_support.textContent = language_supportMessage;
                     language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
                     fetchLabels('both').then(populate)
@@ -662,6 +661,12 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
             newFormInputs[i].classList.remove('readonly-input')
             newFormInputs[i].innerHTML="";
         }
+
+        let newErrorDiv = newForm.querySelector(`#id_form-${formNum}-language_support`);
+        if (newErrorDiv) {
+            newErrorDiv.style.display = 'none';
+        }
+        
         newFormLangButton = newForm.querySelector('button[name="clear-language-btn"]')
         newFormLangButton.classList.add('hide')
         container.insertBefore(newForm, lastDiv)
@@ -698,8 +703,10 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
                     const formNumber = idMatches[1];
                     const required_language = mutation.target.value;
                     const translatedNameElement = document.querySelector(`#id_form-${formNumber}-translated_name`);
+                    const translationSupport = document.querySelector(`#id_form-${formNumber}-language_support`);
                     const translatedTextElement = document.querySelector(`#id_form-${formNumber}-translated_text`);
                     if (supportedLanguages.includes(required_language)) {
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'none' : 'none';
                         try {
                             const data = await fetchLabelTranslations();
                             if (image.id.startsWith('b') && data.bcLabels) {
@@ -712,9 +719,16 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
                         }
                     }
                     else if (required_language === ""){
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'none' : 'none';
                         translatedNameElement.value = " ";
                         translatedTextElement.innerHTML= " ";
-                    }    
+                    }
+                    else if(!supportedLanguages.includes(required_language)){
+                        const language_supportMessage = `We do not have translated Label template text in ${required_language} at this time.`;
+                        translationSupport.textContent = language_supportMessage;
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'block' : 'block';
+
+                    }  
                 }
             }
         }
