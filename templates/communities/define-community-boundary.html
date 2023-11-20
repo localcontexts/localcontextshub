@@ -29,6 +29,7 @@
             border: solid 1px #d9d1d1;
             border-radius: 2px;
             border-top: transparent;
+            z-index: 1;
         }
         .result-item{
             padding-top: 5px;
@@ -48,6 +49,23 @@
             background: aliceblue;
             border-radius: 5px;
             user-select: none;
+        }
+        .selected-title-ellipsis{
+            width: 430px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #selected-title-wrapper{
+            position: relative;
+        }
+        #nld-link{
+            right: 8px;
+            position: absolute;
+            top: 14px;
+            font-weight: bold;
+            color: #007385;
+            cursor: pointer;
         }
 
         #community-boundary-search {
@@ -126,7 +144,15 @@
                 <strong>
                     <label class="pad-top-1-5" for="country">Selected Location</label>
                 </strong><br>
-                <div id="selected-title"></div>
+
+                <div id="selected-title-wrapper">
+                    <div id="selected-title"></div>
+                    <a id="nld-link" target="_blank">
+                        View Location in NLD &nbsp;
+                        <i class="fa fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
             </div>
 
         </div>
@@ -182,9 +208,11 @@
         document.addEventListener('click', (event) => {
             const withinBoundaries = event.composedPath().includes(target)
             if (!withinBoundaries) {
+                // click outside element
                 hideSearchDropDown()
             }
         })
+
         function hideSearchDropDown() {
            $('#region-results').html('')
         }
@@ -198,7 +226,13 @@
         function selectSlug() {
             const title = event.target.dataset.title
             const slug = event.target.dataset.slug
-            $('#selected-title').html(`<div onclick="${slug}">${title} (territories)</div>`)
+            const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+
+            $('#nld-link').attr('href', url)
+            $('#selected-title').html(`
+                <div class="selected-title-ellipsis">${title} (territories)
+            </div>`
+            )
 
             hideSearchDropDown()
             showSelectedSlug()
