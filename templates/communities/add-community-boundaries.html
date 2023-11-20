@@ -1,0 +1,242 @@
+{% extends 'register-base.html' %} {% block title %} Add Community {% endblock %} {% load static %} {% block card %}
+    <style>
+        #define-community-top-text{
+            width: 90%;
+        }
+
+        #define-community-body{
+            position: relative;
+            height: 100%;
+        }
+        #navigate-to-option{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-weight: bold;
+        }
+
+        #region-container{
+            margin-top: 20px;
+        }
+        #region-results-wrapper{
+            position: relative;
+        }
+        #region-results{
+            max-height: 300px;
+            overflow-y: scroll;
+            position: absolute;
+            width: 100%;
+            border: solid 1px #d9d1d1;
+            border-radius: 2px;
+            border-top: transparent;
+            z-index: 1;
+        }
+        .result-item{
+            padding-top: 5px;
+            padding-left: 20px;
+            padding-bottom: 5px;
+            background: white;
+            transition: 0.3s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .result-item:hover {
+            background: #d7e7e4;
+        }
+        #selected-title{
+            padding: 12px;
+            border: 3px solid #007385;
+            background: aliceblue;
+            border-radius: 5px;
+            user-select: none;
+        }
+        .selected-title-ellipsis{
+            width: 430px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #selected-title-wrapper{
+            position: relative;
+        }
+        #nld-link{
+            right: 8px;
+            position: absolute;
+            top: 14px;
+            font-weight: bold;
+            color: #007385;
+            cursor: pointer;
+        }
+
+        #community-boundary-search {
+            position: relative;
+        }
+
+        #community-boundary-search input{
+            width: 100%;
+            padding: 20px;
+        }
+
+        #community-boundary-search i{
+            position: absolute;
+            right: 10px;
+            top: 14px;
+        }
+
+        #buttonRow{
+            margin-top: 20px
+        }
+
+        a.disabled-btn{
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #skip-this-step{
+            margin-left: 20px;
+        }
+
+        .hidden{
+            visibility: hidden;
+        }
+    </style>
+    <div class="w-90" id="define-community-body">
+        <h2 class="no-top-margin">Add Community boundaries</h2>
+        <p id="define-community-top-text">
+        {% if community or institution %}
+            Search for your community boundaries using the Native Land Digital database. We recommend
+            viewing the map on their website before confirming your selection. If your community boundaries
+            is not accurate please don’t hesitate to get in contact with Native Land Digital.
+        {% endif %}
+        </p>
+        <div id="navigate-to-option">
+            Or <a href="{% url 'upload-boundaries-file' %}">upload shape file</a>
+        </div>
+
+        <div class="country-container margin-top-8">
+            <label class="pad-top-1-5" for="country">Country of Community boundaries</label><br>
+            <select name="country" id="id_country">
+            <option value="" selected="">---------</option>
+            <option value="AF">Afghanistan</option>
+            <option value="AX">Åland Islands</option>
+            <option value="AL">Albania</option>
+            <option value="DZ">Algeria</option>
+            <option value="AS">American Samoa</option>
+            <option value="AD">Andorra</option>
+            <option value="AO">Angola</option>
+            </select>
+        </div>
+
+        <div id="region-container">
+            <label class="pad-top-1-5" for="country">Search the Native Land Digital database</label><br>
+            <div id="community-boundary-search">
+                <input class="input-field search" type="text"
+                       placeholder="Search by address, community name or town"
+                >
+                <i class="fa fa-search icon"></i>
+            </div>
+            <div id="region-results-wrapper">
+                <div id="region-results"></div>
+            </div>
+
+            <div id="selected-location" class="hidden">
+                <br>
+                <strong>
+                    <label class="pad-top-1-5" for="country">Selected Location</label>
+                </strong><br>
+
+                <div id="selected-title-wrapper">
+                    <div id="selected-title"></div>
+                    <a id="nld-link" target="_blank">
+                        View Location in NLD &nbsp;
+                        <i class="fa fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="flex-this w-90" id="buttonRow">
+
+        <div class="w-90 flex-this flex-start">
+            <div>
+                <a
+                    id="community-boundary-continue-btn"
+                    class="primary-btn action-btn disabled-btn"
+                    {% if community %}
+                        href="{% url 'create-community' %}"
+                    {% endif %}
+                    {% if institution %}
+                        href="{% url 'create-institution' %}"
+                    {% endif %}
+                >
+                    Confirm location <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="margin-right-8" id="skip-this-step">
+                <a class="primary-btn white-btn" href="{% url 'dashboard' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+
+            $(document).on('keyup', '#region-container input.search', function () {
+                const inputLength = $(this).val().length
+                if (inputLength >= 3) {
+                    var results = response.filter(item => item.post_title.toLowerCase().indexOf($(this).val().toLowerCase()) > -1);
+                    var html = ''
+                    results.forEach(result => {
+                    html += `
+                        <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
+                        ${result.post_title} (territories)</br />
+                        </div>
+                    `
+                    })
+                } else if (inputLength === 0){
+                    html = ''
+                }
+                $('#region-results').html(html);
+            })
+        })
+
+        const target = document.querySelector('#region-results')
+        document.addEventListener('click', (event) => {
+            const withinBoundaries = event.composedPath().includes(target)
+            if (!withinBoundaries) {
+                // click outside element
+                hideSearchDropDown()
+            }
+        })
+
+        function hideSearchDropDown() {
+           $('#region-results').html('')
+        }
+        function showSelectedSlug() {
+           $('#selected-location').removeClass('hidden')
+        }
+        function enableContinueButton(){
+            $('#community-boundary-continue-btn').removeClass('disabled-btn')
+        }
+
+        function selectSlug() {
+            const title = event.target.dataset.title
+            const slug = event.target.dataset.slug
+            const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+
+            $('#nld-link').attr('href', url)
+            $('#selected-title').html(`
+                <div class="selected-title-ellipsis">${title} (territories)
+            </div>`
+            )
+
+            hideSearchDropDown()
+            showSelectedSlug()
+            enableContinueButton()
+        }
+    </script>
+{% endblock %}

@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     path('preparation-step/', views.preparation_step, name="prep-community"),
     path('community-boundaries/', views.community_boundaries, name="community-boundaries"),
-    path('define-community-boundaries/', views.define_community_boundaries, name="define-community-boundaries"),
+    path('add-community-boundaries/', views.add_community_boundaries, name="add-community-boundaries"),
     path('upload-boundaries-file/', views.upload_boundaries_file, name="upload-boundaries-file"),
     path('connect-community/', views.connect_community, name="connect-community"),
     path('create-community/', views.create_community, name="create-community"),

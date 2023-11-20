@@ -86,15 +86,15 @@ def community_boundaries(request):
 
 
 @login_required(login_url='login')
-def define_community_boundaries(request):
+def add_community_boundaries(request):
     community = True
-    return render(request, 'communities/define-community-boundaries.html', {'community': community})
+    return render(request, 'communities/add-community-boundaries.html', {'community': community})
 
 
 @login_required(login_url='login')
 def upload_boundaries_file(request):
     community = True
-    return render(request, 'communities/upload-boundary-file.html', {'community': community})
+    return render(request, 'communities/upload-boundaries-file.html', {'community': community})
 
 
 # Create Community
