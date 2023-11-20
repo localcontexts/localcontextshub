@@ -80,19 +80,19 @@ def preparation_step(request):
 
 
 @login_required(login_url='login')
-def community_boundary(request):
+def community_boundaries(request):
     community = True
-    return render(request, 'communities/community-boundary.html', {'community': community})
+    return render(request, 'communities/community-boundaries.html', {'community': community})
 
 
 @login_required(login_url='login')
-def define_community_boundary(request):
+def define_community_boundaries(request):
     community = True
-    return render(request, 'communities/define-community-boundary.html', {'community': community})
+    return render(request, 'communities/define-community-boundaries.html', {'community': community})
 
 
 @login_required(login_url='login')
-def upload_boundary_file(request):
+def upload_boundaries_file(request):
     community = True
     return render(request, 'communities/upload-boundary-file.html', {'community': community})
 
