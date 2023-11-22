@@ -35,6 +35,12 @@ from django.http import HttpResponse, Http404
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
+
+@login_required(login_url='login')
+def collect_registration_details(request):
+    pass
+
+
 # Connect
 @login_required(login_url='login')
 def connect_community(request):

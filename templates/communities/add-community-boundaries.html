@@ -230,8 +230,8 @@
                 const slug = $('#selected-title').data('slug')
 
                 const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
-                const response = await fetch(url)
-                const data = await response.json()
+                const boundaryResponse = await fetch(url)
+                const boundaryData = await response.json()
 
                 if (data.length === 0) {
                     throw new Error('Region Does Not Have Any Boundaries')
@@ -240,11 +240,14 @@
                 const boundary = data[0]
                 const payload = {
                     source: url,
-                    name: boundary.properties.Name,
-                    coordinates: boundary.geometry.coordinates
+                    name: boundaryData.properties.Name,
+                    coordinates: boundaryData.geometry.coordinates
                 }
 
                 // do post call to set boundaries in request
+                const registrationResponse = await fetch("{% url 'registration-details' %}", {
+                    method: 'POST',
+                })
 
                 // relocate to the window href url
                 window.location.href = href
