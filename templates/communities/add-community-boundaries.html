@@ -1,7 +1,7 @@
 {% extends 'register-base.html' %} {% block title %} Add Community {% endblock %} {% load static %} {% block card %}
     <style>
         #define-community-top-text{
-            width: 90%;
+            width: 94%;
         }
 
         #define-community-body{
@@ -103,11 +103,9 @@
     <div class="w-90" id="define-community-body">
         <h2 class="no-top-margin">Add Community boundaries</h2>
         <p id="define-community-top-text">
-        {% if community or institution %}
-            Search for your community boundaries using the Native Land Digital database. We recommend
-            viewing the map on their website before confirming your selection. If your community boundaries
-            is not accurate please don’t hesitate to get in contact with Native Land Digital.
-        {% endif %}
+            Find your community boundary with ease using the Native Land Digital database. Check
+            out their website map before confirming your selection. If your boundary isn't accurate,
+            please reach out to Native Land Digital for assistance.
         </p>
         <div id="navigate-to-option">
             Or <a href="{% url 'upload-boundaries-file' %}">upload shape file</a>
