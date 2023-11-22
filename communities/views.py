@@ -145,6 +145,10 @@ def upload_boundaries_file(request):
 # Confirm Community
 @login_required(login_url='login')
 def confirm_community(request, community_id):
+    account_id = request.session.get('account_id')
+    if not account_id:
+        return render(request, '403.html', status=403)
+
     community = Community.objects.select_related('community_creator').get(id=community_id)
 
     form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
@@ -153,8 +157,13 @@ def confirm_community(request, community_id):
             data = form.save(commit=False)
             data.save()
             send_hub_admins_application_email(request, community, data)
+
+            # remove account_id from session to prevent
+            # future access with this particular account_id
+            del request.session['account_id']
             return redirect('dashboard')
     return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
+
 
 def public_community_view(request, pk):
     try: 
