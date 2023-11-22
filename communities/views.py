@@ -81,20 +81,26 @@ def preparation_step(request):
 
 @login_required(login_url='login')
 def community_boundaries(request):
-    community = True
-    return render(request, 'communities/community-boundaries.html', {'community': community})
+    account_id = request.session.get('account_id')
+    if not account_id:
+        return render(request, '403.html', status=403)
+    return render(request, 'communities/community-boundaries.html', {'account_id': account_id})
 
 
 @login_required(login_url='login')
 def add_community_boundaries(request):
-    community = True
-    return render(request, 'communities/add-community-boundaries.html', {'community': community})
+    account_id = request.session.get('account_id')
+    if not account_id:
+        return render(request, '403.html', status=403)
+    return render(request, 'communities/add-community-boundaries.html', {'account_id': account_id})
 
 
 @login_required(login_url='login')
 def upload_boundaries_file(request):
-    community = True
-    return render(request, 'communities/upload-boundaries-file.html', {'community': community})
+    account_id = request.session.get('account_id')
+    if not account_id:
+        return render(request, '403.html', status=403)
+    return render(request, 'communities/upload-boundaries-file.html', {'account_id': account_id})
 
 
 # Create Community
@@ -131,7 +137,8 @@ def create_community(request):
                     community_id=data.id,
                     action_account_type='community'
                 )
-                return redirect('confirm-community', data.id)
+                request.session['account_id'] = data.id
+                return redirect('community-boundaries')
     return render(request, 'communities/create-community.html', {'form': form})
 
 # Confirm Community
