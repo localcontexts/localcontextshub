@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -37,8 +38,10 @@ from xhtml2pdf import pisa
 
 
 @login_required(login_url='login')
-def collect_registration_details(request):
-    pass
+def registration_boundaries(request):
+    post_data = json.loads(request.body.decode('UTF-8'))
+    # set boundaries for account here
+    return HttpResponse(status=201)
 
 
 # Connect

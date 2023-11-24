@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('registration-details/', views.collect_registration_details, name="collect-registration-details"),
     path('preparation-step/', views.preparation_step, name="prep-community"),
     path('connect-community/', views.connect_community, name="connect-community"),
     path('create-community/', views.create_community, name="create-community"),
@@ -10,6 +9,7 @@ urlpatterns = [
     path('add-community-boundaries/', views.add_community_boundaries, name="add-community-boundaries"),
     path('upload-boundaries-file/', views.upload_boundaries_file, name="upload-boundaries-file"),
     path('confirm-community/<str:community_id>/', views.confirm_community, name="confirm-community"),
+    path('registration-boundaries', views.registration_boundaries, name="registration-boundaries"),
 
     # Public view
     path('view/<str:pk>/', views.public_community_view, name="public-community"),

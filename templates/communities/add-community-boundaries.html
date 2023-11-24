@@ -231,23 +231,28 @@
 
                 const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
                 const boundaryResponse = await fetch(url)
-                const boundaryData = await response.json()
+                const boundaryData = await boundaryResponse.json()
 
-                if (data.length === 0) {
+                if (boundaryData.length === 0) {
                     throw new Error('Region Does Not Have Any Boundaries')
                 }
 
-                const boundary = data[0]
+                const boundary = boundaryData[0]
                 const payload = {
                     source: url,
-                    name: boundaryData.properties.Name,
-                    coordinates: boundaryData.geometry.coordinates
+                    name: boundary.properties.Name,
+                    coordinates: boundary.geometry.coordinates
                 }
 
                 // do post call to set boundaries in request
-                const registrationResponse = await fetch("{% url 'registration-details' %}", {
-                    method: 'POST',
-                })
+                const registrationResponse = await fetch("{% url 'registration-boundaries' %}", {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: {
+                          'X-CSRFToken': '{{csrf_token}}'
+                        }
+                    })
+                const registrationData = await registrationResponse.json()
 
                 // relocate to the window href url
                 window.location.href = href
