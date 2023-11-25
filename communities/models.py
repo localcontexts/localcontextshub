@@ -23,8 +23,8 @@ def community_img_path(self, filename):
 
 
 class Coordinate(models.Model):
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
 
 class Boundary(models.Model):
@@ -52,8 +52,8 @@ class Community(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     native_land_slug = models.SlugField(max_length = 200, blank=True, null=True)
 
-    boundary_source = models.SlugField(max_length=200, blank=True, null=True)
-    boundary_name = models.SlugField(max_length=200, blank=True, null=True)
+    source_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)
+    name_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)
     boundaries = models.ManyToManyField(Boundary, related_name="boundaries")
 
     # Managers

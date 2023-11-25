@@ -1,4 +1,5 @@
 import json
+from typing import List, Tuple
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -39,8 +40,30 @@ from xhtml2pdf import pisa
 
 @login_required(login_url='login')
 def registration_boundaries(request):
+    account_id = request.session.get('account_id')
+    if not account_id:
+        return render(request, '403.html', status=403)
+
     post_data = json.loads(request.body.decode('UTF-8'))
-    # set boundaries for account here
+
+    # update community with boundary-related information
+    community = get_community(account_id)
+    community.source_of_boundaries = post_data['source']
+    community.name_of_boundaries = post_data['name']
+
+    # remove old boundaries
+    community.boundaries.clear()
+
+    for coordinates in post_data['boundaries']:
+        coordinates = [
+            Coordinate.objects.create(latitude=lat, longitude=lon)
+            for lat, lon in coordinates
+        ]
+        boundary = Boundary.objects.create()
+        boundary.coordinates.set(coordinates)
+        community.boundaries.add(boundary)
+    community.save()
+
     return HttpResponse(status=201)
 
 

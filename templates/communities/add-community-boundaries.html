@@ -241,7 +241,7 @@
                 const payload = {
                     source: url,
                     name: boundary.properties.Name,
-                    coordinates: boundary.geometry.coordinates
+                    boundaries: boundary.geometry.coordinates
                 }
 
                 // do post call to set boundaries in request
@@ -252,7 +252,10 @@
                           'X-CSRFToken': '{{csrf_token}}'
                         }
                     })
-                const registrationData = await registrationResponse.json()
+
+                if (registrationResponse.status !== 201) {
+                    throw new Error('Error Setting Boundaries')
+                }
 
                 // relocate to the window href url
                 window.location.href = href
