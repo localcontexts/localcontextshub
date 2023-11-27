@@ -40,14 +40,14 @@ from xhtml2pdf import pisa
 
 @login_required(login_url='login')
 def registration_boundaries(request):
-    account_id = request.session.get('account_id')
-    if not account_id:
+    new_community_id = request.session.get('new_community_id')
+    if not new_community_id:
         return render(request, '403.html', status=403)
 
     post_data = json.loads(request.body.decode('UTF-8'))
 
     # update community with boundary-related information
-    community = get_community(account_id)
+    community = get_community(new_community_id)
     community.source_of_boundaries = post_data['source']
     community.name_of_boundaries = post_data['name']
 
@@ -145,40 +145,40 @@ def create_community(request):
                     community_id=data.id,
                     action_account_type='community'
                 )
-                request.session['account_id'] = data.id
+                request.session['new_community_id'] = data.id
                 return redirect('community-boundaries')
     return render(request, 'communities/create-community.html', {'form': form})
 
 
 @login_required(login_url='login')
 def community_boundaries(request):
-    account_id = request.session.get('account_id')
-    if not account_id:
+    new_community_id = request.session.get('new_community_id')
+    if not new_community_id:
         return render(request, '403.html', status=403)
-    return render(request, 'communities/community-boundaries.html', {'account_id': account_id})
+    return render(request, 'communities/community-boundaries.html', {'new_community_id': new_community_id})
 
 
 @login_required(login_url='login')
 def add_community_boundaries(request):
-    account_id = request.session.get('account_id')
-    if not account_id:
+    new_community_id = request.session.get('new_community_id')
+    if not new_community_id:
         return render(request, '403.html', status=403)
-    return render(request, 'communities/add-community-boundaries.html', {'account_id': account_id})
+    return render(request, 'communities/add-community-boundaries.html', {'new_community_id': new_community_id})
 
 
 @login_required(login_url='login')
 def upload_boundaries_file(request):
-    account_id = request.session.get('account_id')
-    if not account_id:
+    new_community_id = request.session.get('new_community_id')
+    if not new_community_id:
         return render(request, '403.html', status=403)
-    return render(request, 'communities/upload-boundaries-file.html', {'account_id': account_id})
+    return render(request, 'communities/upload-boundaries-file.html', {'new_community_id': new_community_id})
 
 
 # Confirm Community
 @login_required(login_url='login')
 def confirm_community(request, community_id):
-    account_id = request.session.get('account_id')
-    if not account_id:
+    new_community_id = request.session.get('new_community_id')
+    if not new_community_id:
         return render(request, '403.html', status=403)
 
     community = Community.objects.select_related('community_creator').get(id=community_id)
@@ -190,9 +190,9 @@ def confirm_community(request, community_id):
             data.save()
             send_hub_admins_application_email(request, community, data)
 
-            # remove account_id from session to prevent
-            # future access with this particular account_id
-            del request.session['account_id']
+            # remove new_community_id from session to prevent
+            # future access with this particular new_community_id
+            del request.session['new_community_id']
             return redirect('dashboard')
     return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
 
