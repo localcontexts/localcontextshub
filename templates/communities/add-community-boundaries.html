@@ -150,14 +150,14 @@
                 <a
                     id="community-boundary-continue-btn"
                     class="primary-btn action-btn disabled-btn"
-                    href="{% url 'confirm-community' new_community_id %}"
+                    href="{% url 'confirm-community' %}"
                     onclick="setBoundaries(); event.preventDefault()"
                 >
                     Confirm location <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
             <div class="margin-right-8" id="skip-this-step">
-                <a class="primary-btn white-btn" href="{% url 'confirm-community' new_community_id %}">Skip this step <i class="fa fa-arrow-right"></i></a>
+                <a class="primary-btn white-btn" href="{% url 'confirm-community' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
     </div>

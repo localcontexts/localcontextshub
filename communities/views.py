@@ -42,8 +42,7 @@ def registration_boundaries(request):
     post_data = json.loads(request.body.decode('UTF-8'))
 
     # update community with boundary-related information
-    new_community_id = request.session.get('new_community_id')
-    community = get_community(new_community_id)
+    community = get_community(request.session.get('new_community_id'))
     community.source_of_boundaries = post_data['source']
     community.name_of_boundaries = post_data['name']
 
@@ -149,30 +148,28 @@ def create_community(request):
 @has_new_community_id
 @login_required(login_url='login')
 def community_boundaries(request):
-    new_community_id = request.session.get('new_community_id')
-    return render(request, 'communities/community-boundaries.html', {'new_community_id': new_community_id})
+    return render(request, 'communities/community-boundaries.html')
 
 
 @has_new_community_id
 @login_required(login_url='login')
 def add_community_boundaries(request):
-    new_community_id = request.session.get('new_community_id')
-    return render(request, 'communities/add-community-boundaries.html', {'new_community_id': new_community_id})
+    return render(request, 'communities/add-community-boundaries.html')
 
 
 @has_new_community_id
 @login_required(login_url='login')
 def upload_boundaries_file(request):
-    new_community_id = request.session.get('new_community_id')
-    return render(request, 'communities/upload-boundaries-file.html', {'new_community_id': new_community_id})
+    return render(request, 'communities/upload-boundaries-file.html')
 
 
 # Confirm Community
 @has_new_community_id
 @login_required(login_url='login')
-def confirm_community(request, community_id):
-    new_community_id = request.session.get('new_community_id')
-    community = Community.objects.select_related('community_creator').get(id=new_community_id)
+def confirm_community(request):
+    community = Community.objects.select_related('community_creator').get(
+        id=request.session.get('new_community_id')
+    )
 
     form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
     if request.method == "POST":
