@@ -46,16 +46,19 @@ def registration_boundaries(request):
     community.source_of_boundaries = post_data['source']
     community.name_of_boundaries = post_data['name']
 
-    # remove old boundaries
-    community.boundaries.clear()
+    # remove all coordinates for (all boundaries in this community)
+    Coordinate.objects.filter(coordinates__boundaries__id=community.id).delete()
 
+    # remove all boundaries in this community
+    community.boundaries.all().delete()
+
+    # add new boundaries in this community
     for coordinates in post_data['boundaries']:
-        coordinates = [
-            Coordinate.objects.create(latitude=lat, longitude=lon)
-            for lat, lon in coordinates
-        ]
         boundary = Boundary.objects.create()
-        boundary.coordinates.set(coordinates)
+        for lat, lon in coordinates:
+            boundary.coordinates.add(
+                Coordinate.objects.create(latitude=lat, longitude=lon)
+            )
         community.boundaries.add(boundary)
     community.save()
 
