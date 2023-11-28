@@ -3,7 +3,7 @@ Live Prod Link:
 - [Local Contexts Hub](https://localcontextshub.org/)
 
 Hub Sandbox Link:
-- [Local Contexts Hub Sndbox](https://sandbox.localcontextshub.org/)
+- [Local Contexts Hub Sandbox](https://sandbox.localcontextshub.org/)
 
 Develop Live Link:
 - [Develop](https://local-contexts-hub-sandbox.uc.r.appspot.com/)
