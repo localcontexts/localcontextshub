@@ -1,9 +1,12 @@
 # Local Contexts Hub Main Repository
-Prod Link:
+Live Prod Link:
 - [Local Contexts Hub](https://localcontextshub.org/)
 
-Branches:
-- [Develop/Staging](https://local-contexts-hub-staging.uc.r.appspot.com/)
+Hub Sandbox Link:
+- [Local Contexts Hub](https://localcontextshub.org/)
+
+Develop Live Link:
+- [Develop](https://local-contexts-hub-sandbox.uc.r.appspot.com/)
 
 Data sources:
 - [Data used by Local Contexts Hub](https://github.com/biocodellc/localcontexts_json)
@@ -13,8 +16,8 @@ Data sources:
 What you need to run this app:
 - virtualenv
 - Django 3.1
-- PostGreSQL
-- Python 3.8.3 with the latest version of `pip`
+- PostGreSQL 15+
+- Python 3.8+ with the latest version of `pip`
 
 
 # Local Deployment
@@ -32,7 +35,7 @@ pyenv virtualenv 3.8.3 envi
 
 Activate virtualenvironment:
 ```
-source /Users/jdeck/.pyenv/versions/envi/bin/activate
+source envi/bin/activate
 ```
 
 ## Install or Update Dependencies
@@ -46,12 +49,13 @@ This will set local environment variables accessible via PYTHON
 ```source env-local.sh``` sets up environment variables for locally hosted database
 ```source env-localprod.sh``` sets up environment variables for production database to access it locally
 ```source env-localdev.sh``` sets up environment variables for development/testing database to access it locally
+```source env-localstage.sh``` sets up environment variables for staging database to access it locally
 
 ## Migration
 ```
 python manage.py makemigrations
 python manage.py migrate # sets up database
-python manage.py createsuperuser # so you can start using database)
+python manage.py createsuperuser # so you can start using database
   Username: <Fill in your username>
   Email address: *<INSERT SITE_ADMIN_EMAIL> that is specified in the previous step, 'Initialize Environment Variables'*
 ```
