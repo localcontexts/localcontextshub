@@ -182,8 +182,8 @@ class MultiProjectListDetail(ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CommunitySlugList(generics.ListAPIView):
-    queryset = Community.objects.exclude(native_land_slug=None)
+    queryset = Community.objects
     serializer_class = CommunityNativeLandSlugSerializer
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['native_land_slug']
+    search_fields = []

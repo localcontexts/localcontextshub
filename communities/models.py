@@ -50,7 +50,6 @@ class Community(models.Model):
     is_approved = models.BooleanField(default=False, null=True)
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
-    native_land_slug = models.SlugField(max_length = 200, blank=True, null=True)
 
     source_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)
     name_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)

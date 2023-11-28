@@ -131,4 +131,4 @@ class ProjectNoNoticeSerializer(serializers.ModelSerializer):
 class CommunityNativeLandSlugSerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ('id', 'community_name', 'native_land_slug',)
+        fields = ('id', 'community_name')
