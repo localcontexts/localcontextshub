@@ -1,1 +1,58 @@
-{{ boundaries }}
+<style>
+    .related-widget-wrapper{
+        width: 100%
+    }
+    .boundary-textarea{
+        width: 90%
+    }
+    .delete-boundary{
+        margin-left: 20px;
+        background: lightgrey;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .delete-boundary:hover{
+        background: darkgrey;
+    }
+    .delete-boundary.selected, .delete-boundary.selected:hover{
+        background: #a41515;
+    }
+</style>
+{% for boundary_id, boundary in boundaries.items %}
+    <div style="display: flex">
+        <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
+        <textarea
+                class="boundary-textarea" name="boundary{{boundary_id}}" rows="4"
+                cols="50">{{ boundary |join:", " }}</textarea>
+        <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
+            Mark For Deletion
+        </button>
+    </div>
+    <br>
+{% endfor %}
+<div id="deleted-boundaries" style="display:none"></div>
+<script>
+function markAsDeleted() {
+  const id = event.target.dataset.for
+  const selectorKey = `boundary${id}`
+  const deletedBoundaryMarker = document.querySelector(`[data-deleted=${selectorKey}]`)
+
+  // -----------toggle deletion marker
+  event.target.classList.toggle("selected");
+
+  if (deletedBoundaryMarker) {
+    // if marked for deletion, then remove marker
+    deletedBoundaryMarker.remove()
+  } else {
+    // otherwise, add marker for deletion
+    const deletedBoundariesContainer = document.getElementById('deleted-boundaries')
+    deletedBoundariesContainer.insertAdjacentHTML(
+      'beforeend',
+      `<input type="text" data-deleted="${selectorKey}">`
+    )
+  }
+  // -----------toggle deletion marker
+
+}
+</script>
