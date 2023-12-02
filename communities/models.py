@@ -26,9 +26,18 @@ class Coordinate(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
+    def get_coordinate(self):
+        return self.latitude, self.longitude
+
 
 class Boundary(models.Model):
     coordinates = models.ManyToManyField(Coordinate, related_name="coordinates")
+
+    def get_coordinates(self):
+        return [
+            (float(c.latitude), float(c.longitude))
+            for c in self.coordinates.all()
+        ]
 
 
 class Community(models.Model):
