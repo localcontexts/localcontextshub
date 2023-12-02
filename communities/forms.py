@@ -4,6 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 import os
 
+from .widgets import BoundaryWidget
+
+
 class CreateCommunityForm(forms.ModelForm):
     class Meta:
         model = Community
@@ -43,6 +46,16 @@ class ConfirmCommunityForm(forms.ModelForm):
             if support_document_file.content_type not in allowed_mime_types:
                 raise ValidationError('Invalid document file type. Only PDF and DOC/DOCX files are allowed.')
         return support_document_file
+
+
+class CommunityModelForm(forms.ModelForm):
+    class Meta:
+        model = Community
+        exclude = []
+        widgets = {
+            'boundaries': BoundaryWidget
+        }
+
 
 class UpdateCommunityForm(forms.ModelForm):
     class Meta:
