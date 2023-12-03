@@ -2,6 +2,10 @@
     .related-widget-wrapper{
         width: 100%
     }
+    .boundary-container{
+        display: flex;
+        margin-bottom: 10px;
+    }
     .boundary-textarea{
         width: 90%
     }
@@ -11,6 +15,7 @@
         color: white;
         font-weight: bold;
         cursor: pointer;
+        width: 140px;
     }
     .delete-boundary:hover{
         background: darkgrey;
@@ -38,20 +43,21 @@
         background: #8ebccb;
     }
 </style>
-{% for boundary_id, boundary in boundaries.items %}
-    <div style="display: flex">
-        <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
-        <textarea
-                class="boundary-textarea" name="boundary{{boundary_id}}" rows="4"
-                cols="50">{{ boundary |join:", " }}</textarea>
-        <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
-            Mark For Deletion
-        </button>
-    </div>
-    <br>
-{% endfor %}
+<div id="boundaries-container">
+    {% for boundary_id, boundary in boundaries.items %}
+        <div class="boundary-container">
+            <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
+            <textarea
+                    class="boundary-textarea" name="boundary{{boundary_id}}" rows="4"
+                    cols="50">{{ boundary |join:", " }}</textarea>
+            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
+                Mark For Deletion
+            </button>
+        </div>
+    {% endfor %}
+</div>
 <div id="deleted-boundaries" style="display:none"></div>
-<button id="add-new-boundary" onclick="event.preventDefault()">Add New Boundary</button>
+<button id="add-new-boundary" onclick="addNewBoundary(); event.preventDefault()">Add New Boundary</button>
 <button id="upload-shape-file-data" onclick="event.preventDefault()">Upload Shape File Date</button>
 <script>
 function markAsDeleted() {
@@ -75,5 +81,24 @@ function markAsDeleted() {
   }
   // -----------toggle deletion marker
 
+}
+
+function removeBoundary(){
+  event.target.closest(".boundary-container").remove()
+}
+function addNewBoundary() {
+    const boundaryContainer = document.getElementById('boundaries-container')
+    boundaryContainer.insertAdjacentHTML(
+      'beforeend',
+      `<div class="boundary-container">
+            <label>New Boundary</label>
+            <textarea
+                    class="boundary-textarea" rows="4"
+                    cols="50"></textarea>
+            <button class="delete-boundary" onclick="removeBoundary();event.preventDefault()">
+                Remove
+            </button>
+        </div>`
+    )
 }
 </script>
