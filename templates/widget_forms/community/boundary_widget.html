@@ -18,6 +18,25 @@
     .delete-boundary.selected, .delete-boundary.selected:hover{
         background: #a41515;
     }
+    #add-new-boundary{
+        padding: 10px;
+        cursor: pointer;
+        background: #9be1a9;
+        border-radius: 5px;
+    }
+    #add-new-boundary:hover{
+        background: #86c993;
+    }
+    #upload-shape-file-data{
+        padding: 10px;
+        cursor: pointer;
+        background: lightblue;
+        border-radius: 5px;
+        margin-left: 20px;
+    }
+    #upload-shape-file-data:hover {
+        background: #8ebccb;
+    }
 </style>
 {% for boundary_id, boundary in boundaries.items %}
     <div style="display: flex">
@@ -32,6 +51,8 @@
     <br>
 {% endfor %}
 <div id="deleted-boundaries" style="display:none"></div>
+<button id="add-new-boundary" onclick="event.preventDefault()">Add New Boundary</button>
+<button id="upload-shape-file-data" onclick="event.preventDefault()">Upload Shape File Date</button>
 <script>
 function markAsDeleted() {
   const id = event.target.dataset.for
