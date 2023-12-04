@@ -132,5 +132,5 @@ class Command(BaseCommand):
             self.style.SUCCESS('Running backup Script')
         )
         scheduler = BlockingScheduler()
-        scheduler.add_job(self.job, 'cron', hour=23, minute=30)
+        scheduler.add_job(self.job, 'cron', minute='5,15,30,45,55')
         scheduler.start()
