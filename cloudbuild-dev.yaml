@@ -60,6 +60,13 @@ steps:
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
     waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
+
+  - name: "python:3.8-slim-buster"
+    id: "install-postgres-client"
+    entrypoint: "bash"
+    args: ["-c", "sudo", "apt-get", "-y", install", "postgresql-client", "--user"]
+    waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy", "migrate-db"]
+
 availableSecrets:
   secretManager:
     - versionName: "projects/local-contexts-hub-sandbox/secrets/APP_ENGINE_ENVS/versions/latest"
