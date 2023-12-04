@@ -64,7 +64,7 @@ steps:
   - name: "python:3.8-slim-buster"
     id: "install-postgres-client"
     entrypoint: "bash"
-    args: ["-c", "apt-get", "-y", "install", "postgresql-client"]
+    args: ["-c", "apt -y update && apt -y install postgresql-client"]
     waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy", "migrate-db"]
 
 availableSecrets:
