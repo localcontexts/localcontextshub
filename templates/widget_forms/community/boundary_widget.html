@@ -58,8 +58,32 @@
 </div>
 <div id="deleted-boundaries" style="display:none"></div>
 <button id="add-new-boundary" onclick="addNewBoundary(); event.preventDefault()">Add New Boundary</button>
-<button id="upload-shape-file-data" onclick="event.preventDefault()">Upload Shape File Data</button>
+<button type="file" id="upload-shape-file-data"
+        onclick="triggerShapeFileInput(); event.preventDefault()"
+>
+    Upload Shape File Data
+</button>
+<input
+        type="file" id="shapefile-input" name="shapefile" style="display: none"
+        onchange="uploadShapeFileData(); event.preventDefault()"
+        accept=".zip"
+>
 <script>
+function triggerShapeFileInput() {
+   document.getElementById('shapefile-input').click()
+}
+async function uploadShapeFileData() {
+  var files = event.target.files;
+  var file = files[0];
+
+  const shapeFileData = await file.arrayBuffer()
+  const geoJsonData = await shp(shapeFileData)
+
+  // placeholder
+  // extract boundaries from geoJson features
+
+  return false
+}
 function markAsDeleted() {
   const id = event.target.dataset.for
   const selectorKey = `boundary${id}`
@@ -102,3 +126,4 @@ function addNewBoundary() {
     )
 }
 </script>
+<script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
