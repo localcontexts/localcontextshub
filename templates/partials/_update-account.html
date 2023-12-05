@@ -253,15 +253,15 @@
                                     <!-- Show ORCiD widget based on hostname -->
                                     <div 
                                         id="orcidWidget" 
-                                        {% if 'localcontextshub' in request.get_host %}
+                                        {% if env == "PROD" %}
                                             data-clientid='APP-3AGU5OQX7M7UKIMD' 
                                             data-env="production" 
                                             data-redirecturi="https://localcontextshub.org/researchers/connect-orcid/"
-                                        {% elif 'sandbox.localcontextshub' in request.get_host %}
+                                        {% elif env == "SANDBOX" %}
                                             data-clientid='APP-M1RE2U9DY1B6MNYD' 
                                             data-env="sandbox" 
                                             data-redirecturi="https://sandbox.localcontextshub.org/researchers/connect-orcid/"
-                                        {% elif 'local-contexts-hub-sandbox' in request.get_host %}
+                                        {% elif env == "DEV" %}
                                             data-clientid='APP-M1RE2U9DY1B6MNYD' 
                                             data-env="develop" 
                                             data-redirecturi="https://local-contexts-hub-sandbox.uc.r.appspot.com/researchers/connect-orcid/"
@@ -270,7 +270,7 @@
                                     </div>
                                 </div>
                         
-                                {% if 'local-contexts-hub-sandbox' in request.get_host or 'sandbox.localcontextshub' in request.get_host  %}
+                                {% if env == "DEV" or env == "SANDBOX" %}
                                     <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
                                 {% endif %}  
                             {% endif %}
