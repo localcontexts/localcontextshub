@@ -29,6 +29,7 @@ from .utils import *
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
+    env = dev_prod_or_local(request.get_host())
     
     if researcher == False:
         if request.method == "POST":
@@ -60,8 +61,8 @@ def connect_researcher(request):
                 )
                     
                 return redirect('dashboard')
-
-        return render(request, 'researchers/connect-researcher.html', {'form': form})
+        context = {'form': form, 'env': env}
+        return render(request, 'researchers/connect-researcher.html', context)
     else:
         return redirect('researcher-notices', researcher.id)
 
@@ -150,6 +151,7 @@ def update_researcher(request, pk):
     if user_can_view == False:
         return redirect('restricted')
     else:
+        env = dev_prod_or_local(request.get_host())
         if request.method == 'POST':
             update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
 
@@ -178,6 +180,7 @@ def update_researcher(request, pk):
             'update_form': update_form,
             'researcher': researcher,
             'user_can_view': user_can_view,
+            'env': env
         }
         return render(request, 'researchers/update-researcher.html', context)
 
