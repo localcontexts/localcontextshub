@@ -88,10 +88,12 @@ def test_is_user_in_institution(new_institution):
     result = institution.is_user_in_institution(user)
 
     assert isinstance(result, bool)
+
 # Test case for Institution __str__ method
 @pytest.mark.django_db
 def test_str_method(new_institution):
     institution = new_institution
-    result = str(institution)
+    string = str(institution)
 
-    assert isinstance(result, str)
+    assert isinstance(string, str)
+    assert string == institution.institution_name

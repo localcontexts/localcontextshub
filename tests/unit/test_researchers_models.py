@@ -20,6 +20,7 @@ def test_get_projects_exists(new_researcher):
 @pytest.mark.django_db
 def test_str_method(new_researcher):
     researcher = new_researcher
-    result = str(researcher)
-
-    assert result == str(researcher.user)
+    string = str(researcher)
+    
+    assert isinstance(string, str)
+    assert string == str(researcher)

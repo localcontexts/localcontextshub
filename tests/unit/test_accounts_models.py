@@ -9,7 +9,7 @@ import faker
 
 fake = faker.Faker()
 
-#This ficture of Profile model instacne creation
+#This fiXture of Profile model instacne creation
 @pytest.fixture
 @pytest.mark.django_db
 def new_user():
@@ -35,20 +35,20 @@ def test_get_location():
 @patch('accounts.models.Profile') 
 def test_profile_validation(new_user):
     new_user.country = "England"
-    assert new_user.save()
+    assert new_user.save() is not None
 
 #This test is for the Profile model string method
 @pytest.mark.django_db
 @patch('accounts.models.Profile') 
 def test_str_method(new_user):
     user = new_user
-    result = str(user)
+    string = str(user)
 
-    assert isinstance(result, str)
+    assert isinstance(string, str)
 
 #This test is for Invitation model instance creation
 @pytest.mark.django_db
-def test_create_signup_invitation_with_defaults_expect_failure():
+def test_create_signup_invitation_with_defaults():
     invitation = SignUpInvitation.objects.create(email=fake.email(),message=fake.text(),sender=UserFactory(),date_sent=timezone.now())
     assert invitation.save() is None
 
@@ -57,4 +57,6 @@ def test_create_signup_invitation_with_defaults_expect_failure():
 def test_create_signup_invitation_str():
     invitation = SignUpInvitation.objects.create(email=fake.email(),message=fake.text(),sender=UserFactory(),date_sent=timezone.now())
     invitation.save()
-    assert invitation.__str__() is not None
+    string = str(invitation)
+    assert isinstance(invitation.__str__(),str)
+    assert string == invitation.email
