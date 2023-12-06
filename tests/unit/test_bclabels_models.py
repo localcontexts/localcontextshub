@@ -15,14 +15,15 @@ def new_bclabel():
 @pytest.mark.django_db
 def test_bclabel_str_method(new_bclabel):
     bclabel = new_bclabel
-    result = str(bclabel)
-    assert isinstance(result, str)
+    string = str(bclabel)
+    assert isinstance(string, str)
+    assert string ==  f"{bclabel.community} - {bclabel.name}"
 
 # Test for BCLabel model post creation save method
 @pytest.mark.django_db
 def test_bclabel_save_method(new_bclabel):
     bclabel = new_bclabel
-    # Mock the external requests.get method to avoid making actual requests
+    #This code mocks the external requests.get method to avoid making actual requests
     with patch('requests.get') as mock_get:
         mock_get.return_value.json.return_value = {'English': 'en'}
         bclabel.save()

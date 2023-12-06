@@ -75,10 +75,10 @@ def test_get_template_name_private_and_unexpected_privacy(new_project):
 @pytest.mark.django_db
 def new_project_test_str_method(new_project):
     project = new_project
-    result = str(project)
+    string = str(project)
 
-    assert isinstance(result, str)
-
+    assert isinstance(string, str)
+    assert string == project.title
 
 # This fixture for ProjectPerson model instance creation
 @pytest.fixture
@@ -90,6 +90,7 @@ def new_project_person():
 @pytest.mark.django_db
 def test_project_person_str_method(new_project_person):
     project_person = new_project_person
+    string = project_person.__str__()
     assert isinstance(project_person.__str__(), str)
 
 # This fixture for ProjectNote model instance creation
@@ -102,8 +103,9 @@ def new_project_note():
 @pytest.mark.django_db
 def new_project_note_test_str_method(new_project_note):
     project = new_project_note
-    result = str(project)
-    assert isinstance(result, str)
+    string = str(project)
+    assert isinstance(string, str)
+    assert string == project.project
     
 # This fixture for ProjectContributors model instance creation
 @pytest.fixture
@@ -193,6 +195,7 @@ def test_which_account_type_created_researcher():
 @pytest.mark.django_db
 def test_project_creator_str_method():
     project_creator = ProjectCreatorFactory()
+    string = project_creator.__str__()
     assert isinstance(project_creator.__str__(), str)
 
 # Fixture for ProjectActivity model instance creation
@@ -205,4 +208,5 @@ def new_project_activity():
 @pytest.mark.django_db
 def test_project_activity_str_method(new_project_activity):
     project_activity = new_project_activity
+    string = project_activity.__str__()
     assert isinstance(project_activity.__str__(), str)

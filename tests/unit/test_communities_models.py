@@ -16,8 +16,6 @@ def new_community():
 # This test is for Community model validation of community_name uniqueness
 @pytest.mark.django_db
 def test_community_creation_with_unique_name(new_community):
-
-    # Check if the community name is unique
     name = new_community.community_name
     with pytest.raises(Exception):
         Community.objects.create(community_name=name)
@@ -54,8 +52,9 @@ def test_community_support_document_upload(new_community):
 @pytest.mark.django_db
 def test_str_method(new_community):
     community = new_community
-    result = str(community)
-    assert isinstance(result, str)
+    string = str(community)
+    assert isinstance(string, str)
+    assert string == community.community_name
 
 # This test is for Community model is_user_in_community method
 @pytest.mark.django_db
@@ -108,8 +107,9 @@ def new_invite_member():
 @pytest.mark.django_db
 def test_new_invite_member_str_method(new_invite_member):
     invite_member = new_invite_member
-    result = str(invite_member)
-    assert isinstance(result, str)
+    string = str(invite_member)
+    assert isinstance(string, str)
+    assert string == f"{invite_member.sender}-{invite_member.receiver}-{invite_member.status}"
 
 # This fixture for JoinRequest model instance creation
 @pytest.fixture
@@ -121,5 +121,6 @@ def new_join_request():
 @pytest.mark.django_db
 def test_new_join_request_str_method(new_join_request):
     join_request = new_join_request
-    result = str(join_request)
-    assert isinstance(result, str)
+    string = str(join_request)
+    assert isinstance(string, str)
+    assert string == f"{join_request.user_from}-{join_request.user_to}-{join_request.status}"

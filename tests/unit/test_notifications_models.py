@@ -18,8 +18,9 @@ def user_notification():
 # This test is for UserNotification model __str__ method
 @pytest.mark.django_db
 def test_user_notification_str(user_notification):
-    result = user_notification.__str__()
-    assert isinstance(result, str)
+    string = user_notification.__str__()
+    assert isinstance(string, str)
+    assert string == f"{user_notification.notification_type}-{user_notification.title}"
 
 # This test is for UserNotification model ordering method
 @pytest.mark.django_db
@@ -35,8 +36,9 @@ def action_notification():
 # This test is for ActionNotification model __str__ method
 @pytest.mark.django_db
 def test_action_notification_str(action_notification):
-    result = action_notification.__str__()
-    assert isinstance(result, str)
+    string = action_notification.__str__()
+    assert isinstance(string, str)
+    assert string == f"{action_notification.notification_type} - {action_notification.title}"
 
 # This test is for ActionNotification model ordering method
 @pytest.mark.django_db

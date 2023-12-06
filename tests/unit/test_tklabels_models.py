@@ -16,8 +16,9 @@ def new_tklabel():
 @pytest.mark.django_db
 def test_tklabel_str_method(new_tklabel):
     tklabel = new_tklabel
-    result = str(new_tklabel)
-    assert isinstance(result, str)
+    string = str(new_tklabel)
+    assert isinstance(string, str)
+    assert string == f"{tklabel.community} - {tklabel.name}"
 
 # Test for TKLabel model save method
 @pytest.mark.django_db
