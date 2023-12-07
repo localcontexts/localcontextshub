@@ -13,9 +13,15 @@ steps:
 
   - name: "python:3.8-slim-buster"
     id: "install-deps"
-    entrypoint: "python3"
-    args: ["-m", "pip", "install", "-r", "requirements.txt", "--user"]
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        python3 -m pip install -r requirements.txt --user
+        apt -y update
+        apt -y install postgresql-client
     waitFor: [ "-" ]
+
   - name: "python:3.8-slim-buster"
     id: "collect-statics"
     entrypoint: "bash"
@@ -60,12 +66,6 @@ steps:
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
     waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
-
-  - name: "python:3.8-slim-buster"
-    id: "install-postgres-client"
-    entrypoint: "bash"
-    args: ["-c", "apt -y update && apt -y install postgresql-client"]
-    waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy", "migrate-db"]
 
 availableSecrets:
   secretManager:
