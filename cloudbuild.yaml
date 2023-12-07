@@ -69,7 +69,7 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: "projects/local-contexts-hub-sandbox/secrets/APP_ENGINE_ENVS/versions/latest"
+    - versionName: "projects/local-context-hub-staging/secrets/APP_ENGINE_ENVS/versions/latest"
       env: "APP_ENGINE_ENVS"
-    - versionName: "projects/local-contexts-hub-sandbox/secrets/django-storages-gcs-key/versions/latest"
+    - versionName: "projects/local-context-hub-staging/secrets/django-storages-gcs-key/versions/latest"
       env: "DJANGO_STORAGES_GCS_KEY"
