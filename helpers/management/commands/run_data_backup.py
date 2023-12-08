@@ -120,6 +120,9 @@ class Command(BaseCommand):
                 creation_successful = self.create_backup(file_path)
 
                 if creation_successful:
+                    self.stdout.write(
+                        self.style.SUCCESS(f'Backup Created Successfully: {file_name}')
+                    )
                     files.append(file_name)
                     self.remove_oldest_file(interval, files)
 
