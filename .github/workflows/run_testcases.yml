@@ -21,5 +21,8 @@ jobs:
       - name: Install Requirements
         run: pip install -r requirements.txt
 
+      - name: Setup env
+        run: source ./env.sh
+
       - name: Run Testcases
         run: pytest tests

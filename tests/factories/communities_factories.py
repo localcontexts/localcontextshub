@@ -59,11 +59,6 @@ class InviteMemberFactory(factory.django.DjangoModelFactory):
     status = factory.Faker('random_element', elements=['sent', 'accepted'])
     updated = factory.Faker('date_time_this_year')
     created = factory.Faker('date_time_this_year')
-    
-    @factory.post_generation
-    def set_many_to_many_fields(self, created, extracted, **kwargs):
-        if created:
-            self.save()
 
 class JoinRequestFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the JoinRequest Model'''
@@ -79,8 +74,3 @@ class JoinRequestFactory(factory.django.DjangoModelFactory):
     message = factory.Faker('text', max_nb_chars=200)
     status = factory.Faker('random_element', elements=['sent', 'accepted'])
     date_sent = factory.Faker('date_time_this_year')
-    
-    @factory.post_generation
-    def set_many_to_many_fields(self, created, extracted, **kwargs):
-        if created:
-            self.save()

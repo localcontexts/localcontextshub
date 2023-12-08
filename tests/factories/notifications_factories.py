@@ -26,10 +26,6 @@ class UserNotificationFactory(factory.django.DjangoModelFactory):
     viewed = factory.Faker('boolean')
     created = factory.Faker('date_time_this_year')
 
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
             
 class ActionNotificationFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ActionNotification Model'''
@@ -46,8 +42,3 @@ class ActionNotificationFactory(factory.django.DjangoModelFactory):
     reference_id = factory.LazyAttribute(lambda n: faker.uuid4()[:50])
     viewed = factory.Faker('boolean')
     created = factory.Faker('date_time_this_year')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()

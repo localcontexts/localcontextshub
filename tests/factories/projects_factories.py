@@ -21,11 +21,6 @@ class ProjectArchivedFactory(factory.django.DjangoModelFactory):
     institution_id = factory.Faker('random_int', min=1, max=1000)
     researcher_id = factory.Faker('random_int', min=1, max=1000)
     archived = factory.Faker('boolean')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
 
 class ProjectFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the Project Model'''
@@ -74,12 +69,7 @@ class ProjectPersonFactory(factory.django.DjangoModelFactory):
     project = factory.SubFactory(ProjectFactory)
     name = factory.Faker('name')
     email = factory.Faker('email')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
-    
+
 class ProjectNoteFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ProjectNote Model'''
     class Meta:
@@ -91,12 +81,7 @@ class ProjectNoteFactory(factory.django.DjangoModelFactory):
     sender = factory.SubFactory(UserFactory)
     note = factory.Faker('text')
     created = factory.Faker('date_time_this_month')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
-  
+
 class ProjectContributorsFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ProjectContributors Model'''
     class Meta:
@@ -112,7 +97,7 @@ class ProjectContributorsFactory(factory.django.DjangoModelFactory):
     @factory.post_generation
     def set_many_to_many_fields(self, created, extracted, **kwargs):
         if created:
-            existing_contributors = ProjectContributors.objects.filter(project=self.project)
+            existing_contributors = ProjectContributors.objects.filter()
 
             if existing_contributors.exists():
                 # Reuse the existing instance
@@ -141,11 +126,6 @@ class ProjectCreatorFactory(factory.django.DjangoModelFactory):
     institution = factory.SubFactory(InstitutionFactory)
     researcher = factory.SubFactory(ResearcherFactory)
     project = factory.SubFactory(ProjectFactory)
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
 
 class ProjectActivityFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ProjectActivity Model'''
@@ -156,7 +136,3 @@ class ProjectActivityFactory(factory.django.DjangoModelFactory):
     project = factory.SubFactory(ProjectFactory)
     date = factory.Faker('date_time_this_month')
     activity = factory.Faker('text')
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()

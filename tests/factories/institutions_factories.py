@@ -24,8 +24,3 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
     is_approved = factory.Faker('boolean')
     approved_by = factory.SubFactory(UserFactory)
     is_ror = factory.Faker('boolean')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
