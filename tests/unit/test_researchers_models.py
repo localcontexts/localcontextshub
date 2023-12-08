@@ -2,25 +2,18 @@ from django.test import TestCase
 import pytest
 from factories.researchers_factories import ResearcherFactory
 
-# This fixture for Researcher model instance creation
-@pytest.fixture
-@pytest.mark.django_db
-def new_researcher():
-    return ResearcherFactory()
+class TestResearcher(TestCase):
+    @pytest.mark.django_db
+    def setUp(self):
+        self.researcher = ResearcherFactory()
 
-# This test is for Researcher model get_project method
-@pytest.mark.django_db
-def test_get_projects_exists(new_researcher):
-    researcher = new_researcher
-    result = researcher.get_projects()
+    def test_get_projects_exists(self):
+        result = self.researcher.get_projects()
 
-    assert isinstance(result, bool)
+        assert isinstance(result, bool)
 
-# This test is for Researcher model __str__ method
-@pytest.mark.django_db
-def test_str_method(new_researcher):
-    researcher = new_researcher
-    string = str(researcher)
-    
-    assert isinstance(string, str)
-    assert string == str(researcher)
+    def test_str_method(self):
+        string = str(self.researcher)
+        
+        assert isinstance(string, str)
+        assert string == str(self.researcher)

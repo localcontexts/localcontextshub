@@ -1,99 +1,83 @@
 from django.test import TestCase
 import pytest
-from unittest.mock import patch
 from institutions.models import Institution
 from factories.accounts_factories import UserFactory
 from factories.institutions_factories import InstitutionFactory
-import faker
 
-fake = faker.Faker()
+class TestInstitute(TestCase):
+    @pytest.mark.django_db
+    def setUp(self):
+        self.institution = InstitutionFactory()
+        self.user = UserFactory()
 
-#This fixture of Institute model instacne creation
-@pytest.fixture
-@pytest.mark.django_db
-def new_institution():
-    return InstitutionFactory()
+    def test_get_location(self):
+        new_institution = self.institution
+        new_institution.city_town = "Test City"
+        new_institution.state_province_region = "Test State"
+        new_institution.country = "Test Country"
+        new_institution.is_approved = True
+        new_institution.save()
 
-# Test case for Institution get_location method 
-@pytest.mark.django_db 
-def test_get_location(new_institution):
-    institution = new_institution
-    institution.city_town = 'Test City'
-    institution.state_province_region = 'Test State'
-    institution.country = 'Test Country'
-    institution.is_approved=True
-    institution.save()
+        expected_location = "Test City, Test State, Test Country"
+        assert new_institution.get_location() == expected_location
 
-    expected_location = 'Test City, Test State, Test Country'
-    assert institution.get_location() == expected_location
+    def test_get_location_none_specified(self):
+        new_institution = self.institution
+        new_institution.city_town = None
+        new_institution.state_province_region = None
+        new_institution.country = None
+        new_institution.save()
 
-# Test case for Institution location_none method
-@pytest.mark.django_db
-def test_get_location_none_specified(new_institution):
-    institution = new_institution
-    institution.city_town=None
-    institution.state_province_region = None
-    institution.country = None
-    institution.save()
-    expected_location = 'None specified'
-    assert institution.get_location() == expected_location
+        assert new_institution.get_location() == "None specified"
 
-# Test case for Institution get_member method
-@pytest.mark.django_db 
-def test_get_member_count(new_institution):
-    institution = new_institution
-    institution.admins.add(UserFactory())
-    institution.save()
-    member_count = institution.get_member_count()
-    expected_member_count = 2
-    
-    assert member_count == expected_member_count
+    def test_get_member_count(self):
+        new_institution = self.institution
+        new_institution.admins.add(self.user)
+        new_institution.save()
 
-# Test case for Institution get_member_count_no_members
-@pytest.mark.django_db
-def test_get_member_count_no_members(new_institution):
-    institution =new_institution
-    member_count = institution.get_member_count()
-    expected_member_count = 1
-    assert member_count == expected_member_count
+        member_count = new_institution.get_member_count()
+        expected_member_count = 2
 
-# Test case for Institution different get method
-@pytest.mark.django_db    
-def test_model_methods(new_institution):
-        # Test get_admins
+        assert member_count == expected_member_count
+
+    def test_get_member_count_no_members(self):
+        new_institution = self.institution
+        member_count = new_institution.get_member_count()
+        expected_member_count = 1
+
+        assert member_count == expected_member_count
+
+    def test_model_methods(self):
+        new_institution = self.institution
         admin = UserFactory()
-        institution = new_institution
-        institution.admins.add(admin)
-        admins = institution.get_admins()
-        assert admin, admins
+        new_institution.admins.add(admin)
+        editors = UserFactory()
+        new_institution.editors.add(editors)
+        viewers = UserFactory()
+        new_institution.viewers.add(viewers)
+
+        # Test get_admins
+        admins_list = new_institution.get_admins()
+        assert all([admin in admins_list for admin in new_institution.admins.all()])
 
         # Test get_editors
-        editor = UserFactory()
-        institution.editors.add(editor)
-        editors = institution.get_editors()
-        assert editor, editors
+        editors_list = new_institution.get_editors()
+        assert all([editor in editors_list for editor in new_institution.editors.all()])
 
         # Test get_viewers
-        viewer = UserFactory()
-        institution.viewers.add(viewer)
-        viewers = institution.get_viewers()
-        assert viewer, viewers
+        viewers_list = new_institution.get_viewers()
+        assert all([viewer in viewers_list for viewer in new_institution.viewers.all()])
 
-# Test case for Institution is_user_in_institution method
-@pytest.mark.django_db
-def test_is_user_in_institution(new_institution):
-    institution = new_institution
-    user = UserFactory()
-    institution.viewers.add(user)
-    result = institution.is_user_in_institution(user)
+    def test_is_user_in_institution(self):
+        new_institution = self.institution
+        new_institution.viewers.add(self.user)
 
-    assert isinstance(result, bool)
+        result = new_institution.is_user_in_institution(self.user)
+        assert isinstance(result, bool)
 
-# Test case for Institution __str__ method
-@pytest.mark.django_db
-def test_str_method(new_institution):
-    institution = new_institution
-    string = str(institution)
+    def test_str_method(self):
+        new_institution = self.institution
+        string = str(new_institution)
 
-    assert isinstance(string, str)
-    assert string == institution.institution_name
+        assert isinstance(string, str)
+        assert string == new_institution.institution_name

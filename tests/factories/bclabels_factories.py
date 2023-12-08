@@ -30,7 +30,3 @@ class BCLabelFactory(factory.django.DjangoModelFactory):
                 filename='test_audio.mp3',
                 data=io.BytesIO(os.urandom(1000)).read()
             )
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()

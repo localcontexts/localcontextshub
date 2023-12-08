@@ -19,8 +19,3 @@ class ResearcherFactory(factory.django.DjangoModelFactory):
     website = factory.Faker('url')
     primary_institution = factory.Faker('company')
     orcid_auth_token = factory.Faker('sha256')
-    
-    # @factory.post_generation
-    # def set_many_to_many_fields(self, created, extracted, **kwargs):
-    #     if created:
-    #         self.save()
