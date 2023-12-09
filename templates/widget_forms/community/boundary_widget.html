@@ -1,3 +1,4 @@
+{% load static %}
 <style>
     .related-widget-wrapper{
         width: 100%
@@ -76,11 +77,21 @@ async function uploadShapeFileData() {
   var files = event.target.files;
   var file = files[0];
 
-  const shapeFileData = await file.arrayBuffer()
-  const geoJsonData = await shp(shapeFileData)
+  try {
+    const shapeFileData = await file.arrayBuffer()
+    const geoJsonData = await shp(shapeFileData)
 
-  // placeholder
-  // extract boundaries from geoJson features
+    // merge geoJson to get unique contours
+    const distinctGeoJsonFeatures = turf.union(...geoJsonData.features)
+
+    // extract boundaries from each unique contour
+    // there will be one boundary per contour
+    const distinctBoundaries = [].concat(...distinctGeoJsonFeatures.geometry.coordinates).map(arr => arr)
+  } catch (e) {
+    console.log('Error extracting boundary data from Shape File', e)
+  }
+  // for each distinct new boundary
+  // a boundary ui element is created and populated with boundary data
 
   return false
 }
@@ -126,4 +137,5 @@ function addNewBoundary() {
     )
 }
 </script>
-<script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>
+<script src="{% static 'javascript/turf.js' %}"></script>
