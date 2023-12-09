@@ -87,11 +87,19 @@ async function uploadShapeFileData() {
     // extract boundaries from each unique contour
     // there will be one boundary per contour
     const distinctBoundaries = [].concat(...distinctGeoJsonFeatures.geometry.coordinates).map(arr => arr)
+
+    // for each distinct new boundary a boundary ui element is created
+    // and populated with boundary data from shape file
+    for(let i = 0; i < distinctBoundaries.length; i++) {
+      const distinctBoundaryStr = distinctBoundaries[i].map(function(coordinate){
+        return `(${coordinate[0]}, ${coordinate[1]}) `}
+      )
+      addNewBoundary(distinctBoundaryStr)
+    }
+
   } catch (e) {
     console.log('Error extracting boundary data from Shape File', e)
   }
-  // for each distinct new boundary
-  // a boundary ui element is created and populated with boundary data
 
   return false
 }
@@ -121,7 +129,7 @@ function markAsDeleted() {
 function removeBoundary(){
   event.target.closest(".boundary-container").remove()
 }
-function addNewBoundary() {
+function addNewBoundary(data='') {
     const boundaryContainer = document.getElementById('boundaries-container')
     boundaryContainer.insertAdjacentHTML(
       'beforeend',
@@ -129,7 +137,7 @@ function addNewBoundary() {
             <label>New Boundary</label>
             <textarea
                     class="boundary-textarea" rows="4"
-                    cols="50"></textarea>
+                    cols="50">${data}</textarea>
             <button class="delete-boundary" onclick="removeBoundary();event.preventDefault()">
                 Remove
             </button>
