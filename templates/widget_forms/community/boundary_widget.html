@@ -66,14 +66,14 @@
 </button>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
-        onchange="uploadShapeFileData(); event.preventDefault()"
+        onchange="uploadShapeFileData(this); event.preventDefault()"
         accept=".zip"
 >
 <script>
 function triggerShapeFileInput() {
    document.getElementById('shapefile-input').click()
 }
-async function uploadShapeFileData() {
+async function uploadShapeFileData(self) {
   var files = event.target.files;
   var file = files[0];
 
@@ -101,6 +101,9 @@ async function uploadShapeFileData() {
     console.log('Error extracting boundary data from Shape File', e)
   }
 
+  // set value to null so user can resubmit
+  // same file if needed
+  self.value = null
   return false
 }
 function markAsDeleted() {
