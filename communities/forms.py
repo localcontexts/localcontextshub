@@ -1,3 +1,6 @@
+import json
+import sys
+
 from django import forms
 from .models import Community, InviteMember, JoinRequest
 from django.utils.translation import ugettext_lazy as _
@@ -55,17 +58,71 @@ class CommunityModelForm(forms.ModelForm):
         widgets = {
             'boundaries': BoundaryWidget
         }
+        max_coordinates_in_boundary_count = 2000
+        max_boundary_count = 5
 
-    def get_boundaries(self):
-        # add logic for getting boundaries using supplemental form data
-        return []
+    def parse_boundary_str(self, boundary_str: str) -> dict:
+        boundary_str_with_brackets = boundary_str.replace('(', '[').replace(')', ']')
+        boundary_data = json.loads(f'[{boundary_str_with_brackets}]')
+        boundary_data_length = len(boundary_data)
+
+        if boundary_data_length > self.Meta.max_coordinates_in_boundary_count:
+            raise Exception(f'Boundary Has Too Many Coordinates. '
+                            f'{boundary_data_length} Coordinates Are Detected')
+
+        return boundary_data
+
+    def read_supplementary_boundary_data(self) -> dict:
+        deleted_boundary_ids = []
+        new_boundaries = []
+        current_boundaries = {}
+        errors = []
+
+        for key in self.data:
+            try:
+                if 'deleted-boundary' in key:
+                    _, boundary_id = key.split(':')
+                    deleted_boundary_ids.append(boundary_id)
+
+                elif 'new-boundary' in key:
+                    new_boundary_value = self.parse_boundary_str(self.data[key])
+                    new_boundaries.append(new_boundary_value)
+
+                elif 'current-boundary' in key:
+                    current_boundary_value = self.data[key]
+                    _, boundary_id = key.split(':')
+                    current_boundaries[boundary_id] = self.parse_boundary_str(current_boundary_value)
+
+            except Exception as e:
+                # send error to FE
+                errors.append('Error Reading Boundary Data')
+
+                # log detailed error for devs
+                print(f'Error Reading Supplemental Boundary Data: {e}', file=sys.stderr)
+                break
+
+        # create error when they are too many boundaries
+        boundary_count = len(current_boundaries) - len(deleted_boundary_ids) + len(new_boundaries)
+        if boundary_count > self.Meta.max_boundary_count:
+            errors.append('Too Many Boundaries Detected')
+
+        # when errors exist, add those to the form
+        if errors:
+            self.errors['boundaries'] = errors
+
+        return {
+            'deleted-boundary_ids': deleted_boundary_ids,
+            'current_boundaries': current_boundaries,
+            'new_boundaries': new_boundaries,
+        }
 
     def validate_boundaries(self):
         # remove previous errors
         if 'boundaries' in self.errors:
             del self.errors['boundaries']
 
-        self.cleaned_data['boundaries'] = self.get_boundaries()
+        # store supplementary boundary data in cleaned_data
+        self.cleaned_data['boundaries'] = self.read_supplementary_boundary_data()
 
     def is_valid(self):
         super().is_valid()
