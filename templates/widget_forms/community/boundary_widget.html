@@ -122,7 +122,7 @@ function markAsDeleted() {
     const deletedBoundariesContainer = document.getElementById('deleted-boundaries')
     deletedBoundariesContainer.insertAdjacentHTML(
       'beforeend',
-      `<input type="text" data-deleted="${selectorKey}">`
+      `<input type="text" data-deleted="${selectorKey}" name="data-deleted:${selectorKey}">`
     )
   }
   // -----------toggle deletion marker
@@ -139,8 +139,9 @@ function addNewBoundary(data='') {
       `<div class="boundary-container">
             <label>New Boundary</label>
             <textarea
-                    class="boundary-textarea" rows="4"
-                    cols="50">${data}</textarea>
+                name="new-boundary"
+                class="boundary-textarea" rows="4"
+                cols="50">${data}</textarea>
             <button class="delete-boundary" onclick="removeBoundary();event.preventDefault()">
                 Remove
             </button>
