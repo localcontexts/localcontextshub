@@ -55,6 +55,29 @@ class CommunityModelForm(forms.ModelForm):
         widgets = {
             'boundaries': BoundaryWidget
         }
+        skip_validation_on_fields = ['boundaries']
+
+    def remove_validation_errors_of_skipped_fields(self):
+        for field in self.Meta.skip_validation_on_fields:
+            del self.errors[field]
+
+    def is_valid(self):
+        super().is_valid()
+        self.remove_validation_errors_of_skipped_fields()
+        return self.is_bound and not self.errors
+
+    def get_boundaries(self):
+        # add logic for getting boundaries using supplemental form data
+        return []
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        boundaries = self.get_boundaries()
+        obj.boundaries = boundaries
+
+        if commit:
+            obj.save()
+        return obj
 
 
 class UpdateCommunityForm(forms.ModelForm):
