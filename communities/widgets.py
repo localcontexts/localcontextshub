@@ -10,8 +10,9 @@ class BoundaryWidget(Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         boundaries = {}
-        for boundary_id in value:
-            boundaries[boundary_id] = Boundary.objects.get(id=boundary_id).get_coordinates()
+        if value:
+            for boundary_id in value:
+                boundaries[boundary_id] = Boundary.objects.get(id=boundary_id).get_coordinates()
 
         context = {'boundaries': boundaries}
         template = loader.get_template(self.template_name).render(context)
