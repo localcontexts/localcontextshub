@@ -215,15 +215,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
+                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
+                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -233,7 +233,7 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
+                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
@@ -321,15 +321,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -339,7 +339,7 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
+                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>

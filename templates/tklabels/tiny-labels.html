@@ -3,7 +3,7 @@
 <div>
     <img
         loading="lazy"
-        class="img-sizedown-tiny {% if not tklabel.is_approved %}opacity-4{% endif %}"
+        class="img-sizedown-tiny {% if not tklabel.is_approved %}opacity-4{% endif %} pointer-event-none"
 
         {% if tklabel.label_type == 'attribution' %} 
             src="{% static 'images/tk-labels/tk-attribution.png' %}" 

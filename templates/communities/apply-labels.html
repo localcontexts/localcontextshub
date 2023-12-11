@@ -71,13 +71,13 @@
                             {% for notice in project.project_notice.all %}
                                 {% if not notice.archived %}
                                     {% if notice.notice_type == 'biocultural' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px"></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'traditional_knowledge' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px"></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'attribution_incomplete' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px"></div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
