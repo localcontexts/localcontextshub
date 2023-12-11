@@ -23,14 +23,6 @@ def community_img_path(self, filename):
     return os.path.join('users/community-images', filename)
 
 
-class Coordinate(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
-    def get_coordinate(self):
-        return self.latitude, self.longitude
-
-
 class Boundary(models.Model):
     coordinates = ArrayField(
         ArrayField(
@@ -44,7 +36,7 @@ class Boundary(models.Model):
     def get_coordinates(self):
         return [
             (float(c[0]), float(c[1]))
-            for c in self.coordinates.all()[0]
+            for c in self.coordinates
         ]
 
 
