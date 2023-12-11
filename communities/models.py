@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
@@ -31,12 +32,19 @@ class Coordinate(models.Model):
 
 
 class Boundary(models.Model):
-    coordinates = models.ManyToManyField(Coordinate, related_name="coordinates")
+    coordinates = ArrayField(
+        ArrayField(
+            models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True),
+            size=2,
+            blank=True, null=True
+        ),
+        blank=True, null=True
+    )
 
     def get_coordinates(self):
         return [
-            (float(c.latitude), float(c.longitude))
-            for c in self.coordinates.all()
+            (float(c[0]), float(c[1]))
+            for c in self.coordinates.all()[0]
         ]
 
 
