@@ -18,8 +18,6 @@ steps:
       - "-c"
       - |
         python3 -m pip install -r requirements.txt --user
-        apt -y update
-        apt -y install postgresql-client
     waitFor: [ "-" ]
 
   - name: "python:3.8-slim-buster"
