@@ -58,9 +58,9 @@ class Command(BaseCommand):
         try:
             management.call_command(dbbackup.Command(), verbosity=0, output_filename=file_path)
             return True
-        except (Exception,):
+        except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f'Error Creating File {file_path}')
+                self.style.ERROR(f'Error Creating File {file_path}: {e}')
             )
             return False
 
@@ -94,9 +94,9 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f'Deleted Old Backup For {interval.name} Named {oldest_file_name}')
             )
-        except (Exception,):
+        except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f'Error Deleting File {oldest_file_name}')
+                self.style.ERROR(f'Error Deleting File {oldest_file_name}: {e}')
             )
 
     def job(self):
@@ -105,9 +105,9 @@ class Command(BaseCommand):
                 path = os.path.join(self.env, interval.name)
                 files = self.storage.list_directory(path=path)
                 files.sort()
-            except (Exception,):
+            except Exception as e:
                 self.stdout.write(
-                    self.style.ERROR('Error Getting Files')
+                    self.style.ERROR(f'Error Getting Files: {e}')
                 )
                 files = []
 
@@ -120,6 +120,9 @@ class Command(BaseCommand):
                 creation_successful = self.create_backup(file_path)
 
                 if creation_successful:
+                    self.stdout.write(
+                        self.style.SUCCESS(f'Backup Created Successfully: {file_name}')
+                    )
                     files.append(file_name)
                     self.remove_oldest_file(interval, files)
 
@@ -132,5 +135,5 @@ class Command(BaseCommand):
             self.style.SUCCESS('Running backup Script')
         )
         scheduler = BlockingScheduler()
-        scheduler.add_job(self.job, 'cron', hour=23, minute=30)
+        scheduler.add_job(self.job, 'cron', minute='5,15,30,45,55')
         scheduler.start()
