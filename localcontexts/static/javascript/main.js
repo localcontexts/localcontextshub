@@ -1663,6 +1663,16 @@ if (window.location.href.includes('labels/view/')) {
     });
 })()
 
+// EMBED PROJECTS PAGE
+if (window.location.href.includes('embed')) {
+    const embedProjectID = JSON.parse(
+        document.getElementById('embed-project-id').textContent
+      );
+    const projectLink = document.getElementById('project-link')
+    projectLink.href = 'http://' + window.location.host + '/projects/' + embedProjectID
+    projectLink.textContent = 'http://' + window.location.host + '/projects/' + embedProjectID
+}
+
 // PROJECT ACTION PAGE
 
 var copyProjectURLBtn = document.getElementsByClassName('copyProjectURLBtn')
@@ -1687,8 +1697,8 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
     })
 }
 
-// Embed Code customization options
-if (window.location.href.includes('projects')) {
+// Share Modal - Embed Code customization options
+if (window.location.href.includes('/projects/actions/')) {
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
