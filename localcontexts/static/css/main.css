@@ -177,7 +177,7 @@ input:focus {
 }
 
 /* POINTEREVENT */
-.pointer-event-none{
+.pointer-event-none {
     pointer-events: none;
 }
 
