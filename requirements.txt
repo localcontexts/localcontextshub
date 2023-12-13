@@ -1,5 +1,4 @@
 appdirs==1.4.4
-apscheduler==3.10.4
 arabic-reshaper==3.0.0
 asgiref==3.2.10
 astroid==2.4.2

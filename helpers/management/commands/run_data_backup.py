@@ -9,8 +9,6 @@ from django.conf import settings
 from django.core import management
 from django.core.management.base import BaseCommand
 
-from apscheduler.schedulers.background import BlockingScheduler
-
 from dbbackup.storage import Storage
 from dbbackup.management.commands import dbbackup
 
@@ -134,6 +132,4 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS('Running backup Script')
         )
-        scheduler = BlockingScheduler()
-        scheduler.add_job(self.job, 'cron', minute='5,15,30,45,55')
-        scheduler.start()
+        self.job()
