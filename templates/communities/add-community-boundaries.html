@@ -165,11 +165,12 @@
     <script>
         fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
-            $(document).on('keyup', '#region-container input.search', function () {
-                const inputLength = $(this).val().length
+            document.querySelector('#region-container input.search').addEventListener("keyup", (event) => {
+                let html = ''
+                const textInput = event.target.value
+                const inputLength = textInput.length
                 if (inputLength >= 3) {
-                    var results = response.filter(item => item.post_title.toLowerCase().indexOf($(this).val().toLowerCase()) > -1);
-                    var html = ''
+                    var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
                     results.forEach(result => {
                     html += `
                         <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
@@ -180,8 +181,9 @@
                 } else if (inputLength === 0){
                     html = ''
                 }
-                $('#region-results').html(html);
+                document.querySelector('#region-results').innerHTML = html
             })
+
         })
 
         const target = document.querySelector('#region-results')
@@ -194,29 +196,24 @@
         })
 
         function hideSearchDropDown() {
-           $('#region-results').html('')
+           document.querySelector('#region-results').innerHTML = ''
         }
         function showSelectedSlug() {
-           $('#selected-location').removeClass('hidden')
+            document.querySelector('#selected-location').classList.remove('hidden')
         }
         function enableContinueButton(){
-            $('#community-boundary-continue-btn').removeClass('disabled-btn')
+            document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
         }
 
         function selectSlug() {
             const title = event.target.dataset.title
             const slug = event.target.dataset.slug
             const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
-
-            $('#nld-link').attr('href', url)
-            $('#selected-title').html(`
-                <div class="selected-title-ellipsis">${title} (territories)
-            </div>`
-            )
+            document.querySelector('#nld-link').setAttribute('href', url)
+            document.querySelector('#selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
 
             // set selected data for selection
-            const selection = $('#selected-title')
-            selection.data('slug', slug)
+            document.querySelector('#selected-title').setAttribute('data-slug', slug)
 
             hideSearchDropDown()
             showSelectedSlug()
@@ -226,8 +223,8 @@
         async function setBoundaries() {
             try {
                 // do post call to get boundaries
-                const href = $('#community-boundary-continue-btn').attr('href')
-                const slug = $('#selected-title').data('slug')
+                const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
+                const slug = document.querySelector('#selected-title').getAttribute('slug')
 
                 const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
                 const boundaryResponse = await fetch(url)
