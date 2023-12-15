@@ -231,7 +231,9 @@
                 const boundaryData = await boundaryResponse.json()
 
                 if (boundaryData.length === 0) {
-                    throw new Error('Region Does Not Have Any Boundaries')
+                    const errorMessage = 'The Selected Location Does Not Have Any Boundaries'
+                    alert(errorMessage)
+                    throw new Error(errorMessage)
                 }
 
                 const boundary = boundaryData[0]
