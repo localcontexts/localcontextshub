@@ -4,7 +4,6 @@ from bclabels.models import BCLabel
 from tklabels.models import TKLabel
 from helpers.models import LabelTranslation, Notice, NoticeTranslation
 from projects.models import Project, ProjectCreator
-from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
 
@@ -127,8 +126,3 @@ class ProjectNoNoticeSerializer(serializers.ModelSerializer):
     
     def get_sub_projects(self, obj):
         return [p.unique_id for p in Project.objects.filter(source_project_uuid=obj.unique_id)]
-
-class CommunityNativeLandSlugSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Community
-        fields = ('id', 'community_name')
