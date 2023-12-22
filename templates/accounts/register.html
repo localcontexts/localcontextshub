@@ -56,6 +56,9 @@ load static %} {% load socialaccount %} {% block card %}
                 <div id="help-text-pw" style="position: absolute;">
                     <small>{{ form.password1.help_text }}</small>
                 </div>
+                {% if form.password1.errors %}
+                <div class="msg-red w-50"><small>{{ form.password1.errors.as_text }}</small></div>
+            {% endif %}
             </div>
 
             <div class="pad-left w-50">

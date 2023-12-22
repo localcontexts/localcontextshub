@@ -25,11 +25,11 @@ admin.site.site_header = 'Local Contexts Hub administration'
 urlpatterns = [
     path('admin/', admin_site.urls),
     path('', include('accounts.urls')),
-    path('', include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
     path('communities/', include('communities.urls')),
     path('institutions/', include('institutions.urls')),
     path('researchers/', include('researchers.urls')),
-    path('projects/', include('projects.urls')),    
+    path('projects/', include('projects.urls')),
     path('helpers/', include('helpers.urls')),
     path('api/', include('api.urls')),
     path('restricted/403/', restricted_view, name="restricted"),
