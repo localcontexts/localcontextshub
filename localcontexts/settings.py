@@ -30,7 +30,7 @@ DEBUG = os.environ['DEBUG_VALUE'] == 'True'
 # app not on App Engine, make sure to set an appropriate host here.
 # See https://docs.djangoproject.com/en/1.10/ref/settings/
 # Also see https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/django/mysite/settings.py
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*','localhost']
 
 # https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-ADMINS
 # For when DEBUG = FALSE, sends emails with site errors
@@ -41,6 +41,12 @@ ADMINS = [(SITE_ADMIN_NAME, SITE_ADMIN_EMAIL)]
 # reCAPTCHA
 GOOGLE_RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_REQUIRED_SCORE = 0.5
+
+#Google Oauth Backend
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -74,6 +80,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'debug_toolbar',
     'dbbackup',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +99,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'maintenance_mode.middleware.MaintenanceModeMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 CONTEXT_PROCESSORS = [
@@ -259,3 +271,26 @@ else:
     # upload backups to local file system
     DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
     DBBACKUP_STORAGE_OPTIONS = {'location': 'backups/'}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id':  os.environ.get('CLIENT_ID'),
+            'secret':  os.environ.get('CLIENT_SECRET'),
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'  # Replace with your desired redirect URL after login
+LOGOUT_REDIRECT_URL = '/'
