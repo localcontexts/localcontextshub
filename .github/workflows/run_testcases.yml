@@ -35,7 +35,7 @@ jobs:
       - name: Install Requirements
         run: pip install -r requirements.txt
         
-      - name: Apply Migrations
+      - name: Apply Migrations and Run Tests
         env:
           PROD_KEY: ${{ secrets.PROD_KEY }}
           DEBUG_VALUE: ${{ secrets.DEBUG_VALUE }}
@@ -60,4 +60,4 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         run: |
           python manage.py migrate
-          pytest tests
+          pytest --cov=tests/unit
