@@ -1,5 +1,6 @@
 {% extends 'register-base.html' %} {% load static %} {% block title %} Login {% endblock %}
 
+{% load socialaccount %}
 {% block card %}
     <div class="flex-this space-between w-90">
         <div>
@@ -29,6 +30,9 @@
                     <a href="{% url 'reset_password'%}" class="darkteal-text underline-hover bold">Forgot your password?</a>
                 </div>  
                 <div><button class="primary-btn action-btn margin-top-2 default-btn-width">Sign in</button></div>
+            </div>
+            <div class="flex-this flex-end margin-top-2">
+                <button class="primary-btn action-btn"><a class="white-text" href="{% provider_login_url 'google' %}">Sign in With Google</a></button>
             </div>
             <input type="hidden" name="next" value="{{ request.GET.next }}"/>
         </form>
