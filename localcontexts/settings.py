@@ -30,7 +30,7 @@ DEBUG = os.environ['DEBUG_VALUE'] == 'True'
 # app not on App Engine, make sure to set an appropriate host here.
 # See https://docs.djangoproject.com/en/1.10/ref/settings/
 # Also see https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/django/mysite/settings.py
-ALLOWED_HOSTS = ['*','localhost']
+ALLOWED_HOSTS = ['*']
 
 # https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-ADMINS
 # For when DEBUG = FALSE, sends emails with site errors
@@ -292,5 +292,6 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = '/'  # Replace with your desired redirect URL after login
-LOGOUT_REDIRECT_URL = '/'
+SOCIALACCOUNT_LOGIN_ON_GET=True
+LOGIN_REDIRECT_URL= '/dashboard/'
+ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'

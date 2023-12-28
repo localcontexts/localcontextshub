@@ -1,97 +1,150 @@
-{% extends 'register-base.html' %} {% block title %} Register {% endblock %} {% load static %} {% block card %}
+{% extends 'register-base.html' %} {% block title %} Register {% endblock %} {%
+load static %} {% load socialaccount %} {% block card %}
 <script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
 <script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U', { action: 'register' }).then(function(token) {
-            document.getElementById('g-recaptcha-response').value = token;
-        });
-    });
+  grecaptcha.ready(function () {
+    grecaptcha
+      .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+        action: "register",
+      })
+      .then(function (token) {
+        document.getElementById("g-recaptcha-response").value = token;
+      });
+  });
 </script>
 
 <div class="flex-this space-between w-90">
-    <div><h2>Register with Local Contexts</h2></div>
-    <div><p>Already signed up? <a href="{% url 'login' %}" class="default-a">Sign in</a></p></div>
+  <div><h2>Register with Local Contexts</h2></div>
+  <div>
+    <p>
+      Already signed up?
+      <a href="{% url 'login' %}" class="default-a">Sign in</a>
+    </p>
+  </div>
 </div>
 
 <div class="form-container flex-this column w-90">
-    <form id="registerUserForm" action="{% url 'register' %}" method="POST" class="flex-this column w-100">
-        {% csrf_token %}
+  <form
+    id="registerUserForm"
+    action="{% url 'register' %}"
+    method="POST"
+    class="flex-this column w-100"
+  >
+    {% csrf_token %}
 
-        <div class="pad-top-1-5">
-            <label for="username">Username</label><br>
-            {{ form.username }}
-            {% if form.username.errors %}
-                <div class="msg-red w-100"><small>{{ form.username.errors.as_text }}</small></div> 
-            {% endif %}
+    <div class="pad-top-1-5">
+      <label for="username">Username</label><br />
+      {{ form.username }} {% if form.username.errors %}
+      <div class="msg-red w-100">
+        <small>{{ form.username.errors.as_text }}</small>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="pad-top-1-5">
+      <label for="email">Email address</label><br />
+      {{ form.email }}
+    </div>
+    {% if form.email.errors %}
+    <div class="msg-red w-100">
+      <small>{{ form.email.errors.as_text }}</small>
+    </div>
+    {% endif %}
+
+    <div class="flex-this w-100 pad-top-1-5">
+      <div class="pad-right w-50" style="position: relative">
+        <label for="password">Password</label><br />
+        <div class="flex-this pass-field">{{ form.password1 }}</div>
+        <div id="help-text-pw" style="position: absolute">
+          <small>{{ form.password1.help_text }}</small>
         </div>
-
-        <div class="pad-top-1-5">
-            <label for="email">Email address</label><br>
-            {{ form.email }}
-        </div>
-        {% if form.email.errors %}
-            <div class="msg-red w-100"><small>{{ form.email.errors.as_text }}</small></div> 
-        {% endif %}
-
-        <div class="flex-this w-100 pad-top-1-5">
-
-            <div class="pad-right w-50" style="position: relative;">
-                <label for="password">Password</label><br>
-                <div class="flex-this pass-field">
-                    {{ form.password1 }}
-                </div>
-                <div id="help-text-pw" style="position: absolute;">
-                    <small>{{ form.password1.help_text }}</small>
-                </div>
-            </div>
-
-            <div class="pad-left w-50">
-                <label for="confirm-password">Confirm password</label><br>
-                <div class="flex-this pass-field">
-                    {{ form.password2 }} <br>
-                </div>
-            </div>
-
-        </div>
-
         {% if form.password1.errors %}
-            <div class="msg-red w-50"><small>{{ form.password1.errors.as_text }}</small></div> 
+        <div class="msg-red w-50">
+          <small>{{ form.password1.errors.as_text }}</small>
+        </div>
         {% endif %}
+      </div>
+
+      <div class="pad-left w-50">
+        <label for="confirm-password">Confirm password</label><br />
+        <div class="flex-this pass-field">{{ form.password2 }} <br /></div>
         {% if form.password2.errors %}
-            <div class="msg-red w-50"><small>{{ form.password2.errors.as_text }}</small></div> 
+        <div class="msg-red w-50">
+          <small>{{ form.password2.errors.as_text }}</small>
+        </div>
         {% endif %}
+      </div>
+    </div>
 
-        <div class="flex-this row margin-top-16">
-            <div class="flex-this align-center space-between">
-                <div class="text-align-right margin-right-1">
-                    <input type="checkbox" name="terms-agreement" required>
-                </div>
-                <div class="no-margin w-100">
-                    <p>
-                        <span>Creating an account means you agree with the</span> 
-                        <a href="https://localcontexts.org/indigenous-data-sovereignty/" target="_blank" rel="noopener" class="default-a">
-                            Indigenous Data Sovereignty Agreement,
-                        </a>
-                        <a href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener" class="default-a">Privacy Policy</a>
-                        <span>and the</span> 
-                        <a href="https://localcontexts.org/terms-conditions/" target="_blank" rel="noopener" class="default-a">Terms and Conditions</a>
-                    </p>
-                </div>
-            </div>
+    {% if form.password1.errors %}
+    <div class="msg-red w-50">
+      <small>{{ form.password1.errors.as_text }}</small>
+    </div>
+    {% endif %} {% if form.password2.errors %}
+    <div class="msg-red w-50">
+      <small>{{ form.password2.errors.as_text }}</small>
+    </div>
+    {% endif %}
 
+    <div class="flex-this row margin-top-16">
+      <div class="flex-this align-center space-between">
+        <div class="text-align-right margin-right-1">
+          <input type="checkbox" name="terms-agreement" required />
         </div>
-        <br>
-        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-
-        <div class="flex-this flex-end">
-            <button id="registerUserBtn" class="primary-btn action-btn">Continue <i class="fa fa-arrow-right"></i></button>
+        <div class="no-margin w-100">
+          <p>
+            <span>Creating an account means you agree with the</span>
+            <a
+              href="https://localcontexts.org/indigenous-data-sovereignty/"
+              target="_blank"
+              rel="noopener"
+              class="default-a"
+            >
+              Indigenous Data Sovereignty Agreement,
+            </a>
+            <a
+              href="https://localcontexts.org/privacy-policy/"
+              target="_blank"
+              rel="noopener"
+              class="default-a"
+              >Privacy Policy</a
+            >
+            <span>and the</span>
+            <a
+              href="https://localcontexts.org/terms-conditions/"
+              target="_blank"
+              rel="noopener"
+              class="default-a"
+              >Terms and Conditions</a
+            >
+          </p>
         </div>
+      </div>
+    </div>
+    <br />
+    <input
+      type="hidden"
+      name="g-recaptcha-response"
+      id="g-recaptcha-response"
+    />
 
-        <!-- Alerts -->
+    <div class="flex-this">
+      <button id="registerUserBtn" class="primary-btn action-btn">
+        Continue <i class="fa fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <div class="flex-this margin-top-2">
+      <button class="primary-btn action-btn">
+        <a class="white-text" href="{% provider_login_url 'google' %}"
+          >Signup With Google</a
+        >
+      </button>
+    </div>
+
+    <!-- Alerts -->
     {% include 'partials/_alerts.html' %}
-
-
-    </form>
+  </form>
 </div>
 
 {% endblock %}
