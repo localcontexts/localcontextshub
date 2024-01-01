@@ -600,6 +600,7 @@ def project_actions(request, pk, project_uuid):
 
                             # Create email 
                             send_email_notice_placed(request, project, community, researcher)
+
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
                     elif 'link_projects_btn' in request.POST:
                         selected_projects = request.POST.getlist('projects_to_link')
