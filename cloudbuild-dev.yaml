@@ -13,9 +13,13 @@ steps:
 
   - name: "python:3.8-slim-buster"
     id: "install-deps"
-    entrypoint: "python3"
-    args: ["-m", "pip", "install", "-r", "requirements.txt", "--user"]
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        python3 -m pip install -r requirements.txt --user
     waitFor: [ "-" ]
+
   - name: "python:3.8-slim-buster"
     id: "collect-statics"
     entrypoint: "bash"
@@ -60,6 +64,7 @@ steps:
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
     waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
+
 availableSecrets:
   secretManager:
     - versionName: "projects/local-contexts-hub-sandbox/secrets/APP_ENGINE_ENVS/versions/latest"
