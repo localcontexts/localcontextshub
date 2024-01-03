@@ -51,8 +51,8 @@ class Community(models.Model):
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
 
-    source_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)
-    name_of_boundaries = models.SlugField(max_length=200, blank=True, null=True)
+    source_of_boundaries = models.CharField(max_length=200, blank=True, null=True)
+    name_of_boundaries = models.CharField(max_length=200, blank=True, null=True)
     boundaries = models.ManyToManyField(Boundary, related_name="boundaries")
 
     # Managers
