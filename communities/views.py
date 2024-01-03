@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from itertools import chain
@@ -34,6 +34,36 @@ from .utils import *
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def registration_boundaries(request):
+    post_data = json.loads(request.body.decode('UTF-8'))
+
+    # update community with boundary-related information
+    community = get_community(request.session.get('new_community_id'))
+    community.source_of_boundaries = post_data['source']
+    community.name_of_boundaries = post_data['name']
+
+    # remove all coordinates for (all boundaries in this community)
+    Coordinate.objects.filter(coordinates__boundaries__id=community.id).delete()
+
+    # remove all boundaries in this community
+    community.boundaries.all().delete()
+
+    # add new boundaries in this community
+    for coordinates in post_data['boundaries']:
+        boundary = Boundary.objects.create()
+        for lat, lon in coordinates:
+            boundary.coordinates.add(
+                Coordinate.objects.create(latitude=lat, longitude=lon)
+            )
+        community.boundaries.add(boundary)
+    community.save()
+
+    return HttpResponse(status=201)
+
 
 # Connect
 @login_required(login_url='login')
@@ -78,6 +108,7 @@ def preparation_step(request):
     community = True
     return render(request, 'accounts/preparation.html', { 'community' : community })
 
+
 # Create Community
 @login_required(login_url='login')
 def create_community(request):
@@ -112,13 +143,36 @@ def create_community(request):
                     community_id=data.id,
                     action_account_type='community'
                 )
-                return redirect('confirm-community', data.id)
+                request.session['new_community_id'] = data.id
+                return redirect('community-boundaries')
     return render(request, 'communities/create-community.html', {'form': form})
 
-# Confirm Community
+
+@has_new_community_id
 @login_required(login_url='login')
-def confirm_community(request, community_id):
-    community = Community.objects.select_related('community_creator').get(id=community_id)
+def community_boundaries(request):
+    return render(request, 'communities/community-boundaries.html')
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def add_community_boundaries(request):
+    return render(request, 'communities/add-community-boundaries.html')
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def upload_boundaries_file(request):
+    return render(request, 'communities/upload-boundaries-file.html')
+
+
+# Confirm Community
+@has_new_community_id
+@login_required(login_url='login')
+def confirm_community(request):
+    community = Community.objects.select_related('community_creator').get(
+        id=request.session.get('new_community_id')
+    )
 
     form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
     if request.method == "POST":
@@ -126,8 +180,13 @@ def confirm_community(request, community_id):
             data = form.save(commit=False)
             data.save()
             send_hub_admins_application_email(request, community, data)
+
+            # remove new_community_id from session to prevent
+            # future access with this particular new_community_id
+            del request.session['new_community_id']
             return redirect('dashboard')
     return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
+
 
 def public_community_view(request, pk):
     try: 

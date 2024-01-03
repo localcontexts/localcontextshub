@@ -1064,7 +1064,6 @@ admin_site.register(BCLabel, BCLabelAdmin)
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved', 'created', 'country')
     search_fields = ('community_name', 'contact_name', 'contact_email',)
-    readonly_fields = ('native_land_slug',)
 
 class JoinRequestAdmin(admin.ModelAdmin):
     list_display = ('community', 'institution', 'user_from', 'user_to', 'status', 'date_sent')

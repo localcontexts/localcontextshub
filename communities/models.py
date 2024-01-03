@@ -21,6 +21,16 @@ def community_img_path(self, filename):
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('users/community-images', filename)
 
+
+class Coordinate(models.Model):
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+
+
+class Boundary(models.Model):
+    coordinates = models.ManyToManyField(Coordinate, related_name="coordinates")
+
+
 class Community(models.Model):
     community_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     community_name = models.CharField(max_length=80, null=True, unique=True)
@@ -40,7 +50,10 @@ class Community(models.Model):
     is_approved = models.BooleanField(default=False, null=True)
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
-    native_land_slug = models.SlugField(max_length = 200, blank=True, null=True)
+
+    source_of_boundaries = models.CharField(max_length=200, blank=True, null=True)
+    name_of_boundaries = models.CharField(max_length=200, blank=True, null=True)
+    boundaries = models.ManyToManyField(Boundary, related_name="boundaries")
 
     # Managers
     objects = models.Manager()
