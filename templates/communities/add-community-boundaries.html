@@ -231,7 +231,7 @@
                 const boundaryData = await boundaryResponse.json()
 
                 if (boundaryData.length === 0) {
-                    const errorMessage = 'The Selected Location Does Not Have Any Boundaries'
+                    const errorMessage = 'Selected location does not have any Native Land boundaries'
                     alert(errorMessage)
                     throw new Error(errorMessage)
                 }
