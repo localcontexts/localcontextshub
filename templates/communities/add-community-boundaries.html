@@ -224,7 +224,7 @@
             try {
                 // do post call to get boundaries
                 const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
-                const slug = document.querySelector('#selected-title').getAttribute('slug')
+                const slug = document.querySelector('#selected-title').getAttribute('data-slug')
 
                 const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
                 const boundaryResponse = await fetch(url)
