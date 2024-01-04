@@ -44,6 +44,17 @@
     #upload-shape-file-data:hover {
         background: #8ebccb;
     }
+
+    #preview-boundaries{
+        display: inline;
+        font-weight: bold;
+        margin-left: 20px;
+        font-size: 14px;
+    }
+    #preview-boundaries:hover{
+        cursor: pointer;
+        color: #4d4f74;
+    }
 </style>
 <div id="boundaries-container">
     {% for boundary_id, boundary in boundaries.items %}
@@ -65,6 +76,9 @@
 >
     Upload Shape File Data
 </button>
+<div id="preview-boundaries" onclick="previewBoundaries()">
+    Preview Boundaries On Map
+</div>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
         onchange="uploadShapeFileData(this); event.preventDefault()"
