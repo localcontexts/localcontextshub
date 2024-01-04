@@ -45,13 +45,13 @@
         background: #8ebccb;
     }
 
-    #preview-boundaries{
+    #view-saved-boundaries{
         display: inline;
         font-weight: bold;
         margin-left: 20px;
         font-size: 14px;
     }
-    #preview-boundaries:hover{
+    #view-saved-boundaries:hover{
         cursor: pointer;
         color: #4d4f74;
     }
@@ -76,8 +76,8 @@
 >
     Upload Shape File Data
 </button>
-<div id="preview-boundaries" onclick="previewBoundaries()">
-    Preview Boundaries On Map
+<div id="view-saved-boundaries" onclick="viewSavedBoundaries()">
+    View Saved Boundaries
 </div>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
@@ -122,6 +122,10 @@ async function uploadShapeFileData(self) {
   // same file if needed
   self.value = null
   return false
+}
+async function viewSavedBoundaries() {
+    const url = `{% url 'boundaries-view' %}$?community=`
+
 }
 function markAsDeleted() {
   const id = event.target.dataset.for

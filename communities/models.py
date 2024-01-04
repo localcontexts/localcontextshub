@@ -68,6 +68,12 @@ class Community(models.Model):
     objects = models.Manager()
     approved = ApprovedManager()
 
+    def get_all_coordinates(self):
+        return [
+            b.get_coordinates()
+            for b in self.boundaries.all()
+        ]
+
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]
         location = ', '.join(filter(None, components)) or 'None specified'

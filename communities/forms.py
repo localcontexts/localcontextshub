@@ -57,15 +57,18 @@ class CommunityModelForm(forms.ModelForm):
     class Meta:
         model = Community
         exclude = []
-        widgets = {
-            'boundaries': BoundaryWidget
-        }
         max_coordinates_in_boundary_count = 2000
         max_boundary_count = 5
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.supplementary_boundary_data = None
+        self.fields['boundaries'].widget = BoundaryWidget(
+            attrs={
+                'community_id': self.instance.id,
+                'boundary_ids': [b.id for b in self.instance.boundaries.all()]
+            }
+        )
 
     def parse_boundary_str(self, boundary_str: str) -> dict:
         boundary_str_with_brackets = boundary_str.replace('(', '[').replace(')', ']')

@@ -88,7 +88,7 @@ def download_institution_support_letter(request):
 
 
 @login_required(login_url='login')
-def boundaries_preview(request):
+def boundaries_view(request):
     try:
         boundary = [
             (-76.677557, 36.629281), (-76.528485, 36.604392), (-76.454687, 36.635205), (-76.403028, 36.711),
