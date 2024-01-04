@@ -14,7 +14,7 @@ class BoundaryWidget(Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         boundaries = {}
-        boundary_ids = [b.id for b in self.choices.queryset]
+        boundary_ids = value or []
         for boundary_id in boundary_ids:
             boundaries[boundary_id] = Boundary.objects.get(id=boundary_id).get_coordinates()
 
