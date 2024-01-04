@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.conf import settings
-from communities.models import InviteMember
+from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
 from .downloads import download_otc_notice, download_cc_notices
@@ -90,19 +90,11 @@ def download_institution_support_letter(request):
 @login_required(login_url='login')
 def boundaries_view(request):
     try:
-        boundary = [
-            (-76.677557, 36.629281), (-76.528485, 36.604392), (-76.454687, 36.635205), (-76.403028, 36.711),
-            (-76.369081, 36.790268), (-76.324802, 36.888353), (-76.345465, 36.945019), (-76.425167, 36.979234),
-            (-76.487158, 37.012255), (-76.537341, 37.027581), (-76.586048, 37.029939), (-76.631803, 37.011076),
-            (-76.738072, 36.929676), (-76.795635, 36.890715), (-76.807442, 36.792633), (-76.814822, 36.714551),
-            (-76.752832, 36.645868), (-76.677557, 36.629281)
-        ]
-
-        boundary = [[c[1], c[0]] for c in boundary]
-        boundary2 = [[c[0]+.03, c[1]+.02] for c in boundary]
-
+        community_id = request.GET['community']
+        community = Community.objects.get(id=community_id)
+        boundaries = community.get_all_coordinates(as_tuple=False)
         context = {
-            'boundaries': [boundary, boundary2]
+            'boundaries': boundaries
         }
         return render(request, 'boundaries/boundaries-preview.html', context)
     except:

@@ -33,9 +33,14 @@ class Boundary(models.Model):
         blank=True, null=True
     )
 
-    def get_coordinates(self):
+    def get_coordinates(self, as_tuple=True):
+        if as_tuple:
+            return [
+                (float(c[0]), float(c[1]))
+                for c in self.coordinates
+            ]
         return [
-            (float(c[0]), float(c[1]))
+            [float(c[0]), float(c[1])]
             for c in self.coordinates
         ]
 
@@ -68,9 +73,9 @@ class Community(models.Model):
     objects = models.Manager()
     approved = ApprovedManager()
 
-    def get_all_coordinates(self):
+    def get_all_coordinates(self, as_tuple=True):
         return [
-            b.get_coordinates()
+            b.get_coordinates(as_tuple)
             for b in self.boundaries.all()
         ]
 

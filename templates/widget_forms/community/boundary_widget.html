@@ -76,9 +76,12 @@
 >
     Upload Shape File Data
 </button>
-<div id="view-saved-boundaries" onclick="viewSavedBoundaries()">
+<a
+    id="view-saved-boundaries"
+    target="_blank"
+    href="{% url 'boundaries-view' %}?community={{ community_id }}">
     View Saved Boundaries
-</div>
+</a>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
         onchange="uploadShapeFileData(this); event.preventDefault()"
@@ -122,10 +125,6 @@ async function uploadShapeFileData(self) {
   // same file if needed
   self.value = null
   return false
-}
-async function viewSavedBoundaries() {
-    const url = `{% url 'boundaries-view' %}$?community=`
-
 }
 function markAsDeleted() {
   const id = event.target.dataset.for
