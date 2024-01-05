@@ -96,6 +96,6 @@ def boundaries_view(request):
         context = {
             'boundaries': boundaries
         }
-        return render(request, 'boundaries/boundaries-preview.html', context)
+        return render(request, 'boundaries/boundaries-view.html', context)
     except:
         raise Http404()

@@ -112,7 +112,8 @@ async function uploadShapeFileData(self) {
     // and populated with boundary data from shape file
     for(let i = 0; i < distinctBoundaries.length; i++) {
       const distinctBoundaryStr = distinctBoundaries[i].map(function(coordinate){
-        return `(${coordinate[0]}, ${coordinate[1]}) `}
+        // reverse so code extracts (lat-lon)'s
+        return `(${coordinate[1]}, ${coordinate[0]}) `}
       )
       addNewBoundary(distinctBoundaryStr)
     }
