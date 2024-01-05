@@ -46,7 +46,7 @@
         background: #8ebccb;
     }
 
-    #view-saved-boundaries, #preview-boundary{
+    #view-saved-boundaries, .preview-boundary{
         font-weight: bold;
         display: inline;
         font-size: 14px;
@@ -54,7 +54,7 @@
     #view-saved-boundaries {
         margin-left: 20px;
     }
-    #view-saved-boundaries:hover, #preview-boundary:hover{
+    #view-saved-boundaries:hover, .preview-boundary:hover{
         cursor: pointer;
         color: #4d4f74;
     }
@@ -66,10 +66,11 @@
                 <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
                 <br>
                 <a
-                    id="preview-boundary"
-                    data-boundary-id="{{ boundary_id }}"
+                    class="preview-boundary"
                     target="_blank"
-                    href="{% url 'boundary-view' %}?boundary={{ boundary }}">
+                    onclick="previewBoundary(this)"
+                    href="#"
+                    >
                     Preview
                 </a>
             </div>
@@ -78,16 +79,16 @@
             <textarea
                     class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
                     cols="50">{{ boundary |join:", " }}</textarea>
-            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
+            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted()">
                 Mark For Deletion
             </button>
         </div>
     {% endfor %}
 </div>
 <div id="deleted-boundaries" style="display:none"></div>
-<button id="add-new-boundary" onclick="addNewBoundary(); event.preventDefault()">Add New Boundary</button>
+<button id="add-new-boundary" onclick="addNewBoundary()">Add New Boundary</button>
 <button type="file" id="upload-shape-file-data"
-        onclick="triggerShapeFileInput(); event.preventDefault()"
+        onclick="triggerShapeFileInput()"
 >
     Upload Shape File Data
 </button>
@@ -99,16 +100,32 @@
 </a>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
-        onchange="uploadShapeFileData(this); event.preventDefault()"
+        onchange="uploadShapeFileData(this)"
         accept=".zip"
 >
 <script>
 var newBoundaryCount = 0
 
 function triggerShapeFileInput() {
+   event.preventDefault()
    document.getElementById('shapefile-input').click()
 }
+function previewBoundary(self) {
+  event.preventDefault()
+  const parentBoundaryContainer = self.closest('.boundary-container')
+  const textArea = parentBoundaryContainer.querySelector('textarea')
+  const boundary = textArea.value
+  if (!boundary) {
+    alert('Boundary Is Not Defined')
+    return
+  }
+
+  // open boundary preview
+  const url = `{% url 'boundary-view' %}?boundary=[${boundary}]`
+  window.open(url, '_blank');
+}
 async function uploadShapeFileData(self) {
+  event.preventDefault()
   var files = event.target.files;
   var file = files[0];
 
@@ -143,6 +160,7 @@ async function uploadShapeFileData(self) {
   return false
 }
 function markAsDeleted() {
+  event.preventDefault()
   const id = event.target.dataset.for
   const selectorKey = `boundary${id}`
   const deletedBoundaryMarker = document.querySelector(`[data-deleted=${selectorKey}]`)
@@ -166,21 +184,34 @@ function markAsDeleted() {
 }
 
 function removeBoundary(){
+  event.preventDefault()
   newBoundaryCount--
   event.target.closest(".boundary-container").remove()
 }
 function addNewBoundary(data='') {
+    event.preventDefault()
     newBoundaryCount++
     const boundaryContainer = document.getElementById('boundaries-container')
     boundaryContainer.insertAdjacentHTML(
       'beforeend',
       `<div class="boundary-container">
-            <label>New Boundary</label>
+            <div>
+                <label>New Boundary</label>
+                <br>
+                <a
+                    class="preview-boundary"
+                    target="_blank"
+                    onclick="previewBoundary(this)"
+                    href='#'
+                    >
+                    Preview
+                </a>
+            </div>
             <textarea
                 name="new-boundary:${newBoundaryCount}"
                 class="boundary-textarea" rows="4"
                 cols="50">${data}</textarea>
-            <button class="delete-boundary" onclick="removeBoundary();event.preventDefault()">
+            <button class="delete-boundary" onclick="removeBoundary()">
                 Remove
             </button>
         </div>`
