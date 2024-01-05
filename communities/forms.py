@@ -69,6 +69,7 @@ class CommunityModelForm(forms.ModelForm):
                 'boundary_ids': [b.id for b in self.instance.boundaries.all()]
             }
         )
+        self.fields['boundaries'].help_text = None
 
     def parse_boundary_str(self, boundary_str: str) -> dict:
         boundary_str_with_brackets = boundary_str.replace('(', '[').replace(')', ']')
