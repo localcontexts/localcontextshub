@@ -93,6 +93,12 @@ def download_institution_support_letter(request):
 def community_boundaries_view(request, community_id):
     try:
         community = Community.objects.get(id=community_id)
+
+        if not community.is_user_in_community(request.user):
+            message = 'User Does Not Have Access To Community Boundaries'
+            print(f'{message}: {request.user}')
+            raise Exception(message)
+
         boundaries = community.get_all_coordinates(as_tuple=False)
         context = {
             'boundaries': boundaries
