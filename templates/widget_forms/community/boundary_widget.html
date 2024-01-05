@@ -68,7 +68,7 @@
                 <a
                     class="preview-boundary"
                     target="_blank"
-                    onclick="previewBoundary(this)"
+                    onclick="previewBoundary(this); event.preventDefault()"
                     href="#"
                     >
                     Preview
@@ -79,16 +79,16 @@
             <textarea
                     class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
                     cols="50">{{ boundary |join:", " }}</textarea>
-            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted()">
+            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
                 Mark For Deletion
             </button>
         </div>
     {% endfor %}
 </div>
 <div id="deleted-boundaries" style="display:none"></div>
-<button id="add-new-boundary" onclick="addNewBoundary()">Add New Boundary</button>
+<button id="add-new-boundary" onclick="addNewBoundary(); event.preventDefault()">Add New Boundary</button>
 <button type="file" id="upload-shape-file-data"
-        onclick="triggerShapeFileInput()"
+        onclick="triggerShapeFileInput(); event.preventDefault()"
 >
     Upload Shape File Data
 </button>
@@ -107,11 +107,9 @@
 var newBoundaryCount = 0
 
 function triggerShapeFileInput() {
-   event.preventDefault()
    document.getElementById('shapefile-input').click()
 }
 function previewBoundary(self) {
-  event.preventDefault()
   const parentBoundaryContainer = self.closest('.boundary-container')
   const textArea = parentBoundaryContainer.querySelector('textarea')
   const boundary = textArea.value
@@ -125,7 +123,6 @@ function previewBoundary(self) {
   window.open(url, '_blank');
 }
 async function uploadShapeFileData(self) {
-  event.preventDefault()
   var files = event.target.files;
   var file = files[0];
 
@@ -160,7 +157,6 @@ async function uploadShapeFileData(self) {
   return false
 }
 function markAsDeleted() {
-  event.preventDefault()
   const id = event.target.dataset.for
   const selectorKey = `boundary${id}`
   const deletedBoundaryMarker = document.querySelector(`[data-deleted=${selectorKey}]`)
@@ -184,12 +180,10 @@ function markAsDeleted() {
 }
 
 function removeBoundary(){
-  event.preventDefault()
   newBoundaryCount--
   event.target.closest(".boundary-container").remove()
 }
 function addNewBoundary(data='') {
-    event.preventDefault()
     newBoundaryCount++
     const boundaryContainer = document.getElementById('boundaries-container')
     boundaryContainer.insertAdjacentHTML(
@@ -201,7 +195,7 @@ function addNewBoundary(data='') {
                 <a
                     class="preview-boundary"
                     target="_blank"
-                    onclick="previewBoundary(this)"
+                    onclick="previewBoundary(this); event.preventDefault()"
                     href='#'
                     >
                     Preview
@@ -211,7 +205,7 @@ function addNewBoundary(data='') {
                 name="new-boundary:${newBoundaryCount}"
                 class="boundary-textarea" rows="4"
                 cols="50">${data}</textarea>
-            <button class="delete-boundary" onclick="removeBoundary()">
+            <button class="delete-boundary" onclick="removeBoundary(); event.preventDefault()">
                 Remove
             </button>
         </div>`
