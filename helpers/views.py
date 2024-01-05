@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -88,9 +90,8 @@ def download_institution_support_letter(request):
 
 
 @login_required(login_url='login')
-def boundaries_view(request):
+def community_boundaries_view(request, community_id):
     try:
-        community_id = request.GET['community']
         community = Community.objects.get(id=community_id)
         boundaries = community.get_all_coordinates(as_tuple=False)
         context = {
@@ -99,3 +100,24 @@ def boundaries_view(request):
         return render(request, 'boundaries/boundaries-view.html', context)
     except:
         raise Http404()
+
+
+@login_required(login_url='login')
+def boundary_view(request):
+    try:
+        boundary = request.GET.get('boundary')
+        if boundary:
+            boundary = [json.loads(
+                boundary.replace('(', '[').replace(')', ']')
+            )]
+        else:
+            boundary = []
+
+        context = {
+            'boundaries': boundary
+        }
+        return render(request, 'boundaries/boundaries-view.html', context)
+    except Exception as e:
+        message = 'Invalid Boundary Format'
+        print(f'{message}: {e}')
+        raise Exception(message)

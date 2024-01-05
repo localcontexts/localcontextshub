@@ -46,13 +46,15 @@
         background: #8ebccb;
     }
 
-    #view-saved-boundaries{
-        display: inline;
+    #view-saved-boundaries, #preview-boundary{
         font-weight: bold;
-        margin-left: 20px;
+        display: inline;
         font-size: 14px;
     }
-    #view-saved-boundaries:hover{
+    #view-saved-boundaries {
+        margin-left: 20px;
+    }
+    #view-saved-boundaries:hover, #preview-boundary:hover{
         cursor: pointer;
         color: #4d4f74;
     }
@@ -60,7 +62,19 @@
 <div id="boundaries-container">
     {% for boundary_id, boundary in boundaries.items %}
         <div class="boundary-container">
-            <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
+            <div>
+                <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
+                <br>
+                <a
+                    id="preview-boundary"
+                    data-boundary-id="{{ boundary_id }}"
+                    target="_blank"
+                    href="{% url 'boundary-view' %}?boundary={{ boundary }}">
+                    Preview
+                </a>
+            </div>
+
+
             <textarea
                     class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
                     cols="50">{{ boundary |join:", " }}</textarea>
@@ -80,7 +94,7 @@
 <a
     id="view-saved-boundaries"
     target="_blank"
-    href="{% url 'boundaries-view' %}?community={{ community_id }}">
+    href="{% url 'community-boundaries-view' community_id %}">
     View All Saved Boundaries
 </a>
 <input
