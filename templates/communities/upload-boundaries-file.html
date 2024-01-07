@@ -96,6 +96,9 @@
         .hidden{
             visibility: hidden;
         }
+        .invisible{
+            display: none;
+        }
     </style>
     <div class="w-90" id="define-community-body">
         <h2 class="no-top-margin">Add Community boundaries</h2>
@@ -113,18 +116,24 @@
                 <input class="input-field" type="text"
                        placeholder="Select file"
                        readonly
+                       onclick="triggerShapeFileInput()"
                 >
                 <div
                     id="browse-files-btn"
                     class="primary-btn action-btn"
-                    onclick="uploadShapefile(); event.preventDefault()"
+                    onclick="triggerShapeFileInput()"
                 >
                     Browse files
                 </div>
+                <input
+                    type="file" id="shapefile-input" name="shapefile" style="display: none"
+                    onchange="uploadShapeFileData(this)"
+                    accept=".zip"
+                >
             </div>
         </div>
 
-        <div id="selected-location">
+        <div id="selected-location" class="invisible">
             <br>
             <strong>
                 <label class="pad-top-1-5">Selected Location</label>
@@ -140,11 +149,11 @@
 
         </div>
 
-        <div class="feedback failure">
+        <div class="feedback failure invisible">
             <i class="fa fa-circle-exclamation"></i>
             <div class="message">File not accepted. Please upload another file</div>
         </div>
-        <div class="feedback success">
+        <div class="feedback success invisible">
             <i class="fa fa-circle-check"></i>
             <div class="message">File upload successfully</div>
         </div>
@@ -170,8 +179,57 @@
     </div>
 
     <script>
-        function enableContinueButton(){
-            document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+      function enableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+      }
+      function triggerShapeFileInput() {
+        document.getElementById('shapefile-input').click()
+      }
+      async function uploadShapeFileData(self) {
+        var files = event.target.files
+        var file = files[0]
+        const successMessage = document.querySelector('.feedback.success')
+        const failureMessage = document.querySelector('.feedback.failure')
+
+        // hide feedback messages
+        successMessage.classList.add('invisible')
+        failureMessage.classList.add('invisible')
+
+        try {
+        const shapeFileData = await file.arrayBuffer()
+        const geoJsonData = await shp(shapeFileData)
+
+        // merge geoJson to get unique contours
+        const distinctGeoJsonFeatures = turf.union(...geoJsonData.features)
+
+        // extract boundaries from each unique contour
+        // there will be one boundary per contour
+        const distinctBoundaries = [].concat(...distinctGeoJsonFeatures.geometry.coordinates).map(arr => arr)
+
+        // for each distinct new boundary a boundary ui element is created
+        // and populated with boundary data from shape file
+        for(let i = 0; i < distinctBoundaries.length; i++) {
+          const distinctBoundaryReordered = distinctBoundaries[i].map(function(coordinate){
+              // reverse so code extracts (lat-lon)'s
+              return [coordinate[1], coordinate[0]]
+            }
+          )
+          // upload shape file to cache
+          // uploadNewBoundary(distinctBoundaryStr)
+        }
+        successMessage.classList.toggle('invisible')
+
+      } catch (e) {
+          failureMessage.classList.toggle('invisible')
+          console.log('Error extracting boundary data from Shape File', e)
+        }
+
+          // set value to null so user can resubmit
+          // same file if needed
+          self.value = null
+          return false
         }
     </script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>
+<script src="{% static 'javascript/turf.js' %}"></script>
 {% endblock %}
