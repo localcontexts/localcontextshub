@@ -40,6 +40,28 @@
             top: 14px;
         }
 
+        .feedback {
+            display: flex;
+            padding: 16px;
+            border-radius: 8px;
+            width: max-content;
+            margin-top: 8px;
+        }
+        .feedback i{
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        .failure {
+            color: #B01212;
+            background: #FBF3F3;
+            border: #B0120B 1px solid;
+        }
+        .success {
+            color: #166534;
+            background: #F2F7F4;
+            border: #166534 1px solid;
+        }
+
         #buttonRow{
             margin-top: 20px
         }
@@ -53,6 +75,24 @@
             margin-left: 20px;
         }
 
+        #selected-title-wrapper{
+            position: relative;
+        }
+        #selected-title{
+            padding: 12px;
+            border: 3px solid #007385;
+            background: aliceblue;
+            border-radius: 5px;
+            user-select: none;
+        }
+        #nld-link{
+            right: 8px;
+            position: absolute;
+            top: 14px;
+            font-weight: bold;
+            color: #007385;
+            cursor: pointer;
+        }
         .hidden{
             visibility: hidden;
         }
@@ -84,6 +124,30 @@
             </div>
         </div>
 
+        <div id="selected-location">
+            <br>
+            <strong>
+                <label class="pad-top-1-5">Selected Location</label>
+            </strong><br>
+
+            <div id="selected-title-wrapper">
+                <div id="selected-title">Placeholder</div>
+                <a id="nld-link" target="_blank">
+                    View map in new tab
+                    <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="feedback failure">
+            <i class="fa fa-circle-exclamation"></i>
+            <div class="message">File not accepted. Please upload another file</div>
+        </div>
+        <div class="feedback success">
+            <i class="fa fa-circle-check"></i>
+            <div class="message">File upload successfully</div>
+        </div>
     </div>
 
     <div class="flex-this w-90" id="buttonRow">
