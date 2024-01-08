@@ -44,9 +44,11 @@ def registration_boundaries(request):
     community = get_community(request.session.get('new_community_id'))
     community.source_of_boundaries = post_data['source']
     community.name_of_boundaries = post_data['name']
+    remove_previous_boundaries = post_data.get('remove_previous', True)
 
-    # remove all boundaries in this community
-    community.boundaries.all().delete()
+    # remove all previous boundaries in this community
+    if remove_previous_boundaries:
+        community.boundaries.all().delete()
 
     # add new boundaries in this community
     for coordinates in post_data['boundaries']:
@@ -155,7 +157,11 @@ def add_community_boundaries(request):
 @has_new_community_id
 @login_required(login_url='login')
 def upload_boundaries_file(request):
-    return render(request, 'communities/upload-boundaries-file.html')
+    community_id = get_community(request.session.get('new_community_id'))
+    context = {
+        'community_id': community_id.id
+    }
+    return render(request, 'communities/upload-boundaries-file.html', context)
 
 
 # Confirm Community
