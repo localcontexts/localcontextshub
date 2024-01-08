@@ -191,12 +191,12 @@
         document.getElementById('shapefile-input').click()
       }
 
-      async function registerBoundary(boundaryName, boundaryCoordinates, removePrevious=true) {
+      async function registerBoundary(boundaryName, boundary, removePreexisting=true) {
         const payload = {
             source: 'shape-file',
             name: boundaryName,
-            boundaries: [boundaryCoordinates],
-            remove_previous: removePrevious
+            boundaries: boundary,
+            remove_previous: removePreexisting
         }
 
         // do post call to set boundaries in request
@@ -212,6 +212,11 @@
             throw new Error('Error Setting Boundaries')
         }
 
+      }
+
+      async function resetBoundaries(){
+        // when setting boundaries fails, the boundaries are reset
+        await registerBoundary('No Boundaries', [], true)
       }
 
       async function uploadShapeFileData(self) {
@@ -246,7 +251,7 @@
           )
 
           // upload shape file to session for community
-          await registerBoundary(geoJsonData.fileName, distinctBoundaryReordered, i === 0)
+          await registerBoundary(geoJsonData.fileName, [distinctBoundaryReordered], i === 0)
         }
 
         successMessage.classList.toggle('invisible')
@@ -259,6 +264,7 @@
         failureMessage.classList.toggle('invisible')
         console.log('Error extracting boundary data from Shape File', e)
         disableContinueButton()
+        await resetBoundaries()
       }
         document.querySelector('#select-file-input').value = file.name
         // set value to null so user can resubmit
@@ -267,6 +273,8 @@
         return false
 
         }
+
+
     </script>
 <script src="{% static 'javascript/shpjs.js' %}"></script>
 <script src="{% static 'javascript/turf.js' %}"></script>
