@@ -40,25 +40,17 @@ from xhtml2pdf import pisa
 @login_required(login_url='login')
 def registration_boundaries(request):
     post_data = json.loads(request.body.decode('UTF-8'))
-
     # update community with boundary-related information
     community = get_community(request.session.get('new_community_id'))
     community.source_of_boundaries = post_data['source']
     community.name_of_boundaries = post_data['name']
-
-    # remove all coordinates for (all boundaries in this community)
-    Coordinate.objects.filter(coordinates__boundaries__id=community.id).delete()
 
     # remove all boundaries in this community
     community.boundaries.all().delete()
 
     # add new boundaries in this community
     for coordinates in post_data['boundaries']:
-        boundary = Boundary.objects.create()
-        for lat, lon in coordinates:
-            boundary.coordinates.add(
-                Coordinate.objects.create(latitude=lat, longitude=lon)
-            )
+        boundary = Boundary.objects.create(coordinates=coordinates)
         community.boundaries.add(boundary)
     community.save()
 

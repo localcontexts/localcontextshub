@@ -20,6 +20,7 @@ from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
 from bclabels.models import BCLabel
+from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
 from helpers.models import *
 from institutions.models import Institution
@@ -1062,8 +1063,10 @@ admin_site.register(BCLabel, BCLabelAdmin)
 
 # COMMUNITIES ADMIN
 class CommunityAdmin(admin.ModelAdmin):
+    form = CommunityModelForm
     list_display = ('community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved', 'created', 'country')
     search_fields = ('community_name', 'contact_name', 'contact_email',)
+
 
 class JoinRequestAdmin(admin.ModelAdmin):
     list_display = ('community', 'institution', 'user_from', 'user_to', 'status', 'date_sent')

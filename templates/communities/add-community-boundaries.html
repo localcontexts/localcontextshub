@@ -237,10 +237,14 @@
                 }
 
                 const boundary = boundaryData[0]
+                const boundaryCoordinates = boundary.geometry.coordinates[0]
+                // reorder so (lon, lat)'s become (lat, lon)'s
+                boundaryCoordinates.map(row=>row.reverse())
+
                 const payload = {
                     source: url,
                     name: boundary.properties.Name,
-                    boundaries: boundary.geometry.coordinates
+                    boundaries: [boundaryCoordinates]
                 }
 
                 // do post call to set boundaries in request
