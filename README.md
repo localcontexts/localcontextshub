@@ -6,7 +6,7 @@ Hub Sandbox Link:
 - [Local Contexts Hub Sandbox](https://sandbox.localcontextshub.org/)
 
 Develop Live Link:
-- [Develop](https://local-contexts-hub-sandbox.uc.r.appspot.com/)
+- [Develop](https://local-contexts-hub-develop.uc.r.appspot.com/)
 
 Data sources:
 - [Data used by Local Contexts Hub](https://github.com/biocodellc/localcontexts_json)

@@ -1663,18 +1663,7 @@ if (window.location.href.includes('labels/view/')) {
     });
 })()
 
-// EMBED PROJECTS PAGE
-if (window.location.href.includes('embed')) {
-    const embedProjectID = JSON.parse(
-        document.getElementById('embed-project-id').textContent
-      );
-    const projectLink = document.getElementById('project-link')
-    projectLink.href = 'http://' + window.location.host + '/projects/' + embedProjectID
-    projectLink.textContent = 'http://' + window.location.host + '/projects/' + embedProjectID
-}
-
 // PROJECT ACTION PAGE
-
 var copyProjectURLBtn = document.getElementsByClassName('copyProjectURLBtn')
 var copyProjectIDBtn = document.getElementsByClassName('copyProjectIDBtn')
 if (copyProjectIDBtn && copyProjectURLBtn) {
@@ -1698,7 +1687,7 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
 }
 
 // Share Modal - Embed Code customization options
-if (window.location.href.includes('/projects/actions/')) {
+if (window.location.href.includes('/projects/') && !window.location.href.includes('/projects/embed/')) {
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
@@ -1706,7 +1695,7 @@ if (window.location.href.includes('/projects/actions/')) {
     var layoutType, languageType, customizationOptions = null
     projectID = embedCode.dataset.projectId
     
-    embedCode.value = '<iframe width="560" height="250" src="http://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+    embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
 
     for (i=0;i < languageDropdown.options.length; i++) {
         if (langArray.includes(languageDropdown.options[i].value) == false) {
@@ -1742,7 +1731,7 @@ if (window.location.href.includes('/projects/actions/')) {
             customizationOptions = languageType
         }
 
-        embedCode.value = '<iframe width="560" height="250" src="http://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
     }
 }
 
