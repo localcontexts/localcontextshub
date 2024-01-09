@@ -38,7 +38,9 @@ endblock %} {% load socialaccount %} {% block card %}
     </div>
     <div class="flex-this space-between pad-top-1-5">
       <div>
-        <a href="{% url 'reset_password'%}" class="default-a"
+        <a
+          href="{% url 'reset_password'%}"
+          class="darkteal-text underline-hover bold"
           >Forgot your password?</a
         >
       </div>
@@ -48,12 +50,21 @@ endblock %} {% load socialaccount %} {% block card %}
         </button>
       </div>
     </div>
-    <div class="flex-this flex-end margin-top-2">
-      <button class="primary-btn action-btn">
-        <a class="white-text" href="{% provider_login_url 'google' %}"
-          >Sign in With Google</a
-        >
-      </button>
+    <div class="center-items">
+      <div class="horizontal-line-left"></div>
+      <p>or</p>
+      <div class="horizontal-line-right"></div>
+    </div>
+    <div class="flex-this">
+      <a class="w-100 g-auth-button" href="{% provider_login_url 'google' %}"
+        ><img
+          class="margin-right-1"
+          src="{% static 'images/logos/google.png' %}"
+          alt=""
+        /><span class="margin-left-1 primary-black-text"
+          >Register With Google</span
+        ></a
+      >
     </div>
     <input type="hidden" name="next" value="{{ request.GET.next }}" />
   </form>

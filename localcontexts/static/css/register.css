@@ -1,185 +1,198 @@
 /* Main container */
 #gradient-section {
-    width: 100%;
-    justify-content: center;
-    background: linear-gradient(to bottom, #3876aa, #2876a5, #18769e, #087697, #007590, #00778d, #007989, #007b85, #008083, #008680, #008a7a, #058f73);
-    padding: 3% 1% 1% 1%;
+  width: 100%;
+  justify-content: center;
+  background: linear-gradient(
+    to bottom,
+    #3876aa,
+    #2876a5,
+    #18769e,
+    #087697,
+    #007590,
+    #00778d,
+    #007989,
+    #007b85,
+    #008083,
+    #008680,
+    #008a7a,
+    #058f73
+  );
+  padding: 3% 1% 1% 1%;
 }
 
 /* The entire card */
 .base-card {
-    border-radius: 5px 5px;
-    max-width: 1200px;
-    min-width: 1200px;
-    min-height: 550px;
-    max-height: 550px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    background-color: #fff;
+  border-radius: 5px 5px;
+  max-width: 1200px;
+  min-width: 1200px;
+  min-height: 600px;
+  max-height: 600px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
 }
 
 /* Progress Container || THE ORANGE PART */
 #registration-progress-container {
-    max-width: 35%;
-    min-width: 35%;
-    border-radius: 5px 0px 0px 5px;
-    font-size: 14px;
-    align-items: center;
-} 
+  max-width: 35%;
+  min-width: 35%;
+  border-radius: 5px 0px 0px 5px;
+  font-size: 14px;
+  align-items: center;
+}
 
 /* Form Container || THE WHITE PART */
 .registration-form-container {
-    padding: 35px;
-    max-width: 65%;
-    min-width: 65%;
-    border-radius: 0px 5px 5px 0px;
-    font-size: 14px;
-    align-items: center;
+  padding: 35px;
+  max-width: 65%;
+  min-width: 65%;
+  border-radius: 0px 5px 5px 0px;
+  font-size: 14px;
+  align-items: center;
 }
-
 
 /* Progress Container */
 #progress-ul-container {
-    width: 100%;
-    justify-content: center;
+  width: 100%;
+  justify-content: center;
 }
 
 #progress-ul {
-    align-items: center;
-    width: 100%;
-    padding: 11% 1% 4% 6%;
+  align-items: center;
+  width: 100%;
+  padding: 11% 1% 4% 6%;
 }
 
 #progress-ul li {
-      /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
-      /* Use padding to space things out rather than margins as the line would get broken up otherwise */
-    position: relative;
-    margin: 0;
-    padding-bottom: 2em;
-    padding-left: 4.91%;
-    width: 70%;
+  /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
+  /* Use padding to space things out rather than margins as the line would get broken up otherwise */
+  position: relative;
+  margin: 0;
+  padding-bottom: 2em;
+  padding-left: 4.91%;
+  width: 70%;
 }
 
 #progress-ul li:before {
-    background-color: #fff;
-    width: 2px;
-    content: '';
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 5px; 
+  background-color: #fff;
+  width: 2px;
+  content: "";
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 5px;
 }
 
 /* Start the line further down on the first list item */
-#progress-ul li:first-child:before { 
-    top: 15px;  
+#progress-ul li:first-child:before {
+  top: 15px;
 }
 
 /* Stop the line short on the final list item */
-#progress-ul li:last-child:before { 
-    height: 6px; 
-}
-    
-/* SVG bullet points */
-.bullet { 
-    margin-left: -23px; 
-    width: 30px; 
-    fill: #fff; 
-    float: left; 
-    padding-right: 10px 
+#progress-ul li:last-child:before {
+  height: 6px;
 }
 
-.bullet.big { 
-    width: 30px; 
-    margin-left: -24px; 
-    padding-right: 8px;
+/* SVG bullet points */
+.bullet {
+  margin-left: -23px;
+  width: 30px;
+  fill: #fff;
+  float: left;
+  padding-right: 10px;
+}
+
+.bullet.big {
+  width: 30px;
+  margin-left: -24px;
+  padding-right: 8px;
 }
 
 #progress-bottom-container {
-    border-top: 2px solid #fff;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+  border-top: 2px solid #fff;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 #progress-bottom-container h2 {
-    text-align: center;
-    margin-top: 11%;
-    padding-bottom: 2%;
+  text-align: center;
+  margin-top: 11%;
+  padding-bottom: 2%;
 }
 
 /* Form Section */
 
 /* DIV that houses the h4, form and register button */
 .form-container {
-    height: 450px;
-    position: relative;
+  height: 450px;
+  position: relative;
 }
 
 /* THE FORM ITSELF */
 .form-container input {
-    width: 100%;
+  width: 100%;
 }
 
 .pad-right {
-    padding-right: 1.5%;
+  padding-right: 1.5%;
 }
 
 .pad-left {
-    padding-left: 1.5%;
+  padding-left: 1.5%;
 }
 
 .pass-field {
-    position: relative;
+  position: relative;
 }
 
 /* For validate and connect pages */
 .centered-content {
-    padding-top: 2%;
-    padding-bottom: 2%;
-    width: 70%;
-    text-align: center;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  width: 70%;
+  text-align: center;
 }
 
 /* Create Profile Page Country Select */
-.country-container select{
-    width: 100%;
+.country-container select {
+  width: 100%;
 }
 
 /* Register Reason for Registering */
 .reason-label {
-    padding-top:2%;
+  padding-top: 2%;
 }
 
 #help-text-pw {
-    display: none;
-    background-color: #f1f1f1;
-    min-width: 450px;
-    max-width: 450px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+  display: none;
+  background-color: #f1f1f1;
+  min-width: 450px;
+  max-width: 450px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .login-logo-container {
-    /* border: 1px solid black; */
-    margin-bottom: 70px;
+  /* border: 1px solid black; */
+  margin-bottom: 70px;
 }
 
 .login-logo {
-    height: 297px;
-    width: 219px;
+  height: 297px;
+  width: 219px;
 }
 
 .text-align-right {
-    text-align: right;
+  text-align: right;
 }
 
 .checkbox-space {
-    margin-top: 4%;
-    margin-right: 2%;
+  margin-top: 4%;
+  margin-right: 2%;
 }
 
-input[type=checkbox] {
-    transform: scale(1.5);
+input[type="checkbox"] {
+  transform: scale(1.5);
 }
 
 /* Choose an account page */
@@ -190,101 +203,122 @@ input[type=checkbox] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px;  
+  padding: 15px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
 }
 
 .account-card:nth-child(2) {
-    margin-left: 10px;
-    margin-right: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .white-btn-select {
-   margin: 5px 10px;
-   padding: 8px;
-   border-radius: 5px;
-   border: 1px solid #007385;
-   width: 81px;
-   height: 40px; 
-   background-color: #fff;
-   text-align: center; 
+  margin: 5px 10px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #007385;
+  width: 81px;
+  height: 40px;
+  background-color: #fff;
+  text-align: center;
 }
 
 .white-btn-select span {
-    font-size: 14px;
-    font-weight: bold;
-    color: #007385; 
+  font-size: 14px;
+  font-weight: bold;
+  color: #007385;
 }
 
 .white-btn-select:hover {
-    background-color: #007385;
+  background-color: #007385;
 }
 
 .white-btn-select:hover span {
-    color: #fff;
+  color: #fff;
 }
 
 .tiny-label {
-    width: 50px;
-    height: 38.46px;
+  width: 50px;
+  height: 38.46px;
 }
 
 .tiny-notice {
-    width: 42.59px;
-    height: 42.59px;
+  width: 42.59px;
+  height: 42.59px;
 }
 
 /* Little orange div on login page */
 .test-hub-div {
-    background-color:#ffe0c8;
-    padding: 16px 32px 16px 32px;
-    position: absolute;
-    bottom: 0;
+  background-color: #ffe0c8;
+  padding: 16px 32px 16px 32px;
+  position: absolute;
+  bottom: 0;
 }
 
 .test-hub-div p {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .test-hub-div small {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .create-account__container-width__errors {
-    width: 59%;
+  width: 59%;
 }
 
 .create-account__container-width__buttons {
-    width: 45%;
+  width: 45%;
 }
 
 .blue-highlight {
-    background-color: #E6F1F3;
-    padding: 5px 8px;
-    border-radius: 3px;
+  background-color: #e6f1f3;
+  padding: 5px 8px;
+  border-radius: 3px;
 }
 
 .account-registration-container {
-    overflow: scroll;
-    overflow-x: hidden;
-    padding: 20px;
+  overflow: scroll;
+  overflow-x: hidden;
+  padding: 20px;
 }
 
 /* scrollbar appearance */
 .account-registration-container::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
-  
+
 .account-registration-container::-webkit-scrollbar-thumb {
-    background-color: #888; /* Color of the scrollbar thumb */
-    border-radius: 6px; /* Rounded corners */
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Rounded corners */
 }
-  
+
 .account-registration-container::-webkit-scrollbar-thumb:hover {
-    background-color: #555; /* Color of the scrollbar thumb on hover */
+  background-color: #555; /* Color of the scrollbar thumb on hover */
 }
-  
+
 .account-registration-container::-webkit-scrollbar-track {
-    background-color: #f1f1f1; /* Color of the scrollbar track */
+  background-color: #f1f1f1; /* Color of the scrollbar track */
+}
+
+/*Google auth*/
+.center-items {
+  display: flex;
+  align-items: center;
+}
+
+.horizontal-line-right,
+.horizontal-line-left {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.horizontal-line-right {
+  margin-left: 16px;
+}
+
+.horizontal-line-left {
+  margin-right: 16px;
 }

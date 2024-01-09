@@ -141,6 +141,27 @@ load static %} {% load socialaccount %} {% block card %}
         >
       </button>
     </div>
+    <div class="flex-this">
+      <button id="registerUserBtn" class="primary-btn action-btn">
+        Continue <i class="fa fa-arrow-right"></i>
+      </button>
+    </div>
+    <div class="center-items">
+      <div class="horizontal-line-left"></div>
+      <p>or</p>
+      <div class="horizontal-line-right"></div>
+    </div>
+    <div class="flex-this">
+      <a class="w-100 g-auth-button" href="{% provider_login_url 'google' %}"
+        ><img
+          class="margin-right-1"
+          src="{% static 'images/logos/google.png' %}"
+          alt=""
+        /><span class="margin-left-1 primary-black-text"
+          >Register With Google</span
+        ></a
+      >
+    </div>
 
     <!-- Alerts -->
     {% include 'partials/_alerts.html' %}
