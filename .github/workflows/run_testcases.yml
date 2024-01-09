@@ -4,9 +4,23 @@ on: [push]
 
 jobs:
   build:
-
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.TEST_DB_NAME }}
+          POSTGRES_USER: ${{ secrets.TEST_DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASS }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -20,6 +34,30 @@ jobs:
 
       - name: Install Requirements
         run: pip install -r requirements.txt
-
-      - name: Run Testcases
-        run: pytest tests
+        
+      - name: Apply Migrations and Run Tests
+        env:
+          PROD_KEY: ${{ secrets.PROD_KEY }}
+          DEBUG_VALUE: ${{ secrets.DEBUG_VALUE }}
+          SITE_ADMIN_NAME: ${{ secrets.SITE_ADMIN_NAME }}
+          SITE_ADMIN_EMAIL: ${{ secrets.SITE_ADMIN_EMAIL }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          DB_NAME: ${{ secrets.TEST_DB_NAME }}
+          DB_USER: ${{ secrets.TEST_DB_USER }}
+          DB_PASS: ${{ secrets.TEST_DB_PASS }}
+          DB_HOST: ${{ secrets.TEST_DB_HOST }}
+          DB_PORT: ${{ secrets.TEST_DB_PORT }}
+          CSRF_COOKIE_DOMAIN: ${{ secrets.CSRF_COOKIE_DOMAIN }}
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_BASE_URL: ${{ secrets.MAILGUN_BASE_URL }}
+          MAILGUN_TEMPLATE_URL: ${{ secrets.MAILGUN_TEMPLATE_URL }}
+          COLLECTIONS_CARE_NOTICES_DOWNLOAD_ZIP: ${{ secrets.COLLECTIONS_CARE_NOTICES_DOWNLOAD_ZIP }}
+          OPEN_TO_COLLABORATE_NOTICE_DOWNLOAD_ZIP: ${{ secrets.OPEN_TO_COLLABORATE_NOTICE_DOWNLOAD_ZIP }}
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        run: |
+          python manage.py migrate
+          pytest --cov=tests/unit
