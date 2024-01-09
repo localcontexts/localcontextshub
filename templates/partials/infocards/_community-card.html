@@ -30,7 +30,10 @@
                         href="{% url 'public-community' community.id %}" 
                     >View public page</a>
                 {% endif %}
- 
+
+                {% include 'snippets/notifications.html' with scope=community %}
+                <br>
+                
                 {% if '/dashboard/' in request.path %}
                     {% if approved_label %}
                         {% if request.user in community.get_collaborator or request.user == community.community_creator %}

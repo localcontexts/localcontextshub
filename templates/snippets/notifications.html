@@ -10,25 +10,26 @@
 
 
 <div class="dropdown margin-right-8">
-    <a onclick="toggleNotifications()" class="primary-btn white-btn dropbtn"> 
-        Notifications 
+    <a onclick="toggleNotifications('{{ scope }}')" class="primary-btn white-btn dropbtn"> 
+        Notifications
         <i 
         class="
-            {% if unread_exist_user and 'dashboard' in request.path %} fa-solid fa-bell-on orange-text 
+            {% if unread_exist_user and 'dashboard' in request.path and scope == user %} fa-solid fa-bell-on orange-text 
             {% elif unread_exist_community %} fa-solid fa-bell-on orange-text 
             {% elif unread_exist_institution %} fa-solid fa-bell-on orange-text 
-            {% elif unread_exist_researcher and not 'dashboard' in request.path %} fa-solid fa-bell-on orange-text 
+            {% elif unread_exist_researcher and scope == researcher %} fa-solid fa-bell-on orange-text
+            {% elif unread_exist_researcher and scope == researcher.id %} fa-solid fa-bell-on orange-text
+            {% elif return_notifications %} fa-regular fa-bell 
             {% else %} fa-regular fa-bell {% endif %} 
             " 
         aria-hidden="true"
         ></i>
     </a>
-    <div id="notification-v2" class="notification-dropdown-content">
+    <div id="notification-v2-{{ scope }}" class="notification-dropdown-content">
     <div class="border-bottom-solid-teal center-text">
         <span class="orange-text bold">Notifications</span>
     </div>
-
-        {% if user_notifications and '/dashboard/' in request.path %}
+        {% if user_notifications and '/dashboard/' in request.path and scope == user %}
             {% for n in user_notifications %}
 
                 <div class="border-bottom-solid-teal flex-this space-between">
@@ -70,7 +71,7 @@
         {% endif %}
 
 
-        {% if community %}
+        {% if community and scope == community %}
 
             {% if community_notifications %}
                 {% for n in community_notifications %}
@@ -130,7 +131,7 @@
 
         {% endif %}
 
-        {% if institution %}
+        {% if institution  and scope == institution %}
 
             {% if institution_notifications %}
                 {% for n in institution_notifications %}
@@ -183,7 +184,7 @@
 
         {% endif %}
         
-        {% if researcher and not '/dashboard/' in request.path %}
+        {% if researcher and scope == researcher.id or scope == researcher %}
 
             {% if researcher_notifications %}
                 {% for n in researcher_notifications %}

@@ -39,6 +39,9 @@
                     {% endif %}
                 {% endif %}
 
+                {% include 'snippets/notifications.html' with scope=researcher.id %}
+                <br>
+
                 {% if '/dashboard/' in request.path %}
                     {% if researcher.get_projects %}
                         <a 

@@ -17,7 +17,7 @@
             {% if user_can_view %}
                 <!-- Notifications -->
                 <div class="flex-this w-30 flex-end">
-                    {% include 'snippets/notifications.html' %}
+                    {% include 'snippets/notifications.html' with scope=researcher %}
 
                     <div class="margin-left-8"><a href="{% url 'update-researcher' researcher.id %}" class="darkteal-text primary-btn white-btn">Settings <i class="fa fa-cog" aria-hidden="true"></i></a></div>
                 </div>

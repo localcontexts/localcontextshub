@@ -1325,8 +1325,13 @@ function validateProjectDisableSubmitBtn() {
 
 }
 
-function toggleNotifications() {
-    document.getElementById('notification-v2').classList.toggle('show')
+function toggleNotifications(scope) {
+    // To hide all elements with the common prefix
+    let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
+    allNotificationDivs.forEach(function(element) {
+        element.classList.remove('show');
+    });
+    document.getElementById('notification-v2-'+scope).classList.toggle('show')
 
     window.onclick = function(event) {
         if(!event.target.matches('.dropbtn')) {

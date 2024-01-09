@@ -15,7 +15,7 @@
 
             <!-- Notifications -->
             <div class="flex-this w-30 flex-end">
-                {% include 'snippets/notifications.html' %}
+                {% include 'snippets/notifications.html' with scope=community %}
 
                 <!-- Settings -->
                 {% if request.user == community.community_creator or member_role == 'admin' %}

@@ -40,6 +40,10 @@
                     {% endif %}
                 {% endif %}
 
+
+                {% include 'snippets/notifications.html' with scope=institution %}
+                <br>
+                
                 {% if '/dashboard/' in request.path %}
                     {% if institution_projects %}
                         {% if request.user in institution.get_distinct_creators  %}
