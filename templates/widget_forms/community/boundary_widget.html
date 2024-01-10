@@ -131,7 +131,23 @@ async function uploadShapeFileData(self) {
     const geoJsonData = await shp(shapeFileData)
 
     // merge geoJson to get unique contours
-    const distinctGeoJsonFeatures = turf.union(...geoJsonData.features)
+    let listOfFeatures = geoJsonData.features
+    if (geoJsonData.length) {
+        // flatten features from multiple geoJson objects
+        listOfFeatures = []
+        for (const geoJsonObject of geoJsonData) {
+          for (const featureIndex in geoJsonObject.features) {
+            listOfFeatures.push(geoJsonObject.features[featureIndex])
+          }
+        }
+    }
+
+    listOfFeatures.length = 5
+   // join all boundaries
+   let distinctGeoJsonFeatures = listOfFeatures[0];
+    for (let i=1; i<listOfFeatures.length; i++) {
+      distinctGeoJsonFeatures = turf.union(distinctGeoJsonFeatures, listOfFeatures[i])
+    }
 
     // extract boundaries from each unique contour
     // there will be one boundary per contour
