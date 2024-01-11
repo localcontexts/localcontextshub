@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('register/', views.register, name='register'),
     path('logout/', views.logout, name='logout'),
+    path('social/signup/', views.CustomSocialSignupView.as_view(), name='social_signup'),
 
     path('activate/<uidb64>/<token>', views.ActivateAccountView.as_view(), name='activate'),
     path('verify/', views.verify, name='verify'),

@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
 from django.contrib.auth.views import PasswordChangeForm
+from allauth.socialaccount.views import SignupView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
 
@@ -20,7 +21,6 @@ from django.utils.encoding import force_text
 
 from unidecode import unidecode
 from django.db.models import Q
-
 from django.contrib.auth.models import User
 from communities.models import Community, InviteMember
 from institutions.models import Institution
@@ -182,6 +182,13 @@ def landing(request):
 @login_required(login_url='login')
 def select_account(request):
     return render(request, 'accounts/select-account.html')
+
+class CustomSocialSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:  # Check if already logged in
+            messages.error(request, "You're already logged in. Custom messge")  # Custom message
+            return redirect('login')  # Redirect to desired URL
+        return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='login')
 def dashboard(request):
