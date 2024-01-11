@@ -6,6 +6,7 @@ from django.contrib.auth.views import PasswordChangeForm
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user

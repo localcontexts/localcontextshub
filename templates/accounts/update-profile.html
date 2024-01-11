@@ -6,6 +6,23 @@ block settings %}
     <div>User Name: {{ request.user.username }}</div>
     <div>User ID: {{ request.user.id }}</div>
   </div>
+  {% if True %}
+  <div class="flex-this pad-top-1-5">
+    <a
+      href="{% provider_login_url 'google' process='connect' %}"
+      class="w-100 g-auth-button"
+    >
+      <img
+        class="margin-right-1"
+        src="{% static 'images/logos/google.png' %}"
+        alt=""
+      />
+      <span class="margin-left-1 primary-black-text">Connect with Google</span>
+    </a>
+  </div>
+  {% else %}
+  <p>Google account connected</p>
+  {% endif %}
   <div>
     <form method="POST" action="" enctype="multipart/form-data">
       {% csrf_token %}
