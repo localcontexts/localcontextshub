@@ -295,3 +295,5 @@ SITE_ID = 1
 SOCIALACCOUNT_LOGIN_ON_GET=True
 LOGIN_REDIRECT_URL= '/dashboard/'
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
+
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
