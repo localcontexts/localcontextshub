@@ -185,9 +185,9 @@ def select_account(request):
 
 class CustomSocialSignupView(SignupView):
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:  # Check if already logged in
-            messages.error(request, "You're already logged in. Custom messge")  # Custom message
-            return redirect('login')  # Redirect to desired URL
+        if not request.user.is_authenticated:
+            messages.error(request, "You already create your account using the email and password. Please log in this way.After you log in, you will be able to connect your account using Google.")
+            return redirect('login')
         return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='login')
