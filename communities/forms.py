@@ -58,7 +58,7 @@ class CommunityModelForm(forms.ModelForm):
         model = Community
         exclude = []
         max_coordinates_in_boundary_count = 2000
-        max_boundary_count = 5
+        max_boundary_count = 3000
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,9 +76,9 @@ class CommunityModelForm(forms.ModelForm):
         boundary_data = json.loads(f'[{boundary_str_with_brackets}]')
         boundary_data_length = len(boundary_data)
 
-        if boundary_data_length > self.Meta.max_coordinates_in_boundary_count:
-            raise Exception(f'Boundary Has Too Many Coordinates. '
-                            f'{boundary_data_length} Coordinates Are Detected')
+        # if boundary_data_length > self.Meta.max_coordinates_in_boundary_count:
+        #     raise Exception(f'Boundary Has Too Many Coordinates. '
+        #                     f'{boundary_data_length} Coordinates Are Detected')
 
         return boundary_data
 
