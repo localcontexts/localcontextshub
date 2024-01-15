@@ -13,12 +13,16 @@ from .utils import can_download_project, return_project_labels_by_community
 def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
+        creator = ProjectCreator.objects.get(project=project)
+        if not creator.account_is_confirmed():
+            raise Exception('Account Is Not Confirmed')
+
     except Project.DoesNotExist:
         return render(request, '404.html', status=404)
-    
+
     sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
     notices = Notice.objects.filter(project=project, archived=False)
-    creator = ProjectCreator.objects.get(project=project)
+
     communities = None
     institutions = None
     user_researcher = Researcher.objects.none()

@@ -97,7 +97,7 @@ class Project(models.Model):
             return discoverable_project_view(self, user)
         elif self.project_privacy == 'Private':
             return False
-    
+
     def get_template_name(self, user):
         if self.project_privacy == 'Public':
             return 'partials/_project-actions.html'
@@ -166,6 +166,20 @@ class ProjectCreator(models.Model):
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name='institution_created_project', null=True, blank=True)
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, related_name='researcher_created_project', null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_creator_project', null=True, blank=True)
+
+    def account_is_confirmed(self):
+        """
+        when account is a community or institution, return True when it is approved.
+        otherwise, always return True
+            -assumption:
+                when an account is a parent project or a researcher,
+                it is considered already approved
+        """
+        account = self.community or self.institution
+        if account:
+            return account.is_approved
+
+        return True
 
     def which_account_type_created(self):
         #  returns dictionary
