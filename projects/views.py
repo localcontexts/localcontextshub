@@ -14,9 +14,12 @@ def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
         creator = ProjectCreator.objects.get(project=project)
-        if not creator.account_is_confirmed():
-            raise Exception('Account Is Not Confirmed')
-
+        is_created_by = {
+            'community': creator.community,
+            'institution': creator.institution,
+            'researcher': creator.researcher
+        }
+        creator.validate_user_access(request.user)
     except Project.DoesNotExist:
         return render(request, '404.html', status=404)
 

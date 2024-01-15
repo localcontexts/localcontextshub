@@ -181,6 +181,19 @@ class ProjectCreator(models.Model):
 
         return True
 
+    def validate_user_access(self, user):
+        is_created_by = {
+            'community': self.community,
+            'institution': self.institution,
+            'researcher': self.researcher
+        }
+        if self.account_is_confirmed():
+            return
+
+        if not self.is_user_in_creator_account(user, is_created_by):
+            message = 'Account Is Not Confirmed And User Is Not In Account'
+            raise Exception(message)
+
     def which_account_type_created(self):
         #  returns dictionary
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
