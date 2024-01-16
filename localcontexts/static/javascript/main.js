@@ -1326,6 +1326,9 @@ function validateProjectDisableSubmitBtn() {
 }
 
 function toggleNotifications(scope) {
+    let activebutton= document.getElementById(`notification-button-${scope}`)
+    activebutton.classList.add('notification-button');
+    
     // To hide all elements with the common prefix
     let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
     allNotificationDivs.forEach(function(element) {
@@ -1334,7 +1337,8 @@ function toggleNotifications(scope) {
     document.getElementById('notification-v2-'+scope).classList.toggle('show')
 
     window.onclick = function(event) {
-        if(!event.target.matches('.dropbtn')) {
+        if(!event.target.matches('.dropbtn, .dropbtn i')) {
+            activebutton.classList.remove("notification-button")
             let dropdowns = document.getElementsByClassName("notification-dropdown-content")
             for (let i=0; i < dropdowns.length; i++) {
                 let openDropdown = dropdowns[i]

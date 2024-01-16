@@ -25,7 +25,7 @@
         </div>
 
         <div class="dashcard-btn-container">
-            <div class="margin-left-16">
+            <div class="margin-left-16 flex-this gap-1">
                 {% if '/registry/' in request.path %}
                     <div class="margin-bottom-16">
                         <a 
@@ -40,30 +40,37 @@
                     {% endif %}
                 {% endif %}
 
-
-                {% include 'snippets/notifications.html' with scope=institution %}
-                <br>
-                
-                {% if '/dashboard/' in request.path %}
-                    {% if institution_projects %}
-                        {% if request.user in institution.get_distinct_creators  %}
-                            <a 
-                                class="primary-btn action-btn"
-                                href="{% url 'institution-projects' institution.id %}"
-                            >View account</a>
+                <div class="margin-right-8">
+                    {% if '/dashboard/' in request.path %}
+                        {% if institution_projects %}
+                            {% if request.user in institution.get_distinct_creators  %}
+                                <a 
+                                    class="primary-btn action-btn"
+                                    href="{% url 'institution-projects' institution.id %}"
+                                >View account</a>
+                            {% else %}
+                                <a 
+                                    class="primary-btn action-btn"
+                                    href="{% url 'institution-notices' institution.id %}"
+                                >View account</a>
+                            {% endif %}
                         {% else %}
                             <a 
                                 class="primary-btn action-btn"
                                 href="{% url 'institution-notices' institution.id %}"
                             >View account</a>
                         {% endif %}
-                    {% else %}
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'institution-notices' institution.id %}"
-                        >View account</a>
                     {% endif %}
+                </div>
+                <!-- Notification -->
+                {% include 'snippets/notifications.html' with scope=institution %}
+                <!-- Settings -->
+                {% if request.user == institution.institution_creator or member_role == 'admin'%}
+                    <div>
+                        <a href="{% url 'update-institution' institution.id%}" class="border-raduis50 darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                    </div>
                 {% endif %}
+               
             </div>
         </div>
 

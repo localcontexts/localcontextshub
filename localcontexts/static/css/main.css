@@ -230,6 +230,7 @@ input:focus {
 .auto-margin { margin: auto; }
 .no-top-margin { margin-top: 0; }
 .no-bottom-margin { margin-bottom: 0; }
+.no-margin{margin:0 !important; }
 .margin-top-8 { margin-top: 8px; }
 .margin-bottom-8 { margin-bottom: 8px; }
 .margin-left-8 { margin-left: 8px; }
@@ -262,6 +263,9 @@ input:focus {
     border-bottom: 1px solid #E6F1F3;
 }
 
+/* Boder-Radius */
+.border-raduis50 { border-radius:50% !important; }
+
 /* FLEX */
 .flex-this { display: flex; }
 .row { flex-direction: row; }
@@ -293,6 +297,9 @@ input:focus {
 /* HEIGHTS */
 .h-25 { height: 25%; }
 .h-100 { height: 100% }
+
+/* GAP */
+.gap-1 { gap: 0.5rem;}
 
 /* ACTION Buttons / Register,Sign in, etc. */
 .primary-btn {
@@ -1067,6 +1074,15 @@ i[data-tooltip]:hover:after {
 
 .show { display: block; }
 .hide { display: none; }
+
+.notification-button {
+    background-color:#007385 !important;
+    color: #fff !important;
+}
+.notification-button > i {
+    background-color:#007385 !important;
+    color: #fff !important;
+}
 
 /* Textbox message add-members */
 .add-member-message {
