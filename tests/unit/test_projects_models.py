@@ -177,6 +177,26 @@ class TestProjectCreator(TestCase):
         except Exception as e:
             raise Exception('Error: user of unconfirmed account cannot see own project')
 
+    def test_user_of_confirmed_account_can_see_project(self):
+        # confirmed error is not raised
+        try:
+            user_of_confirmed_account = self.confirmed_account_user
+            self.project_creator_of_confirmed_account.validate_user_access(
+                user_of_confirmed_account
+            )
+        except Exception as e:
+            raise Exception('Error: user of confirmed account cannot see own project')
+
+    def test_nonuser_of_confirmed_account_can_see_project(self):
+        # confirmed error is not raised
+        try:
+            nonuser_of_confirmed_account = self.user
+            self.project_creator_of_confirmed_account.validate_user_access(
+                nonuser_of_confirmed_account
+            )
+        except Exception as e:
+            raise Exception('Error: nonuser of confirmed account cannot see confirmed project')
+
     def test_nonuser_of_unconfirmed_account_cannot_see_project(self):
         # confirm error is raised
         with pytest.raises(Exception, match='Account Is Not Confirmed And User Is Not In Account'):
