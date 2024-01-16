@@ -1,6 +1,8 @@
 import pytest
 from django.test import TestCase
 from django.contrib.auth.models import User
+
+from helpers.exceptions import UnconfirmedAccountException
 from projects.models import ProjectContributors
 
 from factories.accounts_factories import UserFactory
@@ -174,7 +176,7 @@ class TestProjectCreator(TestCase):
             self.project_creator_of_unconfirmed_account.validate_user_access(
                 user_of_unconfirmed_account
             )
-        except Exception as e:
+        except UnconfirmedAccountException:
             raise Exception('Error: user of unconfirmed account cannot see own project')
 
     def test_user_of_confirmed_account_can_see_project(self):
@@ -184,7 +186,7 @@ class TestProjectCreator(TestCase):
             self.project_creator_of_confirmed_account.validate_user_access(
                 user_of_confirmed_account
             )
-        except Exception as e:
+        except UnconfirmedAccountException:
             raise Exception('Error: user of confirmed account cannot see own project')
 
     def test_nonuser_of_confirmed_account_can_see_project(self):
@@ -194,12 +196,12 @@ class TestProjectCreator(TestCase):
             self.project_creator_of_confirmed_account.validate_user_access(
                 nonuser_of_confirmed_account
             )
-        except Exception as e:
+        except UnconfirmedAccountException:
             raise Exception('Error: nonuser of confirmed account cannot see confirmed project')
 
     def test_nonuser_of_unconfirmed_account_cannot_see_project(self):
         # confirm error is raised
-        with pytest.raises(Exception, match='Account Is Not Confirmed And User Is Not In Account'):
+        with pytest.raises(UnconfirmedAccountException, match='Account Is Not Confirmed And User Is Not In Account'):
             nonuser_of_unconfirmed_account = self.user
             self.project_creator_of_unconfirmed_account.validate_user_access(
                 nonuser_of_unconfirmed_account

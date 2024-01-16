@@ -1,10 +1,13 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+
+from helpers.exceptions import UnconfirmedAccountException
 from institutions.models import Institution
 from communities.models import Community
 from researchers.models import Researcher
 from helpers.utils import discoverable_project_view
+
 
 class ProjectArchived(models.Model):
     project_uuid = models.UUIDField(null=True, blank=True, db_index=True)
@@ -192,7 +195,7 @@ class ProjectCreator(models.Model):
 
         if not self.is_user_in_creator_account(user, is_created_by):
             message = 'Account Is Not Confirmed And User Is Not In Account'
-            raise Exception(message)
+            raise UnconfirmedAccountException(message)
 
     def which_account_type_created(self):
         #  returns dictionary
