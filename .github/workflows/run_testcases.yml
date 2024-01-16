@@ -60,4 +60,4 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         run: |
           python manage.py migrate
-          pytest --cov=tests/unit
+          pytest --cov=testing/unit
