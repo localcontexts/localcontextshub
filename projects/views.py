@@ -79,9 +79,6 @@ def download_project(request, unique_id):
         raise Http404()
 
 def embed_project(request, unique_id):
-    # request['Access-Control-Allow-Origin'] = '*'
-    # request['Access-Control-Allow-Methods'] = 'GET'
-
     layout = request.GET.get('lt')
     lang = request.GET.get('lang')
 
@@ -105,7 +102,6 @@ def embed_project(request, unique_id):
     }
 
     response = render(request, 'projects/embed-project.html', context)
-    response['Access-Control-Allow-Origin'] = '*'
-    response['Access-Control-Allow-Methods'] = 'GET'
+    response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response
