@@ -121,6 +121,18 @@ class TestProjectCreator(TestCase):
         self.project_creator.institution_creator = self.institution
         self.project_creator.researcher_creator = self.researcher
 
+        # for unconfirmed account
+        self.unconfirmed_account_user = UserFactory()
+        self.project_creator_of_unconfirmed_account = ProjectCreatorFactory()
+        self.project_creator_of_unconfirmed_account.community.is_approved = False
+        self.project_creator_of_unconfirmed_account.community.community_creator = self.unconfirmed_account_user
+
+        # for confirmed account
+        self.confirmed_account_user = UserFactory()
+        self.project_creator_of_confirmed_account = ProjectCreatorFactory()
+        self.project_creator_of_confirmed_account.community.is_approved = True
+        self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
+
     def test_which_account_type_created_community(self):
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
 
@@ -155,6 +167,10 @@ class TestProjectCreator(TestCase):
         string = project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
 
+    # def test_user_of_unconfirmed_account_can_see_own_project(self):
+    #     # no error is raised
+    #     # self.project_creator.validate_user_access(self.unconfirmed_account_user)
+    #     pass
 
 class TestProjectnote(TestCase):
     @pytest.mark.django_db

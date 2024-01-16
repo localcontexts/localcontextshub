@@ -2,13 +2,14 @@ import factory
 import factory.fuzzy
 from django.contrib.auth.models import User
 from projects.models import Project, ProjectArchived, ProjectPerson, ProjectNote, ProjectContributors, ProjectCreator, ProjectActivity
-from factories.accounts_factories import UserFactory
-from factories.tklabels_factories import TKLabelFactory
-from factories.bclabels_factories import BCLabelFactory
-from factories.accounts_factories import UserFactory
-from factories.communities_factories import CommunityFactory
-from factories.institutions_factories import InstitutionFactory
-from factories.researchers_factories import ResearcherFactory
+from testing.factories.accounts_factories import UserFactory
+from testing.factories.tklabels_factories import TKLabelFactory
+from testing.factories.bclabels_factories import BCLabelFactory
+from testing.factories.accounts_factories import UserFactory
+from testing.factories.communities_factories import CommunityFactory
+from testing.factories.institutions_factories import InstitutionFactory
+from testing.factories.researchers_factories import ResearcherFactory
+
 
 class ProjectArchivedFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ProjectArchived Model'''
