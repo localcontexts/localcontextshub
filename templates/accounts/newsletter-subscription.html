@@ -1,5 +1,12 @@
 {% extends 'gradient-base.html' %} {% block title %} Subscribe {% endblock %}{% load static %} {% block main %}
-<script src='https://www.google.com/recaptcha/api.js' type="text/javascript" defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg', { action: 'register' }).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+        });
+    });
+</script>
 
     <div class="content-card-v3">
         <div class="newsletter-row">
@@ -55,9 +62,7 @@
                                     </div>
                                 </div>
                                 <br>
-                                <div>
-                                    <div class="g-recaptcha" data-sitekey="6LcfEE4pAAAAAKcLvDVz5Cyr37-BR3ftPi-3oD6w"></div>
-                                </div>
+                                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
                                 <br>
                                 <div class="flex-this w-100">
                                     <div class="w-100 margin-right-1">

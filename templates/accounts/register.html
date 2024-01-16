@@ -1,5 +1,12 @@
 {% extends 'register-base.html' %} {% block title %} Register {% endblock %} {% load static %} {% block card %}
-<script src='https://www.google.com/recaptcha/api.js' type="text/javascript" defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg', { action: 'register' }).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+        });
+    });
+</script>
 
 <div class="flex-this space-between w-90">
     <div><h2>Register with Local Contexts</h2></div>
@@ -72,9 +79,9 @@
                 </div>
             </div>
 
-            <div><div class="g-recaptcha" data-sitekey="6LcfEE4pAAAAAKcLvDVz5Cyr37-BR3ftPi-3oD6w"></div></div>
         </div>
         <br>
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
         <div class="flex-this flex-end">
             <button id="registerUserBtn" class="primary-btn action-btn">Continue <i class="fa fa-arrow-right"></i></button>
