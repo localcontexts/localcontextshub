@@ -167,15 +167,23 @@ class TestProjectCreator(TestCase):
         string = project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
 
-    def test_user_of_unconfirmed_account_can_see_own_project(self):
-        # no error is raised
-
+    def test_user_of_unconfirmed_account_can_see_project(self):
+        # confirmed error is not raised
         try:
+            user_of_unconfirmed_account = self.unconfirmed_account_user
             self.project_creator_of_unconfirmed_account.validate_user_access(
-                self.unconfirmed_account_user
+                user_of_unconfirmed_account
             )
         except Exception as e:
             raise Exception('Error: user of unconfirmed account cannot see own project')
+
+    def test_nonuser_of_unconfirmed_account_cannot_see_project(self):
+        # confirm error is raised
+        with pytest.raises(Exception, match='Account Is Not Confirmed And User Is Not In Account'):
+            nonuser_of_unconfirmed_account = self.user
+            self.project_creator_of_unconfirmed_account.validate_user_access(
+                nonuser_of_unconfirmed_account
+            )
 
 
 class TestProjectnote(TestCase):
