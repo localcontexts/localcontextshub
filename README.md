@@ -1,10 +1,12 @@
 # Local Contexts Hub Main Repository
-Prod Link:
+Live Prod Link:
 - [Local Contexts Hub](https://localcontextshub.org/)
 
-Branches:
-- [Staging/Sandbox](https://sandbox.localcontextshub.org/)
-- [Develop](https://local-contexts-hub-staging.uc.r.appspot.com/)
+Hub Sandbox Link:
+- [Local Contexts Hub Sandbox](https://sandbox.localcontextshub.org/)
+
+Develop Live Link:
+- [Develop](https://local-contexts-hub-sandbox.uc.r.appspot.com/)
 
 Data sources:
 - [Data used by Local Contexts Hub](https://github.com/biocodellc/localcontexts_json)
@@ -13,9 +15,9 @@ Data sources:
 ## Getting Started
 What you need to run this app:
 - virtualenv
-- Django 3.1.14
-- PostGreSQL
-- Python 3.8.3 with the latest version of `pip`
+- Django 3.1
+- PostGreSQL 15+
+- Python 3.8+ with the latest version of `pip`
 
 
 # Local Deployment
@@ -33,7 +35,7 @@ pyenv virtualenv 3.8.3 envi
 
 Activate virtual environment:
 ```
-source /Users/username/.pyenv/versions/envi/bin/activate
+source envi/bin/activate
 ```
 
 ## Install or Update Dependencies
@@ -48,6 +50,7 @@ This will set local environment variables accessible via PYTHON
 ```source env-localprod.sh``` sets up environment variables for production database to access it locally
 ```source env-localstage.sh``` sets up environment variables for staging/sandbox database to access it locally
 ```source env-localdev.sh``` sets up environment variables for development/testing database to access it locally
+```source env-localstage.sh``` sets up environment variables for staging database to access it locally
 
 ## Migration
 ```

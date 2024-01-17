@@ -2,89 +2,87 @@
     <!-- import ORCiD Widget -->
     <script src="{% static 'javascript/orcid-widget.js' %}" type="text/javascript" defer></script>
 
-<div class="flex-this column w-90">
-    <div class="margin-bottom-1 flex-this space-between">
-        <h2>Researcher Account</h2>  
-        <div class="margin-top-16">Or <a class="darkteal-text underline-hover" href="{% url 'select-account' %}">choose another account</a></div>
-    </div>
-    <div>
-        <p class="no-top-margin no-bottom-margin">A researcher is a person who carries out academic or scientific research independently or in an institution, such as archive, library, museum, historical society, gallery, data repository, or university.</p>
-    </div>
-
-    <form action="{% url 'connect-researcher' %}" method="POST" class="flex-this column w-100" id="createResearcher">
-        {% csrf_token %}
-
-        <div class="hide"> <!-- TODO: UPDATE ORCID WIDGET. HIDDEN FOR NOW.-->
-            <div class="flex-this space-between">
-                <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
-
-                <!-- Show ORCiD widget based on hostname -->
-                <div 
-                    id="orcidWidget" 
-                    {% if 'localcontextshub' in request.get_host %}
-                        data-clientid='APP-IBW6UOF5FGJG0ODB' 
-                        data-env="production" 
-                        data-redirecturi="https://localcontextshub.org/researchers/connect-researcher/"
-                    {% elif 'localhost' in request.get_host %}
-                        data-clientid='APP-6SAN29B74JQ6FEUQ' 
-                        data-env="sandbox" 
-                        data-redirecturi="http://localhost:8000/researchers/connect-researcher/"
-                    {% elif 'anth-ja77-lc-dev-42d5' in request.get_host %}
-                        data-clientid='APP-6SAN29B74JQ6FEUQ' 
-                        data-env="sandbox" 
-                        data-redirecturi="https://anth-ja77-lc-dev-42d5.uc.r.appspot.com/researchers/connect-researcher/"
-                    {% endif %}
-                >
-                </div>
-            </div>
-
-            {% if 'anth-ja77-lc-dev-42d5' in request.get_host %}
-                <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
-            {% elif 'localhost' in request.get_host %}
-                <small class="bold">Localhost uses the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a> of ORCiD.</small><br>
-            {% endif %}            
+    <div class="flex-this column w-90">
+        <div class="margin-bottom-1 flex-this space-between">
+            <h2>Researcher Account</h2>  
+            <div class="margin-top-16">Or <a class="darkteal-text underline-hover" href="{% url 'select-account' %}">choose another account</a></div>
         </div>
-
-
         <div>
-            <label for="primary_institution">Primary Institution</label>
-            <div class="tooltip"><strong>i</strong>
-                <span class="tooltiptext">If you are associated with an institution, please list your primary institution.</span>
-            </div>
-            {{ form.primary_institution }}
-            {% if form.primary_institution.errors %}
-                <div class="msg-red w-80"><small>{{ form.primary_institution.errors.as_text }}</small></div> 
-            {% endif %}
+            <p class="no-top-margin no-bottom-margin">A researcher is a person who carries out academic or scientific research independently or in an institution, such as archive, library, museum, historical society, gallery, data repository, or university.</p>
         </div>
 
-        <div class="w-100">
-            <div class="pad-top-1-5">
-                <label for="description">Researcher Description</label>
-                <div class="tooltip"><strong>i</strong>
-                    <span class="tooltiptext">This is a place for you to share your research interests and expertise.</span>
+        <form action="{% url 'connect-researcher' %}" method="POST" class="flex-this column w-100" id="createResearcher">
+            {% csrf_token %}
+
+            <div>
+                <div class="flex-this space-between">
+                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
+
+                    <!-- Show ORCiD widget based on hostname -->
+                    <div 
+                        id="orcidWidget" 
+                        {% if env == "PROD" %}
+                            data-clientid='APP-3AGU5OQX7M7UKIMD' 
+                            data-env="production" 
+                            data-redirecturi="https://localcontextshub.org/researchers/connect-researcher/"
+                        {% elif env == "SANDBOX" %}
+                            data-clientid='APP-M1RE2U9DY1B6MNYD' 
+                            data-env="sandbox" 
+                            data-redirecturi="https://sandbox.localcontextshub.org/researchers/connect-researcher/"
+                        {% elif env == "DEV" %}
+                            data-clientid='APP-M1RE2U9DY1B6MNYD' 
+                            data-env="develop" 
+                            data-redirecturi="https://local-contexts-hub-sandbox.uc.r.appspot.com/researchers/connect-researcher/"
+                        {% endif %}
+                    >
+                    </div>
                 </div>
 
-                <br>
-                {{ form.description }}
+                {% if env == "DEV" or env == "SANDBOX" %}
+                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                {% endif %}            
             </div>
-            <small id="charCount" class="block text-align-right">200/200</small>
-        </div>
 
-        <div class="flex-this space-between">
+
             <div>
-                {% if form.errors %}
-                    <small class="red-text">{{ form.description.errors.as_text }}</small>
+                <label for="primary_institution">Primary Institution</label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">If you are associated with an institution, please list your primary institution.</span>
+                </div>
+                {{ form.primary_institution }}
+                {% if form.primary_institution.errors %}
+                    <div class="msg-red w-80"><small>{{ form.primary_institution.errors.as_text }}</small></div> 
                 {% endif %}
-                {% include 'partials/_alerts.html' %}
             </div>
-    
-            <div class="margin-top-8">
-                <button id="submitResearcher" class="primary-btn action-btn margin-top-2">Get Started <i class="fa fa-arrow-right"></i></button>
+
+            <div class="w-100">
+                <div class="pad-top-1-5">
+                    <label for="description">Researcher Description</label>
+                    <div class="tooltip"><strong>i</strong>
+                        <span class="tooltiptext">This is a place for you to share your research interests and expertise.</span>
+                    </div>
+
+                    <br>
+                    {{ form.description }}
+                </div>
+                <small id="charCount" class="block text-align-right">200/200</small>
             </div>
-        </div>
 
-    </form>
+            <div class="flex-this space-between">
+                <div>
+                    {% if form.errors %}
+                        <small class="red-text">{{ form.description.errors.as_text }}</small>
+                    {% endif %}
+                    {% include 'partials/_alerts.html' %}
+                </div>
+        
+                <div class="margin-top-8">
+                    <button id="submitResearcher" class="primary-btn action-btn margin-top-2">Get Started <i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
 
-</div>
+        </form>
+
+    </div>
 
 {% endblock %}

@@ -1,67 +1,129 @@
-{% extends 'auth-base.html' %} {% block title %} Subscribe {% endblock %}{% load static %} {% block main %}
+{% extends 'gradient-base.html' %} {% block title %} Subscribe {% endblock %}{% load static %} {% block main %}
 <script src='https://www.google.com/recaptcha/api.js' type="text/javascript" defer></script>
 
-    <div class="content-card-v2 content-card-space">
-
-        <div>
-            <h1 class="no-top-margin">Subscribe to the Local Contexts Newsletter</h1>
-            <p class="w-70">
-                Each issue of the Local Contexts Newsletter includes updates on some of the real-life applications of the Labels and Notices, news, 
-                upcoming events, and much more. New issues of the Newsletter will be released seasonally, aligning with the ebbs and flows of our natural 
-                world and relations around the world. <br><br>
-                See past issues on the Local Contexts <a href="https://localcontexts.org/support/downloadable-resources/" class="darkteal-text underline-hover">website</a>.
-            </p>               
-        </div>
-
-        <form method="POST" action="" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="flex-this column w-70">
-                <label>Name</label>
-                <div class="flex-this w-100">
-                    <div class="w-50 margin-right-1">
-                        <input class="w-100 margin-bottom-2" id="first_name" type="text" name="first_name" placeholder="First Name"/>
+    <div class="content-card-v3">
+        <div class="newsletter-row">
+            <div class="newsletter-column">
+                <div class="newsletter-form">
+                    <div>
+                        <img class="w-25 h-25" src="{% static 'images/logos/sm-logo-registry.png' %}" alt="">
+                        <h1 class="no-top-margin">Subscribe to the Local Contexts Newsletter</h1>
+                        <p class="w-70">
+                            Each issue of the Local Contexts Newsletter includes updates on some of the real-life applications of the Labels and Notices, news,
+                            upcoming events, and much more. New issues of the Newsletter will be released seasonally, aligning with the ebbs and flows of our natural
+                            world and relations around the world. <br><br>
+                            See past issues on the Local Contexts <a href="https://localcontexts.org/support/downloadable-resources/" class="darkteal-text underline-hover">website</a>.
+                        </p>               
                     </div>
-                    <div class="w-50 margin-right-1">
-                        <input class="w-100 margin-bottom-2" id="last_name" type="text" name="last_name" placeholder="Last Name"/>
+
+                    <div>
+                        <form method="POST" action="" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="flex-this column w-70">
+                                <div class="flex-this w-100">
+                                    <div class="w-100 margin-right-1">
+                                        <label>Name</label>
+                                        <input class="w-100 margin-bottom-2" id="first_name" type="text" name="first_name" placeholder="First Name"/>
+                                    </div>
+                                </div>
+                                <div class="flex-this w-100">
+                                    <div class="w-100 margin-right-1">
+                                        <input class="w-100 margin-bottom-2" id="last_name" type="text" name="last_name" placeholder="Last Name"/>
+                                    </div>
+                                </div>
+                                <div class="flex-this w-100">
+                                    <div class="w-100 margin-right-1">
+                                        <label>Email<span title="Required" class="red-text"> *</span></label>
+                                        <input class="w-100 margin-bottom-2" id="email" type="email" name="email" placeholder="Email" required/>
+                                    </div>
+                                </div>
+                                <label class="margin-top-2">What topic(s) are you interested in? <br/> <em>(Check all that apply):<span title="Required" class="red-text"> *</span></em></label>
+                                <div class="flex-this w-100 margin-top-1">
+                                    <div class="w-100 margin-right-1">
+                                        <br>
+                                        <input class="newsletter-toggle" type="checkbox" id="tech" name="topic" value="tech">
+                                        <label for="tech">Hub & API Updates</label><br><br>
+                                        <input class="newsletter-toggle" type="checkbox" id="news" name="topic" value="news">
+                                        <label for="news">News and Resources</label><br><br>
+                                        <input class="newsletter-toggle" type="checkbox" id="events" name="topic" value="events">
+                                        <label for="events">Events</label><br><br>
+                                        <input class="newsletter-toggle" type="checkbox" id="notice" name="topic" value="notice">
+                                        <label for="notice">Notices in Use</label><br><br>
+                                        <input class="newsletter-toggle" type="checkbox" id="labels" name="topic" value="labels">
+                                        <label for="labels">Labels in Use</label>
+                                    </div>
+                                </div>
+                                <br>
+                                <div>
+                                    <div class="g-recaptcha" data-sitekey="6LcfEE4pAAAAAKcLvDVz5Cyr37-BR3ftPi-3oD6w"></div>
+                                </div>
+                                <br>
+                                <div class="flex-this w-100">
+                                    <div class="w-100 margin-right-1">
+                                        <button type="submit" class="primary-btn action-btn" name="subscribebtn">Subscribe</button>
+                                    </div>
+                                </div> 
+                                <br>
+                            </div>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div id="alert-message">
+                                        <div class="{{ message.tags }} flex-this">
+                                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                                <div class="msg-red"><small>{{ message }}</small></div>
+                                            {% endif %}
+                                            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                                                <div class="msg-blue"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close">&times;</span></div>
+                                            {% endif %}
+                                            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS and emailb64 %}
+                                                <div>
+                                                    <p>
+                                                        <i class="fa-solid fa-circle-check successfulicon-color"></i>&nbsp; Thank you for subscribing!
+                                                    </p>
+                                                    <p>
+                                                        <a class="a darkteal-text"  href="{% url 'newsletter-unsubscription' emailb64=emailb64 %}">Click here</a> if you want to unsubscribe or change the preferences.
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </form>
                     </div>
                 </div>
-                <div class="flex-this w-100">
-                    <div class="w-100 margin-right-1">
-                        <label>Email<span title="Required" class="red-text"> *</span></label>
-                        <input class="w-100 margin-bottom-2" id="email" type="email" name="email" placeholder="Email" required/>
-                    </div>
-                </div>
-                <label>What topic(s) are you interested in? (Check all that apply):<span title="Required" class="red-text"> *</span></label>
-                {% include 'partials/_alerts.html' %}
-                <div class="flex-this w-100 margin-top-1">
-                    <div class="w-100 margin-right-1 margin-left-16">
-                        <input type="checkbox" id="tech" name="topic" value="tech" >
-                        <label for="tech"> Hub & API Updates</label><br>
-                        <input type="checkbox" id="news" name="topic" value="news">
-                        <label for="news"> News and Resources</label><br>
-                        <input type="checkbox" id="events" name="topic" value="events">
-                        <label for="events"> Events</label><br>
-                        <input type="checkbox" id="notice" name="topic" value="notice">
-                        <label for="notice"> Notices in Use</label><br>
-                        <input type="checkbox" id="labels" name="topic" value="labels">
-                        <label for="labels"> Labels in Use</label>
-                    </div>
-                </div>
-
-                <div class="margin-top-1"><div class="g-recaptcha" data-sitekey="6LdRB04pAAAAAJvx4J4mr09v7k_cuOUds3g16Kvf"></div></div>
-                <div class="flex-this w-100">
-                    <div class="w-100 margin-right-1">
-                        
-                        <button type="submit" class="primary-btn action-btn margin-top-2" name="subscribebtn">Subscribe</button>
-                    </div>
-                </div> 
             </div>
-        </form>
+
+            <div class="newsletter-column">
+                <div class="image-container">
+                    {% if messages and emailb64 %}
+                        {% for message in messages %}
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                <h3 class="centered-text">{{ message }}</h3>
+                                <img class="centered-icon" src="{% static 'images/news-letter/send_inverted.png' %}" alt="">
+                                <style>
+                                    .flex-this.column.w-70 {
+                                        display: none; /* Hide the form */
+                                    }
+                                </style>
+                            {% else %}
+                                <h3 class="centered-text">Let's&nbsp;keep&nbsp;in&nbsp;touch.</h3>
+                                <img class="centered-icon" src="{% static 'images/news-letter/send.png' %}" alt="">
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <h3 class="centered-text">Let's&nbsp;keep&nbsp;in&nbsp;touch.</h3>
+                        <img class="centered-icon" src="{% static 'images/news-letter/send.png' %}" alt="">
+                    {% endif %}
+                    <img class="w-100 h-100" src="{% static 'images/news-letter/evi-radauscher-NLlvBb9sLts-unsplash.jpg' %}" alt="">
+                    <div class="image-overlay"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
 <style>
-    
-</style>
 
+</style>
 {% endblock %}
