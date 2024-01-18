@@ -8,7 +8,6 @@ class CustomAccountAdapter(DefaultAccountAdapter):
     def get_signup_redirect_url(self, request):
         return '/create-profile/'
 
-
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     
     def get_connect_redirect_url(self, request, socialaccount):

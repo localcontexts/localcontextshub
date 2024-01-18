@@ -202,7 +202,6 @@ class CustomSocialConnectionsView(ConnectionsView):
             return redirect('link-account')
         return super().dispatch(request, *args, **kwargs)
 
-
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
@@ -317,7 +316,6 @@ def manage_organizations(request):
     if Researcher.objects.filter(user=request.user).exists():
         researcher = Researcher.objects.get(user=request.user)
     return render(request, 'accounts/manage-orgs.html', { 'profile': profile, 'affiliations': affiliations, 'researcher': researcher, 'users_name': users_name })
-
 
 @login_required(login_url='login')
 def link_account(request):
