@@ -197,7 +197,8 @@ class CustomSocialConnectionsView(ConnectionsView):
         social_account = SocialAccount.objects.filter(provider=provider, user=request.user).first()
         if social_account:
             social_account.delete()
-            return redirect('update-profile')
+            messages.info(request, 'The social account has been disconnected.')
+            return redirect('link-account')
         else:
             return redirect('link-account')
         return super().dispatch(request, *args, **kwargs)
