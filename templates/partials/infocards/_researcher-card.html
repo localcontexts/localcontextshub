@@ -41,17 +41,17 @@
 
                 <div class="margin-right-8">
                     {% if '/dashboard/' in request.path %}
-                    {% if researcher.get_projects %}
-                    <a 
-                    class="primary-btn action-btn"
-                    href="{% url 'researcher-projects' researcher.id %}"
-                    >View account</a>
-                    {% else %}
-                    <a 
-                    class="primary-btn action-btn"
-                    href="{% url 'researcher-notices' researcher.id %}"
-                    >View account</a>
-                    {% endif %}
+                        {% if researcher.get_projects %}
+                            <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'researcher-projects' researcher.id %}"
+                            >View account</a>
+                        {% else %}
+                            <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'researcher-notices' researcher.id %}"
+                            >View account</a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <!-- Notification -->

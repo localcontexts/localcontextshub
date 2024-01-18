@@ -33,17 +33,17 @@
 
                 <div class="margin-right-8">                 
                     {% if '/dashboard/' in request.path %}
-                    {% if approved_label %}
-                    {% if request.user in community.get_collaborator or request.user == community.community_creator %}
-                    <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
-                    {% endif %}
-                    {% else %}
-                    <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
-                    {% endif %} 
+                        {% if approved_label %}
+                            {% if request.user in community.get_collaborator or request.user == community.community_creator %}
+                                <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
+                            {% endif %}
+                        {% else %}
+                            <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
+                        {% endif %} 
                     {% endif %}
                     
                     {% if request.user in  community.get_viewers and approved_label %}
-                    <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
+                        <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
                     {% endif %}
                 </div>
                 <!-- Notification -->
