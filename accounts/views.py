@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
 from django.contrib.auth.views import PasswordChangeForm
-from allauth.socialaccount.views import SignupView
+from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
 
@@ -190,6 +190,18 @@ class CustomSocialSignupView(SignupView):
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
 
+class CustomSocialConnectionsView(ConnectionsView):
+    def dispatch(self, request, *args, **kwargs):
+        provider = kwargs['provider']
+        social_account = SocialAccount.objects.filter(provider=provider, user=request.user).first()
+        if social_account:
+            social_account.delete()
+            return redirect('update-profile')
+        else:
+            return redirect('link-account')
+        return super().dispatch(request, *args, **kwargs)
+
+
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
@@ -304,6 +316,17 @@ def manage_organizations(request):
     if Researcher.objects.filter(user=request.user).exists():
         researcher = Researcher.objects.get(user=request.user)
     return render(request, 'accounts/manage-orgs.html', { 'profile': profile, 'affiliations': affiliations, 'researcher': researcher, 'users_name': users_name })
+
+
+@login_required(login_url='login')
+def link_account(request):
+    has_social_account = SocialAccount.objects.filter(user=request.user).exists()
+    provider = None
+    if has_social_account:
+        social_account = SocialAccount.objects.filter(user=request.user).first()
+        provider = social_account.provider
+
+    return render(request, 'accounts/link-account.html', {'socialaccount':has_social_account, 'provider': provider})
 
 @login_required(login_url='login')
 def member_invitations(request):

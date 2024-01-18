@@ -25,8 +25,8 @@
   border-radius: 5px 5px;
   max-width: 1200px;
   min-width: 1200px;
-  min-height: 600px;
-  max-height: 600px;
+  min-height: 650px;
+  max-height: 650px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: #fff;
 }
@@ -250,9 +250,9 @@ input[type="checkbox"] {
 
 /* Little orange div on login page */
 .test-hub-div {
-  background-color: #ffe0c8;
+  background-color: #cfe7e2;
   padding: 16px 32px 16px 32px;
-  position: absolute;
+  margin-top: 5%;
   bottom: 0;
 }
 
@@ -308,17 +308,14 @@ input[type="checkbox"] {
   align-items: center;
 }
 
-.horizontal-line-right,
-.horizontal-line-left {
-  width: 100%;
+.horizental-line {
   height: 1px;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  background: black;
 }
 
-.horizontal-line-right {
-  margin-left: 16px;
-}
-
-.horizontal-line-left {
-  margin-right: 16px;
+.register-text {
+  display: flex;
+  align-self: start;
+  margin-left: 35px;
 }

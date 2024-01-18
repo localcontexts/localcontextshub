@@ -14,15 +14,10 @@ load static %} {% load socialaccount %} {% block card %}
 </script>
 
 <div class="flex-this space-between w-90">
-  <div><h2>Register with Local Contexts</h2></div>
-  <div>
-    <p>
-      Already signed up?
-      <a href="{% url 'login' %}" class="default-a">Sign in</a>
-    </p>
-  </div>
+    <div><h2 class="no-bottom-margin">Register with Local Contexts</h2></div>
+    <div><p class="grey-text">Already signed up?<a href="{% url 'login' %}" class="darkteal-text"> Sign in</a></p></div>
 </div>
-
+<div class="register-text"><p class="no-top-margin">Welcome to Local Contexts! We are so happy to see you, let’s get started.</p></div>
 <div class="form-container flex-this column w-90">
   <form
     id="registerUserForm"
@@ -51,40 +46,36 @@ load static %} {% load socialaccount %} {% block card %}
     </div>
     {% endif %}
 
-    <div class="flex-this w-100 pad-top-1-5">
-      <div class="pad-right w-50" style="position: relative">
-        <label for="password">Password</label><br />
-        <div class="flex-this pass-field">{{ form.password1 }}</div>
-        <div id="help-text-pw" style="position: absolute">
-          <small>{{ form.password1.help_text }}</small>
+        <div class="flex-this w-100 pad-top-1-5">
+
+            <div class="pad-right w-50" style="position: relative;">
+                <label for="password">Password</label><br>
+                <div class="flex-this pass-field">
+                    {{ form.password1 }}
+                </div>
+                <div id="help-text-pw" style="position: absolute;">
+                    <small>{{ form.password1.help_text }}</small>
+                </div>
+            </div>
+
+            <div class="pad-left w-50">
+                <label for="confirm-password">Confirm password</label><br>
+                <div class="flex-this pass-field">
+                    {{ form.password2 }} <br>
+                </div>
+                {% if form.password2.errors %}
+                <div class="msg-red w-50"><small>{{ form.password2.errors.as_text }}</small></div>
+                {% endif %}
+            </div>
+
         </div>
+
         {% if form.password1.errors %}
-        <div class="msg-red w-50">
-          <small>{{ form.password1.errors.as_text }}</small>
-        </div>
+            <div class="msg-red w-50"><small>{{ form.password1.errors.as_text }}</small></div>
         {% endif %}
-      </div>
-
-      <div class="pad-left w-50">
-        <label for="confirm-password">Confirm password</label><br />
-        <div class="flex-this pass-field">{{ form.password2 }} <br /></div>
         {% if form.password2.errors %}
-        <div class="msg-red w-50">
-          <small>{{ form.password2.errors.as_text }}</small>
-        </div>
+            <div class="msg-red w-50"><small>{{ form.password2.errors.as_text }}</small></div>
         {% endif %}
-      </div>
-    </div>
-
-    {% if form.password1.errors %}
-    <div class="msg-red w-50">
-      <small>{{ form.password1.errors.as_text }}</small>
-    </div>
-    {% endif %} {% if form.password2.errors %}
-    <div class="msg-red w-50">
-      <small>{{ form.password2.errors.as_text }}</small>
-    </div>
-    {% endif %}
 
     <div class="flex-this row margin-top-16">
       <div class="flex-this align-center space-between">
@@ -128,44 +119,27 @@ load static %} {% load socialaccount %} {% block card %}
       id="g-recaptcha-response"
     />
 
-    <div class="flex-this">
-      <button id="registerUserBtn" class="primary-btn action-btn">
-        Continue <i class="fa fa-arrow-right"></i>
-      </button>
-    </div>
+        <div class="flex-this column signin-banner margin-top-2">
+            <div class="w-100">
 
-    <div class="flex-this margin-top-2">
-      <button class="primary-btn action-btn">
-        <a class="white-text" href="{% provider_login_url 'google' %}"
-          >Signup With Google</a
-        >
-      </button>
-    </div>
-    <div class="flex-this">
-      <button id="registerUserBtn" class="primary-btn action-btn">
-        Continue <i class="fa fa-arrow-right"></i>
-      </button>
-    </div>
-    <div class="center-items">
-      <div class="horizontal-line-left"></div>
-      <p>or</p>
-      <div class="horizontal-line-right"></div>
-    </div>
-    <div class="flex-this">
-      <a class="w-100 g-auth-button" href="{% provider_login_url 'google' %}"
-        ><img
-          class="margin-right-1"
-          src="{% static 'images/logos/google.png' %}"
-          alt=""
-        /><span class="margin-left-1 primary-black-text"
-          >Register With Google</span
-        ></a
-      >
-    </div>
+                <div class="flex-this justify-center"> <button class="primary-btn action-btn margin-top-2 w-100 signin-btn">Continue</button></div>
+            </div>
+            <div class="flex-this justify-center align-center gap-1">
+                <div class="horizental-line"> </div>
+               <p>or</p>
+               <div class="horizental-line"> </div>
+            </div>
+            <div class="flex-this">
+                <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Register With Google</span></a>
+            </div>
+            <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+            </form>
 
-    <!-- Alerts -->
-    {% include 'partials/_alerts.html' %}
-  </form>
+            <!-- Alerts -->
+            {% include 'partials/_alerts.html' %}
+        </div>
+
+    </form>
 </div>
 
 {% endblock %}

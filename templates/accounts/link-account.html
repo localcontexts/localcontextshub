@@ -1,0 +1,24 @@
+{% extends 'settings-base.html' %} {% load static %}
+{% load socialaccount %}
+{% block settings %}
+
+<div class="flex-this column w-80   margin-right-1">
+    <div>
+        <h3>Linked Accounts</h3>
+        <p>Manage, link or remove accounts connected to this account.</p>
+    </div>
+    
+    {% if socialaccount and provider == 'google' %}
+        <div class="flex-this">
+            <a class="w-50 white-btn flex-this align-center justify-center" href="{%  url 'socialaccount_connections' 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Unlink With Google</span> <i class="fa-solid fa-link-simple-slash margin-left-55"></i></a>
+        </div>
+    {% else %}
+        <div class="flex-this">
+            <a class="w-50 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' process='connect' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Link With Google</span><i class="fa-solid fa-link-simple margin-left-55"></i></a>
+        </div>
+    {% endif %}
+    
+
+</div>
+
+{% endblock %}
