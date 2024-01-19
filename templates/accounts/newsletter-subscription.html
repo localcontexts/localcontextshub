@@ -1,8 +1,8 @@
 {% extends 'gradient-base.html' %} {% block title %} Subscribe {% endblock %}{% load static %} {% block main %}
-<script src="https://www.google.com/recaptcha/api.js?render=6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
 <script>
     grecaptcha.ready(function() {
-        grecaptcha.execute('6LfUc1IpAAAAAFgqPBYi09AXyLT9OyqnpV9PxQfg', { action: 'register' }).then(function(token) {
+        grecaptcha.execute('6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U', { action: 'register' }).then(function(token) {
             document.getElementById('g-recaptcha-response').value = token;
         });
     });
