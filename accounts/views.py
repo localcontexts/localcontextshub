@@ -195,11 +195,13 @@ class CustomSocialConnectionsView(ConnectionsView):
     def dispatch(self, request, *args, **kwargs):
         provider = kwargs['provider']
         social_account = SocialAccount.objects.filter(provider=provider, user=request.user).first()
-        if social_account:
+        has_password = request.user.has_usable_password()
+        if social_account and has_password:
             social_account.delete()
             messages.info(request, 'The social account has been disconnected.')
             return redirect('link-account')
         else:
+            messages.error(request, 'Please set password first to unlink an account')
             return redirect('link-account')
         return super().dispatch(request, *args, **kwargs)
 
