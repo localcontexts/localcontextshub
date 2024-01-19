@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
-from django.contrib.auth.views import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
@@ -284,8 +284,13 @@ def update_profile(request):
 @login_required(login_url='login')
 def change_password(request):
     profile = Profile.objects.select_related('user').get(user=request.user)
+    has_usable_password = request.user.has_usable_password()
 
-    form = PasswordChangeForm(request.user, request.POST or None)
+    if not has_usable_password:
+        form = SetPasswordForm(request.user, request.POST or None)
+    else:
+        form = PasswordChangeForm(request.user, request.POST or None)
+
     if request.method == 'POST':
         if form.is_valid():
             form.save()
