@@ -134,19 +134,26 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = auth.authenticate(request, username=username, password=password)
-        next_path = get_next_path(request, default_path='dashboard')
 
-        # If user is found, log in the user.
-        if user is not None:
-            if not user.last_login:
-                auth.login(request, user)
-                # Welcome email
-                send_welcome_email(request, user)
-                return redirect('create-profile')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            user = None
+
+        # If user is found and the password is correct, log in the user.
+        if user is not None and user.check_password(password):
+            if user.is_active:
+                if not user.last_login:
+                    auth.login(request, user)
+                    # Welcome email
+                    send_welcome_email(request, user)
+                    return redirect('create-profile')
+                else:
+                    auth.login(request, user)
+                    return redirect(get_next_path(request, default_path='dashboard'))
             else:
-                auth.login(request, user)
-                return redirect(next_path)
+                messages.error(request, 'Your account is not active.')
+                return redirect('login')
         else:
             messages.error(request, 'Your username or password does not match an account')
             return redirect('login')
