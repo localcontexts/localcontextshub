@@ -1326,28 +1326,34 @@ function validateProjectDisableSubmitBtn() {
 }
 
 function toggleNotifications(scope) {
-    let activebutton= document.getElementById(`notification-button-${scope}`)
+
+    let activebutton = document.getElementById(`notification-button-${scope}`);
+    let allButtons = document.querySelectorAll('[id^="notification-button-"]');
+    allButtons.forEach(function(button) {
+        button.classList.remove('notification-button');
+    });
+
     activebutton.classList.add('notification-button');
     
-    // To hide all elements with the common prefix
     let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
     allNotificationDivs.forEach(function(element) {
         element.classList.remove('show');
     });
-    document.getElementById('notification-v2-'+scope).classList.toggle('show')
 
+    document.getElementById(`notification-v2-${scope}`).classList.toggle('show');
     window.onclick = function(event) {
-        if(!event.target.matches('.dropbtn, .dropbtn i')) {
-            activebutton.classList.remove("notification-button")
-            let dropdowns = document.getElementsByClassName("notification-dropdown-content")
-            for (let i=0; i < dropdowns.length; i++) {
-                let openDropdown = dropdowns[i]
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show')
-                }
-            }
+        if (!event.target.matches('.dropbtn, .dropbtn i')) {
+            // Remove the "notification-button" class from all buttons
+            allButtons.forEach(function(button) {
+                button.classList.remove('notification-button');
+            });
+
+            // Hide all notification divs
+            allNotificationDivs.forEach(function(element) {
+                element.classList.remove('show');
+            });
         }
-    }
+    };
 }
 
 if (window.location.href.includes('connect-community') || window.location.href.includes('connect-institution')) {
