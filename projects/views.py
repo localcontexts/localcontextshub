@@ -92,8 +92,6 @@ def embed_project(request, unique_id):
                     ).get(unique_id=unique_id)
     notices = Notice.objects.filter(project=project, archived=False)
     label_groups = return_project_labels_by_community(project)
-    # tk_labels = TKLabel.objects.filter(project_tklabels=project)
-    # bc_labels = BCLabel.objects.filter(project_bclabels=project)
     
     context = {
         'layout' : layout,
@@ -102,4 +100,8 @@ def embed_project(request, unique_id):
         'label_groups' :  label_groups,
         'project' : project
     }
-    return render(request, 'projects/embed-project.html', context)
+
+    response = render(request, 'projects/embed-project.html', context)
+    response['Content-Security-Policy'] = 'frame-ancestors https://*'
+
+    return response
