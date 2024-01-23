@@ -514,6 +514,10 @@ input:focus {
   border: none;
 }
 
+.signin-btn {
+  gap: "10px";
+}
+
 .primary-btn {
   display: flex;
   align-items: center;
@@ -1850,4 +1854,26 @@ i[data-tooltip]:hover:after {
 
 .newsletter-toggle {
   accent-color: rgba(5, 143, 115, 1);
+}
+
+/* link account page */
+
+.confirmation-alert {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  z-index: 1000;
+}
+
+.confirmation-alert p {
+  margin-bottom: 10px;
+}
+
+.confirmation-alert button {
+  margin-right: 10px;
 }

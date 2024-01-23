@@ -40,8 +40,6 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             user=user,
             **signal_kwargs,
         )
-        custom_message = ("Successfully signed in as {} using Google Auth").format(user.get_username())
-        messages.add_message(request, messages.SUCCESS, custom_message)
         return response
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):

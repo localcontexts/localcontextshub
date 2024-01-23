@@ -285,6 +285,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'email',
         ],
         'AUTH_PARAMS': {
+            'prompt': 'select_account',
             'access_type': 'online',
         }
     }
