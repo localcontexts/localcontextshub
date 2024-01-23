@@ -1,13 +1,16 @@
 import pytest
-from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth.models import User
-from projects.models import Project, ProjectContributors, ProjectNote
+
+from helpers.exceptions import UnconfirmedAccountException
+from projects.models import ProjectContributors
+
 from factories.accounts_factories import UserFactory
 from factories.institutions_factories import InstitutionFactory
 from factories.communities_factories import CommunityFactory
 from factories.researchers_factories import ResearcherFactory
-from factories.projects_factories import ProjectFactory, ProjectArchivedFactory, ProjectPersonFactory, ProjectNoteFactory, ProjectContributorsFactory, ProjectCreatorFactory, ProjectActivityFactory
+from factories.projects_factories import ProjectFactory, ProjectPersonFactory, ProjectNoteFactory, ProjectContributorsFactory, ProjectCreatorFactory, ProjectActivityFactory
+
 
 class TestProject(TestCase):
     @pytest.mark.django_db
@@ -59,6 +62,7 @@ class TestProjectPerson(TestCase):
         string = new_project_person.__str__()
         assert isinstance(new_project_person.__str__(), str)
 
+
 class TestProjectnote(TestCase):
     @pytest.mark.django_db
     def setUp(self):
@@ -69,12 +73,14 @@ class TestProjectnote(TestCase):
         string = str(new_project_note)
         assert isinstance(string, str)
         assert string == new_project_note.project
- 
+
+
 @pytest.fixture
 @pytest.mark.django_db
 def new_project_contributor():
     assert isinstance(ProjectContributorsFactory().__str__(), str)
     return ProjectContributorsFactory()
+
 
 @pytest.mark.django_db
 def test_is_user_contributor():
@@ -102,6 +108,7 @@ def test_is_user_contributor():
     assert not project_contributors.is_user_contributor(User.objects.create_user(username='another_user', password='another_password'))
     assert not project_contributors.is_user_contributor(User.objects.create_user(username='yet_another_user', password='yet_another_password'))
 
+
 class TestProjectCreator(TestCase):
     @pytest.mark.django_db
     def setUp(self):
@@ -115,6 +122,18 @@ class TestProjectCreator(TestCase):
         self.project_creator.community_creator = self.community
         self.project_creator.institution_creator = self.institution
         self.project_creator.researcher_creator = self.researcher
+
+        # for unconfirmed account
+        self.unconfirmed_account_user = UserFactory()
+        self.project_creator_of_unconfirmed_account = ProjectCreatorFactory()
+        self.project_creator_of_unconfirmed_account.community.is_approved = False
+        self.project_creator_of_unconfirmed_account.community.community_creator = self.unconfirmed_account_user
+
+        # for confirmed account
+        self.confirmed_account_user = UserFactory()
+        self.project_creator_of_confirmed_account = ProjectCreatorFactory()
+        self.project_creator_of_confirmed_account.community.is_approved = True
+        self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
 
     def test_which_account_type_created_community(self):
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
@@ -149,7 +168,46 @@ class TestProjectCreator(TestCase):
         project_creator = self.project_creator
         string = project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
-  
+
+    def test_user_of_unconfirmed_account_can_see_project(self):
+        # confirmed error is not raised
+        try:
+            user_of_unconfirmed_account = self.unconfirmed_account_user
+            self.project_creator_of_unconfirmed_account.validate_user_access(
+                user_of_unconfirmed_account
+            )
+        except UnconfirmedAccountException:
+            raise Exception('Error: user of unconfirmed account cannot see own project')
+
+    def test_user_of_confirmed_account_can_see_project(self):
+        # confirmed error is not raised
+        try:
+            user_of_confirmed_account = self.confirmed_account_user
+            self.project_creator_of_confirmed_account.validate_user_access(
+                user_of_confirmed_account
+            )
+        except UnconfirmedAccountException:
+            raise Exception('Error: user of confirmed account cannot see own project')
+
+    def test_nonuser_of_confirmed_account_can_see_project(self):
+        # confirmed error is not raised
+        try:
+            nonuser_of_confirmed_account = self.user
+            self.project_creator_of_confirmed_account.validate_user_access(
+                nonuser_of_confirmed_account
+            )
+        except UnconfirmedAccountException:
+            raise Exception('Error: nonuser of confirmed account cannot see confirmed project')
+
+    def test_nonuser_of_unconfirmed_account_cannot_see_project(self):
+        # confirm error is raised
+        with pytest.raises(UnconfirmedAccountException, match='Account Is Not Confirmed And User Is Not In Account'):
+            nonuser_of_unconfirmed_account = self.user
+            self.project_creator_of_unconfirmed_account.validate_user_access(
+                nonuser_of_unconfirmed_account
+            )
+
+
 class TestProjectnote(TestCase):
     @pytest.mark.django_db
     def setUp(self):
