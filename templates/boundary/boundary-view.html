@@ -64,12 +64,9 @@
             const map = L.map('map')
             let bounds = new L.latLngBounds()
 
-            // all each polygon to map
-            for (const boundary of boundary) {
-                const polygon = L.polygon(boundary).addTo(map)
-                // extend map bound to fit this polygon
-                bounds.extend(polygon.getBounds())
-            }
+            const polygon = L.polygon(boundary).addTo(map)
+            // extend map bound to fit this polygon
+            bounds.extend(polygon.getBounds())
 
             // make map fit bounds
             map.fitBounds(bounds.pad(.5))

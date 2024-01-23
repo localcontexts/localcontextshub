@@ -90,20 +90,19 @@ def download_institution_support_letter(request):
 
 
 @login_required(login_url='login')
-def community_boundaries_view(request, community_id):
+def community_boundary_view(request, community_id):
     try:
         community = Community.objects.get(id=community_id)
-
         if not community.is_user_in_community(request.user):
-            message = 'User Does Not Have Access To Community Boundaries'
+            message = 'User Does Not Have Access To Community Boundary'
             print(f'{message}: {request.user}')
             raise Exception(message)
 
-        boundaries = community.get_all_coordinates(as_tuple=False)
+        boundary = community.boundary.get_coordinates(as_tuple=False)
         context = {
-            'boundaries': boundaries
+            'boundary': boundary
         }
-        return render(request, 'boundaries/boundaries-view.html', context)
+        return render(request, 'boundary/boundary-view.html', context)
     except:
         raise Http404()
 
@@ -120,9 +119,9 @@ def boundary_view(request):
             boundary = []
 
         context = {
-            'boundaries': boundary
+            'boundary': boundary
         }
-        return render(request, 'boundaries/boundaries-view.html', context)
+        return render(request, 'boundary/boundary-view.html', context)
     except Exception as e:
         message = 'Invalid Boundary Format'
         print(f'{message}: {e}')
