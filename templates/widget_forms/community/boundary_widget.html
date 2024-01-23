@@ -1,8 +1,5 @@
 {% load static %}
 <style>
-    .related-widget-wrapper{
-        width: 100%
-    }
     .boundary-container{
         display: flex;
         margin-bottom: 10px;
@@ -11,30 +8,7 @@
     .boundary-textarea{
         width: 90%
     }
-    .delete-boundary{
-        margin-left: 20px;
-        background: lightgrey;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        width: 140px;
-        height: 90px;
-    }
-    .delete-boundary:hover{
-        background: darkgrey;
-    }
-    .delete-boundary.selected, .delete-boundary.selected:hover{
-        background: #a41515;
-    }
-    #add-new-boundary{
-        padding: 10px;
-        cursor: pointer;
-        background: #9be1a9;
-        border-radius: 5px;
-    }
-    #add-new-boundary:hover{
-        background: #86c993;
-    }
+
     #upload-shape-file-data{
         padding: 10px;
         cursor: pointer;
@@ -46,57 +20,41 @@
         background: #8ebccb;
     }
 
-    #view-saved-boundaries, .preview-boundary{
+    #view-saved-boundary{
         font-weight: bold;
         display: inline;
         font-size: 14px;
     }
-    #view-saved-boundaries {
+    #view-saved-boundary {
         margin-left: 20px;
     }
-    #view-saved-boundaries:hover, .preview-boundary:hover{
+    #view-saved-boundary:hover {
         cursor: pointer;
         color: #4d4f74;
     }
 </style>
-<div id="boundaries-container">
-    {% for boundary_id, boundary in boundaries.items %}
+<div id="boundary-container">
+    {% for boundary_id, boundary in boundary.items %}
         <div class="boundary-container">
-            <div>
-                <label for="boundary{{boundary_id}}">Boundary Id {{ boundary_id }}</label>
-                <br>
-                <a
-                    class="preview-boundary"
-                    target="_blank"
-                    onclick="previewBoundary(this); event.preventDefault()"
-                    href="#"
-                    >
-                    Preview
-                </a>
-            </div>
-
-
             <textarea
                     class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
-                    cols="50">{{ boundary |join:", " }}</textarea>
-            <button class="delete-boundary" data-for="{{boundary_id}}" onclick="markAsDeleted(); event.preventDefault()">
-                Mark For Deletion
-            </button>
+                    cols="50">{{ boundary |join:", " }}
+            </textarea>
+
         </div>
     {% endfor %}
 </div>
-<div id="deleted-boundaries" style="display:none"></div>
-<button id="add-new-boundary" onclick="addNewBoundary(); event.preventDefault()">Add New Boundary</button>
+
 <button type="file" id="upload-shape-file-data"
         onclick="triggerShapeFileInput(); event.preventDefault()"
 >
     Upload Shape File Data
 </button>
 <a
-    id="view-saved-boundaries"
+    id="view-saved-boundary"
     target="_blank"
-    href="{% url 'community-boundaries-view' community_id %}">
-    View All Saved Boundaries
+    href="{% url 'community-boundary-view' community_id %}">
+    View Boundary
 </a>
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
@@ -104,8 +62,6 @@
         accept=".zip"
 >
 <script>
-var newBoundaryCount = 0
-
 function triggerShapeFileInput() {
    document.getElementById('shapefile-input').click()
 }
@@ -142,33 +98,25 @@ async function uploadShapeFileData(self) {
           }
         }
     }
+    const firstBoundaryGeometry = listOfFeatures[0]
+    let firstBoundary = [].concat(...firstBoundaryGeometry.geometry.coordinates).map(arr => arr)
 
-    const maxValue = 100
-    console.log('Feature Length', listOfFeatures.length)
-    if (listOfFeatures.length > maxValue) {
-      listOfFeatures.length = maxValue - 1
+    if (firstBoundaryGeometry.geometry.type === 'MultiPolygon') {
+      // when polygon is made up of multiple polygons, use the first
+      firstBoundary = firstBoundary[0]
     }
 
-   // join all boundaries
-   let distinctGeoJsonFeatures = listOfFeatures[0];
-    for (let i=0; i<listOfFeatures.length; i++) {
-      distinctGeoJsonFeatures = turf.union(distinctGeoJsonFeatures, listOfFeatures[i])
+    if(listOfFeatures.length > 1) {
+      alert('Warning:\nThere Are More Than 1 Boundary Present. Only The First Will Be Used.')
     }
-    alert('boundaries unioned')
 
-    // extract boundaries from each unique contour
-    // there will be one boundary per contour
-    const distinctBoundaries = [].concat(...distinctGeoJsonFeatures.geometry.coordinates).map(arr => arr)
+    const firstBoundaryPolygonStr = firstBoundary.map(function(coordinate){
+      // reverse so code extracts (lat-lon)'s
+      return `(${coordinate[1]}, ${coordinate[0]}) `}
+    )
 
-    // for each distinct new boundary a boundary ui element is created
-    // and populated with boundary data from shape file
-    for(let i = 0; i < distinctBoundaries.length; i++) {
-      const distinctBoundaryStr = distinctBoundaries[i].map(function(coordinate){
-        // reverse so code extracts (lat-lon)'s
-        return `(${coordinate[1]}, ${coordinate[0]}) `}
-      )
-      addNewBoundary(distinctBoundaryStr)
-    }
+    const textArea = document.querySelector('.boundary-container textarea')
+    textArea.value = firstBoundaryPolygonStr
 
   } catch (e) {
     console.log('Error extracting boundary data from Shape File', e)
@@ -179,61 +127,5 @@ async function uploadShapeFileData(self) {
   self.value = null
   return false
 }
-function markAsDeleted() {
-  const id = event.target.dataset.for
-  const selectorKey = `boundary${id}`
-  const deletedBoundaryMarker = document.querySelector(`[data-deleted=${selectorKey}]`)
-
-  // -----------toggle deletion marker
-  event.target.classList.toggle("selected");
-
-  if (deletedBoundaryMarker) {
-    // if marked for deletion, then remove marker
-    deletedBoundaryMarker.remove()
-  } else {
-    // otherwise, add marker for deletion
-    const deletedBoundariesContainer = document.getElementById('deleted-boundaries')
-    deletedBoundariesContainer.insertAdjacentHTML(
-      'beforeend',
-      `<input type="text" data-deleted="${selectorKey}" name="deleted-boundary:${id}">`
-    )
-  }
-  // -----------toggle deletion marker
-
-}
-
-function removeBoundary(){
-  newBoundaryCount--
-  event.target.closest(".boundary-container").remove()
-}
-function addNewBoundary(data='') {
-    newBoundaryCount++
-    const boundaryContainer = document.getElementById('boundaries-container')
-    boundaryContainer.insertAdjacentHTML(
-      'beforeend',
-      `<div class="boundary-container">
-            <div>
-                <label>New Boundary</label>
-                <br>
-                <a
-                    class="preview-boundary"
-                    target="_blank"
-                    onclick="previewBoundary(this); event.preventDefault()"
-                    href='#'
-                    >
-                    Preview
-                </a>
-            </div>
-            <textarea
-                name="new-boundary:${newBoundaryCount}"
-                class="boundary-textarea" rows="4"
-                cols="50">${data}</textarea>
-            <button class="delete-boundary" onclick="removeBoundary(); event.preventDefault()">
-                Remove
-            </button>
-        </div>`
-    )
-}
 </script>
 <script src="{% static 'javascript/shpjs.js' %}"></script>
-<script src="{% static 'javascript/turf.js' %}"></script>

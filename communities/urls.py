@@ -5,11 +5,11 @@ urlpatterns = [
     path('preparation-step/', views.preparation_step, name="prep-community"),
     path('connect-community/', views.connect_community, name="connect-community"),
     path('create-community/', views.create_community, name="create-community"),
-    path('community-boundaries/', views.community_boundaries, name="community-boundaries"),
-    path('add-community-boundaries/', views.add_community_boundaries, name="add-community-boundaries"),
-    path('upload-boundaries-file/', views.upload_boundaries_file, name="upload-boundaries-file"),
+    path('community-boundary/', views.community_boundary, name="community-boundary"),
+    path('add-community-boundary/', views.add_community_boundary, name="add-community-boundary"),
+    path('upload-boundary-file/', views.upload_boundary_file, name="upload-boundary-file"),
     path('confirm-community/', views.confirm_community, name="confirm-community"),
-    path('registration-boundaries', views.registration_boundaries, name="registration-boundaries"),
+    path('registration-boundary', views.registration_boundary, name="registration-boundary"),
 
     # Public view
     path('view/<str:pk>/', views.public_community_view, name="public-community"),
