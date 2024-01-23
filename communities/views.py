@@ -46,8 +46,7 @@ def registration_boundary(request):
     community.name_of_boundary = post_data['name']
 
     # add new boundary in this community
-    for coordinates in post_data['boundary']:
-        community.boundary = Boundary.objects.create(coordinates=coordinates)
+    community.boundary = Boundary.objects.create(coordinates=post_data['boundary'])
     community.save()
 
     return HttpResponse(status=201)

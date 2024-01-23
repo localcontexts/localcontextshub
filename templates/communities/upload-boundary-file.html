@@ -236,16 +236,19 @@
 
           // merge geoJson to get unique contours
           let listOfFeatures = geoJsonData.features
+          let fileName = geoJsonData.fileName
 
           if (geoJsonData.length) {
-                // flatten features from multiple geoJson objects
-                listOfFeatures = []
-                for (const geoJsonObject of geoJsonData) {
-                  for (const featureIndex in geoJsonObject.features) {
-                    listOfFeatures.push(geoJsonObject.features[featureIndex])
-                  }
-                }
+            // flatten features from multiple geoJson objects
+            fileName = geoJsonData[0].fileName
+            listOfFeatures = []
+            for (const geoJsonObject of geoJsonData) {
+              for (const featureIndex in geoJsonObject.features) {
+                listOfFeatures.push(geoJsonObject.features[featureIndex])
+              }
             }
+          }
+
           const firstBoundaryGeometry = listOfFeatures[0]
           let firstBoundary = [].concat(...firstBoundaryGeometry.geometry.coordinates).map(arr => arr)
 
@@ -257,7 +260,6 @@
           if(listOfFeatures.length > 1) {
               alert('Warning:\nThere Are More Than 1 Boundary Present. Only The First Will Be Used.')
             }
-
           const distinctBoundaryReordered = firstBoundary.map(function(coordinate){
               // reverse so code extracts (lat-lon)'s
               return [coordinate[1], coordinate[0]]
@@ -265,7 +267,7 @@
           )
 
           // upload shape file to session for community
-          await registerBoundary(geoJsonData.fileName, distinctBoundaryReordered, i === 0)
+          await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
 
         successMessage.classList.toggle('invisible')
         // show and label ui elements
@@ -284,8 +286,7 @@
         // same file if needed
         self.value = null
         return false
-
-        }
+    }
 
 
     </script>
