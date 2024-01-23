@@ -1329,26 +1329,32 @@ function toggleNotifications(scope) {
 
     let activebutton = document.getElementById(`notification-button-${scope}`);
     let allButtons = document.querySelectorAll('[id^="notification-button-"]');
-    allButtons.forEach(function(button) {
-        button.classList.remove('notification-button');
-    });
-
-    activebutton.classList.add('notification-button');
-    
     let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
-    allNotificationDivs.forEach(function(element) {
-        element.classList.remove('show');
+    let activeNotificationDiv = document.getElementById(`notification-v2-${scope}`)
+    
+    allButtons.forEach(function(button) {
+        if (button !== activebutton) {
+            button.classList.remove('notification-button');
+    
+        }
     });
 
-    document.getElementById(`notification-v2-${scope}`).classList.toggle('show');
+    activebutton.classList.toggle('notification-button');    
+
+    allNotificationDivs.forEach(function(element) {
+        if (element !== activeNotificationDiv){
+            element.classList.remove('show');
+        }
+    });
+
+    activeNotificationDiv.classList.toggle('show');
+
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn, .dropbtn i')) {
-            // Remove the "notification-button" class from all buttons
             allButtons.forEach(function(button) {
                 button.classList.remove('notification-button');
             });
 
-            // Hide all notification divs
             allNotificationDivs.forEach(function(element) {
                 element.classList.remove('show');
             });
