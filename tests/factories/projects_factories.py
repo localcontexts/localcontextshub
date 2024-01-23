@@ -10,6 +10,7 @@ from factories.communities_factories import CommunityFactory
 from factories.institutions_factories import InstitutionFactory
 from factories.researchers_factories import ResearcherFactory
 
+
 class ProjectArchivedFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the ProjectArchived Model'''
     class Meta:

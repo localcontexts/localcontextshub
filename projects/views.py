@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+
+from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
 from helpers.models import Notice
 from bclabels.models import BCLabel
@@ -10,15 +12,18 @@ from helpers.downloads import download_project_zip
 from localcontexts.utils import dev_prod_or_local
 from .utils import can_download_project, return_project_labels_by_community
 
+
 def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
-    except Project.DoesNotExist:
+        creator = ProjectCreator.objects.get(project=project)
+        creator.validate_user_access(request.user)
+    except (Project.DoesNotExist, UnconfirmedAccountException):
         return render(request, '404.html', status=404)
-    
+
     sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
     notices = Notice.objects.filter(project=project, archived=False)
-    creator = ProjectCreator.objects.get(project=project)
+
     communities = None
     institutions = None
     user_researcher = Researcher.objects.none()
