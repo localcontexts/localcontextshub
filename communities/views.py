@@ -38,22 +38,16 @@ from xhtml2pdf import pisa
 
 @has_new_community_id
 @login_required(login_url='login')
-def registration_boundaries(request):
+def registration_boundary(request):
     post_data = json.loads(request.body.decode('UTF-8'))
     # update community with boundary-related information
     community = get_community(request.session.get('new_community_id'))
-    community.source_of_boundaries = post_data['source']
-    community.name_of_boundaries = post_data['name']
-    remove_previous_boundaries = post_data.get('remove_previous', True)
+    community.source_of_boundary = post_data['source']
+    community.name_of_boundary = post_data['name']
 
-    # remove all previous boundaries in this community
-    if remove_previous_boundaries:
-        community.boundaries.all().delete()
-
-    # add new boundaries in this community
-    for coordinates in post_data['boundaries']:
-        boundary = Boundary.objects.create(coordinates=coordinates)
-        community.boundaries.add(boundary)
+    # add new boundary in this community
+    for coordinates in post_data['boundary']:
+        community.boundary = Boundary.objects.create(coordinates=coordinates)
     community.save()
 
     return HttpResponse(status=201)
@@ -138,30 +132,30 @@ def create_community(request):
                     action_account_type='community'
                 )
                 request.session['new_community_id'] = data.id
-                return redirect('community-boundaries')
+                return redirect('community-boundary')
     return render(request, 'communities/create-community.html', {'form': form})
 
 
 @has_new_community_id
 @login_required(login_url='login')
-def community_boundaries(request):
-    return render(request, 'communities/community-boundaries.html')
+def community_boundary(request):
+    return render(request, 'communities/community-boundary.html')
 
 
 @has_new_community_id
 @login_required(login_url='login')
-def add_community_boundaries(request):
-    return render(request, 'communities/add-community-boundaries.html')
+def add_community_boundary(request):
+    return render(request, 'communities/add-community-boundary.html')
 
 
 @has_new_community_id
 @login_required(login_url='login')
-def upload_boundaries_file(request):
+def upload_boundary_file(request):
     community_id = get_community(request.session.get('new_community_id'))
     context = {
         'community_id': community_id.id
     }
-    return render(request, 'communities/upload-boundaries-file.html', context)
+    return render(request, 'communities/upload-boundary-file.html', context)
 
 
 # Confirm Community
