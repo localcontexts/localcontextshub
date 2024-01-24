@@ -264,7 +264,13 @@
                             </div>
                             <div>
                                 <div class="margin-top-16">
+                                    {% if notice.notice_type == 'biocultural' %}
+                                    <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="black square with white letters BC in the middle">
+                                    {% elif notice.notice_type == 'traditional_knowledge' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="black square with white letters TK in the middle">
+                                    {% else  %}
+                                    <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="black square with an unfinished square in the middle in white">
+                                    {% endif %}
                                 </div>
                                 <p>
                                     {{ notice.default_text }} <br><br>
