@@ -65,7 +65,7 @@ def register(request):
                 if User.objects.filter(email=user.email).exists():
                     messages.error(request, 'A user with this email already exists')
                     return redirect('register')
-                elif User.objects.filter(username=user.username.lower()).exists():
+                elif User.objects.filter(username__iexact=user.username.lower()).exists():
                     messages.error(request, 'A user with this username already exists')
                     return redirect('register')
                 else:
