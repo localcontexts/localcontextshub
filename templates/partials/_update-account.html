@@ -13,7 +13,7 @@
         <div class="side-nav-container">
             <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if 'update' in request.path %} selected {% else %} grey-text {% endif %}">
-                    <div class="w-20 margin-right-8"><i class="fa fa-user fa-3x" aria-hidden="true"></i></div>
+                    <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-circle-user fa-3x"></i></div>
                     <div class="w-80">
                         <p class="no-top-margin">
                             {% if community %}
