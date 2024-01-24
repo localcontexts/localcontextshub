@@ -1716,7 +1716,7 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
     var layoutType, languageType, customizationOptions = null
     projectID = embedCode.dataset.projectId
     
-    embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+    embedCode.value = '<iframe width="100%" height="300" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
 
     for (i=0;i < languageDropdown.options.length; i++) {
         if (langArray.includes(languageDropdown.options[i].value) == false) {
