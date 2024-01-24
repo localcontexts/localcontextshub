@@ -17,10 +17,10 @@
                     <div class="w-80">
                         <p class="no-top-margin">
                             {% if community %}
-                                <strong>Community Account</strong><br>Contact name, email, location, description
+                                <strong>Community Account</strong><br>Image, location, description
                             {% endif %}
                             {% if institution %}
-                                <strong>Institution Account</strong><br>Contact name, email, {% if not institution.is_ror %} location, {% endif %} description
+                                <strong>Institution Account</strong><br>Image, location, description
                             {% endif %}
                             {% if researcher %}
                                 <strong>Researcher Account</strong><br>Contact email, primary institution, description
@@ -164,27 +164,9 @@
                         {% endif %}
                     </div>
 
-                    <div><h3>Account Contact</h3></div>
-                    <div class="w-100 margin-bottom-16">
-                        {% if community or institution %}
-                            <div class="flex-this">
-                                <div class="w-50 margin-right-1">
-                                    <label> Name </label><br>                                           
-                                    {{ update_form.contact_name }}
-                                </div>
-                                <div class="w-50">
-                                    <label> Email </label><br>                                       
-                                    {{ update_form.contact_email }}
-                                </div>                            
-                            </div>
-                            {% if update_form.contact_name.errors %}
-                                <div class="msg-red w-50"><small>{{ update_form.contact_name.errors.as_text }}</small></div> 
-                            {% endif %}
-                            {% if update_form.contect_email.errors %}
-                                <div class="msg-red w-50"><small>{{ update_form.contect_email.errors.as_text }}</small></div> 
-                            {% endif %}
-                        {% endif %}
-                        {% if researcher %}
+                    {% if researcher %}
+                        <div><h3>Account Contact</h3></div>
+                        <div class="w-100 margin-bottom-16">
                             <div>
                                 <label for="contact_email"> Contact Email </label><br> 
                                 {{ update_form.contact_email }}
@@ -202,8 +184,8 @@
                                     <div class="msg-red w-50"><small>{{ update_form.contact_email_public.errors.as_text }}</small></div> 
                                 {% endif %}
                             </div>  
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% endif %}
 
                     <div>
                         {% if researcher %}

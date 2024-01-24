@@ -50,8 +50,7 @@
         {% endif %} {% endif %}
 
         <div class="margin-right-8">
-          {% if '/dashboard/' in request.path %} {% if researcher.get_projects
-          %}
+          {% if '/dashboard/' in request.path %} {% if researcher.get_projects %}
           <a
             class="primary-btn action-btn"
             href="{% url 'researcher-projects' researcher.id %}"
