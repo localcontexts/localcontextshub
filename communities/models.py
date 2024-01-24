@@ -65,19 +65,13 @@ class Community(models.Model):
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
 
-    source_of_boundaries = models.CharField(max_length=400, blank=True, null=True)
-    name_of_boundaries = models.CharField(max_length=200, blank=True, null=True)
-    boundaries = models.ManyToManyField(Boundary, related_name="boundaries")
+    source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
+    name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
 
     # Managers
     objects = models.Manager()
     approved = ApprovedManager()
-
-    def get_all_coordinates(self, as_tuple=True):
-        return [
-            b.get_coordinates(as_tuple)
-            for b in self.boundaries.all()
-        ]
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]

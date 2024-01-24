@@ -57,25 +57,24 @@ class CommunityModelForm(forms.ModelForm):
     class Meta:
         model = Community
         exclude = []
-        max_coordinates_in_boundary_count = 2000
-        max_boundary_count = 5
+        max_coordinates_in_boundary_count = 3000
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.supplementary_boundary_data = None
-        self.fields['boundaries'].widget = BoundaryWidget(
+        self.fields['boundary'].widget = BoundaryWidget(
             attrs={
                 'community_id': self.instance.id,
-                'boundary_ids': [b.id for b in self.instance.boundaries.all()]
+                'boundary_id': self.instance.boundary.id if self.instance.boundary else None
             }
         )
-        self.fields['boundaries'].help_text = None
+        self.fields['boundary'].help_text = None
 
     def parse_boundary_str(self, boundary_str: str) -> dict:
         boundary_str_with_brackets = boundary_str.replace('(', '[').replace(')', ']')
         boundary_data = json.loads(f'[{boundary_str_with_brackets}]')
-        boundary_data_length = len(boundary_data)
 
+        boundary_data_length = len(boundary_data)
         if boundary_data_length > self.Meta.max_coordinates_in_boundary_count:
             raise Exception(f'Boundary Has Too Many Coordinates. '
                             f'{boundary_data_length} Coordinates Are Detected')
@@ -83,25 +82,22 @@ class CommunityModelForm(forms.ModelForm):
         return boundary_data
 
     def read_supplementary_boundary_data(self) -> dict:
-        deleted_boundary_ids = []
-        new_boundaries = []
-        current_boundaries = {}
+        current_boundary = None
+        new_boundary = None
         errors = ErrorList()
 
         for key in self.data:
             try:
-                if 'deleted-boundary' in key:
-                    _, boundary_id = key.split(':')
-                    deleted_boundary_ids.append(boundary_id)
-
-                elif 'new-boundary' in key:
-                    new_boundary_value = self.parse_boundary_str(self.data[key])
-                    new_boundaries.append(new_boundary_value)
-
-                elif 'current-boundary' in key:
+                if 'current-boundary' in key:
                     current_boundary_value = self.data[key]
                     _, boundary_id = key.split(':')
-                    current_boundaries[boundary_id] = self.parse_boundary_str(current_boundary_value)
+                    current_boundary = {
+                        'id': boundary_id,
+                        'value': self.parse_boundary_str(current_boundary_value)
+                    }
+
+                if 'new-boundary' in key:
+                    new_boundary = self.parse_boundary_str(self.data[key])
 
             except Exception as e:
                 # send error to FE
@@ -111,57 +107,44 @@ class CommunityModelForm(forms.ModelForm):
                 print(f'Error Reading Supplemental Boundary Data: {e}', file=sys.stderr)
                 break
 
-        # create error when they are too many boundaries
-        boundary_count = len(current_boundaries) - len(deleted_boundary_ids) + len(new_boundaries)
-        if boundary_count > self.Meta.max_boundary_count:
-            errors.data.append('Too Many Boundaries Detected')
-
         # when errors exist, add those to the form
         if errors:
-            self.errors['boundaries'] = errors
+            self.errors['boundary'] = errors
 
         return {
-            'deleted_boundary_ids': deleted_boundary_ids,
-            'current_boundaries': current_boundaries,
-            'new_boundaries': new_boundaries,
+            'current_boundary': current_boundary,
+            'new_boundary': new_boundary,
         }
 
-    def validate_boundaries(self):
+    def validate_boundary(self):
         # remove previous errors
-        if 'boundaries' in self.errors:
-            del self.errors['boundaries']
+        if 'boundary' in self.errors:
+            del self.errors['boundary']
 
         # store supplementary boundary data
         self.supplementary_boundary_data = self.read_supplementary_boundary_data()
 
     def is_valid(self):
         super().is_valid()
-        self.validate_boundaries()
+        self.validate_boundary()
         return self.is_bound and not self.errors
 
-    def save_boundaries(self):
+    def save_boundary(self):
+        # update current boundary
+        updated_boundary = self.supplementary_boundary_data.get('current_boundary')
+        if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
+            self.instance.boundary.coordinates = updated_boundary['value']
+            self.instance.boundary.save()
+            return
 
-        # delete boundaries that should be deleted
-        for boundary_id in self.supplementary_boundary_data['deleted_boundary_ids']:
-            self.instance.boundaries.filter(id=boundary_id).delete()
-
-            # del corresponding boundary from current boundaries
-            del self.supplementary_boundary_data['current_boundaries'][boundary_id]
-
-        # update current boundaries
-        for boundary_id in self.supplementary_boundary_data['current_boundaries']:
-            boundary_object = self.instance.boundaries.filter(id=boundary_id).first()
-            boundary_object.coordinates = self.supplementary_boundary_data['current_boundaries'][boundary_id]
-            boundary_object.save()
-
-        # add new boundaries
-        for coordinates in self.supplementary_boundary_data['new_boundaries']:
-            boundary = Boundary.objects.create(coordinates=coordinates)
-            self.instance.boundaries.add(boundary)
+        new_boundary = self.supplementary_boundary_data.get('new_boundary')
+        if new_boundary:
+            self.instance.boundary = Boundary(coordinates=new_boundary)
+            self.instance.boundary.save()
 
     def save(self, commit=True):
         obj = super().save(commit=False)
-        self.save_boundaries()
+        self.save_boundary()
         if commit:
             obj.save()
         return obj
