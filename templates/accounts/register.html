@@ -1,5 +1,12 @@
 {% extends 'register-base.html' %} {% block title %} Register {% endblock %} {% load static %} {% block card %}
-<script src='https://www.google.com/recaptcha/api.js' type="text/javascript" defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U', { action: 'register' }).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+        });
+    });
+</script>
 
 <div class="flex-this space-between w-90">
     <div><h2>Register with Local Contexts</h2></div>
@@ -55,8 +62,8 @@
         {% endif %}
 
         <div class="flex-this row margin-top-16">
-            <div class="flex-this space-between">
-                <div class="text-align-right checkbox-space">
+            <div class="flex-this align-center space-between">
+                <div class="text-align-right margin-right-1">
                     <input type="checkbox" name="terms-agreement" required>
                 </div>
                 <div class="checkbox-label w-100">
@@ -72,9 +79,9 @@
                 </div>
             </div>
 
-            <div><div class="g-recaptcha" data-sitekey="6LcfEE4pAAAAAKcLvDVz5Cyr37-BR3ftPi-3oD6w"></div></div>
         </div>
         <br>
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
         <div class="flex-this flex-end">
             <button id="registerUserBtn" class="primary-btn action-btn">Continue <i class="fa fa-arrow-right"></i></button>

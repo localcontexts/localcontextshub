@@ -59,7 +59,7 @@ def register(request):
             result = json.loads(response.read().decode())
             ''' End reCAPTCHA validation '''
 
-            if result['success']:
+            if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
                 user = form.save(commit=False)
 
                 if User.objects.filter(email=user.email).exists():
@@ -467,7 +467,7 @@ def newsletter_subscription(request):
                 messages.add_message(request, messages.ERROR, 'Please select at least one topic.')
                 return redirect('newsletter-subscription')
             else:
-                if result['success']:
+                if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
                     first_name = request.POST['first_name']
                     last_name = request.POST['last_name']
                     name= str(first_name) + str(' ') + str(last_name)
