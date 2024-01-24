@@ -1325,20 +1325,41 @@ function validateProjectDisableSubmitBtn() {
 
 }
 
-function toggleNotifications() {
-    document.getElementById('notification-v2').classList.toggle('show')
+function toggleNotifications(scope) {
+
+    let activebutton = document.getElementById(`notification-button-${scope}`);
+    let allButtons = document.querySelectorAll('[id^="notification-button-"]');
+    let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
+    let activeNotificationDiv = document.getElementById(`notification-v2-${scope}`)
+    
+    allButtons.forEach(function(button) {
+        if (button !== activebutton) {
+            button.classList.remove('notification-button');
+    
+        }
+    });
+
+    activebutton.classList.toggle('notification-button');    
+
+    allNotificationDivs.forEach(function(element) {
+        if (element !== activeNotificationDiv){
+            element.classList.remove('show');
+        }
+    });
+
+    activeNotificationDiv.classList.toggle('show');
 
     window.onclick = function(event) {
-        if(!event.target.matches('.dropbtn')) {
-            let dropdowns = document.getElementsByClassName("notification-dropdown-content")
-            for (let i=0; i < dropdowns.length; i++) {
-                let openDropdown = dropdowns[i]
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show')
-                }
-            }
+        if (!event.target.matches('.dropbtn, .dropbtn i')) {
+            allButtons.forEach(function(button) {
+                button.classList.remove('notification-button');
+            });
+
+            allNotificationDivs.forEach(function(element) {
+                element.classList.remove('show');
+            });
         }
-    }
+    };
 }
 
 if (window.location.href.includes('connect-community') || window.location.href.includes('connect-institution')) {

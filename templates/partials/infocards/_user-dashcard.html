@@ -41,7 +41,7 @@
                 <div class="margin-right-8"><a href="{% url 'dashboard' %}" class="primary-btn white-btn">Back to Profile</a></div>
             {% else %}
                 <!-- Notifications -->
-                {% include 'snippets/notifications.html' %}
+                {% include 'snippets/notifications.html' with scope=user %}
                     
                 <div><a href="{% url 'update-profile' %}" class="primary-btn green-btn">Edit profile <i class="fa fa-pencil" aria-hidden="true"></i></a></div>
             {% endif %}
