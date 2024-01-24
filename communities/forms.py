@@ -4,7 +4,7 @@ import sys
 from django import forms
 from django.forms.utils import ErrorList
 
-from .models import Community, InviteMember, JoinRequest
+from .models import Community, InviteMember, JoinRequest, Boundary
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 import os
@@ -65,7 +65,7 @@ class CommunityModelForm(forms.ModelForm):
         self.fields['boundary'].widget = BoundaryWidget(
             attrs={
                 'community_id': self.instance.id,
-                'boundary_id': self.instance.boundary.id
+                'boundary_id': self.instance.boundary.id if self.instance.boundary else None
             }
         )
         self.fields['boundary'].help_text = None
@@ -83,6 +83,7 @@ class CommunityModelForm(forms.ModelForm):
 
     def read_supplementary_boundary_data(self) -> dict:
         current_boundary = None
+        new_boundary = None
         errors = ErrorList()
 
         for key in self.data:
@@ -94,6 +95,9 @@ class CommunityModelForm(forms.ModelForm):
                         'id': boundary_id,
                         'value': self.parse_boundary_str(current_boundary_value)
                     }
+
+                if 'new-boundary' in key:
+                    new_boundary = self.parse_boundary_str(self.data[key])
 
             except Exception as e:
                 # send error to FE
@@ -109,6 +113,7 @@ class CommunityModelForm(forms.ModelForm):
 
         return {
             'current_boundary': current_boundary,
+            'new_boundary': new_boundary,
         }
 
     def validate_boundary(self):
@@ -129,6 +134,12 @@ class CommunityModelForm(forms.ModelForm):
         updated_boundary = self.supplementary_boundary_data.get('current_boundary')
         if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
             self.instance.boundary.coordinates = updated_boundary['value']
+            self.instance.boundary.save()
+            return
+
+        new_boundary = self.supplementary_boundary_data.get('new_boundary')
+        if new_boundary:
+            self.instance.boundary = Boundary(coordinates=new_boundary)
             self.instance.boundary.save()
 
     def save(self, commit=True):

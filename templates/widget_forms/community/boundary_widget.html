@@ -35,14 +35,15 @@
 </style>
 <div id="boundary-container">
     {% for boundary_id, boundary in boundary.items %}
-        <div class="boundary-container">
-            <textarea
-                    class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
-                    cols="50">{{ boundary |join:", " }}
-            </textarea>
-
-        </div>
+        <div class="boundary-container"><textarea
+        class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
+        cols="50">{{ boundary |join:", " }}</textarea></div>
     {% endfor %}
+    {% if not boundary %}
+        <div class="boundary-container"><textarea
+        class="boundary-textarea" name="new-boundary" rows="4"
+        cols="50"></textarea></div>
+    {% endif %}
 </div>
 
 <button type="file" id="upload-shape-file-data"
