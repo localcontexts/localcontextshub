@@ -1,144 +1,124 @@
-{% extends 'settings-base.html' %} {% load static %} {% block settings %}
-<div class="flex-this column w-50 margin-right-1">
-  <div class="flex-this space-between">
-    <div><h3 class="no-top-margin">Profile Information</h3></div>
-    <div>User Name: {{ request.user.username }}</div>
-    <div>User ID: {{ request.user.id }}</div>
-  </div>
+{% extends 'settings-base.html' %} {% load static %}
 
-  <div>
-    <form method="POST" action="" enctype="multipart/form-data">
-      {% csrf_token %}
+{% block settings %}
+<div class="flex-this column w-50   margin-right-1">
+    <div class="flex-this space-between">
+        <div><h3 class="no-top-margin">Profile Information</h3></div>
+        <div>User Name: {{ request.user.username }}</div>
+        <div>User ID: {{ request.user.id }}</div>
+    </div>
 
-      <div class="w-100 margin-top-8">
-        <div class="flex-this">
-          <div class="w-50">
-            <label for="first_name">First Name </label><br />
-            {{ user_form.first_name }}<br />
-          </div>
-          <div class="w-50 margin-left-16">
-            <label for="last_name">Last Name </label><br />
-            {{ user_form.last_name }}<br />
-          </div>
-        </div>
-        {% if user_form.first_name.errors %}
-        <div class="msg-red w-50">
-          <small>{{ user_form.first_name.errors.as_text }}</small>
-        </div>
-        {% endif %} {% if user_form.last_name.errors %}
-        <div class="msg-red w-50">
-          <small>{{ user_form.last_name.errors.as_text }}</small>
-        </div>
-        {% endif %}
-      </div>
+    <div>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
 
-      <div class="w-100 margin-top-8">
-        <label for="email">Email</label><br />
-        {{ user_form.email }} {% if user_form.email.errors %}
-        <div class="msg-red w-50">
-          <small>{{ user_form.email.errors.as_text }}</small>
-        </div>
-        {% endif %}
-      </div>
+            <div class="w-100 margin-top-8">
+                <div class="flex-this">
+                    <div class="w-50">
+                        <label for="first_name">First Name </label><br>
+                        {{ user_form.first_name }}<br>
+                    </div>
+                    <div class="w-50 margin-left-16">
+                        <label for="last_name">Last Name </label><br>
+                        {{ user_form.last_name }}<br>
+                    </div>                 
+                </div>
+                {% if user_form.first_name.errors %}
+                    <div class="msg-red w-50"><small>{{ user_form.first_name.errors.as_text }}</small></div> 
+                {% endif %}
+                {% if user_form.last_name.errors %}
+                    <div class="msg-red w-50"><small>{{ user_form.last_name.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
 
-      <div class="w-100 margin-top-8">
-        <div class="flex-this">
-          <div class="w-50">
-            <label for="position">Position </label><br />
-            {{ profile_form.position }}
-          </div>
+            <div class="w-100 margin-top-8">
+                <label for="email">Email</label><br>
+                {{ user_form.email }}
+                {% if user_form.email.errors %}
+                    <div class="msg-red w-50"><small>{{ user_form.email.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
 
-          <div class="w-50 margin-left-16">
-            <label for="affiliation">Affiliation </label><br />
-            {{ profile_form.affiliation }}
-          </div>
-        </div>
-        {% if profile_form.position.errors %}
-        <div class="msg-red w-50">
-          <small>{{ profile_form.position.errors.as_text }}</small>
-        </div>
-        {% endif %} {% if profile_form.affiliation.errors %}
-        <div class="msg-red w-50">
-          <small>{{ profile_form.affiliation.errors.as_text }}</small>
-        </div>
-        {% endif %}
-      </div>
+            <div class="w-100 margin-top-8">
+                <div class="flex-this">
+                    <div class="w-50">
+                        <label for="position">Position </label><br>                                           
+                        {{ profile_form.position }}
+                    </div>
 
-      <div class="w-100 flex-this">
-        <div class="w-50 margin-top-8">
-          <label for="preferred_language">Preferred Language</label><br />
-          {{ profile_form.preferred_language }} {% if
-          profile_form.preferred_language.errors %}
-          <div class="msg-red w-50">
-            <small>{{ profile_form.preferred_language.errors.as_text }}</small>
-          </div>
-          {% endif %}
+                    <div class="w-50 margin-left-16">
+                        <label for="affiliation">Affiliation </label><br>                                           
+                        {{ profile_form.affiliation }}
+                    </div>
+                </div>
+                {% if profile_form.position.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.position.errors.as_text }}</small></div> 
+                {% endif %}
+                {% if profile_form.affiliation.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.affiliation.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
+
+        <div class="w-100 flex-this">
+            <div class="w-50 margin-top-8">
+                <label for="preferred_language">Preferred Language</label><br>
+                {{ profile_form.preferred_language }}
+                {% if profile_form.preferred_language.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.preferred_language.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
+
+            <div class="w-50 margin-top-8 margin-left-16">
+                <label>Languages Spoken</label><br>
+                {{ profile_form.languages_spoken }}
+                {% if profile_form.languages_spoken.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.languages_spoken.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>    
         </div>
 
-        <div class="w-50 margin-top-8 margin-left-16">
-          <label>Languages Spoken</label><br />
-          {{ profile_form.languages_spoken }} {% if
-          profile_form.languages_spoken.errors %}
-          <div class="msg-red w-50">
-            <small>{{ profile_form.languages_spoken.errors.as_text }}</small>
-          </div>
-          {% endif %}
-        </div>
-      </div>
 
-      <div class="w-100 margin-top-8">
-        <div class="flex-this">
-          <div class="w-100">
-            <label for="city_town">City or Town </label><br />
-            {{ profile_form.city_town }}
-          </div>
-          <div class="w-100 margin-left-16">
-            <label for="state_province_region">State or Province </label><br />
-            {{ profile_form.state_province_region }}
-          </div>
-        </div>
-        {% if profile_form.city_town.errors %}
-        <div class="msg-red w-50">
-          <small>{{ profile_form.city_town.errors.as_text }}</small>
-        </div>
-        {% endif %} {% if profile_form.state_province_region.errors %}
-        <div class="msg-red w-50">
-          <small>{{ profile_form.state_province_region.errors.as_text }}</small>
-        </div>
-        {% endif %}
-      </div>
+            <div class="w-100 margin-top-8">
+                <div class="flex-this">
+                    <div class="w-100">
+                        <label for="city_town">City or Town </label><br>
+                        {{ profile_form.city_town }}
+                    </div>
+                    <div class="w-100 margin-left-16">
+                        <label for="state_province_region">State or Province </label><br>                                           
+                        {{ profile_form.state_province_region }}
+                    </div>
+                </div>
+                {% if profile_form.city_town.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.city_town.errors.as_text }}</small></div> 
+                {% endif %}
+                {% if profile_form.state_province_region.errors %}
+                    <div class="msg-red w-50"><small>{{ profile_form.state_province_region.errors.as_text }}</small></div> 
+                {% endif %}
 
-      <div class="flex-this w-100 margin-top-8">
-        <div class="w-100">
-          <label for="country">Country </label><br />
-          {{ profile_form.country }}
-        </div>
-      </div>
+            </div>
 
-      {% include 'partials/_alerts.html' %}
+            <div class="flex-this w-100 margin-top-8">
+                <div class="w-100">
+                    <label for="country">Country </label><br>                                       
+                    {{ profile_form.country }}
+                </div>
+            </div>
 
-      <div class="w-100">
-        <p>
-          <small
-            >Providing your personal information is optional. By providing it,
-            you consent for it to be shown to other Hub users, see the
-            <a
-              href="https://localcontexts.org/privacy-policy/"
-              class="darkteal-text underline-hover"
-              target="_blank"
-              rel="noopener"
-              >Privacy Policy
-              <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a
-            >.</small
-          >
-        </p>
-        <div class="margin-bottom-16 margin-top-16">
-          <button class="primary-btn action-btn margin-top-2">
-            Save changes <i class="fa fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
+            {% include 'partials/_alerts.html' %}
+
+            <div class="w-100">
+                <p>
+                    <small>Providing your personal information is optional.
+                        By providing it, you consent for it to be shown to other Hub users, see the <a href="https://localcontexts.org/privacy-policy/" class="darkteal-text underline-hover" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</small>
+                </p>  
+                <div class="margin-bottom-16 margin-top-16">
+                    <button class="primary-btn action-btn margin-top-2">Save changes <i class="fa fa-arrow-right"></i></button>
+                </div>  
+            </div>
+
+        </form>
+    </div>
+
 </div>
 {% endblock %}
