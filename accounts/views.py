@@ -152,8 +152,12 @@ def login(request):
                     auth.login(request, user)
                     return redirect(get_next_path(request, default_path='dashboard'))
             else:
-                messages.error(request, 'Your account is not active. Please contact support@localcontexts.org')
-                return redirect('login')
+                if not user.last_login:
+                    messages.error(request, 'Your account is not active. Please verify your email.')
+                    return redirect('verify')
+                else:
+                    messages.error(request, 'Your account is not active. Please contact support@localcontexts.org')
+                    return redirect('login')
         else:
             messages.error(request, 'Your username or password does not match an account')
             return redirect('login')
