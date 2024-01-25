@@ -6,7 +6,7 @@
         <div class="flex-this w-100 space-between">
             <div class="loc grey-text bold">
                 <small>
-                    <a href="{% url 'dashboard' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'dashboard' %}" class="default-a">
                         {% firstof request.user.first_name request.user %}
                     </a> 
                     >>                        
@@ -47,7 +47,7 @@
                     {% if researcher.orcid %}
                         <div itemscope itemtype="https://schema.org/Person">
                             <a 
-                                class="darkteal-text underline-hover" 
+                                class="default-a" 
                                 itemprop="sameAs" 
                                 target="orcid.widget" 
                                 rel="me noopener noreferrer" 

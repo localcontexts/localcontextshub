@@ -59,7 +59,7 @@
                     <div><p>
                             <em>
                                 <a 
-                                    class="darkteal-text underline-hover" 
+                                    class="default-a" 
                                     {% if community %}
                                         href="{% url 'community-project-actions' community.id project.source_project_uuid %}"
                                     {% endif %}
@@ -103,7 +103,7 @@
                             <ul>
                                 {% for url in project.urls %}
                                     <li>
-                                        <a href="{{ url }}" class="darkteal-text underline-hover word-break" target="_blank" rel="noopener">{{ url }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+                                        <a href="{{ url }}" class="default-a word-break" target="_blank" rel="noopener">{{ url }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -121,7 +121,7 @@
                                     <li>
                                         <div class="flex-this space-between">
                                             <div>
-                                                <a href="{% url 'public-community' account.id %}" class="darkteal-text underline-hover">{{ account.community_name }}</a> | Community 
+                                                <a href="{% url 'public-community' account.id %}" class="default-a">{{ account.community_name }}</a> | Community 
                                             </div>
                                             {% if account == community and not account == creator.community %} 
                                                 <div>
@@ -138,7 +138,7 @@
                                     <li>
                                         <div class="flex-this space-between">
                                             <div>
-                                                <a href="{% url 'public-institution' account.id %}" class="darkteal-text underline-hover">{{ account.institution_name }}</a> | Institution 
+                                                <a href="{% url 'public-institution' account.id %}" class="default-a">{{ account.institution_name }}</a> | Institution 
                                             </div>
                                             {% if account == institution and not account == creator.institution %} 
                                                 <div>
@@ -160,7 +160,7 @@
                                                         <img loading="lazy" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="margin-top:2.5px;" alt="ORCID iD icon">
                                                     </a>
                                                 {% endif %}
-                                                <a href="{% url 'public-researcher' account.id %}" class="darkteal-text underline-hover">{% firstof account.user.get_full_name account.user.username %}</a> | Researcher
+                                                <a href="{% url 'public-researcher' account.id %}" class="default-a">{% firstof account.user.get_full_name account.user.username %}</a> | Researcher
                                             </div>
                                             {% if account == researcher and not account == creator.researcher %} 
                                                 <div>
@@ -299,7 +299,7 @@
                         <div class="label-group">
                             <div class="flex-this space-between">
                                 <div>
-                                    <a class="darkteal-text underline-hover bold" href="{% url 'public-community' community.id %}">{{ community.community_name }}</a> <br>
+                                    <a class="default-a" href="{% url 'public-community' community.id %}">{{ community.community_name }}</a> <br>
                                     <p class="italic">
                                         <i class="fa-solid fa-tag"></i> {{ labels.bc_label_count|add:labels.tk_label_count }} Labels applied
                                     </p>                                
@@ -960,7 +960,7 @@
                 {% if statuses %}
                     {% for status in statuses %}
                         <div class="border-bottom-grey">
-                            <div><p><span class="bold"><a href="{% url 'public-community' status.community.id %}" class="darkteal-text underline-hover">{{ status.community }}</a> </span></p></div>
+                            <div><p><span class="bold"><a href="{% url 'public-community' status.community.id %}" class="default-a">{{ status.community }}</a> </span></p></div>
                             <div>
                                 <p><em> Project status: </em>
                                     {% if status.seen and status.status == None %} Seen
