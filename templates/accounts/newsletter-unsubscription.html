@@ -8,7 +8,7 @@
                         <div>
                             <img class="w-25 h-25" src="{% static 'images/logos/sm-logo-registry.png' %}" alt="">
                             <h1 class="no-top-margin">Update Newsletter Preferences</h1>
-                            <p>Preferences for <a class="darkteal-text underline-hover" href="mailto:{{ email }}">{{ email }}</a></p>
+                            <p>Preferences for <a class="default-a" href="mailto:{{ email }}">{{ email }}</a></p>
                         </div>
 
                         <form method="POST" action="" enctype="multipart/form-data">
@@ -52,7 +52,7 @@
                     {% else %}
                         <div>
                             <h1 class="no-top-margin">You have been successfully unsubscribed.</h1>
-                            <p>If this was a mistake and you would like to subscribe again, click <a class="darkteal-text underline-hover" href="{% url 'newsletter-subscription' %}">here</a>.</p>               
+                            <p>If this was a mistake and you would like to subscribe again, click <a class="default-a" href="{% url 'newsletter-subscription' %}">here</a>.</p>               
                         </div>
                     {% endif %}
                 </div>

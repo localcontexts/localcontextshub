@@ -9,7 +9,7 @@
                     Account
                 </h2>
             </div>
-            <div class="margin-top-16">Or <a class="darkteal-text underline-hover" href="{% url 'select-account' %}">choose another account</a></div>
+            <div class="margin-top-16">Or <a class="default-a" href="{% url 'select-account' %}">choose another account</a></div>
         </div>
         <p class="w-90">
             Search the registry of {% if community %} communities {% endif %}{% if institution %} institutions {% endif %} that have accounts on the Local Contexts Hub. 
@@ -54,7 +54,7 @@
      <div class="flex-this space-between margin-top-1">
          <div>
              <a 
-                class="darkteal-text underline-hover" 
+                class="default-a" 
                 {% if community %}
                 href="{% url 'create-community' %}"
                 {% endif %}
@@ -67,7 +67,7 @@
             </a>
         </div>
         <div class="flex-this">
-            <div class="margin-right-16 flex-this align-center"><small class="block"><a href="{% url 'dashboard' %}" class="darkteal-text underline-hover bold">Skip this for now</a></small></div>
+            <div class="margin-right-16 flex-this align-center"><small class="block"><a href="{% url 'dashboard' %}" class="default-a">Skip this for now</a></small></div>
             <div><button id="openJoinRequestModalBtn" class="primary-btn action-btn margin-top-2 ">Next <i class="fa fa-arrow-right"></i></button></div>
         </div>
      </div>
@@ -128,7 +128,7 @@
 
                 <div class="flex-this space-between w-100">
                     <p class="w-70 no-top-margin">
-                        <small class="grey-text">By sending this request, you consent for your message and email address to be shared with account administrators.</small>
+                        <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
                     </p>
                     <div>
                         <button class="primary-btn action-btn margin-top-2">Send request</button>

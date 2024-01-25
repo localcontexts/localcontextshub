@@ -132,14 +132,6 @@
     position: relative;
 }
 
-.checkbox-label p {
-    margin: 0;
-}
-
-.checkbox-label span {
-    color: #7d7d7d;
-}
-
 /* For validate and connect pages */
 .centered-content {
     padding-top: 2%;

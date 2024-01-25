@@ -67,6 +67,13 @@ ol ol {
 
 a { text-decoration: none; }
 
+.default-a {
+    color: #007585;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* FORM INPUTS */
 label {
     font-size: 16px;

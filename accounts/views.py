@@ -65,6 +65,9 @@ def register(request):
                 if User.objects.filter(email=user.email).exists():
                     messages.error(request, 'A user with this email already exists')
                     return redirect('register')
+                elif User.objects.filter(username__iexact=user.username.lower()).exists():
+                    messages.error(request, 'A user with this username already exists')
+                    return redirect('register')
                 else:
                     user.is_active = False
                     user.save()
@@ -82,7 +85,7 @@ def register(request):
                     return redirect('verify')
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-            
+
             return redirect('register')
     return render(request, "accounts/register.html", { "form" : form })
 
@@ -149,7 +152,7 @@ def login(request):
             return redirect('login')
     else:
         return render(request, "accounts/login.html", {'envi': envi })
-    
+
 @login_required(login_url='login')
 def logout(request):
     if request.method == 'POST':
@@ -170,24 +173,24 @@ def dashboard(request):
     researcher = is_user_researcher(user)
 
     affiliation = user.user_affiliations.prefetch_related(
-        'communities', 
-        'institutions', 
-        'communities__admins', 
-        'communities__editors', 
+        'communities',
+        'institutions',
+        'communities__admins',
+        'communities__editors',
         'communities__viewers',
-        'institutions__admins', 
-        'institutions__editors', 
+        'institutions__admins',
+        'institutions__editors',
         'institutions__viewers'
         ).all().first()
 
-    user_communities = affiliation.communities.all()    
+    user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
 
     if request.method == 'POST':
         profile.onboarding_on = False
         profile.save()
 
-    context = { 
+    context = {
         'profile': profile,
         'user_communities': user_communities,
         'user_institutions': user_institutions,
@@ -254,7 +257,7 @@ def change_password(request):
             messages.add_message(request, messages.ERROR, 'Something went wrong')
             return redirect('change-password')
     return render(request, 'accounts/change-password.html', {'profile': profile, 'form':form })
-    
+
 
 @login_required(login_url='login')
 def deactivate_user(request):
@@ -324,7 +327,7 @@ def invite_user(request):
             if User.objects.filter(email=data.email).exists():
                 messages.add_message(request, messages.ERROR, 'This user is already in the Hub')
                 return redirect(selected_path)
-            else: 
+            else:
                 if SignUpInvitation.objects.filter(email=data.email).exists():
                     messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email')
                     return redirect(selected_path)
@@ -350,7 +353,7 @@ def registry(request, filtertype=None):
         if ('q' in request.GET) and (filtertype != None):
             q = request.GET.get('q')
             return redirect('/registry/?q=' + q)
-        
+
         elif ('q' in request.GET) and (filtertype == None):
             q = request.GET.get('q')
             q = unidecode(q) #removes accents from search query
@@ -390,7 +393,7 @@ def registry(request, filtertype=None):
             'items' : page,
             'filtertype' : filtertype
         }
-        
+
         return render(request, 'accounts/registry.html', context)
 
     except:
@@ -511,7 +514,7 @@ def newsletter_unsubscription(request, emailb64):
                         labels = variables[item]
                     if item == 'first_name':
                         first_name = variables[item]
-            
+
                 context = {
                     'email': email,
                     'tech': tech,
