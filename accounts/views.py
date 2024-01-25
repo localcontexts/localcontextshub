@@ -154,6 +154,11 @@ def login(request):
             else:
                 if not user.last_login:
                     messages.error(request, 'Your account is not active. Please verify your email.')
+                    if SignUpInvitation.objects.filter(email=user.email).exists():
+                        for invite in SignUpInvitation.objects.filter(email=user.email):
+                            invite.delete()
+
+                    send_activation_email(request, user)
                     return redirect('verify')
                 else:
                     messages.error(request, 'Your account is not active. Please contact support@localcontexts.org')
