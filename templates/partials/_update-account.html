@@ -214,7 +214,7 @@
                                     <div>
                                         <div itemscope itemtype="https://schema.org/Person">
                                             <a 
-                                                class="darkteal-text underline-hover" 
+                                                class="default-a" 
                                                 itemprop="sameAs" 
                                                 target="orcid.widget" 
                                                 rel="me noopener noreferrer" 
@@ -249,7 +249,7 @@
 
                             {% else %}
                                 <div class="flex-this space-between">
-                                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
+                                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="default-a" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
                                     <!-- Show ORCiD widget based on hostname -->
                                     <div 
                                         id="orcidWidget" 
@@ -271,7 +271,7 @@
                                 </div>
                         
                                 {% if env == "DEV" or env == "SANDBOX" %}
-                                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="default-a" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
                                 {% endif %}  
                             {% endif %}
                                 
@@ -287,7 +287,7 @@
                         </div>
                         <p>
                             <small class="grey-text">Providing your personal information is optional.
-                                By providing it, you consent for it to be shown to other Hub users, see the <a href="https://localcontexts.org/privacy-policy/" class="darkteal-text underline-hover" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</small>
+                                By providing it, you consent for it to be shown to other Hub users, see the <a href="https://localcontexts.org/privacy-policy/" class="default-a" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</small>
                         </p> 
                     </div>
                 </form>

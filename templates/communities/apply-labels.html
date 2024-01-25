@@ -100,9 +100,9 @@
         <p class="no-top-margin w-70">
             {% if bclabels or tklabels %}
                 Your community can apply Labels to Projects, please choose from your customized Labels below.<br>
-                If you would like to customize more Labels, you can do so <a class="darkteal-text underline-hover" href="{% url 'select-label' community.id %}">here</a>.
+                If you would like to customize more Labels, you can do so <a class="default-a" href="{% url 'select-label' community.id %}">here</a>.
             {% else %}
-                It looks like currently you do not have any Labels customized. To customize a new Label, click <a class="darkteal-text underline-hover" href="{% url 'select-label' community.id %}">here</a>.
+                It looks like currently you do not have any Labels customized. To customize a new Label, click <a class="default-a" href="{% url 'select-label' community.id %}">here</a>.
             {% endif %}
 
             {% include 'partials/_alerts.html' %}

@@ -6,7 +6,7 @@
         <div class="flex-this w-100 space-between">
             <div class="loc grey-text bold">
                 <small>
-                    <a href="{% url 'dashboard' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'dashboard' %}" class="default-a">
                         {% firstof request.user.first_name request.user %}
                     </a> 
                     >> {{ institution.institution_name }}                    

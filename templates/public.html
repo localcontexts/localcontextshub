@@ -5,7 +5,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >> {{ community.community_name }}  
@@ -23,7 +23,7 @@
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
                                 <div class="margin-top-8 margin-bottom-8">
-                                    <a id="openRequestToJoinModalBtn" class="darkteal-text underline-hover pointer">Request to join</a>
+                                    <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                            
                         </div>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="loc grey-text bold margin-bottom-16">
+                    <div class="loc bold margin-bottom-16">
                         <small>
                             You are a member of this community
                         </small>
@@ -64,7 +64,7 @@
             {% else %}
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
-                        <a href="{% url 'login' %}" class="bold darkteal-text underline-hover">
+                        <a href="{% url 'login' %}" class="default-a">
                             Login
                         </a> 
                         to contact
@@ -125,7 +125,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold  margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >> {{ institution.institution_name }}
@@ -142,7 +142,7 @@
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
                                 <div class="margin-top-8 margin-bottom-8">
-                                    <a id="openRequestToJoinModalBtn" class="darkteal-text underline-hover pointer">Request to join</a>
+                                    <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                                
                         </div>
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="loc grey-text bold margin-bottom-16">
+                    <div class="loc bold margin-bottom-16">
                         <small>
                             You are a member of this institution
                         </small>
@@ -184,7 +184,7 @@
             {% else %}
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
-                        <a href="{% url 'login' %}" class="bold darkteal-text underline-hover">
+                        <a href="{% url 'login' %}" class="default-a">
                             Login
                         </a> 
                         to contact
@@ -237,7 +237,7 @@
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
-                                    <a href="{{ notice.url }}" class="darkteal-text underline-hover">
+                                    <a href="{{ notice.url }}" class="default-a">
                                         {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
                                     </a>
                                 </li>
@@ -253,7 +253,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >>    
@@ -343,7 +343,7 @@
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
-                                    <a href="{{ notice.url }}" class="darkteal-text underline-hover">
+                                    <a href="{{ notice.url }}" class="default-a">
                                         {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
                                     </a>
                                 </li>
@@ -430,7 +430,7 @@
 
                                 <div class="flex-this space-between margin-top-8 w-100">
                                     <p class="w-70 no-top-margin">
-                                        <small class="grey-text">By sending this request, you consent for your message and email address to be shared with account administrators.</small>
+                                        <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
                                     </p>
                                     <div>
                                         <input type="hidden" name="join_request">

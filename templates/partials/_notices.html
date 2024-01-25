@@ -55,7 +55,7 @@
                 <p>
                     <span class="bold">How can I use this Notice?</span><br>
                     Access the Hub API or click the “Download Notice” button on this page to use the Open to Collaborate Notice. For detailed information about the Engagement Notice and how to apply it, 
-                    <a class="darkteal-text underline-hover" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>. 
+                    <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>. 
                     <br><br>
                     If you add the Notice to a website, click the “Add Link” button and enter the information about where your Notice is displayed. If you have applied the Notice in multiple places, you can add multiple links.
                     <br><br>
@@ -72,13 +72,13 @@
                             {% for url in urls %}
                                 <li class="margin-bottom-8">
                                     <div class="flex-this w-70 space-between">
-                                        <a class="darkteal-text underline-hover block" href="{{ url.0 }}" target="_blank" rel="noopener">{{ url.1 }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+                                        <a class="default-a block" href="{{ url.0 }}" target="_blank" rel="noopener">{{ url.1 }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
                                         {% if researcher %}
-                                            <a class="darkteal-text underline-hover block" href="{% url 'researcher-delete-otc' researcher.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            <a class="default-a block" href="{% url 'researcher-delete-otc' researcher.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
                                         {% endif %}     
                                         {% if institution %}
                                             {% if member_role == 'admin' or member_role == 'editor' %}
-                                                <a class="darkteal-text underline-hover block" href="{% url 'institution-delete-otc' institution.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                                <a class="default-a block" href="{% url 'institution-delete-otc' institution.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
                                             {% endif %}
                                         {% endif %}                                   
                                     </div>
@@ -129,7 +129,7 @@
         <p>
             <span class="bold">How can I use these Notices?</span><br>
             To apply the Disclosure Notices, you will create a Project to describe the context. After creating a Project, you can use the Hub API or download from the Project page to use the Notice(s). For detailed information about the Disclosure Notices and how to apply them, 
-            <a class="darkteal-text underline-hover" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+            <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
         </p>        
     </div>
 
@@ -166,7 +166,7 @@
                         <p>
                             <span class="bold">Notice Text</span><br>                        
                             The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated. For more information about the TK Notice click 
-                            <a class="darkteal-text underline-hover" href="https://localcontexts.org/notice/tk-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+                            <a class="default-a" href="https://localcontexts.org/notice/tk-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                         </p>         
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                         <p>
                             <span class="bold">Notice Text</span><br>
                             The BC Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material or data. The BC Notice recognizes the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity or genetic resources associated with traditional lands, waters, and territories. The BC Notice may indicate that BC (Biocultural) Labels are in development and their implementation is being negotiated. For more information about the BC Notice click 
-                            <a class="darkteal-text underline-hover" href="https://localcontexts.org/notice/bc-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+                            <a class="default-a" href="https://localcontexts.org/notice/bc-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                         </p>         
                     </div>
                 </div>
@@ -272,7 +272,7 @@
                         Within the downloaded zip file are folders for each Notice containing its text, png, svg, QR code, and printable labels. Also included in the zip file is a poster with the Overall Notice. For transparency and staff awareness, we highly recommend that the poster with the Overall Notice is displayed in collections storage where the CC Notices are in use. 
                         <br><br>
                         For detailed information about the CC Notices and how to apply them, 
-                        <a class="darkteal-text underline-hover" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+                        <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                     </p>
                 </div>
 
