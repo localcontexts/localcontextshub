@@ -1,6 +1,5 @@
 {% extends 'auth-base.html' %} {% block title %} Update Profile {% endblock %}
-{% load static %} {% block main %} {% if user.is_authenticated %} {% include
-'partials/infocards/_user-dashcard.html' %}
+{% load static %} {% block main %} {% if user.is_authenticated %} {% include 'partials/infocards/_user-dashcard.html' %}
 
 <div
   class="content-card-v2 content-card-space flex-this column settings-height"

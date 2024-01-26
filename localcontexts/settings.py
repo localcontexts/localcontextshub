@@ -298,27 +298,3 @@ LOGIN_REDIRECT_URL= '/dashboard/'
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id':  os.environ.get('CLIENT_ID'),
-            'secret':  os.environ.get('CLIENT_SECRET'),
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
-
-SITE_ID = 1
-
-SOCIALACCOUNT_LOGIN_ON_GET=True
-LOGIN_REDIRECT_URL= '/dashboard/'
-ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'

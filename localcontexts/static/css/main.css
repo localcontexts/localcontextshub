@@ -502,16 +502,15 @@ input:focus {
 }
 
 /* ACTION Buttons / Register,Sign in, etc. */
-.primary-btn,
-.g-auth-button {
-  min-height: 50px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  line-height: 21px;
-  cursor: pointer;
-  transition: 0.3s;
-  border: none;
+.primary-btn, .white-btn {
+    min-height: 50px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 21px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
 }
 
 .signin-btn {
@@ -525,23 +524,25 @@ input:focus {
   font-weight: bold;
 }
 
-.g-auth-button {
-  display: flex;
-  align-items: center;
-  justify-content: left;
-  border: 1px solid #e6f1f3;
-  color: #007385;
-  background-color: #fff;
+.signin-btn {
+    gap:"10px"
 }
 
-.g-auth-button:hover {
-  border-radius: 4px;
-  border: 1px solid #0d99ff;
-  box-shadow: 0.5px 0.5px 2px 0.5px #0d99ff;
+.primary-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
 }
 
-.g-auth-button img {
-  width: 18px;
+.white-btn:hover {
+    border-radius: 4px;
+    border: 1px solid #0D99FF;
+    box-shadow: 0.5px 0.5px 2px 0.5px #0D99FF;
+}
+
+.white-btn img {
+    width: 18px
 }
 
 .primary-btn i {

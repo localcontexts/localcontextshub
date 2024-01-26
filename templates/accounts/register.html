@@ -1,5 +1,5 @@
-{% extends 'register-base.html' %} {% block title %} Register {% endblock %} {%
-load static %} {% load socialaccount %} {% block card %}
+{% extends 'register-base.html' %} {% block title %} Register {% endblock %}
+{% load static %} {% load socialaccount %} {% block card %}
 <script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
 <script>
   grecaptcha.ready(function () {
@@ -126,7 +126,6 @@ load static %} {% load socialaccount %} {% block card %}
         </div>
       </div>
     </div>
-    <br />
     <input
       type="hidden"
       name="g-recaptcha-response"
@@ -142,35 +141,15 @@ load static %} {% load socialaccount %} {% block card %}
         </div>
       </div>
 
-      <div>
-        <div
-          class="g-recaptcha"
-          data-sitekey="6LelPSYpAAAAAIzJgklE9tkfj0mEL0ECuIbWm4-E"
-        ></div>
-      </div>
-    </div>
-    <br />
-
-    <div class="flex-this">
-      <button id="registerUserBtn" class="primary-btn action-btn">
-        Continue <i class="fa fa-arrow-right"></i>
-      </button>
-    </div>
-    <div class="center-items">
-      <div class="horizontal-line-left"></div>
-      <p>or</p>
-      <div class="horizontal-line-right"></div>
-    </div>
-    <div class="flex-this">
-      <a class="w-100 g-auth-button" href="{% provider_login_url 'google' %}"
-        ><img
-          class="margin-right-1"
-          src="{% static 'images/logos/google.png' %}"
-          alt=""
-        /><span class="margin-left-1 primary-black-text"
-          >Register With Google</span
-        ></a
-      >
+        <div class="flex-this justify-center align-center gap-1">
+            <div class="horizental-line"> </div>
+        <p>or</p>
+        <div class="horizental-line"> </div>
+        </div>
+        <div class="flex-this">
+            <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Register With Google</span></a>
+        </div>
+        {% include 'partials/_alerts.html' %}
     </div>
   </form>
 </div>
