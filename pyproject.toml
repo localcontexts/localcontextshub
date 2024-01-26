@@ -1,18 +1,7 @@
-[tool.black]
-line-length = 79
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | build
-  | dist
-  | migrations
-  | \tests
-  | manage.py
-)/
-'''
+[tool.yapfignore]
+column_limit=79
+ignore_patterns = [
+    '*/migrations/*',
+    'tests/*',
+    'manage.py'
+]
