@@ -2,11 +2,13 @@
 
 {% load socialaccount %}
 {% block card %}
-    <div class="flex-this space-between w-90">
-        <div>
-            <h2 class="margin-bottom-2">Welcome back!</h2>
+    <div class="w-90">
+        <div class="flex-this space-between margin-bottom-8">
+            <div>
+                <h2 class="margin-bottom-2">Welcome back!</h2>
+            </div>
+            <div><p>Not signed up yet? <a href="{% url 'register' %}" class="default-a">Register</a></p></div>
         </div>
-        <div><p>Not signed up yet? <a href="{% url 'register' %}" class="default-a">Register</a></p></div>
 
         <div class="form-container flex-this column w-90">
 
@@ -45,7 +47,7 @@
 
             <!-- Alerts -->
             {% include 'partials/_alerts.html' %}
-            {% if envi == 'PROD' or 'localhost' in request.get_host %}
+            {% if not envi == "SANDBOX" %}
                 <div class="flex-this column w-100 test-hub-div">
                     <div>
                         <p class="no-top-margin">Interested in exploring the Local Contexts hub before registering? Explore our sandbox website where you can play around our tools.</p>
