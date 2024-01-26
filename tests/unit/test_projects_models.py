@@ -28,7 +28,7 @@ class TestProject(TestCase):
 
     def test_project_can_user_access(self):
         with patch('projects.models.discoverable_project_view') as mocked_function:
-            mocked_function.return_value = 'not-partial'
+            mocked_function.return_value = True
             assert isinstance(self.project.can_user_access(self.user), bool)
 
     def test_get_template_name_public_privacy(self):
