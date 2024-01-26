@@ -1,5 +1,8 @@
 from django.urls import path, re_path
-from .views import *
+from .views import (MultiProjectListDetail, ProjectDetail, ProjectList,
+                    apiOverview, openToCollaborateNotice,
+                    project_detail_providers, projects_by_institution,
+                    projects_by_researcher, projects_by_user)
 
 multisearch = MultiProjectListDetail.as_view({'get': 'multisearch'})
 

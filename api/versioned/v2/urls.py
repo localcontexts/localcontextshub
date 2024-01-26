@@ -1,5 +1,7 @@
 from django.urls import path, re_path
-from .views import *
+from .views import (APIOverview, MultiProjectListDetail,
+                    OpenToCollaborateNotice, ProjectDetail, ProjectList,
+                    ProjectsByIdViewSet)
 
 projects_by_user = ProjectsByIdViewSet.as_view({'get': 'projects_by_user'})
 projects_by_institution = ProjectsByIdViewSet.as_view(

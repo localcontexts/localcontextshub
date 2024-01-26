@@ -1,4 +1,4 @@
-from .models import *
+from .models import BCLabel, os
 from django import forms
 from django.core.exceptions import ValidationError
 

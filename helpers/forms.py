@@ -1,5 +1,7 @@
 from django import forms
-from .models import *
+from .models import (BCLabel, CollectionsCareNoticePolicy, LabelNote,
+                     LabelTranslation, LabelVersion,
+                     OpenToCollaborateNoticeURL, ProjectComment, TKLabel)
 from django.forms import modelformset_factory, inlineformset_factory
 
 AddLabelTranslationFormSet = modelformset_factory(

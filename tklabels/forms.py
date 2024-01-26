@@ -1,5 +1,5 @@
 from django import forms
-from .models import *
+from .models import TKLabel, os
 from django.core.exceptions import ValidationError
 
 

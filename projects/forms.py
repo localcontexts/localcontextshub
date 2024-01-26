@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory, inlineformset_factory
-from .models import *
+from .models import Project, ProjectNote, ProjectPerson
 from django.utils.translation import ugettext_lazy as _
 
 

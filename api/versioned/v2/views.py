@@ -1,4 +1,9 @@
-from api.base.views import *
+from api.base.views import (Http404, Institution, Notice, PermissionDenied,
+                            Project, ProjectCreator, ProjectDateModified,
+                            ProjectNoNoticeSerializer,
+                            ProjectOverviewSerializer, ProjectSerializer, Q,
+                            Researcher, Response, filters, generics, reverse,
+                            status)
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework_api_key.permissions import HasAPIKey

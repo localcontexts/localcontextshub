@@ -7,7 +7,9 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
-from .serializers import *
+from .serializers import (Institution, ProjectDateModified,
+                          ProjectNoNoticeSerializer, ProjectOverviewSerializer,
+                          ProjectSerializer, Researcher)
 from projects.models import Project
 from helpers.models import Notice
 from projects.models import ProjectCreator
