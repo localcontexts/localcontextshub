@@ -493,7 +493,7 @@ def newsletter_subscription(request):
                     email = request.POST['email']
                     emailb64 = urlsafe_base64_encode(force_bytes(email))
                     variables = manage_mailing_list(request, first_name, emailb64)
-                    add_to_mailing_list(str(email), str(name), str(variables))
+                    add_to_newsletter_mailing_list(str(email), str(name), str(variables))
                     message_text = mark_safe('Thank&nbsp;you&nbsp;an&nbsp;email&nbsp;has&nbsp;been&nbsp;sent')
                     messages.add_message(request, messages.SUCCESS, message_text)
                     return render(request, 'accounts/newsletter-subscription.html', {'emailb64': emailb64})
@@ -551,7 +551,7 @@ def newsletter_unsubscription(request, emailb64):
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     elif 'topic' in request.POST:
                         variables = manage_mailing_list(request, first_name, email)
-                        add_to_mailing_list(str(email), str(name), str(variables))
+                        add_to_newsletter_mailing_list(str(email), str(name), str(variables))
                         messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated.')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     else:
