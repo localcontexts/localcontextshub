@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -25,7 +27,9 @@ class TestProject(TestCase):
         assert self.project.has_tklabels()
 
     def test_project_can_user_access(self):
-        assert isinstance(self.project.can_user_access(self.user), bool)
+        with patch('projects.models.discoverable_project_view') as mocked_function:
+            mocked_function.return_value = 'not-partial'
+            assert isinstance(self.project.can_user_access(self.user), bool)
 
     def test_get_template_name_public_privacy(self):
         self.project.project_privacy = "Public"
@@ -36,8 +40,10 @@ class TestProject(TestCase):
     def test_get_template_name_contributor_privacy(self):
         self.project.project_privacy = "Contributor"
         self.project.save()
-        assert self.project.get_template_name(
-            self.user) == "partials/_project-actions.html"
+        with patch('projects.models.discoverable_project_view') as mocked_function:
+            mocked_function.return_value = 'not-partial'
+            assert self.project.get_template_name(
+                self.user) == "partials/_project-actions.html"
 
     def test_get_template_name_private_and_unexpected_privacy(self):
         UserFactory()
