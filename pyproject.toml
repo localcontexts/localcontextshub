@@ -1,5 +1,5 @@
 [tool.black]
-line-length =
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -14,3 +14,8 @@ exclude = '''
   | migrations
 )/
 '''
+
+[tool.autoflake]
+remove-all-unused-imports=true
+remove-duplicate-keys=true
+remove-unused-variables=true
