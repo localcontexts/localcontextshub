@@ -2,6 +2,7 @@ appdirs==1.4.4
 arabic-reshaper==3.0.0
 asgiref==3.2.10
 astroid==2.4.2
+black==23.12.1
 boto3==1.26.77
 botocore==1.29.77
 cachetools==4.2.4
@@ -28,6 +29,7 @@ djangorestframework-api-key==2.2.0
 filelock==3.0.12
 factory-boy==3.3.0
 Faker==20.0.0
+flake8==7.0.0
 future==0.18.3
 google-api-core==1.32.0
 google-auth==1.30.0
