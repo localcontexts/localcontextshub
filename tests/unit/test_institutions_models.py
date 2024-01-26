@@ -1,10 +1,11 @@
 from django.test import TestCase
 import pytest
-from institutions.models import Institution
 from factories.accounts_factories import UserFactory
 from factories.institutions_factories import InstitutionFactory
 
+
 class TestInstitute(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.institution = InstitutionFactory()
@@ -58,15 +59,20 @@ class TestInstitute(TestCase):
 
         # Test get_admins
         admins_list = new_institution.get_admins()
-        assert all([admin in admins_list for admin in new_institution.admins.all()])
+        assert all(
+            [admin in admins_list for admin in new_institution.admins.all()])
 
         # Test get_editors
         editors_list = new_institution.get_editors()
-        assert all([editor in editors_list for editor in new_institution.editors.all()])
+        assert all([
+            editor in editors_list for editor in new_institution.editors.all()
+        ])
 
         # Test get_viewers
         viewers_list = new_institution.get_viewers()
-        assert all([viewer in viewers_list for viewer in new_institution.viewers.all()])
+        assert all([
+            viewer in viewers_list for viewer in new_institution.viewers.all()
+        ])
 
     def test_is_user_in_institution(self):
         new_institution = self.institution

@@ -1,14 +1,10 @@
 import pytest
-from unittest.mock import patch
 from django.test import TestCase
-from django.utils import timezone
-from django.contrib.auth.models import User
-from communities.models import Community
-from institutions.models import Institution
-from researchers.models import Researcher
 from factories.notifications_factories import UserNotificationFactory, ActionNotificationFactory
 
+
 class TestUserNotification(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.user_notification = UserNotificationFactory()
@@ -23,7 +19,9 @@ class TestUserNotification(TestCase):
         new_user_notification = self.user_notification
         assert new_user_notification._meta.ordering == ('viewed', '-created')
 
+
 class TestActionNotification(TestCase):
+
     def setUp(self):
         self.action_notification = ActionNotificationFactory()
 

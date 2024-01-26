@@ -6,16 +6,19 @@ from bclabels.models import BCLabel
 import io
 import os
 
+
 class BCLabelFactory(factory.django.DjangoModelFactory):
     ''' This is the factory for the BCLabel model'''
+
     class Meta:
         model = BCLabel
-        skip_postgeneration_save=True
+        skip_postgeneration_save = True
 
     unique_id = factory.Faker('uuid4')
     version = factory.fuzzy.FuzzyInteger(1, 10)
     created_by = factory.SubFactory(UserFactory)
-    label_type = factory.fuzzy.FuzzyChoice([choice[0] for choice in BCLabel.TYPES])
+    label_type = factory.fuzzy.FuzzyChoice(
+        [choice[0] for choice in BCLabel.TYPES])
     community = factory.SubFactory(CommunityFactory)
     name = factory.Faker('word')
     language_tag = factory.Faker('language_code')
@@ -26,7 +29,6 @@ class BCLabelFactory(factory.django.DjangoModelFactory):
     is_approved = factory.Faker('boolean')
     approved_by = factory.SubFactory(UserFactory)
     last_edited_by = factory.SubFactory(UserFactory)
-    audiofile = factory.django.FileField(
-                filename='test_audio.mp3',
-                data=io.BytesIO(os.urandom(1000)).read()
-            )
+    audiofile = factory.django.FileField(filename='test_audio.mp3',
+                                         data=io.BytesIO(
+                                             os.urandom(1000)).read())

@@ -23,9 +23,11 @@ from django.shortcuts import get_object_or_404
 
 def check_member_role(user, organization):
     # Check for creator roles
-    if isinstance(organization, Community) and user == organization.community_creator:
+    if isinstance(organization,
+                  Community) and user == organization.community_creator:
         return 'admin'
-    if isinstance(organization, Institution) and user == organization.institution_creator:
+    if isinstance(organization,
+                  Institution) and user == organization.institution_creator:
         return 'admin'
 
     # Check for admin/editor/viewer roles
@@ -48,7 +50,7 @@ def change_member_role(org, member, current_role, new_role):
 
     if current_role and current_role in role_map:
         role_map[current_role].remove(member)
-    
+
     if new_role and new_role in role_map:
         role_map[new_role].add(member)
 
@@ -63,8 +65,8 @@ def add_user_to_role(account, role, user):
     }
     role_map[role].add(user)
     account.save()
-    
-    
+
+
 def accept_member_invite(request, invite_id):
     invite = get_object_or_404(InviteMember, id=invite_id)
     affiliation = get_object_or_404(UserAffiliation, user=invite.receiver)
@@ -75,15 +77,20 @@ def accept_member_invite(request, invite_id):
         affiliation.communities.add(account)
     if invite.institution:
         affiliation.institutions.add(account)
-    
+
     affiliation.save()
-    
-    add_user_to_role(account, invite.role, invite.receiver) # Add user to role
-    send_user_notification_member_invite_accept(invite) # Send UserNotifications
-    send_membership_email(request, account, invite.receiver, invite.role) # Send email notifications letting user know they are a member
+
+    add_user_to_role(account, invite.role, invite.receiver)  # Add user to role
+    send_user_notification_member_invite_accept(
+        invite)  # Send UserNotifications
+    send_membership_email(
+        request, account, invite.receiver, invite.role
+    )  # Send email notifications letting user know they are a member
 
     # Delete relevant user notification
-    UserNotification.objects.filter(to_user=invite.receiver, from_user=invite.sender, reference_id=invite.id).delete()
+    UserNotification.objects.filter(to_user=invite.receiver,
+                                    from_user=invite.sender,
+                                    reference_id=invite.id).delete()
 
 
 def accepted_join_request(request, org, join_request_id, selected_role):
@@ -94,16 +101,29 @@ def accepted_join_request(request, org, join_request_id, selected_role):
             pass
         else:
             # Add organization to userAffiliation and delete relevant action notification
-            affiliation = UserAffiliation.objects.get(user=join_request.user_from)
+            affiliation = UserAffiliation.objects.get(
+                user=join_request.user_from)
             if isinstance(org, Community):
                 affiliation.communities.add(org)
-                if ActionNotification.objects.filter(sender=join_request.user_from, community=org, reference_id=join_request.id).exists():
-                    notification = ActionNotification.objects.get(sender=join_request.user_from, community=org, reference_id=join_request.id)
+                if ActionNotification.objects.filter(
+                        sender=join_request.user_from,
+                        community=org,
+                        reference_id=join_request.id).exists():
+                    notification = ActionNotification.objects.get(
+                        sender=join_request.user_from,
+                        community=org,
+                        reference_id=join_request.id)
                     notification.delete()
             if isinstance(org, Institution):
                 affiliation.institutions.add(org)
-                if ActionNotification.objects.filter(sender=join_request.user_from, institution=org, reference_id=join_request.id).exists():
-                    notification = ActionNotification.objects.get(sender=join_request.user_from, institution=org, reference_id=join_request.id)
+                if ActionNotification.objects.filter(
+                        sender=join_request.user_from,
+                        institution=org,
+                        reference_id=join_request.id).exists():
+                    notification = ActionNotification.objects.get(
+                        sender=join_request.user_from,
+                        institution=org,
+                        reference_id=join_request.id)
                     notification.delete()
 
             # Add member to role
@@ -113,21 +133,24 @@ def accepted_join_request(request, org, join_request_id, selected_role):
                 org.editors.add(join_request.user_from)
             elif selected_role == 'Viewer':
                 org.viewers.add(join_request.user_from)
-            
+
             # Create UserNotification
             sender = join_request.user_from
             title = f"You are now a member of {org}!"
-            UserNotification.objects.create(to_user=sender, title=title, notification_type="Accept")
+            UserNotification.objects.create(to_user=sender,
+                                            title=title,
+                                            notification_type="Accept")
 
             send_membership_email(request, org, sender, selected_role)
 
             # Delete join request
             join_request.delete()
 
+
 # h/t: https://stackoverflow.com/questions/59695870/generate-multiple-pdfs-and-zip-them-for-download-all-in-a-single-view
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
-    html  = template.render(context_dict)
+    html = template.render(context_dict)
     buffer = BytesIO()
     p = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), buffer)
     pdf = buffer.getvalue()
@@ -136,25 +159,29 @@ def render_to_pdf(template_src, context_dict={}):
         return pdf
     return None
 
+
 def generate_zip(files):
     mem_zip = BytesIO()
 
-    with zipfile.ZipFile(mem_zip, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(mem_zip, mode="w",
+                         compression=zipfile.ZIP_DEFLATED) as zf:
         for f in files:
             zf.writestr(f[0], f[1])
 
     return mem_zip.getvalue()
 
+
 def get_labels_json():
     json_data = open('./localcontexts/static/json/Labels.json')
-    data = json.load(json_data) #deserialize
+    data = json.load(json_data)  #deserialize
     return data
+
 
 def get_notice_translations():
     json_path = finders.find('json/NoticeTranslations.json')
     with open(json_path, 'r', encoding="utf8") as file:
         data = json.load(file)
-    
+
     # Restructure the data as a nested dictionary with noticeType and language as keys
     notice_translations = {}
     for item in data:
@@ -165,14 +192,17 @@ def get_notice_translations():
         notice_translations[notice_type][language_tag] = item
     return notice_translations
 
+
 def get_notice_defaults():
     json_path = finders.find('json/Notices.json')
     with open(json_path, 'r') as file:
         data = json.load(file)
     return data
 
+
 # Create/Update/Delete Notices and Notice Translations
-def crud_notices(request, selected_notices, selected_translations, organization, project, existing_notices):
+def crud_notices(request, selected_notices, selected_translations,
+                 organization, project, existing_notices):
     # organization: instance of institution or researcher
     # selected_notices: list: ['attribution_incomplete', 'bcnotice', 'tknotice']
     # existing_notices: a queryset of notices that exist for this project already
@@ -195,9 +225,8 @@ def crud_notices(request, selected_notices, selected_translations, organization,
                     action_user_id=request.user.id,
                     action_type="Disclosure Notice(s) Added",
                     project_id=project.id,
-                    action_account_type = 'institution',
-                    institution_id=organization.id
-                )
+                    action_account_type='institution',
+                    institution_id=organization.id)
             elif isinstance(organization, Researcher):
                 notice_fields['researcher'] = organization
                 # Adds activity to Hub Activity
@@ -205,54 +234,65 @@ def crud_notices(request, selected_notices, selected_translations, organization,
                     action_user_id=request.user.id,
                     action_type="Disclosure Notice(s) Added",
                     project_id=project.id,
-                    action_account_type = 'researcher'
-                )
+                    action_account_type='researcher')
 
             new_notice = Notice.objects.create(**notice_fields)
-            ProjectActivity.objects.create(project=project, activity=f'{new_notice.name} was applied to the Project by {name}')
+            ProjectActivity.objects.create(
+                project=project,
+                activity=
+                f'{new_notice.name} was applied to the Project by {name}')
 
             # Create any notice translations
             update_notice_translation(new_notice, selected_translations)
 
-    def create_notices(existing_notice_types):          
+    def create_notices(existing_notice_types):
         for notice_type in selected_notices:
             if notice_type:
                 if existing_notice_types:
-                    if not notice_type in existing_notice_types:  
+                    if not notice_type in existing_notice_types:
                         create(notice_type)
                 else:
                     create(notice_type)
-    
+
     def update_notice_translation(notice, selected_translations):
-        selected_notice_types_langs = [value.split('-') for value in selected_translations]
+        selected_notice_types_langs = [
+            value.split('-') for value in selected_translations
+        ]
 
         for translation in notice.notice_translations.all():
             ntype = translation.notice_type
             lang_tag = translation.language_tag
 
             # If this notice translation is not in the selected translations and its type matches the notice, delete it
-            if (ntype, lang_tag) not in selected_notice_types_langs and notice.notice_type == ntype:
+            if (
+                    ntype, lang_tag
+            ) not in selected_notice_types_langs and notice.notice_type == ntype:
                 translation.delete()
 
         for ntype, lang_tag in selected_notice_types_langs:
             # Check if the notice type matches the selected translation
             if notice.notice_type == ntype:
                 # If translation of this type in this language does NOT exist, create it.
-                if not notice.notice_translations.filter(notice_type=ntype, language_tag=lang_tag).exists():
+                if not notice.notice_translations.filter(
+                        notice_type=ntype, language_tag=lang_tag).exists():
                     notice.save(language_tag=lang_tag)
-                
+
     if existing_notices:
         existing_notice_types = []
         for notice in existing_notices:
             existing_notice_types.append(notice.notice_type)
-            if not notice.notice_type in selected_notices: # if existing notice not in selected notices, delete notice
+            if not notice.notice_type in selected_notices:  # if existing notice not in selected notices, delete notice
                 notice.delete()
-                ProjectActivity.objects.create(project=project, activity=f'{notice.name} was removed from the Project by {name}')
+                ProjectActivity.objects.create(
+                    project=project,
+                    activity=
+                    f'{notice.name} was removed from the Project by {name}')
             update_notice_translation(notice, selected_translations)
         create_notices(existing_notice_types)
 
     else:
         create_notices(None)
+
 
 def add_remove_labels(request, project, community):
     from projects.models import ProjectActivity
@@ -268,25 +308,45 @@ def add_remove_labels(request, project, community):
     # find target community labels and clear those only!
     if project.bc_labels.filter(community=community).exists():
 
-        for bclabel in project.bc_labels.filter(community=community).exclude(unique_id__in=bclabels_selected): # does project have labels from this community that aren't the selected ones?
-            project.bc_labels.remove(bclabel) 
-            ProjectActivity.objects.create(project=project, activity=f'{bclabel.name} Label was removed by {user} | {community.community_name}')
+        for bclabel in project.bc_labels.filter(community=community).exclude(
+                unique_id__in=bclabels_selected
+        ):  # does project have labels from this community that aren't the selected ones?
+            project.bc_labels.remove(bclabel)
+            ProjectActivity.objects.create(
+                project=project,
+                activity=
+                f'{bclabel.name} Label was removed by {user} | {community.community_name}'
+            )
 
     if project.tk_labels.filter(community=community).exists():
-        for tklabel in project.tk_labels.filter(community=community).exclude(unique_id__in=tklabels_selected):
+        for tklabel in project.tk_labels.filter(community=community).exclude(
+                unique_id__in=tklabels_selected):
             project.tk_labels.remove(tklabel)
-            ProjectActivity.objects.create(project=project, activity=f'{tklabel.name} Label was removed by {user} | {community.community_name}')
+            ProjectActivity.objects.create(
+                project=project,
+                activity=
+                f'{tklabel.name} Label was removed by {user} | {community.community_name}'
+            )
 
     for bclabel in bclabels:
-        if not bclabel in project.bc_labels.all(): # if label not in project labels, apply it
+        if not bclabel in project.bc_labels.all(
+        ):  # if label not in project labels, apply it
             project.bc_labels.add(bclabel)
-            ProjectActivity.objects.create(project=project, activity=f'{bclabel.name} Label was applied by {user} | {community.community_name}')
+            ProjectActivity.objects.create(
+                project=project,
+                activity=
+                f'{bclabel.name} Label was applied by {user} | {community.community_name}'
+            )
 
     for tklabel in tklabels:
         if not tklabel in project.tk_labels.all():
             project.tk_labels.add(tklabel)
-            ProjectActivity.objects.create(project=project, activity=f'{tklabel.name} Label was applied by {user} | {community.community_name}')
-    
+            ProjectActivity.objects.create(
+                project=project,
+                activity=
+                f'{tklabel.name} Label was applied by {user} | {community.community_name}'
+            )
+
     project.save()
 
 
@@ -300,7 +360,8 @@ def handle_label_versions(label):
         translations = LabelTranslation.objects.filter(bclabel=label)
 
         # If approved version exists, set version number to 1 more than the latest
-        latest_version = LabelVersion.objects.filter(bclabel=label).order_by('-version').first()
+        latest_version = LabelVersion.objects.filter(
+            bclabel=label).order_by('-version').first()
 
         if latest_version is not None:
             if latest_version.is_approved:
@@ -314,21 +375,20 @@ def handle_label_versions(label):
             label.save()
 
         # Create Version for BC Label
-        version = LabelVersion.objects.create(
-            bclabel=label,
-            version=version_num, 
-            created_by=label.created_by, 
-            is_approved=True,
-            approved_by=label.approved_by,
-            version_text=label.label_text,
-            created=label.created
-        )
+        version = LabelVersion.objects.create(bclabel=label,
+                                              version=version_num,
+                                              created_by=label.created_by,
+                                              is_approved=True,
+                                              approved_by=label.approved_by,
+                                              version_text=label.label_text,
+                                              created=label.created)
 
     if isinstance(label, TKLabel):
         translations = LabelTranslation.objects.filter(tklabel=label)
 
         # If approved version exists, set version number to 1 more than the latest
-        latest_version = LabelVersion.objects.filter(tklabel=label).order_by('-version').first()
+        latest_version = LabelVersion.objects.filter(
+            tklabel=label).order_by('-version').first()
 
         if latest_version is not None:
             if latest_version.is_approved:
@@ -342,26 +402,24 @@ def handle_label_versions(label):
             label.save()
 
         # Create Version for TK Label
-        version = LabelVersion.objects.create(
-            tklabel=label,
-            version=version_num, 
-            created_by=label.created_by, 
-            is_approved=True,
-            approved_by=label.approved_by,
-            version_text=label.label_text,
-            created=label.created
-        )
+        version = LabelVersion.objects.create(tklabel=label,
+                                              version=version_num,
+                                              created_by=label.created_by,
+                                              is_approved=True,
+                                              approved_by=label.approved_by,
+                                              version_text=label.label_text,
+                                              created=label.created)
 
     # Create version translations
     for t in translations:
         LabelTranslationVersion.objects.create(
             version_instance=version,
             translated_name=t.translated_name,
-            language=t.language, 
+            language=t.language,
             language_tag=t.language_tag,
             translated_text=t.translated_text,
-            created=version.created
-        )
+            created=version.created)
+
 
 def discoverable_project_view(project, user):
     project_contributors = project.project_contributors

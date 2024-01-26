@@ -28,13 +28,11 @@ urlpatterns = [
     path('communities/', include('communities.urls')),
     path('institutions/', include('institutions.urls')),
     path('researchers/', include('researchers.urls')),
-    path('projects/', include('projects.urls')),    
+    path('projects/', include('projects.urls')),
     path('helpers/', include('helpers.urls')),
     path('api/', include('api.urls')),
     path('restricted/403/', restricted_view, name="restricted"),
-
     path('notifications/', include('notifications.urls')),
-
     re_path(r'^maintenance-mode/', include('maintenance_mode.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

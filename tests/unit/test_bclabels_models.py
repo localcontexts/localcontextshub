@@ -1,11 +1,12 @@
 import pytest
-import requests
 from unittest.mock import patch
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from factories.bclabels_factories import BCLabelFactory
 
+
 class TestBCLabels(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.new_bclabel = BCLabelFactory()
@@ -27,9 +28,9 @@ class TestBCLabels(TestCase):
         assert bclabel.svg_url is not None
 
     def test_bclabel_audiofile_upload(self):
-        audio_file = SimpleUploadedFile(
-            "test_audio.mp3", b"file_content", content_type="audio/mp3"
-        )
+        audio_file = SimpleUploadedFile("test_audio.mp3",
+                                        b"file_content",
+                                        content_type="audio/mp3")
         self.new_bclabel.audiofile = audio_file
         self.new_bclabel.save()
         assert self.new_bclabel.audiofile.url is not None

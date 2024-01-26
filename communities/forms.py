@@ -13,14 +13,24 @@ from .widgets import BoundaryWidget
 
 
 class CreateCommunityForm(forms.ModelForm):
+
     class Meta:
         model = Community
-        fields = ['community_name', 'community_entity', 'state_province_region', 'country', 'description',]
+        fields = [
+            'community_name',
+            'community_entity',
+            'state_province_region',
+            'country',
+            'description',
+        ]
         widgets = {
             'community_name': forms.TextInput(attrs={'class': 'w-100'}),
             'community_entity': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
-            'description': forms.Textarea(attrs={'rows': 2, 'class': 'w-100'}),
+            'description': forms.Textarea(attrs={
+                'rows': 2,
+                'class': 'w-100'
+            }),
         }
         error_messages = {
             'community_name': {
@@ -28,32 +38,54 @@ class CreateCommunityForm(forms.ModelForm):
             },
         }
 
+
 class ConfirmCommunityForm(forms.ModelForm):
+
     class Meta:
         model = Community
         fields = ['contact_name', 'contact_email', 'support_document']
         widgets = {
-            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'communityContactEmailField'}),
-            'support_document': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'communitySupportLetterUploadBtn', 'onchange': 'showFile()'}),
+            'contact_name':
+            forms.TextInput(attrs={'class': 'w-100'}),
+            'contact_email':
+            forms.EmailInput(attrs={
+                'class': 'w-100',
+                'id': 'communityContactEmailField'
+            }),
+            'support_document':
+            forms.ClearableFileInput(
+                attrs={
+                    'class': 'w-100 hide',
+                    'id': 'communitySupportLetterUploadBtn',
+                    'onchange': 'showFile()'
+                }),
         }
 
     def clean_support_document(self):
         support_document_file = self.cleaned_data.get('support_document')
         if support_document_file:
-            allowed_extensions = ['.pdf', '.doc', '.docx']  # Add more extensions if needed
+            allowed_extensions = ['.pdf', '.doc',
+                                  '.docx']  # Add more extensions if needed
             file_ext = os.path.splitext(support_document_file.name)[1].lower()
 
             if file_ext not in allowed_extensions:
-                raise ValidationError('Invalid document file extension. Only PDF and DOC/DOCX files are allowed.')
+                raise ValidationError(
+                    'Invalid document file extension. Only PDF and DOC/DOCX files are allowed.'
+                )
 
-            allowed_mime_types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+            allowed_mime_types = [
+                'application/pdf', 'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ]
             if support_document_file.content_type not in allowed_mime_types:
-                raise ValidationError('Invalid document file type. Only PDF and DOC/DOCX files are allowed.')
+                raise ValidationError(
+                    'Invalid document file type. Only PDF and DOC/DOCX files are allowed.'
+                )
         return support_document_file
 
 
 class CommunityModelForm(forms.ModelForm):
+
     class Meta:
         model = Community
         exclude = []
@@ -64,14 +96,16 @@ class CommunityModelForm(forms.ModelForm):
         self.supplementary_boundary_data = None
         self.fields['boundary'].widget = BoundaryWidget(
             attrs={
-                'community_id': self.instance.id,
-                'boundary_id': self.instance.boundary.id if self.instance.boundary else None
-            }
-        )
+                'community_id':
+                self.instance.id,
+                'boundary_id':
+                self.instance.boundary.id if self.instance.boundary else None
+            })
         self.fields['boundary'].help_text = None
 
     def parse_boundary_str(self, boundary_str: str) -> dict:
-        boundary_str_with_brackets = boundary_str.replace('(', '[').replace(')', ']')
+        boundary_str_with_brackets = boundary_str.replace('(', '[').replace(
+            ')', ']')
         boundary_data = json.loads(f'[{boundary_str_with_brackets}]')
 
         boundary_data_length = len(boundary_data)
@@ -93,7 +127,8 @@ class CommunityModelForm(forms.ModelForm):
                     _, boundary_id = key.split(':')
                     current_boundary = {
                         'id': boundary_id,
-                        'value': self.parse_boundary_str(current_boundary_value)
+                        'value':
+                        self.parse_boundary_str(current_boundary_value)
                     }
 
                 if 'new-boundary' in key:
@@ -104,7 +139,8 @@ class CommunityModelForm(forms.ModelForm):
                 errors.data.append('Error Reading Boundary Data')
 
                 # log detailed error for devs
-                print(f'Error Reading Supplemental Boundary Data: {e}', file=sys.stderr)
+                print(f'Error Reading Supplemental Boundary Data: {e}',
+                      file=sys.stderr)
                 break
 
         # when errors exist, add those to the form
@@ -122,7 +158,8 @@ class CommunityModelForm(forms.ModelForm):
             del self.errors['boundary']
 
         # store supplementary boundary data
-        self.supplementary_boundary_data = self.read_supplementary_boundary_data()
+        self.supplementary_boundary_data = self.read_supplementary_boundary_data(
+        )
 
     def is_valid(self):
         super().is_valid()
@@ -131,8 +168,10 @@ class CommunityModelForm(forms.ModelForm):
 
     def save_boundary(self):
         # update current boundary
-        updated_boundary = self.supplementary_boundary_data.get('current_boundary')
-        if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
+        updated_boundary = self.supplementary_boundary_data.get(
+            'current_boundary')
+        if updated_boundary and self.instance.boundary.id == int(
+                updated_boundary['id']):
             self.instance.boundary.coordinates = updated_boundary['value']
             self.instance.boundary.save()
             return
@@ -151,31 +190,58 @@ class CommunityModelForm(forms.ModelForm):
 
 
 class UpdateCommunityForm(forms.ModelForm):
+
     class Meta:
         model = Community
-        fields = ['description', 'community_entity', 'city_town', 'state_province_region', 'country', 'image']
+        fields = [
+            'description', 'community_entity', 'city_town',
+            'state_province_region', 'country', 'image'
+        ]
         widgets = {
-            'community_entity': forms.TextInput(attrs={'class': 'w-100'}),
-            'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
-            'city_town': forms.TextInput(attrs={'class': 'w-100'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'class': 'w-100'}),
-            'image': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'communityImgUploadBtn', 'onchange': 'showFile()'}),
+            'community_entity':
+            forms.TextInput(attrs={'class': 'w-100'}),
+            'state_province_region':
+            forms.TextInput(attrs={'class': 'w-100'}),
+            'city_town':
+            forms.TextInput(attrs={'class': 'w-100'}),
+            'description':
+            forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'w-100'
+            }),
+            'image':
+            forms.ClearableFileInput(
+                attrs={
+                    'class': 'w-100 hide',
+                    'id': 'communityImgUploadBtn',
+                    'onchange': 'showFile()'
+                }),
         }
 
+
 class InviteMemberForm(forms.ModelForm):
+
     class Meta:
         model = InviteMember
         fields = ['role', 'message']
         widgets = {
             'role': forms.Select(attrs={'class': 'w-100'}),
-            'message': forms.Textarea(attrs={'rows': 2, 'class':'w-100'}),
+            'message': forms.Textarea(attrs={
+                'rows': 2,
+                'class': 'w-100'
+            }),
         }
 
+
 class JoinRequestForm(forms.ModelForm):
+
     class Meta:
         model = JoinRequest
         fields = ['role', 'message']
         widgets = {
             'role': forms.Select(attrs={'class': 'w-100'}),
-            'message': forms.Textarea(attrs={'rows': 3, 'class':'w-100'}),
+            'message': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'w-100'
+            }),
         }

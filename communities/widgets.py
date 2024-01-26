@@ -16,8 +16,12 @@ class BoundaryWidget(Widget):
         boundary = {}
         boundary_id = self.attrs['boundary_id']
         if boundary_id:
-            boundary[boundary_id] = Boundary.objects.get(id=boundary_id).get_coordinates()
+            boundary[boundary_id] = Boundary.objects.get(
+                id=boundary_id).get_coordinates()
 
-        context = {'boundary': boundary, 'community_id': self.attrs['community_id']}
+        context = {
+            'boundary': boundary,
+            'community_id': self.attrs['community_id']
+        }
         template = loader.get_template(self.template_name).render(context)
         return mark_safe(template)

@@ -5,4 +5,4 @@ class ResearchersConfig(AppConfig):
     name = 'researchers'
 
     def ready(self):
-        import researchers.signals
+        pass

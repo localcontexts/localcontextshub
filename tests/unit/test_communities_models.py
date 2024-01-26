@@ -1,12 +1,13 @@
 import pytest
-from unittest.mock import patch
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from communities.models import Community
 from factories.accounts_factories import UserFactory
-from factories.communities_factories import CommunityFactory, InviteMemberFactory, JoinRequestFactory
+from factories.communities_factories import CommunityFactory, JoinRequestFactory
+
 
 class TestCommunity(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.new_community = CommunityFactory()
@@ -27,13 +28,17 @@ class TestCommunity(TestCase):
         assert result == expected_result
 
     def test_community_image_upload(self):
-        image_file = SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
+        image_file = SimpleUploadedFile("test_image.jpg",
+                                        b"file_content",
+                                        content_type="image/jpeg")
         self.new_community.image = image_file
         self.new_community.save()
         assert self.new_community.image.url is not None
 
     def test_community_support_document_upload(self):
-        document_file = SimpleUploadedFile("test_document.txt", b"file_content", content_type="text/plain")
+        document_file = SimpleUploadedFile("test_document.txt",
+                                           b"file_content",
+                                           content_type="text/plain")
         self.new_community.support_document = document_file
         self.new_community.save()
         assert self.new_community.support_document.url is not None
@@ -46,7 +51,8 @@ class TestCommunity(TestCase):
 
     def test_is_user_in_community(self):
         user_in_community = UserFactory()
-        self.new_community.admins.set([self.new_community.admins.first(), user_in_community])
+        self.new_community.admins.set(
+            [self.new_community.admins.first(), user_in_community])
         assert self.new_community.is_user_in_community(user_in_community)
 
     def test_get_collaborator(self):
@@ -64,7 +70,7 @@ class TestCommunity(TestCase):
         editor = UserFactory()
         self.new_community.editors.add(editor)
         editors = self.new_community.get_editors()
-        
+
         assert editor, editors
 
         viewer = UserFactory()
@@ -76,7 +82,9 @@ class TestCommunity(TestCase):
         expected_member_count = 7
         assert member_count == expected_member_count
 
+
 class TestJoinRequest(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.new_join_request = JoinRequestFactory()

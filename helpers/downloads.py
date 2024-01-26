@@ -10,6 +10,7 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 
+
 # Open to Collaborate Notice
 def download_otc_notice(request):
     url = os.environ.get('OPEN_TO_COLLABORATE_NOTICE_DOWNLOAD_ZIP')
@@ -17,6 +18,7 @@ def download_otc_notice(request):
         return redirect(url)
     else:
         return render(request, '500.html')
+
 
 # Collections Care Notices
 def download_cc_notices(request):
@@ -33,7 +35,11 @@ def download_labels_zip(community):
     tklabels = TKLabel.objects.filter(community=community, is_approved=True)
 
     template_path = 'snippets/pdfs/community-labels.html'
-    context = {'community': community, 'bclabels': bclabels, 'tklabels': tklabels,}
+    context = {
+        'community': community,
+        'bclabels': bclabels,
+        'tklabels': tklabels,
+    }
 
     files = []
 
@@ -54,8 +60,11 @@ def download_labels_zip(community):
 
         if bclabel.bclabel_translation.all():
             for translation in bclabel.bclabel_translation.all():
-                text_addon.append('\n\n' + translation.translated_name + ' (' + translation.language + ') ' + '\n' + translation.translated_text)
-            files.append((bclabel.name + '.txt', text_content + '\n'.join(text_addon)))
+                text_addon.append('\n\n' + translation.translated_name + ' (' +
+                                  translation.language + ') ' + '\n' +
+                                  translation.translated_text)
+            files.append(
+                (bclabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((bclabel.name + '.txt', text_content))
 
@@ -65,33 +74,41 @@ def download_labels_zip(community):
         get_svg = requests.get(tklabel.svg_url)
         files.append((tklabel.name + '.png', get_image.content))
         files.append((tklabel.name + '.svg', get_svg.content))
-        
+
         # Default Label text
         text_content = tklabel.name + '\n' + tklabel.label_text
         text_addon = []
 
         if tklabel.tklabel_translation.all():
             for translation in tklabel.tklabel_translation.all():
-                text_addon.append('\n\n' + translation.translated_name + ' (' + translation.language + ') ' + '\n' + translation.translated_text)
-            files.append((tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
+                text_addon.append('\n\n' + translation.translated_name + ' (' +
+                                  translation.language + ') ' + '\n' +
+                                  translation.translated_text)
+            files.append(
+                (tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((tklabel.name + '.txt', text_content))
-    
+
     # Create Readme
     readme_text = "The Traditional Knowledge (TK) and Biocultural (BC) Labels reinforce the cultural authority and rights of Indigenous communities.\nThe TK and BC Labels are intended to be displayed prominently on public-facing Indigenous community, researcher and institutional websites, metadata and digital collection's pages.\n\nThis folder contains the following files:\n"
     file_names = []
     for f in files:
         file_names.append(f[0])
-    readme_content = readme_text + '\n'.join(file_names) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Labels for your community.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
+    readme_content = readme_text + '\n'.join(
+        file_names
+    ) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Labels for your community.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
     files.append(('README.txt', readme_content))
 
-    # Generate zip file 
+    # Generate zip file
     full_zip_in_memory = generate_zip(files)
 
-    response = HttpResponse(full_zip_in_memory, content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename="{}"'.format(community.community_name + '-Labels.zip')
+    response = HttpResponse(full_zip_in_memory,
+                            content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+        community.community_name + '-Labels.zip')
 
     return response
+
 
 # Download Project
 def download_project_zip(project):
@@ -99,13 +116,19 @@ def download_project_zip(project):
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
     project_creator = project.project_creator_project.first()
-    contributors = ProjectContributors.objects.prefetch_related('communities', 'institutions', 'researchers').get(project=project)
+    contributors = ProjectContributors.objects.prefetch_related(
+        'communities', 'institutions', 'researchers').get(project=project)
     project_people = project.additional_contributors.all()
 
     notice_exists = Notice.objects.filter(project=project).exists()
 
     template_path = 'snippets/pdfs/project-pdf.html'
-    context = { 'project': project, 'project_creator': project_creator, 'contributors': contributors, 'project_people': project_people }
+    context = {
+        'project': project,
+        'project_creator': project_creator,
+        'contributors': contributors,
+        'project_people': project_people
+    }
 
     files = []
 
@@ -129,24 +152,37 @@ def download_project_zip(project):
                 # Create PNG and TXT files based on which Notices are attached to the Project
                 if notice.notice_type == 'biocultural':
                     get_img = requests.get(notice.img_url)
-                    get_svg = requests.get(baseURL + 'labels/notices/bc-notice.svg')
-                    files.append(('Biocultural_Notice' + '.png', get_img.content))
-                    files.append(('Biocultural_Notice' + '.svg', get_svg.content))
-                    files.append(('Biocultural_Notice' + '.txt', notice.default_text))
+                    get_svg = requests.get(baseURL +
+                                           'labels/notices/bc-notice.svg')
+                    files.append(
+                        ('Biocultural_Notice' + '.png', get_img.content))
+                    files.append(
+                        ('Biocultural_Notice' + '.svg', get_svg.content))
+                    files.append(
+                        ('Biocultural_Notice' + '.txt', notice.default_text))
 
                 if notice.notice_type == 'traditional_knowledge':
                     get_img = requests.get(notice.img_url)
-                    get_svg = requests.get(baseURL + 'labels/notices/tk-notice.svg')
-                    files.append(('Traditional_Knowledge_Notice' + '.png', get_img.content))
-                    files.append(('Traditional_Knowledge_Notice' + '.svg', get_svg.content))
-                    files.append(('Traditional_Knowledge_Notice' + '.txt', notice.default_text))
-                
+                    get_svg = requests.get(baseURL +
+                                           'labels/notices/tk-notice.svg')
+                    files.append(('Traditional_Knowledge_Notice' + '.png',
+                                  get_img.content))
+                    files.append(('Traditional_Knowledge_Notice' + '.svg',
+                                  get_svg.content))
+                    files.append(('Traditional_Knowledge_Notice' + '.txt',
+                                  notice.default_text))
+
                 if notice.notice_type == 'attribution_incomplete':
                     get_img = requests.get(notice.img_url)
-                    get_svg = requests.get(baseURL + 'labels/notices/ci-attribution-incomplete.svg')
-                    files.append(('Attribution_Incomplete' + '.png', get_img.content))
-                    files.append(('Attribution_Incomplete' + '.svg', get_svg.content))
-                    files.append(('Attribution_Incomplete' + '.txt', notice.default_text))
+                    get_svg = requests.get(
+                        baseURL +
+                        'labels/notices/ci-attribution-incomplete.svg')
+                    files.append(
+                        ('Attribution_Incomplete' + '.png', get_img.content))
+                    files.append(
+                        ('Attribution_Incomplete' + '.svg', get_svg.content))
+                    files.append(('Attribution_Incomplete' + '.txt',
+                                  notice.default_text))
 
     if project_bclabels or project_tklabels:
         # Set readme text
@@ -165,8 +201,11 @@ def download_project_zip(project):
 
         if bclabel.bclabel_translation.all():
             for translation in bclabel.bclabel_translation.all():
-                text_addon.append('\n\n' + translation.translated_name + ' (' + translation.language + ') ' + '\n' + translation.translated_text)
-            files.append((bclabel.name + '.txt', text_content + '\n'.join(text_addon)))
+                text_addon.append('\n\n' + translation.translated_name + ' (' +
+                                  translation.language + ') ' + '\n' +
+                                  translation.translated_text)
+            files.append(
+                (bclabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((bclabel.name + '.txt', text_content))
 
@@ -176,31 +215,38 @@ def download_project_zip(project):
         get_svg = requests.get(tklabel.svg_url)
         files.append((tklabel.name + '.png', get_image.content))
         files.append((tklabel.name + '.svg', get_svg.content))
-        
+
         # Default Label text
         text_content = tklabel.name + '\n' + tklabel.label_text
         text_addon = []
 
         if tklabel.tklabel_translation.all():
             for translation in tklabel.tklabel_translation.all():
-                text_addon.append('\n\n' + translation.translated_name + ' (' + translation.language + ') ' + '\n' + translation.translated_text)
-            files.append((tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
+                text_addon.append('\n\n' + translation.translated_name + ' (' +
+                                  translation.language + ') ' + '\n' +
+                                  translation.translated_text)
+            files.append(
+                (tklabel.name + '.txt', text_content + '\n'.join(text_addon)))
         else:
             files.append((tklabel.name + '.txt', text_content))
-    
+
     # Create Readme
     file_names = []
     for f in files:
         file_names.append(f[0])
-    readme_content = readme_text + '\n'.join(file_names) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Notices or Labels for your Project.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
+    readme_content = readme_text + '\n'.join(
+        file_names
+    ) + '\n\nRefer to the Usage Guides (https://localcontexts.org/support/downloadable-resources/) for details on how to adapt and display the Notices or Labels for your Project.\n\nFor more information, contact Local Contexts at localcontexts.org or support@localcontexts.org'
     files.append(('README.txt', readme_content))
 
-    # Generate zip file 
+    # Generate zip file
     full_zip_in_memory = generate_zip(files)
 
     zipfile_name = f"LC-Project-{project.title}.zip"
 
-    response = HttpResponse(full_zip_in_memory, content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename="{}"'.format(zipfile_name)
+    response = HttpResponse(full_zip_in_memory,
+                            content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+        zipfile_name)
 
     return response

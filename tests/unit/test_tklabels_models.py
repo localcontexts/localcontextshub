@@ -1,11 +1,12 @@
 import pytest
-import requests
 from unittest.mock import patch
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from factories.tklabels_factories import TKLabelFactory
 
+
 class TestTKLabel(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.tklabel = TKLabelFactory()
@@ -25,7 +26,9 @@ class TestTKLabel(TestCase):
         assert self.tklabel.svg_url is not None
 
     def test_tklabel_audiofile_upload(self):
-        audio_file = SimpleUploadedFile("test_audio.mp3", b"file_content", content_type="audio/mp3")
+        audio_file = SimpleUploadedFile("test_audio.mp3",
+                                        b"file_content",
+                                        content_type="audio/mp3")
         self.tklabel.audiofile = audio_file
         self.tklabel.save()
         assert self.tklabel.audiofile.url is not None

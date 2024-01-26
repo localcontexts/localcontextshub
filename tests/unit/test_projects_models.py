@@ -13,6 +13,7 @@ from factories.projects_factories import ProjectFactory, ProjectPersonFactory, P
 
 
 class TestProject(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.project = ProjectFactory()
@@ -29,19 +30,22 @@ class TestProject(TestCase):
     def test_get_template_name_public_privacy(self):
         self.project.project_privacy = "Public"
         self.project.save()
-        assert self.project.get_template_name(self.user) == "partials/_project-actions.html"
+        assert self.project.get_template_name(
+            self.user) == "partials/_project-actions.html"
 
     def test_get_template_name_contributor_privacy(self):
         self.project.project_privacy = "Contributor"
         self.project.save()
-        assert self.project.get_template_name(self.user) == "partials/_project-actions.html"
+        assert self.project.get_template_name(
+            self.user) == "partials/_project-actions.html"
 
     def test_get_template_name_private_and_unexpected_privacy(self):
-        another_user = UserFactory()
+        UserFactory()
         self.project.project_privacy = "Private"
         self.user = self.project.project_creator
         self.project.save()
-        assert self.project.get_template_name(self.user) == "partials/_project-actions.html"
+        assert self.project.get_template_name(
+            self.user) == "partials/_project-actions.html"
 
         self.project.project_privacy = "SomethingElse"
         self.project.save()
@@ -52,18 +56,21 @@ class TestProject(TestCase):
         assert isinstance(string, str)
         assert string == self.project.title
 
+
 class TestProjectPerson(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.project_person = ProjectPersonFactory()
 
     def test_project_person_str_method(self):
         new_project_person = self.project_person
-        string = new_project_person.__str__()
+        new_project_person.__str__()
         assert isinstance(new_project_person.__str__(), str)
 
 
 class TestProjectnote(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.project_note = ProjectNoteFactory()
@@ -92,24 +99,31 @@ def test_is_user_contributor():
     researcher = ResearcherFactory()
 
     # Checking if a ProjectContributors instance exists for the project
-    existing_contributor = ProjectContributors.objects.filter(project=project).first()
+    existing_contributor = ProjectContributors.objects.filter(
+        project=project).first()
 
     if existing_contributor:
         project_contributors = existing_contributor
     else:
-        project_contributors = ProjectContributors.objects.create(project=project)
+        project_contributors = ProjectContributors.objects.create(
+            project=project)
 
     project_contributors = ProjectContributors.objects.create()
     project_contributors.communities.add(community)
     project_contributors.institutions.add(institution)
     project_contributors.researchers.add(researcher)
-    
-    assert project_contributors.is_user_contributor(user) is False 
-    assert not project_contributors.is_user_contributor(User.objects.create_user(username='another_user', password='another_password'))
-    assert not project_contributors.is_user_contributor(User.objects.create_user(username='yet_another_user', password='yet_another_password'))
+
+    assert project_contributors.is_user_contributor(user) is False
+    assert not project_contributors.is_user_contributor(
+        User.objects.create_user(username='another_user',
+                                 password='another_password'))
+    assert not project_contributors.is_user_contributor(
+        User.objects.create_user(username='yet_another_user',
+                                 password='yet_another_password'))
 
 
 class TestProjectCreator(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.project_creator = ProjectCreatorFactory()
@@ -136,37 +150,52 @@ class TestProjectCreator(TestCase):
         self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
 
     def test_which_account_type_created_community(self):
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
+        is_created_by = {
+            'community': False,
+            'institution': False,
+            'researcher': False,
+        }
 
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] == True
         is_created_by['community'] == True
-        is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
+        is_user_in_account = self.project_creator.is_user_in_creator_account(
+            self.user, is_created_by)
         assert is_user_in_account == False
 
     def test_which_account_type_created_institution(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
+        is_created_by = {
+            'community': False,
+            'institution': False,
+            'researcher': False,
+        }
 
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] == True
         is_created_by['institution'] == True
-        is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
+        is_user_in_account = self.project_creator.is_user_in_creator_account(
+            self.user, is_created_by)
         assert is_user_in_account == False
 
     def test_which_account_type_created_researcher(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
+        is_created_by = {
+            'community': False,
+            'institution': False,
+            'researcher': False,
+        }
 
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] == True
         is_created_by['researcher'] == True
-        is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
+        is_user_in_account = self.project_creator.is_user_in_creator_account(
+            self.user, is_created_by)
         assert is_user_in_account == False
-        
+
     def test_project_creator_str_method(self):
         project_creator = self.project_creator
-        string = project_creator.__str__()
+        project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
 
     def test_user_of_unconfirmed_account_can_see_project(self):
@@ -174,46 +203,49 @@ class TestProjectCreator(TestCase):
         try:
             user_of_unconfirmed_account = self.unconfirmed_account_user
             self.project_creator_of_unconfirmed_account.validate_user_access(
-                user_of_unconfirmed_account
-            )
+                user_of_unconfirmed_account)
         except UnconfirmedAccountException:
-            raise Exception('Error: user of unconfirmed account cannot see own project')
+            raise Exception(
+                'Error: user of unconfirmed account cannot see own project')
 
     def test_user_of_confirmed_account_can_see_project(self):
         # confirmed error is not raised
         try:
             user_of_confirmed_account = self.confirmed_account_user
             self.project_creator_of_confirmed_account.validate_user_access(
-                user_of_confirmed_account
-            )
+                user_of_confirmed_account)
         except UnconfirmedAccountException:
-            raise Exception('Error: user of confirmed account cannot see own project')
+            raise Exception(
+                'Error: user of confirmed account cannot see own project')
 
     def test_nonuser_of_confirmed_account_can_see_project(self):
         # confirmed error is not raised
         try:
             nonuser_of_confirmed_account = self.user
             self.project_creator_of_confirmed_account.validate_user_access(
-                nonuser_of_confirmed_account
-            )
+                nonuser_of_confirmed_account)
         except UnconfirmedAccountException:
-            raise Exception('Error: nonuser of confirmed account cannot see confirmed project')
+            raise Exception(
+                'Error: nonuser of confirmed account cannot see confirmed project'
+            )
 
     def test_nonuser_of_unconfirmed_account_cannot_see_project(self):
         # confirm error is raised
-        with pytest.raises(UnconfirmedAccountException, match='Account Is Not Confirmed And User Is Not In Account'):
+        with pytest.raises(
+                UnconfirmedAccountException,
+                match='Account Is Not Confirmed And User Is Not In Account'):
             nonuser_of_unconfirmed_account = self.user
             self.project_creator_of_unconfirmed_account.validate_user_access(
-                nonuser_of_unconfirmed_account
-            )
+                nonuser_of_unconfirmed_account)
 
 
 class TestProjectnote(TestCase):
+
     @pytest.mark.django_db
     def setUp(self):
         self.project_activity = ProjectActivityFactory()
 
     def test_project_activity_str_method(self):
         new_project_activity = self.project_activity
-        string = new_project_activity.__str__()
+        new_project_activity.__str__()
         assert isinstance(new_project_activity.__str__(), str)

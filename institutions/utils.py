@@ -1,7 +1,11 @@
 from .models import Institution
 
+
 def get_institution(pk):
-    return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
+    return Institution.objects.select_related(
+        'institution_creator').prefetch_related('admins', 'editors',
+                                                'viewers').get(id=pk)
+
 
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
@@ -10,7 +14,7 @@ def set_ror_id(institution):
 
     url = 'https://api.ror.org/organizations'
     query = institution.institution_name
-    params = { 'query': query }
+    params = {'query': query}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:

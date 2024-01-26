@@ -50,13 +50,11 @@ INSTALLED_APPS = [
     'researchers.apps.ResearchersConfig',
     'projects.apps.ProjectsConfig',
     'tklabels.apps.TklabelsConfig',
-
     'communities',
     'institutions',
     'api',
     'helpers',
     'notifications',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,11 +62,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-
     'django_countries',
     'django_cleanup',
     'storages',
-
     'rest_framework',
     'rest_framework_api_key',
     'corsheaders',
@@ -132,8 +128,7 @@ if os.getenv('GAE_APPLICATION', None):
     }
     GS_BUCKET_NAME = os.environ.get('GCS_BUCKET')
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.path.join(BASE_DIR, 'django-storages-gcs-key.json')
-    )
+        os.path.join(BASE_DIR, 'django-storages-gcs-key.json'))
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     MAINTENANCE_MODE_STATE_BACKEND = 'localcontexts.storage_backends.GCSDefaultStorageBackend'
 else:
@@ -157,16 +152,20 @@ MAINTENANCE_MODE_IGNORE_SUPERUSER = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -216,15 +215,15 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'localcontexts/static')
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'localcontexts/static')]
 
 API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
 
 REST_FRAMEWORK = {
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_VERSIONING_CLASS':
+    'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
 
