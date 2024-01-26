@@ -63,21 +63,11 @@
         <div id="help-text-pw" style="position: absolute">
           <small>{{ form.password1.help_text }}</small>
         </div>
-        {% if form.password1.errors %}
-        <div class="msg-red w-50">
-          <small>{{ form.password1.errors.as_text }}</small>
-        </div>
-        {% endif %}
       </div>
 
       <div class="pad-left w-50">
         <label for="confirm-password">Confirm password</label><br />
         <div class="flex-this pass-field">{{ form.password2 }} <br /></div>
-        {% if form.password2.errors %}
-        <div class="msg-red w-50">
-          <small>{{ form.password2.errors.as_text }}</small>
-        </div>
-        {% endif %}
       </div>
     </div>
 

@@ -2,21 +2,7 @@
 #gradient-section {
   width: 100%;
   justify-content: center;
-  background: linear-gradient(
-    to bottom,
-    #3876aa,
-    #2876a5,
-    #18769e,
-    #087697,
-    #007590,
-    #00778d,
-    #007989,
-    #007b85,
-    #008083,
-    #008680,
-    #008a7a,
-    #058f73
-  );
+  background: linear-gradient(to bottom, #3876aa, #2876a5, #18769e, #087697, #007590, #00778d, #007989, #007b85, #008083, #008680, #008a7a, #058f73);
   padding: 3% 1% 1% 1%;
 }
 
@@ -25,8 +11,8 @@
   border-radius: 5px 5px;
   max-width: 1200px;
   min-width: 1200px;
-  min-height: 600px;
-  max-height: 600px;
+  min-height: 650px;
+  max-height: 650px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: #fff;
 }
@@ -38,7 +24,7 @@
   border-radius: 5px 0px 0px 5px;
   font-size: 14px;
   align-items: center;
-}
+} 
 
 /* Form Container || THE WHITE PART */
 .registration-form-container {
@@ -51,6 +37,7 @@
   overflow-y: auto; /* Enable vertical scrolling */
   max-height: 650px;
 }
+
 
 /* Progress Container */
 #progress-ul-container {
@@ -65,8 +52,8 @@
 }
 
 #progress-ul li {
-  /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
-  /* Use padding to space things out rather than margins as the line would get broken up otherwise */
+    /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
+    /* Use padding to space things out rather than margins as the line would get broken up otherwise */
   position: relative;
   margin: 0;
   padding-bottom: 2em;
@@ -77,35 +64,35 @@
 #progress-ul li:before {
   background-color: #fff;
   width: 2px;
-  content: "";
+  content: '';
   position: absolute;
   top: 0px;
   bottom: 0px;
-  left: 5px;
+  left: 5px; 
 }
 
 /* Start the line further down on the first list item */
-#progress-ul li:first-child:before {
-  top: 15px;
+#progress-ul li:first-child:before { 
+  top: 15px;  
 }
 
 /* Stop the line short on the final list item */
-#progress-ul li:last-child:before {
-  height: 6px;
+#progress-ul li:last-child:before { 
+  height: 6px; 
 }
-
+  
 /* SVG bullet points */
-.bullet {
-  margin-left: -23px;
-  width: 30px;
-  fill: #fff;
-  float: left;
-  padding-right: 10px;
+.bullet { 
+  margin-left: -23px; 
+  width: 30px; 
+  fill: #fff; 
+  float: left; 
+  padding-right: 10px 
 }
 
-.bullet.big {
-  width: 30px;
-  margin-left: -24px;
+.bullet.big { 
+  width: 30px; 
+  margin-left: -24px; 
   padding-right: 8px;
 }
 
@@ -147,6 +134,14 @@
   position: relative;
 }
 
+.checkbox-label p {
+  margin: 0;
+}
+
+.checkbox-label span {
+  color: #7d7d7d;
+}
+
 /* For validate and connect pages */
 .centered-content {
   padding-top: 2%;
@@ -156,13 +151,13 @@
 }
 
 /* Create Profile Page Country Select */
-.country-container select {
+.country-container select{
   width: 100%;
 }
 
 /* Register Reason for Registering */
 .reason-label {
-  padding-top: 2%;
+  padding-top:2%;
 }
 
 #help-text-pw {
@@ -170,7 +165,7 @@
   background-color: #f1f1f1;
   min-width: 450px;
   max-width: 450px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
@@ -193,21 +188,21 @@
   margin-right: 2%;
 }
 
-input[type="checkbox"] {
+input[type=checkbox] {
   transform: scale(1.5);
 }
 
 /* Choose an account page */
 
 .account-card {
-  width: 218px;
-  height: 390px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
-  border-radius: 12px;
+width: 218px;
+height: 390px;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 15px;  
+box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
+border-radius: 12px;
 }
 
 .account-card:nth-child(2) {
@@ -216,20 +211,20 @@ input[type="checkbox"] {
 }
 
 .white-btn-select {
-  margin: 5px 10px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #007385;
-  width: 81px;
-  height: 40px;
-  background-color: #fff;
-  text-align: center;
+ margin: 5px 10px;
+ padding: 8px;
+ border-radius: 5px;
+ border: 1px solid #007385;
+ width: 81px;
+ height: 40px; 
+ background-color: #fff;
+ text-align: center; 
 }
 
 .white-btn-select span {
   font-size: 14px;
   font-weight: bold;
-  color: #007385;
+  color: #007385; 
 }
 
 .white-btn-select:hover {
@@ -252,15 +247,12 @@ input[type="checkbox"] {
 
 /* Little orange div on login page */
 .test-hub-div {
-  background-color: #cfe7e2;
+  background-color:#CFE7E2;
   padding: 16px 32px 16px 32px;
   margin-top: 5%;
   bottom: 0;
 }
 
-.test-hub-div p {
-  font-size: 16px;
-}
 
 .test-hub-div small {
   font-size: 14px;
@@ -275,7 +267,7 @@ input[type="checkbox"] {
 }
 
 .blue-highlight {
-  background-color: #e6f1f3;
+  background-color: #E6F1F3;
   padding: 5px 8px;
   border-radius: 3px;
 }
@@ -306,18 +298,18 @@ input[type="checkbox"] {
 
 /*Google auth*/
 .center-items {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .horizental-line{
-    height: 1px;
-    width: 100%;
-    background: black;
+  height: 1px;
+  width: 100%;
+  background: black;
 }
 
 .register-text{
-    display: flex;
-    align-self: start;
-    margin-left: 35px;
+  display: flex;
+  align-self: start;
+  margin-left: 35px;
 }

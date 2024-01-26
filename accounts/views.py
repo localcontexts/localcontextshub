@@ -6,7 +6,6 @@ from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
-from allauth.socialaccount.models import SocialAccount
 
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
@@ -136,14 +135,15 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        user = auth.authenticate(request, username=username, password=password)
 
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            user = None
+        if user is None:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                user = None
 
-        # If user is found and the password is correct, log in the user.
-        if user is not None and user.check_password(password):
+        if user:
             if user.is_active:
                 if not user.last_login:
                     auth.login(request, user)
