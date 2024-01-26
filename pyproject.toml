@@ -1,0 +1,16 @@
+[tool.black]
+line-length =
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+  | migrations
+)/
+'''
