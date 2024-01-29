@@ -86,6 +86,7 @@ def download_project(request, unique_id):
 def embed_project(request, unique_id):
     layout = request.GET.get('lt')
     lang = request.GET.get('lang')
+    align = request.GET.get('align')
 
     project = project = Project.objects.prefetch_related(
                     'bc_labels', 
@@ -101,6 +102,7 @@ def embed_project(request, unique_id):
     context = {
         'layout' : layout,
         'lang' : lang,
+        'align' : align,
         'notices' : notices,
         'label_groups' :  label_groups,
         'project' : project

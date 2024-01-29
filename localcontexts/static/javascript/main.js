@@ -1731,11 +1731,13 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
+    var alignmentDropdown = document.getElementById('embedAlignOptions')
     var langArray= new Array();
-    var layoutType, languageType, customizationOptions = null
+    var layoutType, languageType, alignType = null
     projectID = embedCode.dataset.projectId
+
     
-    embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+    embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
 
     for (i=0;i < languageDropdown.options.length; i++) {
         if (langArray.includes(languageDropdown.options[i].value) == false) {
@@ -1749,29 +1751,39 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
 
     if (layoutDropdown) {
         layoutDropdown.addEventListener("change", function(e) {
-            layoutType = 'lt='+this.value
+            layoutType = 'lt='+this.value+'&'
             updateEmbedCode()
         })
     }
     if (languageDropdown) {
         languageDropdown.addEventListener("change", function(e) {
-            languageType = 'lang='+this.value
+            languageType = 'lang='+this.value+'&'
+            updateEmbedCode()
+        })
+    }
+    if (alignmentDropdown) {
+        alignmentDropdown.addEventListener("change", function(e) {
+            alignType = 'align='+this.value+'&'
             updateEmbedCode()
         })
     }
 
     function updateEmbedCode() {
-        if (layoutType && languageType) {
-            customizationOptions = layoutType+'&'+languageType
+        let customizationOptions = ""
+        
+        if (layoutType) {
+            customizationOptions += layoutType
         }
-        else if (!(languageType)) {
-            customizationOptions = layoutType
+        if (languageType) {
+            customizationOptions += languageType
         }
-        else if (!(layoutType)) {
-            customizationOptions = languageType
+        if (alignType) {
+            customizationOptions += alignType
         }
 
-        embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        customizationOptions = customizationOptions.slice(0,-1)
+
+        embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
     }
 }
 
