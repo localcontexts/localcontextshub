@@ -237,9 +237,8 @@ input:focus {
 .auto-margin { margin: auto; }
 .no-top-margin { margin-top: 0; }
 .no-bottom-margin { margin-bottom: 0; }
-.no-margin {    margin: 0 !important;}
+.no-margin { margin: 0 !important; }
 .margin-top-8 { margin-top: 8px; }
-
 .margin-bottom-8 { margin-bottom: 8px; }
 .margin-left-8 { margin-left: 8px; }
 .margin-right-8 { margin-right: 8px; }
