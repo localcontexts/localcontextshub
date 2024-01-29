@@ -1,51 +1,62 @@
 {% extends 'register-base.html' %} {% load static %} {% block title %} Login {% endblock %}
 
+{% load socialaccount %}
 {% block card %}
-    <div class="flex-this space-between w-90">
-        <div>
-            <h2 class="margin-bottom-2">Welcome back!</h2>
-            <p>Please sign in to use the Local Contexts Hub</p>                    
-        </div>
-        <div><p>Not signed up yet? <a href="{% url 'register' %}" class="default-a">Register</a></p></div>                    
-    </div>
-
-    <div class="form-container flex-this column w-90">
-
-        <form action="{% url 'login' %}" method="POST" class="flex-this column w-100" autocomplete="off">
-            {% csrf_token %}
+    <div class="w-90">
+        <div class="flex-this space-between margin-bottom-8">
             <div>
-                <label>Username</label>
-                <div class="tooltip" style="margin-top: 15px; margin-left: 5px;"><strong>i</strong>
-                    <span class="tooltiptext">Log-in with the username you created during the registration process, not your email</span>
-                </div>
-                <input type="username" name="username" required>
+                <h2 class="margin-bottom-2">Welcome back!</h2>
             </div>
-            <div class="pad-top-1-5">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
-            <div class="flex-this space-between pad-top-1-5"> 
+            <div><p>Not signed up yet? <a href="{% url 'register' %}" class="default-a">Register</a></p></div>
+        </div>
+
+        <div class="form-container flex-this column w-90">
+
+            <form action="{% url 'login' %}" method="POST" class="flex-this column w-100" autocomplete="off">
+                {% csrf_token %}
                 <div>
-                    <a href="{% url 'reset_password'%}" class="default-a">Forgot your password?</a>
-                </div>  
-                <div><button class="primary-btn action-btn margin-top-2 default-btn-width">Sign in</button></div>
-            </div>
-            <input type="hidden" name="next" value="{{ request.GET.next }}"/>
-        </form>
-
-        <!-- Alerts -->
-        {% include 'partials/_alerts.html' %}
-
-        {% if envi == 'PROD' or 'localhost' in request.get_host %}
-            <div class="flex-this w-100 test-hub-div">
-                <div class="w-70 margin-right-16">
-                    <p class="no-top-margin no-bottom-margin bold">First time using the Local Contexts Hub?</p>
-                    <small>We have a test site where you can practice and explore the Local Contexts Hub. Follow this button to go to the Hub test site.</small>
+                    <label>Username</label>
+                    <div class="tooltip" style="margin-top: 15px; margin-left: 5px;"><strong>i</strong>
+                        <span class="tooltiptext">Log-in with the username you created during the registration process, not your email</span>
+                    </div>
+                    <input type="username" name="username" required>
                 </div>
-                <div class="margin-left-16">
-                    <a class="primary-btn orange-btn block" href="https://sandbox.localcontextshub.org" target="_blank" rel="noopener">Let's go <i class="fa fa-arrow-right margin-left-8"></i></a></div>            
-            </div>
-        {% endif %}
+                <div class="pad-top-1-5">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div>
+                    <a href="{% url 'reset_password'%}" class="darkteal-text underline-hover bold">Forgot your password?</a>
+                </div> 
+                <div class="flex-this column margin-top-2">
+                    <div class="w-100"> 
+
+                        <div class="flex-this justify-center"> <button class="primary-btn action-btn margin-top-2 w-100 signin-btn">Sign in</button></div>
+                    </div>
+                    <div class="flex-this justify-center align-center gap-1">
+                        <div class="horizental-line"> </div>
+                    <p>or</p>
+                    <div class="horizental-line"> </div>
+                    </div>
+                    <div class="flex-this">
+                        <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Sign in With Google</span></a>
+                    </div>
+                </div>
+                <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+            </form>
+
+            <!-- Alerts -->
+            {% include 'partials/_alerts.html' %}
+            {% if not envi == "SANDBOX" %}
+                <div class="flex-this column w-100 test-hub-div">
+                    <div>
+                        <p class="no-top-margin">Interested in exploring the Local Contexts hub before registering? Explore our sandbox website where you can play around our tools.</p>
+                    </div>
+                    <div>
+                        <a class="primary-btn green-btn block" href="https://sandbox.localcontextshub.org" target="_blank" rel="noopener">Explore Sandbox</a></div>
+                </div>
+            {% endif %}
+        </div>
 
     </div>
 

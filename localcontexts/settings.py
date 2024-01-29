@@ -42,6 +42,12 @@ ADMINS = [(SITE_ADMIN_NAME, SITE_ADMIN_EMAIL)]
 GOOGLE_RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_REQUIRED_SCORE = 0.5
 
+#Google Oauth Backend
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
 # Application definition
 INSTALLED_APPS = [
     'maintenance_mode',
@@ -74,6 +80,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'debug_toolbar',
     'dbbackup',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +99,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'maintenance_mode.middleware.MaintenanceModeMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 CONTEXT_PROCESSORS = [
@@ -259,3 +271,30 @@ else:
     # upload backups to local file system
     DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
     DBBACKUP_STORAGE_OPTIONS = {'location': 'backups/'}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id':  os.environ.get('GOOGLE_AUTH_CLIENT_ID'),
+            'secret':  os.environ.get('GOOGLE_AUTH_CLIENT_SECRET'),
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'prompt': 'select_account',
+            'access_type': 'online',
+        }
+    }
+}
+
+SITE_ID = 1
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
+LOGIN_REDIRECT_URL= '/dashboard/'
+ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
+
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'

@@ -1326,40 +1326,42 @@ function validateProjectDisableSubmitBtn() {
 }
 
 function toggleNotifications(scope) {
+  let activebutton = document.getElementById(`notification-button-${scope}`);
+  let allButtons = document.querySelectorAll('[id^="notification-button-"]');
+  let allNotificationDivs = document.querySelectorAll(
+    '[id^="notification-v2-"]'
+  );
+  let activeNotificationDiv = document.getElementById(
+    `notification-v2-${scope}`
+  );
 
-    let activebutton = document.getElementById(`notification-button-${scope}`);
-    let allButtons = document.querySelectorAll('[id^="notification-button-"]');
-    let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
-    let activeNotificationDiv = document.getElementById(`notification-v2-${scope}`)
-    
-    allButtons.forEach(function(button) {
-        if (button !== activebutton) {
-            button.classList.remove('notification-button');
-    
-        }
-    });
+  allButtons.forEach(function (button) {
+    if (button !== activebutton) {
+      button.classList.remove("notification-button");
+    }
+  });
 
-    activebutton.classList.toggle('notification-button');    
+  activebutton.classList.toggle("notification-button");
 
-    allNotificationDivs.forEach(function(element) {
-        if (element !== activeNotificationDiv){
-            element.classList.remove('show');
-        }
-    });
+  allNotificationDivs.forEach(function (element) {
+    if (element !== activeNotificationDiv) {
+      element.classList.remove("show");
+    }
+  });
 
-    activeNotificationDiv.classList.toggle('show');
+  activeNotificationDiv.classList.toggle("show");
 
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn, .dropbtn i')) {
-            allButtons.forEach(function(button) {
-                button.classList.remove('notification-button');
-            });
+  window.onclick = function (event) {
+    if (!event.target.matches(".dropbtn, .dropbtn i")) {
+      allButtons.forEach(function (button) {
+        button.classList.remove("notification-button");
+      });
 
-            allNotificationDivs.forEach(function(element) {
-                element.classList.remove('show');
-            });
-        }
-    };
+      allNotificationDivs.forEach(function (element) {
+        element.classList.remove("show");
+      });
+    }
+  };
 }
 
 if (window.location.href.includes('connect-community') || window.location.href.includes('connect-institution')) {
@@ -1492,6 +1494,23 @@ if (deactivateAccountBtn) {
         let continueDeactivationBtn = document.getElementById('continueDeactivationBtn')
         continueDeactivationBtn.addEventListener('click', function(){ document.getElementById('deactivateUserForm').submit() })
     })
+}
+
+// Deactivate and unlink g-account in user settings
+function showConfirmationAlert() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'block';
+}
+
+function confirmUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
+    document.getElementById('unlinkForm').submit();
+}
+
+function cancelUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
 }
 
 if (window.location.href.includes('newsletter/preferences/') ) {

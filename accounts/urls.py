@@ -9,6 +9,8 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('register/', views.register, name='register'),
     path('logout/', views.logout, name='logout'),
+    path('social/signup/', views.CustomSocialSignupView.as_view(), name='social_signup'),
+    path('social/connections/<str:provider>/', views.CustomSocialConnectionsView.as_view(), name='socialaccount_connections'),
 
     path('activate/<uidb64>/<token>', views.ActivateAccountView.as_view(), name='activate'),
     path('verify/', views.verify, name='verify'),
@@ -24,6 +26,7 @@ urlpatterns = [
 
     path('update-profile/', views.update_profile, name='update-profile'),
     path('manage/', views.manage_organizations, name='manage-orgs'),
+    path('link-account/', views.link_account, name='link-account'),
     path('change-password/', views.change_password, name='change-password'),
     path('deactivate/', views.deactivate_user, name='deactivate-user'),
 

@@ -1,69 +1,96 @@
-{% extends 'auth-base.html' %} {% block title %} Update Profile {% endblock %} {% load static %} {% block main %}
+{% extends 'auth-base.html' %} {% block title %} Update Profile {% endblock %}
+{% load static %} {% block main %} {% if user.is_authenticated %} {% include 'partials/infocards/_user-dashcard.html' %}
 
-{% if user.is_authenticated %}
+<div
+  class="content-card-v2 content-card-space flex-this column settings-height"
+>
+  <h2 class="no-top-margin">User Settings</h2>
 
-    {% include 'partials/infocards/_user-dashcard.html' %}
+  <div class="flex-this w-100">
+    <div class="side-nav-container">
+      <a class="side-nav-a" href="{% url 'update-profile' %}">
+        <div
+          class="side-nav-item {% if 'update-profile' in request.path %} selected {% else %} grey-text {% endif %}"
+        >
+          <div class="w-20 margin-left-8 margin-top-8">
+            <i class="fa-solid fa-circle-user fa-3x"></i>
+          </div>
+          <div>
+            <p class="no-top-margin">
+              <strong>Profile</strong><br />Contact name, email, location
+            </p>
+          </div>
+        </div>
+      </a>
 
-    <div class="content-card-v2 content-card-space flex-this column settings-height">
-        <h2 class="no-top-margin">User Settings</h2>
+      <a class="side-nav-a" href="{% url 'manage-orgs' %}">
+        <div
+          class="side-nav-item {% if 'manage' in request.path %} selected {% else %} grey-text {% endif %}"
+        >
+          <div><i class="fa-solid fa-user-group"></i></div>
+          <div>
+            <p class="no-top-margin">
+              <strong>Accounts</strong><br />Manage your accounts
+            </p>
+          </div>
+        </div>
+      </a>
 
-        <div class="flex-this w-100">
+      <a class="side-nav-a" href="{% url 'link-account' %}">
+        <div
+          class="side-nav-item {% if 'link-account' in request.path %} selected {% else %} grey-text {% endif %}"
+        >
+          <div><i class="fa-solid fa-link-simple"></i></div>
+          <div>
+            <p class="no-top-margin">
+              <strong>Linked Accounts</strong><br />Google
+            </p>
+          </div>
+        </div>
+      </a>
 
-            <div class="side-nav-container">
-                <a class="side-nav-a" href="{% url 'update-profile' %}">
-                    <div class="side-nav-item {% if 'update-profile' in request.path %} selected {% else %} grey-text {% endif %}">
-                        <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-circle-user fa-3x"></i></div>
-                        <div>
-                            <p class="no-top-margin"><strong>Profile</strong><br>Contact name, email, location</p>
-                        </div>  
-                    </div>   
-                </a>
+      <a class="side-nav-a" href="{% url 'change-password' %}">
+        <div
+          class="side-nav-item {% if 'change-password' in request.path %} selected {% else %} grey-text {% endif %}"
+        >
+          <div><i class="fa fa-key" aria-hidden="true"></i></div>
+          <div>
+            <p class="no-top-margin">
+              <strong>Password</strong><br />Change your password
+            </p>
+          </div>
+        </div>
+      </a>
 
-                <a class="side-nav-a" href="{% url 'manage-orgs' %}">
-                    <div class="side-nav-item {% if 'manage' in request.path %} selected {% else %} grey-text {% endif %}">
-                        <div><i class="fa-solid fa-user-group"></i></div>
-                        <div>
-                            <p class="no-top-margin"><strong>Accounts</strong><br>Manage your accounts</p>
-                        </div>  
-                    </div>
-                </a>
-
-                <a class="side-nav-a" href="{% url 'change-password' %}">
-                    <div class="side-nav-item {% if 'change-password' in request.path %} selected {% else %} grey-text {% endif %}">
-                        <div><i class="fa fa-key" aria-hidden="true"></i></div>
-                        <div>
-                            <p class="no-top-margin"><strong>Password</strong><br>Change your password</p>
-                        </div>  
-                    </div>
-                </a>
-
-                <!-- {# 
+      <!-- {#
                 <a class="side-nav-a" href="{% url 'api-key' %}">
                     <div class="side-nav-item {% if 'apikey' in request.path %} selected {% else %} grey-text {% endif %}">
                         <div class="w-20 margin-right-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
                         <div class="w-80">
                             <p class="no-top-margin"><strong>API Key</strong><br>Manage API Key</p>
-                        </div>  
-                    </div>
-                </a> 
-                #} -->
-                
-                <a class="side-nav-a" href="{% url 'deactivate-user' %}">
-                    <div class="side-nav-item {% if 'deactivate' in request.path %} selected {% else %} grey-text {% endif %}">
-                        <div class="w-20 margin-right-8"><i class="fa fa-power-off fa-3x" aria-hidden="true"></i></div>
-                        <div class="w-80">
-                            <p class="no-top-margin"><strong>Deactivate</strong><br>Deactivate your profile</p>
-                        </div>  
+                        </div>
                     </div>
                 </a>
+                #} -->
 
-            </div>
-
-            {% block settings %}{% endblock %}
+      <a class="side-nav-a" href="{% url 'deactivate-user' %}">
+        <div
+          class="side-nav-item {% if 'deactivate' in request.path %} selected {% else %} grey-text {% endif %}"
+        >
+          <div class="w-20 margin-right-8">
+            <i class="fa fa-power-off fa-3x" aria-hidden="true"></i>
+          </div>
+          <div class="w-80">
+            <p class="no-top-margin">
+              <strong>Deactivate</strong><br />Deactivate your profile
+            </p>
+          </div>
         </div>
-
+      </a>
     </div>
 
-{% endif %}
+    {% block settings %}{% endblock %}
+  </div>
+</div>
 
-{% endblock %}
+{% endif %} {% endblock %}

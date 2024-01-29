@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
-from django.contrib.auth.views import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm
+from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
@@ -19,7 +21,6 @@ from django.utils.encoding import force_text
 
 from unidecode import unidecode
 from django.db.models import Q
-
 from django.contrib.auth.models import User
 from communities.models import Community, InviteMember
 from institutions.models import Institution
@@ -134,22 +135,23 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        user = auth.authenticate(request, username=username, password=password)
 
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            user = None
+        if user is None:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                user = None
 
-        # If user is found and the password is correct, log in the user.
         if user is not None and user.check_password(password):
             if user.is_active:
                 if not user.last_login:
-                    auth.login(request, user)
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # Welcome email
                     send_welcome_email(request, user)
                     return redirect('create-profile')
                 else:
-                    auth.login(request, user)
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     return redirect(get_next_path(request, default_path='dashboard'))
             else:
                 if not user.last_login:
@@ -181,6 +183,27 @@ def landing(request):
 @login_required(login_url='login')
 def select_account(request):
     return render(request, 'accounts/select-account.html')
+
+class CustomSocialSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "You have already created your account using username and password. Please use those to login instead. You can still connect your account with Google once you login.")
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+class CustomSocialConnectionsView(ConnectionsView):
+    def dispatch(self, request, *args, **kwargs):
+        provider = kwargs['provider']
+        social_account = SocialAccount.objects.filter(provider=provider, user=request.user).first()
+        has_password = request.user.has_usable_password()
+        if social_account and has_password:
+            social_account.delete()
+            messages.info(request, 'The social account has been disconnected.')
+            return redirect('link-account')
+        else:
+            messages.error(request, 'Please set password first to unlink an account')
+            return redirect('link-account')
+        return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='login')
 def dashboard(request):
@@ -261,8 +284,13 @@ def update_profile(request):
 @login_required(login_url='login')
 def change_password(request):
     profile = Profile.objects.select_related('user').get(user=request.user)
+    has_usable_password = request.user.has_usable_password()
 
-    form = PasswordChangeForm(request.user, request.POST or None)
+    if not has_usable_password:
+        form = SetPasswordForm(request.user, request.POST or None)
+    else:
+        form = PasswordChangeForm(request.user, request.POST or None)
+
     if request.method == 'POST':
         if form.is_valid():
             form.save()
@@ -296,6 +324,16 @@ def manage_organizations(request):
     if Researcher.objects.filter(user=request.user).exists():
         researcher = Researcher.objects.get(user=request.user)
     return render(request, 'accounts/manage-orgs.html', { 'profile': profile, 'affiliations': affiliations, 'researcher': researcher, 'users_name': users_name })
+
+@login_required(login_url='login')
+def link_account(request):
+    has_social_account = SocialAccount.objects.filter(user=request.user).exists()
+    provider = None
+    if has_social_account:
+        social_account = SocialAccount.objects.filter(user=request.user).first()
+        provider = social_account.provider
+
+    return render(request, 'accounts/link-account.html', {'socialaccount':has_social_account, 'provider': provider})
 
 @login_required(login_url='login')
 def member_invitations(request):
