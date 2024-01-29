@@ -143,15 +143,15 @@ def login(request):
             except User.DoesNotExist:
                 user = None
 
-        if user:
+        if user is not None and user.check_password(password):
             if user.is_active:
                 if not user.last_login:
-                    auth.login(request, user)
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # Welcome email
                     send_welcome_email(request, user)
                     return redirect('create-profile')
                 else:
-                    auth.login(request, user)
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     return redirect(get_next_path(request, default_path='dashboard'))
             else:
                 if not user.last_login:
