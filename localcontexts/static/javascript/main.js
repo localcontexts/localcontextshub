@@ -1326,40 +1326,42 @@ function validateProjectDisableSubmitBtn() {
 }
 
 function toggleNotifications(scope) {
+  let activebutton = document.getElementById(`notification-button-${scope}`);
+  let allButtons = document.querySelectorAll('[id^="notification-button-"]');
+  let allNotificationDivs = document.querySelectorAll(
+    '[id^="notification-v2-"]'
+  );
+  let activeNotificationDiv = document.getElementById(
+    `notification-v2-${scope}`
+  );
 
-    let activebutton = document.getElementById(`notification-button-${scope}`);
-    let allButtons = document.querySelectorAll('[id^="notification-button-"]');
-    let allNotificationDivs = document.querySelectorAll('[id^="notification-v2-"]');
-    let activeNotificationDiv = document.getElementById(`notification-v2-${scope}`)
-    
-    allButtons.forEach(function(button) {
-        if (button !== activebutton) {
-            button.classList.remove('notification-button');
-    
-        }
-    });
+  allButtons.forEach(function (button) {
+    if (button !== activebutton) {
+      button.classList.remove("notification-button");
+    }
+  });
 
-    activebutton.classList.toggle('notification-button');    
+  activebutton.classList.toggle("notification-button");
 
-    allNotificationDivs.forEach(function(element) {
-        if (element !== activeNotificationDiv){
-            element.classList.remove('show');
-        }
-    });
+  allNotificationDivs.forEach(function (element) {
+    if (element !== activeNotificationDiv) {
+      element.classList.remove("show");
+    }
+  });
 
-    activeNotificationDiv.classList.toggle('show');
+  activeNotificationDiv.classList.toggle("show");
 
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn, .dropbtn i')) {
-            allButtons.forEach(function(button) {
-                button.classList.remove('notification-button');
-            });
+  window.onclick = function (event) {
+    if (!event.target.matches(".dropbtn, .dropbtn i")) {
+      allButtons.forEach(function (button) {
+        button.classList.remove("notification-button");
+      });
 
-            allNotificationDivs.forEach(function(element) {
-                element.classList.remove('show');
-            });
-        }
-    };
+      allNotificationDivs.forEach(function (element) {
+        element.classList.remove("show");
+      });
+    }
+  };
 }
 
 if (window.location.href.includes('connect-community') || window.location.href.includes('connect-institution')) {
@@ -1492,6 +1494,23 @@ if (deactivateAccountBtn) {
         let continueDeactivationBtn = document.getElementById('continueDeactivationBtn')
         continueDeactivationBtn.addEventListener('click', function(){ document.getElementById('deactivateUserForm').submit() })
     })
+}
+
+// Deactivate and unlink g-account in user settings
+function showConfirmationAlert() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'block';
+}
+
+function confirmUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
+    document.getElementById('unlinkForm').submit();
+}
+
+function cancelUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
 }
 
 if (window.location.href.includes('newsletter/preferences/') ) {
@@ -1712,11 +1731,13 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
+    var alignmentDropdown = document.getElementById('embedAlignOptions')
     var langArray= new Array();
-    var layoutType, languageType, customizationOptions = null
+    var layoutType, languageType, alignType = null
     projectID = embedCode.dataset.projectId
+
     
-    embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+    embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
 
     for (i=0;i < languageDropdown.options.length; i++) {
         if (langArray.includes(languageDropdown.options[i].value) == false) {
@@ -1730,29 +1751,39 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
 
     if (layoutDropdown) {
         layoutDropdown.addEventListener("change", function(e) {
-            layoutType = 'lt='+this.value
+            layoutType = 'lt='+this.value+'&'
             updateEmbedCode()
         })
     }
     if (languageDropdown) {
         languageDropdown.addEventListener("change", function(e) {
-            languageType = 'lang='+this.value
+            languageType = 'lang='+this.value+'&'
+            updateEmbedCode()
+        })
+    }
+    if (alignmentDropdown) {
+        alignmentDropdown.addEventListener("change", function(e) {
+            alignType = 'align='+this.value+'&'
             updateEmbedCode()
         })
     }
 
     function updateEmbedCode() {
-        if (layoutType && languageType) {
-            customizationOptions = layoutType+'&'+languageType
+        let customizationOptions = ""
+        
+        if (layoutType) {
+            customizationOptions += layoutType
         }
-        else if (!(languageType)) {
-            customizationOptions = layoutType
+        if (languageType) {
+            customizationOptions += languageType
         }
-        else if (!(layoutType)) {
-            customizationOptions = languageType
+        if (alignType) {
+            customizationOptions += alignType
         }
 
-        embedCode.value = '<iframe width="560" height="250" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        customizationOptions = customizationOptions.slice(0,-1)
+
+        embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
     }
 }
 

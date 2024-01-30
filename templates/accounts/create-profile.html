@@ -1,71 +1,84 @@
-{% extends 'register-base.html' %} {% block title %} Create Profile {% endblock %} {% load static %} {% block card %}
-{% if user.is_authenticated %}
+{% extends 'register-base.html' %} {% block title %} Create Profile {% endblock%} {% load static %} {% block card %} {% if user.is_authenticated %}
 
 <div class="flex-this column w-90">
-    <div><h2 class="no-top-margin">Create your personal profile</h2></div>
-    <div class="w-80"><p class="no-top-margin">The information you provide here will be shared with other accounts you decide to join to help them identify who you are.</p></div>
+  <div><h2 class="no-top-margin">Create your personal profile</h2></div>
+  <div class="w-80">
+    <p class="no-top-margin">
+      The information you provide here will be shared with other accounts you
+      decide to join to help them identify who you are.
+    </p>
+  </div>
 </div>
 
 <div class="form-container flex-this column w-90">
-    <form action="{% url 'create-profile' %}" method="POST" enctype="multipart/form-data" class="flex-this column w-100">
-        {% csrf_token %}
-        <div class="flex-this column w-100">
-
-            <div class="flex-this w-100 space-between">
-                <div class="w-50 margin-right-1"> 
-                    <label for="first_name">First name </label>
-                        {{ user_form.first_name }}
-                </div>
-                <div class="w-50 margin-left-1">
-                    <label for="last_name">Last name</label>
-                        {{ user_form.last_name }}
-                </div>
-            </div>
-
-            <div class="flex-this w-100 space-between margin-top-1">
-                <div class="w-50 margin-right-1"> 
-                    <label for="position">Position </label>
-                    {{ profile_form.position }}
-                </div>
-                <div class="w-50 margin-left-1">
-                    <label for="affiliation">Affiliation</label>
-                    {{ profile_form.affiliation }}
-                </div>
-            </div>
-
-            <div class="flex-this w-100 space-between margin-top-1">
-                <div class="w-50 margin-right-1"> 
-                    <label for="city_town">Town or city </label>
-                        {{ profile_form.city_town }}
-                </div>
-                <div class="w-50 margin-left-1">
-                    <label for="state_province_region">State, province, or region</label>
-                        {{ profile_form.state_province_region }}
-                </div>
-            </div>
-
-            <div class="w-100 pad-top-1-5">
-                <label for="country">Country </label><br>
-                {{ profile_form.country }}
-            </div>
-
+  <form
+    action="{% url 'create-profile' %}"
+    method="POST"
+    enctype="multipart/form-data"
+    class="flex-this column w-100"
+  >
+    {% csrf_token %}
+    <div class="flex-this column w-100">
+      <div class="flex-this w-100 space-between">
+        <div class="w-50 margin-right-1">
+          <label for="first_name">First name </label>
+          {{ user_form.first_name }}
         </div>
-
-        <div class="w-80 margin-top-8">
-            <small>
-                Providing your personal information is optional.
-                By providing it, you consent for it to be shown to other Hub users, see the 
-                <a href="https://localcontexts.org/privacy-policy/" class="default-a" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-            </small>                
+        <div class="w-50 margin-left-1">
+          <label for="last_name">Last name</label>
+          {{ user_form.last_name }}
         </div>
+      </div>
 
-        <div class="flex-this flex-end">
-            <button class="primary-btn action-btn margin-top-2">Continue <i class="fa fa-arrow-right"></i></button>
-        </div>              
- 
+      <div class="flex-this w-100 space-between margin-top-1">
+        <div class="w-50 margin-right-1">
+          <label for="position">Position </label>
+          {{ profile_form.position }}
+        </div>
+        <div class="w-50 margin-left-1">
+          <label for="affiliation">Affiliation</label>
+          {{ profile_form.affiliation }}
+        </div>
+      </div>
 
-    </form>
+      <div class="flex-this w-100 space-between margin-top-1">
+        <div class="w-50 margin-right-1">
+          <label for="city_town">Town or city </label>
+          {{ profile_form.city_town }}
+        </div>
+        <div class="w-50 margin-left-1">
+          <label for="state_province_region">State, province, or region</label>
+          {{ profile_form.state_province_region }}
+        </div>
+      </div>
+
+      <div class="w-100 pad-top-1-5">
+        <label for="country">Country </label><br />
+        {{ profile_form.country }}
+      </div>
+    </div>
+
+    <div class="w-80 margin-top-8">
+      <small>
+        Providing your personal information is optional. By providing it, you
+        consent for it to be shown to other Hub users, see the
+        <a
+          href="https://localcontexts.org/privacy-policy/"
+          class="default-a"
+          target="_blank"
+          rel="noopener"
+          >Privacy Policy
+          <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a
+        >.
+      </small>
+    </div>
+
+    <div class="flex-this flex-end">
+      <button class="primary-btn action-btn margin-top-2">
+        Continue <i class="fa fa-arrow-right"></i>
+      </button>
+    </div>
+  </form>
+
 </div>
-{% endif %}
-
-{% endblock %}
+{% endif %} {% endblock %}

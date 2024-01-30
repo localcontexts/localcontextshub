@@ -1,8 +1,7 @@
 appdirs==1.4.4
 arabic-reshaper==3.0.0
-asgiref==3.2.10
-astroid==3.0.1
-autoflake==2.2.1
+asgiref==3.3.2
+astroid==2.4.2
 boto3==1.26.77
 botocore==1.29.77
 cachetools==4.2.4
@@ -10,7 +9,8 @@ certifi==2023.7.22
 charset-normalizer==2.0.6
 distlib==0.3.0
 dj-database-url==0.5.0
-Django==3.1.14
+Django==3.2
+django-allauth==0.59.0
 django-appconf==1.0.4
 django-dbbackup==4.0.2
 django-chartjs==2.3.0
@@ -18,7 +18,8 @@ django-classy-tags==2.0.0
 django-cleanup==5.1.0
 django-cookie-consent==0.2.6
 django-cors-headers==3.11.0
-django-countries==6.1.3
+django-countries==7.5.1
+django-dbbackup==4.0.2
 django-debug-toolbar==3.2.4
 django-guardian==2.3.0
 django-maintenance-mode==0.16.0
@@ -44,7 +45,7 @@ idna==3.2
 isort==5.4.2
 jmespath==0.10.0
 lazy-object-proxy==1.4.3
-mccabe==0.7.0
+mccabe==0.6.1
 packaging==21.0
 pillow>=10.0.1
 pip>=23.3
@@ -52,7 +53,7 @@ protobuf==3.18.3
 psycopg2-binary==2.8.5
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pylint==3.0.3
+pylint==2.6.0
 pylint-django==2.3.0
 pylint-plugin-utils==0.6
 pyparsing==2.4.7
@@ -66,9 +67,9 @@ pytest-runner==5.3.1
 python-bidi==0.4.2
 python-dateutil==2.8.1
 pytz==2020.1
-removestar==1.5
 reportlab>=3.6.13
 requests==2.31.0
+requests-oauthlib==1.3.1
 rsa==4.7.2
 s3transfer==0.6.0
 setuptools==65.5.1
@@ -84,3 +85,4 @@ whitenoise==5.2.0
 wrapt==1.12.1
 xhtml2pdf==0.2.11
 yapf==0.40.2
+

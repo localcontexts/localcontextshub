@@ -11,8 +11,8 @@
     border-radius: 5px 5px;
     max-width: 1200px;
     min-width: 1200px;
-    min-height: 550px;
-    max-height: 550px;
+    min-height: 650px;
+    max-height: 650px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     background-color: #fff;
 }
@@ -34,6 +34,8 @@
     border-radius: 0px 5px 5px 0px;
     font-size: 14px;
     align-items: center;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 650px;
 }
 
 
@@ -78,7 +80,7 @@
 #progress-ul li:last-child:before { 
     height: 6px; 
 }
-    
+  
 /* SVG bullet points */
 .bullet { 
     margin-left: -23px; 
@@ -130,6 +132,14 @@
 
 .pass-field {
     position: relative;
+}
+
+.checkbox-label p {
+    margin: 0;
+}
+
+.checkbox-label span {
+  color: #7d7d7d;
 }
 
 /* For validate and connect pages */
@@ -185,14 +195,14 @@ input[type=checkbox] {
 /* Choose an account page */
 
 .account-card {
-  width: 218px;
-  height: 390px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;  
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
-  border-radius: 12px;
+    width: 218px;
+    height: 390px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;  
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
 }
 
 .account-card:nth-child(2) {
@@ -237,15 +247,12 @@ input[type=checkbox] {
 
 /* Little orange div on login page */
 .test-hub-div {
-    background-color:#ffe0c8;
-    padding: 16px 32px 16px 32px;
-    position: absolute;
-    bottom: 0;
+  background-color:#CFE7E2;
+  padding: 16px 32px 16px 32px;
+  margin-top: 5%;
+  bottom: 0;
 }
 
-.test-hub-div p {
-    font-size: 16px;
-}
 
 .test-hub-div small {
     font-size: 14px;
@@ -287,4 +294,22 @@ input[type=checkbox] {
   
 .account-registration-container::-webkit-scrollbar-track {
     background-color: #f1f1f1; /* Color of the scrollbar track */
+}
+
+/*Google auth*/
+.center-items {
+    display: flex;
+    align-items: center;
+}
+
+.horizental-line {
+    height: 1px;
+    width: 100%;
+    background: black;
+}
+
+.register-text {
+    display: flex;
+    align-self: start;
+    margin-left: 35px;
 }

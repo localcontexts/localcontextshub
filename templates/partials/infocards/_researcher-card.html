@@ -64,6 +64,7 @@
           >
           {% endif %} {% endif %}
         </div>
+        {% if '/dashboard/' in request.path %}
         <!-- Notification -->
         {% include 'snippets/notifications.html' with scope=researcher.id %}
         <!-- Settings -->
@@ -74,6 +75,7 @@
             ><i class="no-margin fa fa-cog" aria-hidden="true"></i
           ></a>
         </div>
+        {% endif %}
       </div>
     </div>
   </div>
