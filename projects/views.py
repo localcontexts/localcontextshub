@@ -15,14 +15,17 @@ from .utils import can_download_project, return_project_labels_by_community
 
 def view_project(request, unique_id):
     try:
-        project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(
-            unique_id=unique_id)
+        project = Project.objects.select_related(
+            'project_creator').prefetch_related(
+                'bc_labels', 'tk_labels').get(unique_id=unique_id)
         creator = ProjectCreator.objects.get(project=project)
         creator.validate_user_access(request.user)
     except (Project.DoesNotExist, UnconfirmedAccountException):
         return render(request, '404.html', status=404)
 
-    sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
+    sub_projects = Project.objects.filter(
+        source_project_uuid=project.unique_id).values_list(
+            'unique_id', 'title')
     notices = Notice.objects.filter(project=project, archived=False)
 
     communities = None
@@ -35,12 +38,15 @@ def view_project(request, unique_id):
     if request.user.is_authenticated:
         affiliations = UserAffiliation.objects.get(user=request.user)
 
-        community_ids = ProjectContributors.objects.filter(project=project).values_list('communities__id', flat=True)
-        institution_ids = ProjectContributors.objects.filter(project=project).values_list('institutions__id', flat=True)
+        community_ids = ProjectContributors.objects.filter(
+            project=project).values_list('communities__id', flat=True)
+        institution_ids = ProjectContributors.objects.filter(
+            project=project).values_list('institutions__id', flat=True)
         communities = affiliations.communities.filter(id__in=community_ids)
         institutions = affiliations.institutions.filter(id__in=institution_ids)
 
-        researcher_ids = ProjectContributors.objects.filter(project=project).values_list('researchers__id', flat=True)
+        researcher_ids = ProjectContributors.objects.filter(
+            project=project).values_list('researchers__id', flat=True)
 
         if Researcher.objects.filter(user=request.user).exists():
             researcher = Researcher.objects.get(user=request.user)
@@ -64,7 +70,9 @@ def view_project(request, unique_id):
     }
 
     if template_name:
-        if project.can_user_access(request.user) == 'partial' or project.can_user_access(request.user) == True:
+        if project.can_user_access(
+                request.user) == 'partial' or project.can_user_access(
+                    request.user) == True:
             return render(request, 'projects/view-project.html', context)
         else:
             return redirect('restricted')
@@ -75,7 +83,8 @@ def view_project(request, unique_id):
 def download_project(request, unique_id):
     try:
         project = Project.objects.get(unique_id=unique_id)
-        can_download = can_download_project(request, project.project_creator_project.first())
+        can_download = can_download_project(
+            request, project.project_creator_project.first())
 
         if project.project_privacy == "Private" or dev_prod_or_local(
                 request.get_host()) == 'SANDBOX' or not can_download:
