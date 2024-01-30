@@ -1,3 +1,5 @@
+# !/bin/sh
+
 echo -e 'FORMATTING PYTHON FILES'
 # this makes eligible files PEP8 compliant automatically
 yapf --recursive -i .
