@@ -181,6 +181,7 @@ def confirm_community(request):
 
 def public_community_view(request, pk):
     try: 
+        environment = dev_prod_or_local(request.get_host())
         community = Community.objects.get(id=pk)
         bclabels = BCLabel.objects.filter(community=community, is_approved=True)
         tklabels = TKLabel.objects.filter(community=community, is_approved=True)
@@ -209,7 +210,7 @@ def public_community_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = community.community_creator.email
 
-                        send_contact_email(to_email, from_name, from_email, message, community)
+                        send_contact_email(request, to_email, from_name, from_email, message, community)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-community', community.id)
                     else:
@@ -243,6 +244,7 @@ def public_community_view(request, pk):
                 'bclabels' : bclabels,
                 'tklabels' : tklabels,
                 'projects' : projects,
+                'env': environment,
             }
             return render(request, 'public.html', context)
 
@@ -254,6 +256,7 @@ def public_community_view(request, pk):
             'form': form, 
             'join_form': join_form,
             'user_communities': user_communities,
+            'env': environment,
         }
         return render(request, 'public.html', context)
     except:
@@ -364,7 +367,8 @@ def community_members(request, pk):
         'form': form,
         'join_requests_count': join_requests_count,
         'users': users,
-        'invite_form': SignUpInvitationForm()
+        'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
     }
     return render(request, 'communities/members.html', context)
 
