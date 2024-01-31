@@ -15,6 +15,7 @@ urlpatterns = [
     path('view/<str:pk>/', views.public_community_view, name="public-community"),
 
     path('update/<str:pk>/', views.update_community, name="update-community"),
+    path('reset-community_boundary/<str:pk>/', views.reset_community_boundary, name="reset-community_boundary"),
     path('update-community-boundary/<str:pk>/', views.update_community_boundary, name="update-community-boundary"),
 
     path('members/<str:pk>/', views.community_members, name="members"),

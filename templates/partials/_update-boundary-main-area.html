@@ -7,33 +7,70 @@
         display: flex;
         justify-content: space-between;
     }
+    #boundary-container-right{
+        display: flex;
+        flex-direction: row;
+    }
     .center-boundary-container-item-vertically{
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
+    #remove-boundary{
+        font-weight: bold;
+        color: #007385;
+        cursor: pointer;
+        margin-right: 30px;
+    }
+    #preview-container-wrapper.hidden-element{
+        display: none;
+    }
 </style>
+
+<script>
+    async function resetBoundary(){
+        // do post call to reset boundary in request
+        const response = await fetch("{% url 'reset-community_boundary' community.id %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{csrf_token}}'
+            }
+        })
+        if (response.status !== 204) {
+            alert('Error Resetting Boundary')
+        }
+        document.querySelector('#preview-container-wrapper').classList.add('hidden-element')
+    }
+</script>
 <div class="flex-this space-between">
     <div><h3 class="no-top-margin">Account Boundaries</h3></div>
 </div>
 <div>Edit and manage your community boundaries.</div>
 <hr class="border-hr">
 
-{% if community.boundary %}
-    <div id="preview-boundary-container">
-        <strong class="center-boundary-container-item-vertically">
-            {{ community.name_of_boundary }} (territories)
-        </strong>
+{% if community.name_of_boundary %}
+    <div id="preview-container-wrapper">
+        <div id="preview-boundary-container">
+            <strong class="center-boundary-container-item-vertically">
+                {{ community.name_of_boundary }} (territories)
+            </strong>
 
-        <div class="center-boundary-container-item-vertically">
-            <a class="primary-btn green-btn margin-top-2"
-               href="{% url 'community-boundary-view' community.id %}"
-               target="_blank">
-                View Location
-                <i class="fa fa-arrow-up-right-from-square"></i>
-            </a>
+            <div id="boundary-container-right">
+                <div id="remove-boundary" class="center-boundary-container-item-vertically"
+                     onclick="resetBoundary(); event.preventDefault()">
+                    Remove
+                </div>
+                <div class="center-boundary-container-item-vertically">
+                <a class="primary-btn green-btn margin-top-2"
+                   href="{% url 'community-boundary-view' community.id %}"
+                   target="_blank">
+                    View Location
+                    <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+            </div>
+
         </div>
-
-    </div>
     <hr class="border-hr">
+    </div>
 {% endif %}

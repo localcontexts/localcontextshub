@@ -302,6 +302,18 @@ def update_community_boundary(request, pk):
     return render(request, 'communities/update-community.html', context)
 
 
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def reset_community_boundary(request, pk):
+    community = get_community(pk)
+    community.name_of_boundary = ''
+    community.source_of_boundary = ''
+    community.boundary.coordinates = []
+    community.boundary.save()
+    community.save()
+    return HttpResponse(status=204)
+
+
 # Members
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
