@@ -290,6 +290,37 @@ def update_community(request, pk):
     }
     return render(request, 'communities/update-community.html', context)
 
+
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def update_community_boundary(request, pk):
+    community = get_community(pk)
+    member_role = check_member_role(request.user, community)
+    update_form = UpdateCommunityForm(instance=community)
+
+    if request.method == "POST":
+        update_form = UpdateCommunityForm(request.POST, request.FILES, instance=community)
+
+        if 'clear_image' in request.POST:
+            community.image = None
+            community.save()
+            return redirect('update-community', community.id)
+        else:
+            if update_form.is_valid():
+                update_form.save()
+                messages.add_message(request, messages.SUCCESS, 'Updated!')
+                return redirect('update-community', community.id)
+    else:
+        update_form = UpdateCommunityForm(instance=community)
+
+    context = {
+        'community': community,
+        'update_form': update_form,
+        'member_role': member_role,
+    }
+    return render(request, 'communities/update-community.html', context)
+
+
 # Members
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
