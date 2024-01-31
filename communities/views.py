@@ -317,6 +317,7 @@ def update_community_boundary(request, pk):
         'community': community,
         'update_form': update_form,
         'member_role': member_role,
+        'main_area': 'boundary',
     }
     return render(request, 'communities/update-community.html', context)
 
