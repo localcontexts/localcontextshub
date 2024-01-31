@@ -40,13 +40,15 @@
 
         <div class="flex-this column w-80">
 
-            <div class="w-70 margin-left-16">
-                {% if main_area == 'boundary' %}
+            {% if main_area == 'boundary' %}
+                <div class="w-98 margin-left-16">
                     {% include 'partials/_update-boundary-main-area.html' %}
-                {% else %}
-                    {% include 'partials/_update-account-main-area.html' %}
-                {% endif %}
-            </div>
+                </div>
+            {% else %}
+                <div class="w-70 margin-left-16">
+                {% include 'partials/_update-account-main-area.html' %}
+                </div>
+            {% endif %}
 
         </div>
     </div>

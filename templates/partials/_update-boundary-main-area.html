@@ -1,246 +1,39 @@
 {% load static %}
-
+<style>
+    .border-hr{
+        border: 1px solid #DDDDDD;
+    }
+    #preview-boundary-container{
+        display: flex;
+        justify-content: space-between;
+    }
+    .center-boundary-container-item-vertically{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>
 <div class="flex-this space-between">
     <div><h3 class="no-top-margin">Account Boundaries</h3></div>
-    <div>Account ID:
-        {% if community %} {{ community.id }} {% endif %}
-        {% if institution %} {{ institution.id }} {% endif %}
-        {% if researcher %} {{ researcher.id }} {% endif %}
-    </div>
 </div>
+<div>Edit and manage your community boundaries.</div>
+<hr class="border-hr">
 
-<form
-    method="POST"
-    action="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}"
-    enctype="multipart/form-data">
-    {% csrf_token %}
+{% if community.boundary %}
+    <div id="preview-boundary-container">
+        <strong class="center-boundary-container-item-vertically">
+            {{ community.name_of_boundary }} (territories)
+        </strong>
 
-    <!-- Account Image -->
-    <div>
-        <div class="hide">{{ update_form.image }}</div>
-
-        <div id="defaultPlaceholderUrl" data-url="{% static 'images/placeholders/community-place.jpg' %}"></div>
-
-        <div class="flex-this space-between margin-bottom-16">
-            <div class="w-50">
-                {% if community %}
-                    <div id="imagePreviewContainer" class="img-preview__container__rectangle">
-                        {% if not community.image %}
-                            <img src="{% static 'images/placeholders/community-place.jpg' %}">
-                        {% else %}
-                            <img src="{{ update_form.instance.image.url }}" alt="{{ update_form.instance.community_name }} image">
-                        {% endif %}
-                    </div>
-                {% endif %}
-
-                {% if institution %}
-                    <div id="imagePreviewContainer" class="img-preview__container__rectangle">
-                        {% if not institution.image %}
-                            <img src="{% static 'images/placeholders/institution-place.jpg' %}">
-                        {% else %}
-                            <img src="{{ update_form.instance.image.url }}" alt="{{ update_form.instance.institution_name }} image">
-                        {% endif %}
-                    </div>
-                {% endif %}
-
-                {% if researcher %}
-                    <div id="imagePreviewContainer" class="img-preview__container__square">
-                        {% if not researcher.image %}
-                            <img src="{% static 'images/placeholders/researcher-place.jpg' %}">
-                        {% else %}
-                            <img src="{{ update_form.instance.image.url }}" alt="researcher account image">
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="flex-this">
-                <div>
-                    <button id="altImageUploadBtn" class="primary-btn action-btn margin-right-8">Upload image <i class="fa-solid fa-upload"></i></button>
-                </div>
-                <div>
-                    <button id="clearImageBtn" class="primary-btn white-btn" name="clear_image">Clear image</button>
-                </div>
-            </div>
+        <div class="center-boundary-container-item-vertically">
+            <a class="primary-btn green-btn margin-top-2"
+               href="{% url 'community-boundary-view' community.id %}"
+               target="_blank">
+                View Location
+                <i class="fa fa-arrow-up-right-from-square"></i>
+            </a>
         </div>
 
-        {% if update_form.image.errors %}
-            <div class="msg-red w-50"><small>{{ update_form.image.errors.as_text }}</small></div>
-        {% endif %}
     </div>
-
-    <div class="w-100 margin-bottom-8">
-        {{ update_form.description.label }} <br>
-        {{ update_form.description }}
-        {% if update_form.description.errors %}
-            <div class="msg-red w-80"><small>{{ update_form.description.errors.as_text }}</small></div>
-        {% endif %}
-    </div>
-
-    <!-- Community entity -->
-    {% if community %}
-        <div class="w-100 margin-bottom-8">
-            <label> Community Entity </label><br>
-            {{ update_form.community_entity }}
-            {% if update_form.community_entity.errors %}
-                <div class="msg-red w-50"><small>{{ update_form.community_entity.errors.as_text }}</small></div>
-            {% endif %}
-        </div>
-    {% endif %}
-
-    <!-- Primary institution -->
-    {% if researcher %}
-        <div class="margin-bottom-8">
-            <label for="primary_institution"> Primary Institution </label><br>
-            {{ update_form.primary_institution }}
-        </div>
-        <div class="margin-bottom-8">
-            {{ update_form.website.label }} <br>
-            {{ update_form.website }}
-        </div>
-        {% if update_form.primary_institution.errors %}
-            <div class="msg-red w-50"><small>{{ update_form.primary_institution.errors.as_text }}</small></div>
-        {% endif %}
-        {% if update_form.website.errors %}
-            <div class="msg-red w-50"><small>{{ update_form.website.errors.as_text }}</small></div>
-        {% endif %}
-    {% endif %}
-
-    <!-- Location -->
-    {% if institution or community %}
-        <div class="w-100 margin-bottom-8">
-            <div class="w-100 margin-bottom-8">
-                {{ update_form.country.label }} <br>
-                {{ update_form.country }}
-            </div>
-            <div class="flex-this">
-                <div class="w-50 margin-right-1">
-                    <label>State, Province, or Region</label> <br>
-                    {{ update_form.state_province_region }}
-                </div>
-                <div class="w-50">
-                    <label> City or Town </label><br>
-                    {{ update_form.city_town }}
-                </div>
-            </div>
-            {% if update_form.state_province_region.errors %}
-                <div class="msg-red w-50"><small>{{ update_form.state_province_region.errors.as_text }}</small></div>
-            {% endif %}
-            {% if update_form.city_town.errors %}
-                <div class="msg-red w-50"><small>{{ update_form.city_town.errors.as_text }}</small></div>
-            {% endif %}
-        </div>
-    {% endif %}
-
-    <!-- Researcher account contact -->
-    {% if researcher %}
-        <div><h3>Account Contact</h3></div>
-        <div class="w-100 margin-bottom-16">
-            <div>
-                <label for="contact_email"> Contact Email </label><br>
-                {{ update_form.contact_email }}
-            </div>
-
-            {% if update_form.contact_email.errors %}
-                <div class="msg-red w-50"><small>{{ update_form.contact_email.errors.as_text }}</small></div>
-            {% endif %}
-
-            <div class="margin-top-16">
-                {{ update_form.contact_email_public.label }}
-                {{ update_form.contact_email_public }}
-
-                {% if update_form.contact_email_public.errors %}
-                    <div class="msg-red w-50"><small>{{ update_form.contact_email_public.errors.as_text }}</small></div>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Researcher: ORCiD -->
-    {% if researcher %}
-    <div>
-        <div><h3>ORCiD</h3></div>
-        <div class="w-100 margin-bottom-16">
-            {% if researcher.orcid %}
-            <div class="flex-this space-between">
-                <div>
-                    <div itemscope itemtype="https://schema.org/Person">
-                        <a
-                            class="darkteal-text underline-hover"
-                            itemprop="sameAs"
-                            target="orcid.widget"
-                            rel="me noopener noreferrer"
-                            style="vertical-align:top;"
-                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
-                                content="{{ researcher.orcid }}"
-                                href="{{ researcher.orcid }}"
-                            {% elif 'X' in researcher.orcid %}
-                                content="https://sandbox.orcid.org/{{ researcher.orcid }}"
-                                href="https://sandbox.orcid.org/{{ researcher.orcid }}"
-                            {% else %}
-                                content="https://orcid.org/{{ researcher.orcid }}"
-                                href="https://orcid.org/{{ researcher.orcid }}"
-                            {% endif %}
-                        >
-                            <img loading="lazy" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">
-                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
-                                {{ researcher.orcid }}
-                            {% elif 'X' in researcher.orcid %}
-                                https://sandbox.orcid.org/{{ researcher.orcid }}
-                            {% else %}
-                                https://orcid.org/{{ researcher.orcid }}
-                            {% endif %}
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    <a class="primary-btn white-btn" href="{% url 'disconnect-orcid' %}">Disconnect ORCiD</a>
-                </div>
-            </div>
-
-        {% else %}
-            <div class="flex-this space-between">
-                <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
-                <!-- Show ORCiD widget based on hostname -->
-                <div
-                    id="orcidWidget"
-                    {% if env == "PROD" %}
-                        data-clientid='APP-3AGU5OQX7M7UKIMD'
-                        data-env="production"
-                        data-redirecturi="https://localcontextshub.org/researchers/connect-orcid/"
-                    {% elif env == "SANDBOX" %}
-                        data-clientid='APP-M1RE2U9DY1B6MNYD'
-                        data-env="sandbox"
-                        data-redirecturi="https://sandbox.localcontextshub.org/researchers/connect-orcid/"
-                    {% elif env == "DEV" %}
-                        data-clientid='APP-M1RE2U9DY1B6MNYD'
-                        data-env="develop"
-                        data-redirecturi="https://local-contexts-hub-develop.uc.r.appspot.com/researchers/connect-orcid/"
-                    {% endif %}
-                >
-                </div>
-            </div>
-
-            {% if env == "DEV" or env == "SANDBOX" %}
-                <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
-            {% endif %}
-        {% endif %}
-
-        </div>
-    </div>
-
-    {% endif %}
-
-    {% include 'partials/_alerts.html' %}
-
-    <div>
-        <p>
-            <small>Providing your personal information is optional.
-                By providing it, you consent for it to be shown to other Hub users, see the <a href="https://localcontexts.org/privacy-policy/" class="default-a" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</small>
-        </p>
-        <div class="margin-top-16 w-50">
-            <button class="primary-btn action-btn margin-top-2">Save changes <i class="fa fa-arrow-right"></i></button>
-        </div>
-    </div>
-</form>
+    <hr class="border-hr">
+{% endif %}
