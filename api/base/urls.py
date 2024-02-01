@@ -13,6 +13,7 @@ urlpatterns = [
     re_path(r'^$', apiOverview, name="api-overview"),
     path('notices/open_to_collaborate', openToCollaborateNotice, name="api-open-to-collaborate"),
 
+    path('users/', get_user, name="api-get-user"),
     path('projects/', ProjectList.as_view(), name="api-projects"),
     path('projects/<uuid:unique_id>/', ProjectDetail.as_view(), name="api-project-detail"),
     path('projects/external/<str:providers_id>/', project_detail_providers, name="api-project-detail-providers"),
