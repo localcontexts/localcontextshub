@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 from rest_framework import generics, filters
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
 from .serializers import *
@@ -19,8 +20,18 @@ from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def apiOverview(request, format=None):
+    email = request.query_params.get('email', None)
     api_urls = {
-        'get_user': '/users/<EMAIL>/',
+        'get_user': {
+            'url': '/users?email=<email>',
+            'description': 'Get user details by providing the email parameter.',
+            'parameters': {
+                'email': 'The email of the user to retrieve.',
+            },
+            'headers': {
+                'X-Api-Key': 'Your-API-Key-Here',
+            },
+        },
         'projects_list': reverse('api-projects', request=request, format=format),
         'project_detail': '/projects/<PROJECT_UNIQUE_ID>/',
         'multi_project_detail':'/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
