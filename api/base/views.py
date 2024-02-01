@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework.response import Response
@@ -7,7 +7,6 @@ from rest_framework.reverse import reverse
 from rest_framework import generics, filters
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
 from .serializers import *
@@ -20,7 +19,6 @@ from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def apiOverview(request, format=None):
-    email = request.query_params.get('email', None)
     api_urls = {
         'get_user': {
             'url': '/users?email=<email>',
