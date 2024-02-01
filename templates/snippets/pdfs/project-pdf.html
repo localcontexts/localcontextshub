@@ -126,7 +126,7 @@
                         {% if notice.notice_type == 'biocultural' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with white letters BC in the middle">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Biocultural Notice</h1>
@@ -137,7 +137,7 @@
                         {% if notice.notice_type == 'traditional_knowledge' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with white letters TK in the middle">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center.">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Traditional Knowledge Notice</h1>
@@ -148,7 +148,7 @@
                         {% if notice.notice_type == 'attribution_incomplete' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with an unfinished square in the middle in white">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line.">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Attribution Incomplete Notice</h1>
@@ -160,11 +160,11 @@
                 {% endfor %}
             {% endif %}
 
-            {% if project.bc_labels.all %}
-                {% for bclabel in project.bc_labels.all %}
+            {% if project_bclabels %}
+                {% for bclabel in project_bclabels %}
                     <tr>
                         <td class="image-td">
-                            <img loading="lazy" src="{{ bclabel.img_url }}" alt="{{ bclabel.name }} Label" width="200px">
+                            <img loading="lazy" src="{{ bclabel.img_url }}" alt="{{ bclabel.alt_text }}" width="200px">
                         </td>
                         <td class="text-td">
                             <h1 class="no-bottom-margin">{{ bclabel.name }} ({{ bclabel.community.community_name }})</h1>
@@ -181,11 +181,11 @@
                 {% endfor %}
             {% endif %}
 
-            {% if project.tk_labels.all %}
-                {% for tklabel in project.tk_labels.all %}
+            {% if project_tklabels %}
+                {% for tklabel in project_tklabels %}
                     <tr>
                         <td class="image-td">
-                            <img loading="lazy" src="{{ tklabel.img_url }}" alt="{{ tklabel.name }} Label" width="200px">
+                            <img loading="lazy" src="{{ tklabel.img_url }}" alt="{{ tklabel.alt_text}}" width="200px">
                         </td>
                         <td class="text-td">
                             <h1 class="no-bottom-margin">{{ tklabel.name }} ({{ tklabel.community.community_name }})</h1>
