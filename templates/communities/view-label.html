@@ -108,6 +108,7 @@
                     {% if tklabel %} {% if tklabel.version %} <span class="bold">Version </span> - {{ tklabel.version }}{% endif %} <br> {% endif %}
 
                     {% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
+                    {% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
                     <br>                    
                 </p>
 
