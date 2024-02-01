@@ -43,8 +43,12 @@
                             <div class="hide">{{ form.audiofile }}</div>
                             <button id="customLabelAudioFileUploadBtn" class="primary-btn green-btn">
                                 {% if bclabel.audiofile or tklabel.audiofile %}
-                                    {% firstof bclabel.audiofile.name|get_filename tklabel.audiofile.name|get_filename %}
-                                    <i class="fa-solid fa-check"></i>
+                                    {% if bclabel.audiofile %}
+                                        {{ bclabel.audiofile.name|get_filename }}
+                                    {% elif tklabel.audiofile %}
+                                        {{ tklabel.audiofile.name|get_filename }}
+                                    {% endif %}
+                                <i class="fa-solid fa-check"></i>
                                 {% else %}
                                     Upload audio file 
                                     <i class="fa-solid fa-upload"></i>

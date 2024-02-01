@@ -160,6 +160,7 @@ def confirm_institution(request, institution_id):
 
 def public_institution_view(request, pk):
     try:
+        environment = dev_prod_or_local(request.get_host())
         institution = Institution.objects.get(id=pk)
 
         # Do notices exist
@@ -190,7 +191,7 @@ def public_institution_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = institution.institution_creator.email
                         
-                        send_contact_email(to_email, from_name, from_email, message, institution)
+                        send_contact_email(request, to_email, from_name, from_email, message, institution)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-institution', institution.id)
                     else:
@@ -225,6 +226,7 @@ def public_institution_view(request, pk):
                 'tknotice': tknotice,
                 'attrnotice': attrnotice,
                 'otc_notices': otc_notices,
+                'env': environment,
             }
             return render(request, 'public.html', context)
 
@@ -238,6 +240,7 @@ def public_institution_view(request, pk):
             'tknotice': tknotice,
             'attrnotice': attrnotice,
             'otc_notices': otc_notices,
+            'env': environment,
         }
         return render(request, 'public.html', context)
     except:
@@ -408,6 +411,7 @@ def institution_members(request, pk):
         'join_requests_count': join_requests_count,
         'users': users,
         'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
     }    
     return render(request, 'institutions/members.html', context)
 

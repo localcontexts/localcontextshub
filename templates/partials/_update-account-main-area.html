@@ -132,104 +132,103 @@
         </div>
     {% endif %}
 
-    <!-- Researcher account contact -->
     {% if researcher %}
-        <div><h3>Account Contact</h3></div>
-        <div class="w-100 margin-bottom-16">
-            <div>
-                <label for="contact_email"> Contact Email </label><br>
-                {{ update_form.contact_email }}
-            </div>
-
-            {% if update_form.contact_email.errors %}
-                <div class="msg-red w-50"><small>{{ update_form.contact_email.errors.as_text }}</small></div>
-            {% endif %}
-
-            <div class="margin-top-16">
-                {{ update_form.contact_email_public.label }}
-                {{ update_form.contact_email_public }}
-
-                {% if update_form.contact_email_public.errors %}
-                    <div class="msg-red w-50"><small>{{ update_form.contact_email_public.errors.as_text }}</small></div>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Researcher: ORCiD -->
-    {% if researcher %}
-    <div>
-        <div><h3>ORCiD</h3></div>
-        <div class="w-100 margin-bottom-16">
-            {% if researcher.orcid %}
-            <div class="flex-this space-between">
+        <!-- Researcher account contact, disabled in sandbox -->
+        {% if not env == "SANDBOX" %}
+            <div><h3>Account Contact</h3></div>
+            <div class="w-100 margin-bottom-16">
                 <div>
-                    <div itemscope itemtype="https://schema.org/Person">
-                        <a
-                            class="darkteal-text underline-hover"
-                            itemprop="sameAs"
-                            target="orcid.widget"
-                            rel="me noopener noreferrer"
-                            style="vertical-align:top;"
-                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
-                                content="{{ researcher.orcid }}"
-                                href="{{ researcher.orcid }}"
-                            {% elif 'X' in researcher.orcid %}
-                                content="https://sandbox.orcid.org/{{ researcher.orcid }}"
-                                href="https://sandbox.orcid.org/{{ researcher.orcid }}"
-                            {% else %}
-                                content="https://orcid.org/{{ researcher.orcid }}"
-                                href="https://orcid.org/{{ researcher.orcid }}"
-                            {% endif %}
-                        >
-                            <img loading="lazy" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">
-                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
-                                {{ researcher.orcid }}
-                            {% elif 'X' in researcher.orcid %}
-                                https://sandbox.orcid.org/{{ researcher.orcid }}
-                            {% else %}
-                                https://orcid.org/{{ researcher.orcid }}
-                            {% endif %}
-                        </a>
+                    <label for="contact_email"> Contact Email </label><br>
+                    {{ update_form.contact_email }}
+                </div>
+
+                {% if update_form.contact_email.errors %}
+                    <div class="msg-red w-50"><small>{{ update_form.contact_email.errors.as_text }}</small></div>
+                {% endif %}
+
+                <div class="margin-top-16">
+                    {{ update_form.contact_email_public.label }}
+                    {{ update_form.contact_email_public }}
+
+                    {% if update_form.contact_email_public.errors %}
+                        <div class="msg-red w-50"><small>{{ update_form.contact_email_public.errors.as_text }}</small></div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Researcher: ORCiD -->
+        <div>
+            <div><h3>ORCiD</h3></div>
+            <div class="w-100 margin-bottom-16">
+                {% if researcher.orcid %}
+                <div class="flex-this space-between">
+                    <div>
+                        <div itemscope itemtype="https://schema.org/Person">
+                            <a
+                                class="darkteal-text underline-hover"
+                                itemprop="sameAs"
+                                target="orcid.widget"
+                                rel="me noopener noreferrer"
+                                style="vertical-align:top;"
+                                {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
+                                    content="{{ researcher.orcid }}"
+                                    href="{{ researcher.orcid }}"
+                                {% elif 'X' in researcher.orcid %}
+                                    content="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                                    href="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                                {% else %}
+                                    content="https://orcid.org/{{ researcher.orcid }}"
+                                    href="https://orcid.org/{{ researcher.orcid }}"
+                                {% endif %}
+                            >
+                                <img loading="lazy" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">
+                                {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
+                                    {{ researcher.orcid }}
+                                {% elif 'X' in researcher.orcid %}
+                                    https://sandbox.orcid.org/{{ researcher.orcid }}
+                                {% else %}
+                                    https://orcid.org/{{ researcher.orcid }}
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="primary-btn white-btn" href="{% url 'disconnect-orcid' %}">Disconnect ORCiD</a>
                     </div>
                 </div>
 
-                <div>
-                    <a class="primary-btn white-btn" href="{% url 'disconnect-orcid' %}">Disconnect ORCiD</a>
+            {% else %}
+                <div class="flex-this space-between">
+                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
+                    <!-- Show ORCiD widget based on hostname -->
+                    <div
+                        id="orcidWidget"
+                        {% if env == "PROD" %}
+                            data-clientid='APP-3AGU5OQX7M7UKIMD'
+                            data-env="production"
+                            data-redirecturi="https://localcontextshub.org/researchers/connect-orcid/"
+                        {% elif env == "SANDBOX" %}
+                            data-clientid='APP-M1RE2U9DY1B6MNYD'
+                            data-env="sandbox"
+                            data-redirecturi="https://sandbox.localcontextshub.org/researchers/connect-orcid/"
+                        {% elif env == "DEV" %}
+                            data-clientid='APP-M1RE2U9DY1B6MNYD'
+                            data-env="develop"
+                            data-redirecturi="https://local-contexts-hub-develop.uc.r.appspot.com/researchers/connect-orcid/"
+                        {% endif %}
+                    >
+                    </div>
                 </div>
-            </div>
 
-        {% else %}
-            <div class="flex-this space-between">
-                <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
-                <!-- Show ORCiD widget based on hostname -->
-                <div
-                    id="orcidWidget"
-                    {% if env == "PROD" %}
-                        data-clientid='APP-3AGU5OQX7M7UKIMD'
-                        data-env="production"
-                        data-redirecturi="https://localcontextshub.org/researchers/connect-orcid/"
-                    {% elif env == "SANDBOX" %}
-                        data-clientid='APP-M1RE2U9DY1B6MNYD'
-                        data-env="sandbox"
-                        data-redirecturi="https://sandbox.localcontextshub.org/researchers/connect-orcid/"
-                    {% elif env == "DEV" %}
-                        data-clientid='APP-M1RE2U9DY1B6MNYD'
-                        data-env="develop"
-                        data-redirecturi="https://local-contexts-hub-develop.uc.r.appspot.com/researchers/connect-orcid/"
-                    {% endif %}
-                >
-                </div>
-            </div>
-
-            {% if env == "DEV" or env == "SANDBOX" %}
-                <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                {% if env == "DEV" or env == "SANDBOX" %}
+                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                {% endif %}
             {% endif %}
-        {% endif %}
 
+            </div>
         </div>
-    </div>
-
     {% endif %}
 
     {% include 'partials/_alerts.html' %}
