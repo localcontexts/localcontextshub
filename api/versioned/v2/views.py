@@ -6,9 +6,31 @@ from . import serializers as v2_serializers
 from rest_framework.viewsets import ViewSet
 from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from django.conf import settings
 from django.contrib.auth.models import User
+
+class ApiKeyAuthentication(BaseAuthentication):
+    VALID_USER_IDS = {1, 2}  # Replace with the actual list of valid user IDs
+
+    def authenticate(self, request):
+        api_key = request.headers.get('X-Api-Key')
+
+        if not api_key:
+            return None
+
+        try:
+            user = User.objects.get(user_profile__api_key=api_key)
+        except User.DoesNotExist:
+            raise AuthenticationFailed('Invalid API key')
+
+        # Check if the authenticated user is in the list of valid user IDs
+        if user.id not in self.VALID_USER_IDS:
+            raise AuthenticationFailed('Unauthorized user')
+
+        return (user, None)
 
 class APIOverview(APIView):
     def get(self, request, format=None):
@@ -180,7 +202,8 @@ class MultiProjectListDetail(ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class GetUserAPIView(APIView):
-    permission_classes = [HasAPIKey | IsAuthenticated]
+    authentication_classes = [ApiKeyAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         email = request.query_params.get('email', None)
