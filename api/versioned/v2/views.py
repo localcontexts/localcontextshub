@@ -8,6 +8,7 @@ from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework.permissions import IsAuthenticated
 
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class APIOverview(APIView):
     def get(self, request, format=None):
@@ -177,3 +178,17 @@ class MultiProjectListDetail(ViewSet):
             return Response(serializer.data)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+class GetUserAPIView(APIView):
+    permission_classes = [HasAPIKey | IsAuthenticated]
+
+    def get(self, request):
+        email = request.query_params.get('email', None)
+        if not email:
+            return Response({"error": "Email parameter is required in the query parameters."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=email)
+            serializer = GetUserSerializer(user)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)

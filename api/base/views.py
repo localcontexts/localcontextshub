@@ -1,7 +1,5 @@
 from django.db.models import Q
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_api_key.permissions import HasAPIKey
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import generics, filters
@@ -15,21 +13,10 @@ from helpers.models import Notice
 from projects.models import ProjectCreator
 from django.http import Http404
 from django.conf import settings
-from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def apiOverview(request, format=None):
     api_urls = {
-        'get_user': {
-            'url': '/users?email=<email>',
-            'description': 'Get user details by providing the email parameter.',
-            'parameters': {
-                'email': 'The email of the user to retrieve.',
-            },
-            'headers': {
-                'X-Api-Key': 'Your-API-Key-Here',
-            },
-        },
         'projects_list': reverse('api-projects', request=request, format=format),
         'project_detail': '/projects/<PROJECT_UNIQUE_ID>/',
         'multi_project_detail':'/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
@@ -132,19 +119,6 @@ def projects_by_institution(request, institution_id, providers_id=None):
         return Response(serializer.data)
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-@api_view(['GET'])
-@permission_classes([HasAPIKey | IsAuthenticated])
-def get_user(request):
-    email = request.query_params.get('email', None)
-    if not email:
-        return Response({"error": "Email parameter is required in the query parameters."}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        user = User.objects.get(email=email)
-        serializer = GetUserSerializer(user)
-        return Response(serializer.data)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def projects_by_researcher(request, researcher_id):
