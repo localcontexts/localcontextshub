@@ -271,9 +271,6 @@ def update_profile(request):
             profile_form.save()
             messages.add_message(request, messages.SUCCESS, 'Profile Updated!')
             return redirect('update-profile')
-        else:
-            messages.add_message(request, messages.ERROR, 'Something went wrong')
-            return redirect('update-profile')
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.user_profile)
