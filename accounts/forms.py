@@ -41,6 +41,15 @@ class UserUpdateForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
+    def clean(self):
+        super(UserUpdateForm, self).clean()
+        email = self.cleaned_data.get('email')
+
+        if len(email) == 0:
+            self._errors['email'] = self.error_class(['Email Is Required'])
+        return self.cleaned_data
+
+
 class ProfileCreationForm(forms.ModelForm):
     class Meta:
         model = Profile
