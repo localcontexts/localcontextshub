@@ -958,68 +958,73 @@ class HubActivityAdmin(admin.ModelAdmin):
         return False
     
     def action(self, obj):
-        user_name = get_users_name(User.objects.get(id=obj.action_user_id))
+        try:
+            user_name = get_users_name(User.objects.get(id=obj.action_user_id))
 
-        if obj.action_account_type == 'institution':
-            account_id = obj.institution_id
-            account_name = Institution.objects.values_list('institution_name', flat=True).get(id=obj.institution_id)
-            account_link = 'institutions/institution'
-        elif obj.action_account_type == 'community':
-            account_id = obj.community_id
-            account_name = Community.objects.values_list('community_name', flat=True).get(id=obj.community_id)
-            account_link = 'communities/community'
-        elif obj.action_account_type == 'researcher' or obj.action_type == 'New Researcher':
-            researcher = is_user_researcher(obj.action_user_id)
-            account_id = researcher.id
-            account_name = 'Researcher'
-            account_link = 'researchers/researcher'
+            if obj.action_account_type == 'institution':
+                account_id = obj.institution_id
+                account_name = Institution.objects.values_list('institution_name', flat=True).get(id=obj.institution_id)
+                account_link = 'institutions/institution'
+            elif obj.action_account_type == 'community':
+                account_id = obj.community_id
+                account_name = Community.objects.values_list('community_name', flat=True).get(id=obj.community_id)
+                account_link = 'communities/community'
+            elif obj.action_account_type == 'researcher' or obj.action_type == 'New Researcher':
+                researcher = is_user_researcher(obj.action_user_id)
+                account_id = researcher.id
+                account_name = 'Researcher'
+                account_link = 'researchers/researcher'
+            
+            if obj.project_id and obj.action_type != 'Engagement Notice Added':
+                project = Project.objects.values_list('title', 'project_page').get(id=obj.project_id)
+                project_name = project[0]
+                project_url = project[1]
+            elif obj.project_id and obj.action_type == 'Engagement Notice Added':
+                project = OpenToCollaborateNoticeURL.objects.values_list('name', 'url').get(id=obj.project_id)
+                project_name = project[0]
+                project_url = project[1]
+            
+            if obj.action_type == 'New Member Added':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> joined <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
+
+            elif obj.action_type == 'New User':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has joined the Hub', obj.action_user_id, user_name)
+
+            elif obj.action_type == 'New Researcher':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a <a href="/admin/{}/{}/change/">Researcher</a> account', obj.action_user_id, user_name, account_link, account_id)
+
+            elif obj.action_type == 'New Community':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a Community account: <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
+
+            elif obj.action_type == 'New Institution':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created an Institution account: <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
+
+            elif obj.action_type == 'Project Edited':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) edited Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+            
+            elif obj.action_type == 'Project Created':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) created Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+
+            elif obj.action_type == 'Community Notified':
+                community_id = obj.community_id
+                community_name = Community.objects.values_list('community_name', flat=True).get(id=obj.community_id)
+                community_link = 'communities/community'
+                action_message = format_html('<a href="/admin/{}/{}/change/">{}</a> was notified by <a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) of Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', community_link, community_id, community_name, obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+
+            elif obj.action_type == 'Label(s) Applied':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+
+            elif obj.action_type == 'Disclosure Notice(s) Added':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+
+            elif obj.action_type == 'Engagement Notice Added':
+                action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+
+            return action_message
+        except:
+            action_message = action_message = format_html('-')
+            return action_message
         
-        if obj.project_id and obj.action_type != 'Engagement Notice Added':
-            project = Project.objects.values_list('title', 'project_page').get(id=obj.project_id)
-            project_name = project[0]
-            project_url = project[1]
-        elif obj.project_id and obj.action_type == 'Engagement Notice Added':
-            project = OpenToCollaborateNoticeURL.objects.values_list('name', 'url').get(id=obj.project_id)
-            project_name = project[0]
-            project_url = project[1]
-        
-        if obj.action_type == 'New Member Added':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> joined <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
-
-        elif obj.action_type == 'New User':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has joined the Hub', obj.action_user_id, user_name)
-
-        elif obj.action_type == 'New Researcher':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a <a href="/admin/{}/{}/change/">Researcher</a> account', obj.action_user_id, user_name, account_link, account_id)
-
-        elif obj.action_type == 'New Community':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a Community account: <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
-
-        elif obj.action_type == 'New Institution':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> has created an Institution account: <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name, account_link, account_id, account_name)
-
-        elif obj.action_type == 'Project Edited':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) edited Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-        
-        elif obj.action_type == 'Project Created':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) created Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-
-        elif obj.action_type == 'Community Notified':
-            community_id = obj.community_id
-            community_name = Community.objects.values_list('community_name', flat=True).get(id=obj.community_id)
-            community_link = 'communities/community'
-            action_message = format_html('<a href="/admin/{}/{}/change/">{}</a> was notified by <a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) of Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', community_link, community_id, community_name, obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-
-        elif obj.action_type == 'Label(s) Applied':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-
-        elif obj.action_type == 'Disclosure Notice(s) Added':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-
-        elif obj.action_type == 'Engagement Notice Added':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
-
-        return action_message
     action.short_description = "Action"
     
 admin_site.register(HubActivity, HubActivityAdmin)
