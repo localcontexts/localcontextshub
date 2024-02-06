@@ -6,7 +6,7 @@
         <div class="flex-this w-100 space-between">
             <div class="loc grey-text bold">
                 <small>
-                    <a href="{% url 'dashboard' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'dashboard' %}" class="default-a">
                         {% firstof request.user.get_full_name request.user %}
                     </a> 
                     >> {{ community.community_name }}                    
@@ -15,7 +15,7 @@
 
             <!-- Notifications -->
             <div class="flex-this w-30 flex-end">
-                {% include 'snippets/notifications.html' %}
+                {% include 'snippets/notifications.html' with scope=community %}
 
                 <!-- Settings -->
                 {% if request.user == community.community_creator or member_role == 'admin' %}

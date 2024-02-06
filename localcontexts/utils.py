@@ -3,7 +3,7 @@ from django.contrib.sites.shortcuts import get_current_site
 def dev_prod_or_local(hostname):
     # use: dev_prod_or_local(request.get_host())
     hostnames = {
-        'local-contexts-hub-sandbox.uc.r.appspot.com': 'DEV',
+        'local-contexts-hub-develop.uc.r.appspot.com': 'DEV',
         'localcontextshub.org': 'PROD',
         'sandbox.localcontextshub.org': 'SANDBOX',
     }

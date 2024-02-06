@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from itertools import chain
@@ -34,6 +34,23 @@ from .utils import *
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def registration_boundary(request):
+    post_data = json.loads(request.body.decode('UTF-8'))
+    # update community with boundary-related information
+    community = get_community(request.session.get('new_community_id'))
+    community.source_of_boundary = post_data['source']
+    community.name_of_boundary = post_data['name']
+
+    # add new boundary in this community
+    community.boundary = Boundary.objects.create(coordinates=post_data['boundary'])
+    community.save()
+
+    return HttpResponse(status=201)
+
 
 # Connect
 @login_required(login_url='login')
@@ -78,6 +95,7 @@ def preparation_step(request):
     community = True
     return render(request, 'accounts/preparation.html', { 'community' : community })
 
+
 # Create Community
 @login_required(login_url='login')
 def create_community(request):
@@ -112,13 +130,40 @@ def create_community(request):
                     community_id=data.id,
                     action_account_type='community'
                 )
-                return redirect('confirm-community', data.id)
+                request.session['new_community_id'] = data.id
+                return redirect('community-boundary')
     return render(request, 'communities/create-community.html', {'form': form})
 
-# Confirm Community
+
+@has_new_community_id
 @login_required(login_url='login')
-def confirm_community(request, community_id):
-    community = Community.objects.select_related('community_creator').get(id=community_id)
+def community_boundary(request):
+    return render(request, 'communities/community-boundary.html')
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def add_community_boundary(request):
+    return render(request, 'communities/add-community-boundary.html')
+
+
+@has_new_community_id
+@login_required(login_url='login')
+def upload_boundary_file(request):
+    community_id = get_community(request.session.get('new_community_id'))
+    context = {
+        'community_id': community_id.id
+    }
+    return render(request, 'communities/upload-boundary-file.html', context)
+
+
+# Confirm Community
+@has_new_community_id
+@login_required(login_url='login')
+def confirm_community(request):
+    community = Community.objects.select_related('community_creator').get(
+        id=request.session.get('new_community_id')
+    )
 
     form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
     if request.method == "POST":
@@ -126,11 +171,17 @@ def confirm_community(request, community_id):
             data = form.save(commit=False)
             data.save()
             send_hub_admins_application_email(request, community, data)
+
+            # remove new_community_id from session to prevent
+            # future access with this particular new_community_id
+            del request.session['new_community_id']
             return redirect('dashboard')
     return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
 
+
 def public_community_view(request, pk):
     try: 
+        environment = dev_prod_or_local(request.get_host())
         community = Community.objects.get(id=pk)
         bclabels = BCLabel.objects.filter(community=community, is_approved=True)
         tklabels = TKLabel.objects.filter(community=community, is_approved=True)
@@ -159,7 +210,7 @@ def public_community_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = community.community_creator.email
 
-                        send_contact_email(to_email, from_name, from_email, message, community)
+                        send_contact_email(request, to_email, from_name, from_email, message, community)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-community', community.id)
                     else:
@@ -193,6 +244,7 @@ def public_community_view(request, pk):
                 'bclabels' : bclabels,
                 'tklabels' : tklabels,
                 'projects' : projects,
+                'env': environment,
             }
             return render(request, 'public.html', context)
 
@@ -204,6 +256,7 @@ def public_community_view(request, pk):
             'form': form, 
             'join_form': join_form,
             'user_communities': user_communities,
+            'env': environment,
         }
         return render(request, 'public.html', context)
     except:
@@ -314,7 +367,8 @@ def community_members(request, pk):
         'form': form,
         'join_requests_count': join_requests_count,
         'users': users,
-        'invite_form': SignUpInvitationForm()
+        'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
     }
     return render(request, 'communities/members.html', context)
 

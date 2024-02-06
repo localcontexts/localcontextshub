@@ -25,41 +25,55 @@
         </div>
 
         <div class="dashcard-btn-container">
-            <div class="margin-left-16">
-                {% if '/registry/' in request.path %}
-                    <div class="margin-bottom-16">
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'public-institution' institution.id %}"                    
-                        >View public page</a>                        
-                    </div>
-                    {% if institution.otc_institution_url.all %}
-                        <div class="flex-this flex-end">
-                            <img src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px">
-                        </div>
-                    {% endif %}
-                {% endif %}
-
-                {% if '/dashboard/' in request.path %}
-                    {% if institution_projects %}
-                        {% if request.user in institution.get_distinct_creators  %}
+            {% if '/registry/' in request.path %}
+                <div class="margin-left-16">
+                        <div class="margin-bottom-16">
                             <a 
                                 class="primary-btn action-btn"
-                                href="{% url 'institution-projects' institution.id %}"
-                            >View account</a>
+                                href="{% url 'public-institution' institution.id %}"                    
+                            >View public page</a>                        
+                        </div>
+                        {% if institution.otc_institution_url.all %}
+                            <div class="flex-this flex-end">
+                                <img class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px" alt="black square with white rectangle being held by two hands in the middle">
+                            </div>
+                        {% endif %}
+                    </div>
+            {% endif %}
+            <div class="margin-left-16 flex-this gap-1">
+                <div>
+                    {% if '/dashboard/' in request.path %}
+                        {% if institution_projects %}
+                            {% if request.user in institution.get_distinct_creators  %}
+                                <a 
+                                    class="primary-btn action-btn"
+                                    href="{% url 'institution-projects' institution.id %}"
+                                >View account</a>
+                            {% else %}
+                                <a 
+                                    class="primary-btn action-btn"
+                                    href="{% url 'institution-notices' institution.id %}"
+                                >View account</a>
+                            {% endif %}
                         {% else %}
                             <a 
                                 class="primary-btn action-btn"
                                 href="{% url 'institution-notices' institution.id %}"
                             >View account</a>
                         {% endif %}
-                    {% else %}
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'institution-notices' institution.id %}"
-                        >View account</a>
+                    {% endif %}
+                </div>
+                {% if '/dashboard/' in request.path %}
+                    <!-- Notification -->
+                    {% include 'snippets/notifications.html' with scope=institution %}
+                    <!-- Settings -->
+                    {% if request.user == institution.institution_creator or member_role == 'admin'%}
+                        <div>
+                            <a href="{% url 'update-institution' institution.id%}" class="border-raduis50 darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                        </div>
                     {% endif %}
                 {% endif %}
+               
             </div>
         </div>
 

@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
@@ -21,6 +22,29 @@ def community_img_path(self, filename):
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('users/community-images', filename)
 
+
+class Boundary(models.Model):
+    coordinates = ArrayField(
+        ArrayField(
+            models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True),
+            size=2,
+            blank=True, null=True
+        ),
+        blank=True, null=True
+    )
+
+    def get_coordinates(self, as_tuple=True):
+        if as_tuple:
+            return [
+                (float(c[0]), float(c[1]))
+                for c in self.coordinates
+            ]
+        return [
+            [float(c[0]), float(c[1])]
+            for c in self.coordinates
+        ]
+
+
 class Community(models.Model):
     community_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     community_name = models.CharField(max_length=80, null=True, unique=True)
@@ -40,7 +64,10 @@ class Community(models.Model):
     is_approved = models.BooleanField(default=False, null=True)
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
-    native_land_slug = models.SlugField(max_length = 200, blank=True, null=True)
+
+    source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
+    name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
 
     # Managers
     objects = models.Manager()

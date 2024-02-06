@@ -343,6 +343,22 @@ async function fetchLabels(type) {
     if (type == 'bc') { return data.bcLabels } else if (type == 'tk') { return data.tkLabels } else if (type == 'both') { return data }
 }
 
+const supportedLanguages = ['French', 'Spanish', 'Māori', 'English'];
+
+async function fetchLabelTranslations() {
+    const response = await fetch('/static/json/LabelTranslations.json');
+    const data = await response.json();
+    return data;
+}
+
+function findLabelAndSetValues(labels, id, selectedLanguage,label_name,label_text) {
+    const label = labels.find(label => id === label.labelCode && selectedLanguage === label.translated_language);
+    if (label) {
+        label_name.value = label.labelTranslatedName;
+        label_text.innerHTML = label.labelTranslatedText;
+    }
+}
+
 // Expand BC Labels Card in Community: Labels -> select-labels
 function showBCLabelInfo() {
     let labelContainer = document.getElementById('expand-bclabels')
@@ -496,6 +512,8 @@ function populateTemplate(id) {
     let hiddenInput = document.getElementById('input-label-name')
     let whyUseText = document.getElementById('whyUseText')
     let labelNamePTag = document.getElementById('labelNamePTag')
+    let language = document.getElementById('id_language')
+    let language_support = document.getElementById('languageError')
 
     fetchLabels('both').then(populate)
 
@@ -525,8 +543,40 @@ function populateTemplate(id) {
         }
     }
 
+    const observer = new MutationObserver(async function (mutationsList) {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                const selectedLanguage = language.value;
+                if (selectedLanguage == "English" || selectedLanguage == "") {
+                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
+                    fetchLabels('both').then(populate)
+                } else if (supportedLanguages.includes(selectedLanguage)) {
+                    language_support.style.display = (language_support.style.display === 'none') ? 'none' : 'none';
+                    try {
+                        const data = await fetchLabelTranslations();
+                        if (id.startsWith('b') && data.bcLabels) {
+                        findLabelAndSetValues(data.bcLabels, id, selectedLanguage, templateName, templateText);
+                        } else if (id.startsWith('t') && data.tkLabels) {
+                        findLabelAndSetValues(data.tkLabels, id, selectedLanguage, templateName, templateText);
+                        } else {
+                        console.error(`Data for '${id.startsWith('b') ? 'bcLabels' : 'tkLabels'}' is missing or not in the expected format.`);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching label translations:", error);
+                    }
+                } else if (selectedLanguage != "") {
+                    const language_supportMessage = `We do not have translated Label template text in ${selectedLanguage} at this time.`;
+                    language_support.textContent = language_supportMessage;
+                    language_support.style.display = (language_support.style.display === 'none') ? 'block' : 'block';
+                    fetchLabels('both').then(populate)
+                }
+            }
+        }
+    });
+      
+    observer.observe(language, { attributes: true, attributeFilter: ['value'] });
 }
-  
+
 function expandCCNotice(noticeDiv) {
     let divID = noticeDiv.id
     let divToOpen = document.getElementById(`openDiv-${divID}`)
@@ -583,6 +633,8 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
     if (addTranslationBtn) { addTranslationBtn.addEventListener('click', cloneForm, false)}
 
     // h/t: https://www.brennantymrak.com/articles/django-dynamic-formsets-javascript
+    const initialTargetNodes = document.querySelectorAll('[id^="id_form-"][id$="-language"]');
+    initializeObserver(initialTargetNodes);
 
     function cloneForm(e) {
         e.stopImmediatePropagation()
@@ -601,19 +653,85 @@ if (window.location.href.includes('/labels/customize') || window.location.href.i
         formNum++
 
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-        newFormInputs = newForm.querySelectorAll('input')
+        newFormInputs = newForm.querySelectorAll('input, textarea')
         for (var i = 0; i < newFormInputs.length; i++){
             newFormInputs[i].removeAttribute('value')
             newFormInputs[i].removeAttribute('readonly')
             newFormInputs[i].classList.remove('readonly-input')
+            newFormInputs[i].innerHTML="";
         }
+
+        let newErrorDiv = newForm.querySelector(`#id_form-${formNum}-language_support`);
+        if (newErrorDiv) {
+            newErrorDiv.style.display = 'none';
+        }
+        
         newFormLangButton = newForm.querySelector('button[name="clear-language-btn"]')
         newFormLangButton.classList.add('hide')
         container.insertBefore(newForm, lastDiv)
         totalForms.setAttribute('value', `${formNum+1}`)
         languageFormValidation()
+
+        const updatedTargetNodes = document.querySelectorAll('[id^="id_form-"][id$="-language"]');
+        disconnectObserver();
+        initializeObserver(updatedTargetNodes);
+
+        languageFormValidation();
     }
 
+    function initializeObserver(targetNodes) {
+        const config = { attributes: true, attributeFilter: ['value'] };
+        observer = new MutationObserver(handleValueChange);
+
+        targetNodes.forEach(targetNode => {
+            observer.observe(targetNode, config);
+        });
+    }
+
+    function disconnectObserver() {
+        if (observer) {
+            observer.disconnect();
+        }
+    }
+
+    async function handleValueChange(mutationsList) {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                const idMatches = mutation.target.id.match(/id_form-(\d+)-language/);
+                if (idMatches) {
+                    const formNumber = idMatches[1];
+                    const required_language = mutation.target.value;
+                    const translatedNameElement = document.querySelector(`#id_form-${formNumber}-translated_name`);
+                    const translationSupport = document.querySelector(`#id_form-${formNumber}-language_support`);
+                    const translatedTextElement = document.querySelector(`#id_form-${formNumber}-translated_text`);
+                    if (supportedLanguages.includes(required_language)) {
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'none' : 'none';
+                        try {
+                            const data = await fetchLabelTranslations();
+                            if (image.id.startsWith('b') && data.bcLabels) {
+                            findLabelAndSetValues(data.bcLabels, image.id, required_language, translatedNameElement, translatedTextElement);
+                            } else if (image.id.startsWith('t') && data.tkLabels) {
+                            findLabelAndSetValues(data.tkLabels, image.id, required_language, translatedNameElement, translatedTextElement);
+                            }
+                        } catch (error) {
+                            console.error("Error fetching label translations:", error);
+                        }
+                    }
+                    else if (required_language === ""){
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'none' : 'none';
+                        translatedNameElement.value = " ";
+                        translatedTextElement.innerHTML= " ";
+                    }
+                    else if(!supportedLanguages.includes(required_language)){
+                        const language_supportMessage = `We do not have translated Label template text in ${required_language} at this time.`;
+                        translationSupport.textContent = language_supportMessage;
+                        translationSupport.style.display = (translationSupport.style.display === 'none') ? 'block' : 'block';
+
+                    }  
+                }
+            }
+        }
+    }
     languageFormValidation()
 
     // adds input event for translation name and text to make sure language is also selected
@@ -990,8 +1108,8 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
                 li.classList.add('show')
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
-                    <div><p class="center-name">${item}</p></div>
-                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer">&times;</div>
+                    <div><p class="center-name word-break">${item}</p></div>
+                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
                 </div>
                 <input type="hidden" value="${item.trim()}" name="project_urls">`
     
@@ -1207,20 +1325,43 @@ function validateProjectDisableSubmitBtn() {
 
 }
 
-function toggleNotifications() {
-    document.getElementById('notification-v2').classList.toggle('show')
+function toggleNotifications(scope) {
+  let activebutton = document.getElementById(`notification-button-${scope}`);
+  let allButtons = document.querySelectorAll('[id^="notification-button-"]');
+  let allNotificationDivs = document.querySelectorAll(
+    '[id^="notification-v2-"]'
+  );
+  let activeNotificationDiv = document.getElementById(
+    `notification-v2-${scope}`
+  );
 
-    window.onclick = function(event) {
-        if(!event.target.matches('.dropbtn')) {
-            let dropdowns = document.getElementsByClassName("notification-dropdown-content")
-            for (let i=0; i < dropdowns.length; i++) {
-                let openDropdown = dropdowns[i]
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show')
-                }
-            }
-        }
+  allButtons.forEach(function (button) {
+    if (button !== activebutton) {
+      button.classList.remove("notification-button");
     }
+  });
+
+  activebutton.classList.toggle("notification-button");
+
+  allNotificationDivs.forEach(function (element) {
+    if (element !== activeNotificationDiv) {
+      element.classList.remove("show");
+    }
+  });
+
+  activeNotificationDiv.classList.toggle("show");
+
+  window.onclick = function (event) {
+    if (!event.target.matches(".dropbtn, .dropbtn i")) {
+      allButtons.forEach(function (button) {
+        button.classList.remove("notification-button");
+      });
+
+      allNotificationDivs.forEach(function (element) {
+        element.classList.remove("show");
+      });
+    }
+  };
 }
 
 if (window.location.href.includes('connect-community') || window.location.href.includes('connect-institution')) {
@@ -1353,6 +1494,23 @@ if (deactivateAccountBtn) {
         let continueDeactivationBtn = document.getElementById('continueDeactivationBtn')
         continueDeactivationBtn.addEventListener('click', function(){ document.getElementById('deactivateUserForm').submit() })
     })
+}
+
+// Deactivate and unlink g-account in user settings
+function showConfirmationAlert() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'block';
+}
+
+function confirmUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
+    document.getElementById('unlinkForm').submit();
+}
+
+function cancelUnlink() {
+    var confirmationAlert = document.getElementById('googleConfirmationAlert');
+    confirmationAlert.style.display = 'none';
 }
 
 if (window.location.href.includes('newsletter/preferences/') ) {
@@ -1546,7 +1704,6 @@ if (window.location.href.includes('labels/view/')) {
 })()
 
 // PROJECT ACTION PAGE
-
 var copyProjectURLBtn = document.getElementsByClassName('copyProjectURLBtn')
 var copyProjectIDBtn = document.getElementsByClassName('copyProjectIDBtn')
 if (copyProjectIDBtn && copyProjectURLBtn) {
@@ -1567,6 +1724,67 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
             btnElem.innerHTML = `<i class="round-btn fa-regular fa-clone fa-rotate-90"></i>`
         }, 1000)
     })
+}
+
+// Share Modal - Embed Code customization options
+if (window.location.href.includes('/projects/') && !window.location.href.includes('/projects/embed/')) {
+    var embedCode = document.getElementById('projectPageEmbedToCopy')
+    var layoutDropdown = document.getElementById('embedLayoutOptions')
+    var languageDropdown = document.getElementById('embedLanguageOptions')
+    var alignmentDropdown = document.getElementById('embedAlignOptions')
+    var langArray= new Array();
+    var layoutType, languageType, alignType = null
+    projectID = embedCode.dataset.projectId
+
+    
+    embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+
+    for (i=0;i < languageDropdown.options.length; i++) {
+        if (langArray.includes(languageDropdown.options[i].value) == false) {
+            langArray.push(languageDropdown.options[i].value)
+            languageDropdown.options[i].classList.remove("hide");
+        }
+        else {
+            languageDropdown.options[i].classList.add("hide");
+        }
+    }
+
+    if (layoutDropdown) {
+        layoutDropdown.addEventListener("change", function(e) {
+            layoutType = 'lt='+this.value+'&'
+            updateEmbedCode()
+        })
+    }
+    if (languageDropdown) {
+        languageDropdown.addEventListener("change", function(e) {
+            languageType = 'lang='+this.value+'&'
+            updateEmbedCode()
+        })
+    }
+    if (alignmentDropdown) {
+        alignmentDropdown.addEventListener("change", function(e) {
+            alignType = 'align='+this.value+'&'
+            updateEmbedCode()
+        })
+    }
+
+    function updateEmbedCode() {
+        let customizationOptions = ""
+        
+        if (layoutType) {
+            customizationOptions += layoutType
+        }
+        if (languageType) {
+            customizationOptions += languageType
+        }
+        if (alignType) {
+            customizationOptions += alignType
+        }
+
+        customizationOptions = customizationOptions.slice(0,-1)
+
+        embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+    }
 }
 
 // Share on Social Media

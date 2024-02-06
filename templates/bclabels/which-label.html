@@ -4,7 +4,7 @@
 <div>
     <img 
         loading="lazy" 
-        class="label-medium {% if not bclabel.is_approved %}opacity-4{% endif %}"
+        class="label-medium {% if not bclabel.is_approved %}opacity-4{% endif %} pointer-event-none"
         
         {% if bclabel.label_type == 'commercialization'%}
             src="{% static 'images/bc-labels/bc-open-to-commercialization.png' %}" 

@@ -8,5 +8,6 @@ urlpatterns = [
     path('invite/delete/<str:pk>/', views.delete_member_invite, name="delete-member-invite"),
     path('download/community/support-letter/', views.download_community_support_letter, name="download-community-support-letter"),
     path('download/institution/support-letter/', views.download_institution_support_letter, name="download-institution-support-letter"),
-
+    path('community-boundary-view/<int:community_id>', views.community_boundary_view, name="community-boundary-view"),
+    path('boundary-view/', views.boundary_view, name="boundary-view"),
 ]

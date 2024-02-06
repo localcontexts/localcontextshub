@@ -1,59 +1,82 @@
 {% load static %}
 <div class="dashcard show">
-    <div class="flex-this">
-
-        <div class="researcher-img-container">
-            <img loading="lazy" 
-                class="profile-img" 
-                src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}" 
-                alt="{{ researcher.researcher_name }} image"
-            >
-        </div>
-        <div class="flex-this column dashcard-text-container">
-            <div><h3 class="dashcard-h3 darkteal-text">
-                {% firstof researcher.user.get_full_name researcher.user.username %}
-            </h3></div>
-            <div>
-                <p class="dashcard-subheader">
-                    Researcher | Location: {{ researcher.user.user_profile.get_location }}
-                </p>
-            </div>
-            <div><p class="dashcard-description description-sm">
-                {% if researcher.description %}{{ researcher.description }} {% else %} No description provided. {% endif %}
-            </p></div>
-        </div>
-
-        <div class="dashcard-btn-container">
-            <div class="margin-left-16">
-                {% if '/registry/' in request.path %}
-                    <div class="margin-bottom-16">
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'public-researcher' researcher.id %}"
-                        >View public page</a>                        
-                    </div>
-                    {% if researcher.otc_researcher_url.all %}
-                        <div class="flex-this flex-end">
-                            <img src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px">
-                        </div>
-                    {% endif %}
-                {% endif %}
-
-                {% if '/dashboard/' in request.path %}
-                    {% if researcher.get_projects %}
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'researcher-projects' researcher.id %}"
-                        >View account</a>
-                    {% else %}
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'researcher-notices' researcher.id %}"
-                        >View account</a>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-
+  <div class="flex-this">
+    <div class="researcher-img-container">
+      <img
+        loading="lazy"
+        class="profile-img"
+        src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}"
+        alt="{{ researcher.researcher_name }} image"
+      />
     </div>
+    <div class="flex-this column dashcard-text-container">
+      <div>
+        <h3 class="dashcard-h3 darkteal-text">
+          {% firstof researcher.user.get_full_name researcher.user.username %}
+        </h3>
+      </div>
+      <div>
+        <p class="dashcard-subheader">
+          Researcher | Location: {{ researcher.user.user_profile.get_location }}
+        </p>
+      </div>
+      <div>
+        <p class="dashcard-description description-sm">
+          {% if researcher.description %}{{ researcher.description }} {% else %}
+          No description provided. {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="dashcard-btn-container">
+      <div class="margin-left-16 flex-this gap-1">
+        {% if '/registry/' in request.path %}
+        <div class="margin-bottom-16">
+          <a
+            class="primary-btn action-btn"
+            href="{% url 'public-researcher' researcher.id %}"
+            >View public page</a
+          >
+        </div>
+        {% if researcher.otc_researcher_url.all %}
+        <div class="flex-this flex-end">
+          <img
+            class="pointer-event-none"
+            src="{% static 'images/notices/ci-open-to-collaborate.png' %}"
+            width="60px"
+            alt="black square with white rectangle being held by two hands in the middle"
+          />
+        </div>
+        {% endif %} {% endif %}
+
+        <div class="margin-right-8">
+          {% if '/dashboard/' in request.path %} {% if researcher.get_projects %}
+          <a
+            class="primary-btn action-btn"
+            href="{% url 'researcher-projects' researcher.id %}"
+            >View account</a
+          >
+          {% else %}
+          <a
+            class="primary-btn action-btn"
+            href="{% url 'researcher-notices' researcher.id %}"
+            >View account</a
+          >
+          {% endif %} {% endif %}
+        </div>
+        {% if '/dashboard/' in request.path %}
+        <!-- Notification -->
+        {% include 'snippets/notifications.html' with scope=researcher.id %}
+        <!-- Settings -->
+        <div>
+          <a
+            href="{% url 'update-researcher' researcher.id %}"
+            class="border-raduis50 darkteal-text primary-btn white-btn"
+            ><i class="no-margin fa fa-cog" aria-hidden="true"></i
+          ></a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>

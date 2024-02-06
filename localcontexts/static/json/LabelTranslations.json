@@ -1,0 +1,1088 @@
+{
+    "bcLabels": [
+        {
+            "id": 1,
+            "labelName": "BC Provenance (BC P)",
+            "labelTranslatedName": "PROVENANCE (BC P)",
+            "labelCode": "bcp",
+            "labelTranslatedText": "Cette étiquette est utilisée afin d’affirmer l’intérêt inhérent qu’ont les peuples autochtones dans les collections et les données scientifiques relatives aux communautés, aux gens et à la biodiversité que l’on retrouve sur les terres, les cours d’eau et les territoires traditionnels. [Nom de la communauté et de la partie autorisée] se réserve le droit d’être nommée et associée à ces données dans le futur. Cette association reflète l’importance de la relation et de la responsabilité qui existe envers [l’espèce ou l’entité biologique] et les collections et données scientifiques y étant associées.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 2,
+            "labelName": "BC Multiple Communities (BC MC)",
+            "labelTranslatedName": "COMMUNAUTÉS MULTIPLES (BC CM)",
+            "labelCode": "bcmc",
+            "labelTranslatedText": "Cette étiquette est utilisée afin de confirmer que la responsabilité ou la propriété de l’information, de la collection, des données et de l’information sur les séquences numériques est partagée par plusieurs communautés distinctes. Son utilisation dépendra de l’issue des discussions et des négociations avec plusieurs communautés.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 3,
+            "labelName": "BC Open to Collaboration (BC CB)",
+            "labelTranslatedName": "OUVERTS À LA COLLABORATION (BC OC)",
+            "labelCode": "bccb",
+            "labelTranslatedText": "Cette étiquette est utilisée afin de confirmer que [nom de la communauté ou de la partie autorisée], est ouverte à développer un engagement, une collaboration ou un partenariat dans le futur, autour d’un projet de recherche et d’activités de sensibilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 4,
+            "labelName": "BC Open to Commercialization (BC OC)",
+            "labelTranslatedName": "OUVERTS À LA COMMERCIALISATION (BC OC)",
+            "labelCode": "bcoc",
+            "labelTranslatedText": "Cette étiquette est utilisée afin d’indiquer que [nom de la communauté ou de la partie autorisée] est ouverte aux opportunités de commercialisation qui pourraient dériver de toutes informations, collections, données et ISN rattachées à cette étiquette. En tant que principale partie prenante de tout partenariat ou opportunité de collaboration émergeant de l’utilisation de ces ressources, nous nous réservons un intérêt formel dans toute négociation future.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 5,
+            "labelName": "BC Research Use (BC R)",
+            "labelTranslatedName": "POUR LA RECHERCHE (BC R)",
+            "labelCode": "bcr",
+            "labelTranslatedText": "Cette étiquette est utilisée par [nom de la communauté ou de la partie autorisée] afin de permettre que ces informations, données et informations sur les séquences numériques, soient utilisées à des fins de recherches non spécifiées. Cette étiquette ne permet pas les activités de commercialisation.  [Déclaration facultative concernant le retour des résultats de la recherche]",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 6,
+            "labelName": "BC Consent Verified (BC CV)",
+            "labelTranslatedName": "CONSENTEMENT VÉRIFIÉ (BC CV)",
+            "labelCode": "bccv",
+            "labelTranslatedText": "Cette étiquette est utilisée afin de confirmer que [nom de la communauté ou de la partie autorisée] a des conditions de consentement en place pour l’utilisation de ces informations, collections, données et informations sur les séquences numériques. [Ces conditions peuvent être consultées au…].",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 7,
+            "labelName": "BC Consent Non-Verified (BC CNV)",
+            "labelTranslatedName": "CONSENTEMENT BC NON VÉRIFIÉ (CNV BC)",
+            "labelCode": "bccnv",
+            "labelTranslatedText": "Cette étiquette est utilisée en raison de préoccupations liées au processus ayant mené au consentement ou à la représentation des données. Ce matériel n’a pas été créé à la suite d’un consentement éclairé ou en suivant les protocoles de recherche et d’engagement de la communauté.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 8,
+            "labelName": "BC Clan (BC CL)",
+            "labelTranslatedName": "CLAN BC (CL BC)",
+            "labelCode": "bccl",
+            "labelTranslatedText": "Cette étiquette est utilisée afin d’indiquer que le matériel concerné n’est traditionnellement et habituellement pas accessible publiquement. L’étiquette informe les futurs utilisateurs que ces données sont soumises à des conditions spécifiques d’utilisation et de partage liées à l’appartenance à un clan ou à des relations claniques. Cette étiquette invite ceux qui voudront consulter ce matériel à respecter les valeurs culturelles et les attentes relatives à sa circulation et à son utilisation, définies par les clans mentionnés, leurs membres et les relations internes qui les régissent.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 9,
+            "labelName": "BC Outreach (BC O)",
+            "labelTranslatedName": "SENSIBILISATION BC (S BC)",
+            "labelCode": "bco",
+            "labelTranslatedText": "Cette étiquette informe les utilisateurs que ces données peuvent être utilisées à des fins d’activités éducatives de sensibilisation. Cette étiquette vous demande de respecter les conditions de circulation désignées associées à ce matériel ou à ces données bioculturelles et, si possible, de développer des moyens afin d’assurer un échange juste et équitable avec les détenteurs de ce matériel pour son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 10,
+            "labelName": "BC Non-Commercial (BC NC)",
+            "labelTranslatedName": "BC NON COMMERCIALE (BC NC)",
+            "labelCode": "bcnc",
+            "labelTranslatedText": "Cette étiquette est utilisée afin d’indiquer que ce matériel ou ces données bioculturelles ont été désignées comme étant disponibles à des fins non commerciales. Il vous est permis d’utiliser ce matériel à des fins non commerciales, notamment dans le cadre d’une recherche, d’une étude, d’une présentation publique, d’un blog ou sur des sites Web non commerciaux.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 11,
+            "labelName": "BC Provenance (BC P)",
+            "labelTranslatedName": "PROCEDENCIA (BC P)",
+            "labelCode": "bcp",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada para afirmar el interés intrínseco que las personas y pueblos Indígenas tienen sobre las colecciones y datos científicos sobre comunidades, personas y formas de biodiversidad que se encuentran en tierras, aguas y territorios ancestrales/tradicionales. [Nombre de la comunidad o entidad autorizante] retiene el derecho a ser nombrada/o y asociada/o en relación a dichos recursos en el futuro. Dicha asociación refleja una manera de relacionarse y responsabilidad significativas hacia [especie o entidad biológica] y hacia las colecciones y datos científicos asociados a ellas. [Declaración de atribución opcional]",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 12,
+            "labelName": "BC Multiple Communities (BC MC)",
+            "labelTranslatedName": "MÚLTIPLES COMUNIDADES (BC MC)",
+            "labelCode": "bcmc",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada para afirmar responsabilidad y propiedad sobre cómo esta información, colección, datos e información de secuencia digital es divulgada a través de diferentes comunidades. Su uso será subjetivo a discusiones y negociaciones con y entre múltiples comunidades.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 13,
+            "labelName": "BC Open to Collaboration (BC CB)",
+            "labelTranslatedName": "DISPUESTA/O A COLABORAR (BC OC)",
+            "labelCode": "bccb",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada para dejar en claro que [nombre de la comunidad o entidad autorizante] está dispuesta a establecer relaciones de colaboración y compromiso respecto a posibles actividades de investigación y divulgación.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 14,
+            "labelName": "BC Open to Commercialization (BC OC)",
+            "labelTranslatedName": "DISPUESTA/O A COMERCIALIZAR (BC OC)",
+            "labelCode": "bcoc",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada para indicar que [nombre de la comunidad o entidad autorizante] está dispuesta a participar de oportunidades de comercialización que puedan surgir derivadas de cualquier información, colecciones, datos y DSI a los que esta Etiqueta se encuentra asociada. Como parte primaria en cualquier oportunidad de colaboración y asociación que se presente en relación al uso de estos recursos, retenemos el interés expreso en cualquier negociación futura.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 15,
+            "labelName": "BC Research Use (BC R)",
+            "labelTranslatedName": "USO PARA INVESTIGACIÓN (BC R)",
+            "labelCode": "bcr",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada por [nombre de comunidad o entidad autorizante] para permitir el uso de esta información, datos e información de secuencia digital con fines de investigación no específicos. Esta Etiqueta no provee permiso para actividades con fines comerciales. [Declaración opcional de retorno de resultados de investigación]",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 16,
+            "labelName": "BC Consent Verified (BC CV)",
+            "labelTranslatedName": "CONSENTIMIENTO VERIFICADO (BC CV)",
+            "labelCode": "bccv",
+            "labelTranslatedText": "Esta Etiqueta está siendo utilizada para verificar que [nombre de la comunidad o entidad autorizante] cuenta con las condiciones apropiadas de consentimiento respecto al uso de esta información, colecciones, datos e información de secuencia digital. [Dicha verificaión puede ser encontrada en…]",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 17,
+            "labelName": "BC Consent Non-Verified (BC CNV)",
+            "labelTranslatedName": "CONSENTIMIENTO NO VERIFICADO BC (CNV BC)",
+            "labelCode": "bccnv",
+            "labelTranslatedText": "La Etiqueta se utiliza cuando hay preocupaciones respecto a la fiabilidad del consentimiento y/o las representaciones hechas para la información. Este material no fue creado a través de un consentimiento informado o protocolos comunitarios para la investigación y colaboración.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 18,
+            "labelName": "BC Clan (BC CL)",
+            "labelTranslatedName": "BC CLAN (BC CL)",
+            "labelCode": "bccl",
+            "labelTranslatedText": "Esta Etiqueta se utiliza para indicar que el material está disponible para usos tradicionales y no públicos. La Etiqueta le permite saber a los usuarios futuros que hay condiciones específicas para el uso por motivos de pertenencia a un clan y/o las relaciones del clan. La Etiqueta pide a quienes acceden al material que respeten los valores culturales y las expectativas de circulación y uso definidas por clanes específicos, sus miembros y sus relaciones internas.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 19,
+            "labelName": "BC Outreach (BC O)",
+            "labelTranslatedName": "DIVULGACIÓN BC (D BC)",
+            "labelCode": "bco",
+            "labelTranslatedText": "Esta Etiqueta le permite a cualquier usuario saber que la información puede ser utilizada con fines de divulgación educativa. La Etiqueta pide que se respeten las condiciones de circulación asignadas al material y datos bioculturales. Además, donde sea posible, se solicita que se desarrolle un medio que permita un intercambio recíproco, justo y equitativo, para el uso de la información con los titulares de la BC.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 20,
+            "labelName": "BC Non-Commercial (BC NC)",
+            "labelTranslatedName": "BC NO LUCRATIVO (BC NL)",
+            "labelCode": "bcnc",
+            "labelTranslatedText": "La Etiqueta se utiliza para indicar que el material y/o información biocultural ha sido designada para uso no lucrativo. Se permite utilizar el material para propósitos no lucrativos tales como la investigación, el estudio, o presentación pública y/o en blogs o sitios web no comerciales. Esta Etiqueta pide que uno piense y actúe con respeto y responsabilidad hacia esta información y sus custodios originales.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 21,
+            "labelName": "BC Provenance (BC P)",
+            "labelTranslatedName": "BC MANA TUKU IHO",
+            "labelCode": "bcp",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaū i te mana tuku iho o ngā iwi taketake ki roto i ngā kohinga mātauranga pūtaiao, me ngā raraunga mō runga i ngā hapori, ngā tāngata, me te rerenga rauropi e noho pū ana i ngā whenua, i ngā wai me ngā rohe o ngā iwi taketake. Ka noho ngātahi te [ingoa hapori, mana whakahaere rānei] ki tēnei tohu, ki tua i te anamata. E whakaata mai ana tēnei ngātahitanga i te piringa me te haepapa ki ngā taonga, ki ngā kohinga mātauranga pūtaiao me ngā raraunga. [Rerenga whakamana]",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 22,
+            "labelName": "BC Multiple Communities (BC MC)",
+            "labelTranslatedName": "BC TINI HAPORI",
+            "labelCode": "bcmc",
+            "labelTranslatedText": "Whakapūmautia ai ki roto i tēnei tohu, kua tau te mana o ngā mōhiohio, o ngā kohinga mātauranga, o ngā raraunga, o ngā mōhiohio DSI, ki runga i ētahi tini hapori, kaua ki te hapori kotahi noa iho. Ina whakamahia tēnei tohu, me mātua whakaae ngā tono e aua tini hapori.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 23,
+            "labelName": "BC Open to Collaboration (BC CB)",
+            "labelTranslatedName": "BC MAHI NGĀTAHI",
+            "labelCode": "bccb",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakaū i te āheinga o te [ingoa hapori, mana whakahaere rānei] kia mahi ngātahi ai ki ētahi atu rōpū, tāngata, hapori, tērā he rangahau, he taumahi rānei ki te hapori.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 24,
+            "labelName": "BC Open to Commercialization (BC OC)",
+            "labelTranslatedName": "BC MAHI PAKIHI (BC OC)",
+            "labelCode": "bcoc",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakaatu i te whai wāhitanga mai o te [ingoa hapori, mana whakahaere rānei] kia whiwhi i ngā hua o roto o ngā mōhiohio, o ngā kohinga mātauranga, o ngā raraunga me ngā mōhiohio hangarau (DSI) e pā mai ana ki tēnei tohu. He reo whai mana te iwi taketake ki ngā mahi ngātahitanga e puea ai i ēnei taonga, otirā, me mātua noho te iwi taketake ki te pae whiriwhiri, i roto i ngā whakawhitinga kōrero ki tua o anamata.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 25,
+            "labelName": "BC Research Use (BC R)",
+            "labelTranslatedName": "BC RANGAHAU",
+            "labelCode": "bcr",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu e te [ingoa hapori, mana whakahaere rānei] kia wātea ai ēnei tāngata/rōpū ki te whakamahi i ngā mōhiohio, ngā kohinga mātauranga, ngā raraunga, ngā mōhiohio DSI rānei mō ētahi rangahau. E kore rawa e taea te mahi pakihi i raro i tēnei Tohu.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 26,
+            "labelName": "BC Consent Verified (BC CV)",
+            "labelTranslatedName": "BC WHAI WHAKAAETANGA",
+            "labelCode": "bccv",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakaū i ngā here whakaae [ingoa hapori, mana whakahaere rānei] i runga i te whakamahitanga o ngā mōhiohio, ngā kohinga mātauranga, ngā raraunga me ngā mōhiohio hangarau (DSI). [Kitea ai ēnei i ….].",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 27,
+            "labelName": "BC Consent Non-Verified (BC CNV)",
+            "labelTranslatedName": "BC WHAKAAETANGA WHAKAMANA KORE (BC CNV)",
+            "labelCode": "bccnv",
+            "labelTranslatedText": "Mēnā ka whakamahia tēnei tohu, kua kitea ētahi āwangawanga mō te tōtika, ngā whakatau hoki/rānei ki tēnei rawa. Kīhai tēnei rawa i hangā mā roto i tētahi whakaae whai whakaaro, i ngā tikanga ā-hapori rānei mō te rangahau.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 28,
+            "labelName": "BC Clan (BC CL)",
+            "labelTranslatedName": "BC HAPŪ (BC CL)",
+            "labelCode": "bccl",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere. Ko tā te tohu nei, he whakamārama ki te hunga whakamahi, tērā ētahi tikanga motuhake tuari mō tēnei rawa, e pā kau ana ki ōna hapū ake, ki ōna honohononga hoki/rānei. Ko tā tēnei tohu, he āki i te kaiwhakamahi, kia whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē me tōna whakamahinga, i runga i ngā tikanga whakamahi i whakatakotoria e ngā hapū, iwi, uri, rūnanga, whakahaere hoki/rānei, nā rātou tēnei taonga.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 29,
+            "labelName": "BC Outreach (BC O)",
+            "labelTranslatedName": "BC TORO (BC O)",
+            "labelCode": "bco",
+            "labelTranslatedText": "He whakamārama tā tēnei tohu ki te hunga whakamahi, ka taea e rātou ēnei raraunga mō ngā akoako toro. Ko tā tēnei tohu, he āki atu kia tika te tiaki i ngā tikanga tuari mō tēnei rawa, ēnei raraunga hoki/rānei, ā, ki ngā wā e taea ana, me whai whakaaro ki ētahi huarahi tau-utuutu me ngā kaipupuri BC e tika ana hei whakaea i tāu nā whakamahi i te taonga nei.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 30,
+            "labelName": "BC Non-Commercial (BC NC)",
+            "labelTranslatedName": "BC UMANGA-KORE (BC NC)",
+            "labelCode": "bcnc",
+            "labelTranslatedText": "He whakamārama atu tā tēnei tohu, kua whakaaetia ēnei rawa ahurea, raraunga hoki/rānei hei whakamahinga mō te umanga-kore. E taea nei te whakamahi i a ia mō ngā take rangahau, akoako, kauhau, matapaki ā-ipurangi, whārangi ipurangi umanga-kore hoki/rānei. Ko tā tēnei tohu, he āki i te kaiwhakamahi, kia tika te tiaki i te taonga nei me te whai whakaaro ki ngā kaitiaki taketake.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 31,
+            "labelName": "BC Provenance (BC P)",
+            "labelTranslatedName": "BC Provenance (BC P)",
+            "labelCode": "bcp",
+            "labelTranslatedText": "This Label is being used to affirm an inherent interest Indigenous people have in the scientific collections and data about communities, peoples, and the biodiversity found within traditional lands, waters and territories. [Community name or authorizing party] retains the right to be named and associated with it into the future. This association reflects a significant relationship and responsibility to [the species or biological entity] and associated scientific collections and data. [Optional attribution statement]",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 32,
+            "labelName": "BC Multiple Communities (BC MC)",
+            "labelTranslatedName": "BC Multiple Communities (BC MC)",
+            "labelCode": "bcmc",
+            "labelTranslatedText": "This Label is being used to affirm that responsibility and ownership over this information, collection, data, and digital sequence information (DSI) is spread across several distinct communities. Use will be dependent upon discussion and negotiation with these multiple communities.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 33,
+            "labelName": "BC Open to Collaboration (BC CB)",
+            "labelTranslatedName": "BC Open to Collaboration (BC CB)",
+            "labelCode": "bccb",
+            "labelTranslatedText": "This Label is being used to make clear [community name or authorizing body] is open to future engagement, collaboration, and partnership around research and outreach opportunities.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 34,
+            "labelName": "BC Open to Commercialization (BC OC)",
+            "labelTranslatedName": "BC Open to Commercialization (BC OC)",
+            "labelCode": "bcoc",
+            "labelTranslatedText": "This Label is being used to indicate that [community name or authorizing party] is open to commercialization opportunities that might derive from any information, collections, data, and digital sequence information (DSI) to which this Label is connected. As a primary party in any partnership and collaboration opportunity that emerges from the use of these resources, we retain an express interest in any future negotiations.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 35,
+            "labelName": "BC Research Use (BC R)",
+            "labelTranslatedName": "BC Research Use (BC R)",
+            "labelCode": "bcr",
+            "labelTranslatedText": "This Label is being used by [community name or authorizing body] to allow this information, collection, data, and digital sequence information (DSI) to be used for unspecified research purposes. This Label does not provide permission for commercialization activities. [Optional return of research results statement]",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 36,
+            "labelName": "BC Consent Verified (BC CV)",
+            "labelTranslatedName": "BC Consent Verified (BC CV)",
+            "labelCode": "bccv",
+            "labelTranslatedText": "This Label is being used to verify that [community name or authorizing party] have consent conditions in place for the use of this information, collections, data, and digital sequence information. [These can be found at ….].",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 37,
+            "labelName": "BC Consent Non-Verified (BC CNV)",
+            "labelTranslatedName": "BC Consent Non-Verified (BC CNV)",
+            "labelCode": "bccnv",
+            "labelTranslatedText": "This Label is being used because there are concerns about the accuracy of the consent and/or representations made for this data. This material was not created through informed consent or community protocols for research and engagement.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 38,
+            "labelName": "BC Clan (BC CL)",
+            "labelTranslatedName": "BC Clan (BC CL)",
+            "labelCode": "bccl",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available. The Label lets future users know that this data has specific conditions for use and sharing because of clan membership and/or relationships. This Label asks viewers of this data to respect the cultural values and expectations about circulation and use defined by designated clans, members, and their internal relations.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 39,
+            "labelName": "BC Outreach (BC O)",
+            "labelTranslatedName": "BC Outreach (BC O)",
+            "labelCode": "bco",
+            "labelTranslatedText": "The Label is letting any users know that this data can be used for educational outreach activities. This Label asks you to respect the designated circulation conditions for these biocultural materials and/or data and additionally, where possible, to develop a means for fair and equitable reciprocal exchange for the use of this data with the relevant BC holders.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 40,
+            "labelName": "BC Non-Commercial (BC NC)",
+            "labelTranslatedName": "BC Non-Commercial (BC NC)",
+            "labelCode": "bcnc",
+            "labelTranslatedText": "This Label is being used to indicate that these biocultural materials and/or data have been designated as being available for non-commercial use. You are allowed to use this material for non-commercial purposes including for research, study, or public presentation and/or online in blogs or non-commercial websites. This Label asks you to think and act with respect and responsibility towards this data and the original custodians.",
+            "translated_language": "English",
+            "languageTag": "en"
+        }
+        
+    ],
+    "tkLabels": [
+        {
+            "id": 1,
+            "labelName": "TK Attribution (TK A)",
+            "labelTranslatedName": "ST ATTRIBUTION (ST A)",
+            "labelCode": "tka",
+            "labelTranslatedText": "Cette étiquette permet de corriger des erreurs ou des exclusions historiques liées à ce matériel. Cela s’applique particulièrement au nom des personnes liées aux performances ou à la création de ce matériel. Elle s’applique aussi à l’attribution correcte du nom de la communauté d’origine. À titre d’utilisateur, on vous demande d’attribuer correctement la provenance de ce matériel à chaque nouvelle utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 2,
+            "labelName": "TK Clan (TK CL)",
+            "labelTranslatedName": "ST CLAN (ST CL)",
+            "labelCode": "tkcl",
+            "labelTranslatedText": "Cette étiquette est utilisée afin d’indiquer que ce matériel n’est traditionnellement et normalement pas accessible publiquement. Elle informe le futur utilisateur que ce matériel est lié à des conditions d’utilisation et de partage spécifiques, en raison de l’appartenance à un clan ou à des relations claniques. Ce matériel n’est pas, et n’a jamais été ni gratuit, ni public, ni accessible à tous. Cette étiquette invite ceux qui voudront consulter ce matériel, à respecter les valeurs culturelles et les attentes relatives à sa circulation et à son utilisation, qui ont été définies par les clans mentionnés, leurs membres et les relations internes qui les régissent.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 3,
+            "labelName": "TK Family (TK F)",
+            "labelTranslatedName": "ST FAMILLE (ST F)",
+            "labelCode": "tkf",
+            "labelTranslatedText": "Cette étiquette est utilisée pour indiquer que, traditionnellement et généralement, ce matériel n’est pas accessible au grand public. Elle corrige un malentendu sur les options de diffusion de ce matériel. Elle informe les utilisateurs de l’existence de conditions spécifiques qui stipulent un partage entre membres d’une même famille. Il revient à chaque communauté de définir l’identité des membres d’une famille ainsi que les conditions de partage. Ce matériel n’est pas et n’a jamais été accessible gratuitement ou publiquement pour qui que ce soit et en quelques circonstances que ce soit. Cette étiquette vous demande de réfléchir à la façon dont vous utiliserez ce matériel et de respecter les valeurs culturelles et les attentes liées à sa diffusion.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 4,
+            "labelName": "TK Multiple Communities (TK MC)",
+            "labelTranslatedName": "ST COMMUNAUTÉS MULTIPLES (ST CM)",
+            "labelCode": "tkmc",
+            "labelTranslatedText": "Plusieurs communautés distinctes se partagent la responsabilité et la propriété de ce matériel. Son utilisation dépend des discussions et des négociations qui seront menées avec les communautés suivantes : [insérer le nom des communautés]. Les décisions quant à l’utilisation du matériel devront être prises collectivement. Cette étiquette vous demande, à titre d’utilisateur externe, de reconnaitre et de respecter les protocoles culturels touchant l’utilisation de ce matériel et d’obtenir l’approbation des communautés spécifiées quant à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 5,
+            "labelName": "TK Community Voice (TK CV)",
+            "labelTranslatedName": "ST VOIX DE LA COMMUNAUTÉ (ST VC)",
+            "labelCode": "tkcv",
+            "labelTranslatedText": "Cette étiquette est utilisée pour encourager le partage des récits et des voix sur ce matériel. Elle indique que le savoir et les descriptions qui existent sont incomplets ou biaisés. Tous les membres de la communauté sont invités à partager leur savoir sur l’événement, la photographie, l’enregistrement ou l’objet patrimonial. Partager nos voix nous aide à nous réapproprier nos récits et notre savoir. Ce partage est un processus qui se fait à l’intérieur de la communauté.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 6,
+            "labelName": "TK Creative (TK CR)",
+            "labelTranslatedName": "ST CRÉATION (ST CR)",
+            "labelCode": "tkcr",
+            "labelTranslatedText": "Cette étiquette est utilisée en reconnaissance de la relation qui existe entre les activités de création de [nom] et de [nom de la communauté], et des responsabilités culturelles associées.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 7,
+            "labelName": "TK Verified (TK V)",
+            "labelTranslatedName":"ST VÉRIFIÉ (ST V)",
+            "labelCode": "tkv",
+            "labelTranslatedText": "Cette étiquette affirme que la représentation et la présentation de ce matériel sont conformes aux attentes et aux protocoles culturels de la communauté. Elle vous informe que la personne, la famille ou la communauté représentée dans ce matériel considère son utilisation comme étant équitable, raisonnable et respectueuse.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 8,
+            "labelName": "TK Non-Verified (TK NV)",
+            "labelTranslatedName": "ST NON VÉRIFIÉ (ST NV)",
+            "labelCode": "tknv",
+            "labelTranslatedText": "Cette étiquette est utilisée lorsqu’il y a des préoccupations quant à l’exactitude ou au contenu présenté. Ce matériel n’a pas fait l’objet d’un consentement informé ou il n’y pas eu d’entente ou de protocole communautaire quant au processus de recherche. Des questions sont soulevées quant à son exactitude, à l’identité des personnes qui représentent la communauté et à la façon dont ce matériel présente cette communauté.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 9,
+            "labelName": "TK Seasonal (TK S)",
+            "labelTranslatedName": "ST SAISONNIER (ST S)",
+            "labelCode": "tks",
+            "labelTranslatedText": "Cette étiquette est utilisée pour faire savoir que, traditionnellement et généralement, ce matériel est entendu ou utilisé à une période précise de l’année et en réponse à des changements et à des contextes saisonniers. Par exemple, plusieurs cérémonies importantes se tiennent à des périodes précises de l’année. Cette étiquette souligne l’existence d’une relation sophistiquée entre le territoire et la création du savoir. Elle souligne aussi les liens entre ce matériel et son contexte spécifique de création, en particulier la nature interreliée et incarnée des enseignements qui y sont transmis.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 10,
+            "labelName": "TK Women General (TK WG)",
+            "labelTranslatedName": "ST GÉNÉRAL POUR LES FEMMES (ST GFE)",
+            "labelCode": "tkwg",
+            "labelTranslatedText": "Ce matériel contient des restrictions d’accès de nature genrée. Généralement, seules les femmes de la communauté peuvent y avoir accès et l’utiliser. Si vous n’êtes pas un membre de la communauté et que vous avez accès à ce matériel, on vous demande de ne pas télécharger, copier, remixer ou diffuser ce matériel de quelque façon que ce soit sans autorisation préalable. Cette étiquette vous demande de considérer si vous devriez utiliser ce matériel et de respecter les valeurs culturelles et les attentes quant à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 11,
+            "labelName": "TK Men General (TK MG)",
+            "labelTranslatedName": "ST GÉNÉRAL POUR LES HOMMES (ST GH)",
+            "labelCode": "tkmg",
+            "labelTranslatedText": "Ce matériel contient des restrictions d’accès de nature genrée. Généralement, seuls les hommes de la communauté y ont accès et peuvent l’utiliser. Si vous n’êtes pas un membre de la communauté et que vous avez accès à ce matériel, on vous demande de ne pas télécharger, copier, remixer ou diffuser ce matériel de quelque façon que ce soit sans autorisation préalable. Cette étiquette vous demande de considérer si vous devriez utiliser ce matériel et de respecter les valeurs culturelles et les attentes quant à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 12,
+            "labelName": "TK Men Restricted (TK MR)",
+            "labelTranslatedName": "ST RÉSERVÉ AUX HOMMES (ST RH)",
+            "labelCode": "tkmr",
+            "labelTranslatedText": "Ce matériel contient des restrictions d’accès spécifiques de nature genrée. Il est considéré comme étant secret ou cérémonial et il est accompagné de règlements de la communauté quant aux personnes qui peuvent y avoir accès. À cause de sa nature, seuls des hommes autorisés [ou initiés] de la communauté peuvent utiliser ce matériel. Si vous êtes une tierce partie non membre de la communauté et que vous avez accès à ce matériel, on vous demande de ne pas télécharger, copier, remixer ou diffuser ce matériel de quelque façon que ce soit. Ce matériel n’est pas accessible publiquement au sein de la communauté et ne devrait donc pas être diffusé publiquement à l’extérieur de la communauté. Cette étiquette vous demande de considérer si vous devriez utiliser ce matériel et de respecter les valeurs culturelles et les attentes quant à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 13,
+            "labelName": "TK Women Restricted (TK WR)",
+            "labelTranslatedName": "ST RÉSERVÉ AUX FEMMES (ST RFE)",
+            "labelCode": "tkwr",
+            "labelTranslatedText": "Ce matériel contient des restrictions d’accès spécifiques de nature genrée. Il est considéré comme étant secret ou cérémonial et il est accompagné de règlements de la communauté quant aux personnes qui peuvent y avoir accès. À cause de sa nature, seules des femmes autorisées [ou initiées] de la communauté peuvent utiliser ce matériel. Si vous êtes une tierce partie non membre de la communauté et que vous avez accès à ce matériel, on vous demande de ne pas télécharger, copier, remixer ou diffuser ce matériel de quelque façon que ce soit. Ce matériel n’est pas accessible publiquement au sein de la communauté et ne devrait donc pas être diffusé publiquement à l’extérieur de la communauté. Cette étiquette vous demande de considérer si vous devriez utiliser ce matériel et de respecter les valeurs culturelles et les attentes quant à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 14,
+            "labelName": "TK Culturally Sensitive (TK CS)",
+            "labelTranslatedName": "ST SENSIBILITÉ CULTURELLE (ST SC)",
+            "labelCode": "tkcs",
+            "labelTranslatedText": "Cette étiquette est utilisée pour indiquer que le matériel comporte des éléments culturels ou historiques très délicats. Elle vous demande de porter attention à l’accès à ce matériel, à son utilisation et à sa diffusion, en particulier lorsqu’il vient d’être remis ou retourné à sa communauté d’origine. Dans certains cas, cette étiquette précisera qu’il faut obtenir la permission de la communauté avant toute utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 15,
+            "labelName": "TK Secret / Sacred (TK SS)",
+            "labelTranslatedName": "ST SECRET / SACRÉ (ST SS)",
+            "labelCode": "tkss",
+            "labelTranslatedText": "Cette étiquette est utilisée pour indiquer que, traditionnellement et généralement, ce matériel n’est pas accessible au grand public, car il contient des éléments de nature secrète/sacrée. Elle corrige un malentendu sur l’importance de ce matériel et, donc, sur ses conditions de diffusion. Elle informe les utilisateurs que la nature secrète/sacrée de ce matériel fait en sorte qu’il n’est pas et n’a jamais été accessible gratuitement ou publiquement pour qui que ce soit et en quelques circonstances que ce soit. Cette étiquette vous demande de considérer si vous devriez utiliser ce matériel et de respecter les valeurs culturelles et les attentes quant à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 16,
+            "labelName": "TK Open to Commercialization (TK OC)",
+            "labelTranslatedName": "ST COMMERCIAL (ST C)",
+            "labelCode": "tkoc",
+            "labelTranslatedText": "Ce matériel est accessible pour usage commercial. Bien que la communauté source ne détienne pas les droits de ce matériel, il pourrait tout de même être protégé par des droits d’auteur et tout usage commercial devra être autorisé par le détenteur des droits. Quelle que soit la propriété intellectuelle, on vous demande de porter une attention particulière aux protocoles de la communauté et de ne pas utiliser ce matériel d’une façon qui pourrait mener à un usage méprisant ou qui pourrait causer du tort à la communauté ou à sa culture. Lorsque nécessaire, des coordonnées sont incluses. Elles vous aideront à établir un dialogue avec les gardiens d’origine et à confirmer que l’usage que vous en ferez ne sera pas de nature méprisante ou insultante pour la communauté et sa culture.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 17,
+            "labelName": "TK Non-Commercial (TK NC)",
+            "labelTranslatedName": "ST NON COMMERCIAL (ST NC)",
+            "labelCode": "tknc",
+            "labelTranslatedText": "Ce matériel a été désigné pour usage non commercial. Vous avez la permission de l’utiliser à des fins non commerciales, ce qui inclut la recherche et les études ainsi que des présentations publiques ou en ligne, des blogues ou des sites web non commerciaux. Cette étiquette vous demande de penser et d’agir de manière équitable et responsable envers ce matériel et ces gardiens d’origine.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 18,
+            "labelName": "TK Community Use Only (TK CO)",
+            "labelTranslatedName": "ST RÉSERVÉ À LA COMMUNAUTÉ (ST RC)",
+            "labelCode": "tkco",
+            "labelTranslatedText": "Cette étiquette est utilisée pour indiquer que, traditionnellement et généralement, ce matériel n’est pas accessible au grand public. Elle corrige un malentendu sur les options de diffusion de ce matériel. Elle informe les utilisateurs de l’existence de conditions spécifiques qui stipulent une diffusion au sein de la communauté. Ce matériel n’est pas et n’a jamais été accessible gratuitement ou publiquement pour qui que ce soit et en quelques circonstances que ce soit. Cette étiquette vous demande de réfléchir à la façon dont vous utiliserez ce matériel et de respecter les valeurs culturelles et les attentes liées à sa diffusion et à son utilisation.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 19,
+            "labelName": "TK Outreach (TK O)",
+            "labelTranslatedName": "ST SENSIBILISATION (ST SE)",
+            "labelCode": "tko",
+            "labelTranslatedText": "Cette étiquette est utilisée pour indiquer que, traditionnellement et généralement, ce matériel n’est pas accessible au grand public. Elle corrige un malentendu sur les options de diffusion de ce matériel. Elle informe les utilisateurs que ce matériel peut être utilisé pour des activités de sensibilisation. Cette étiquette vous demande de respecter ces conditions de diffusion. De plus, elle vous demande, lorsque possible, de développer des moyens pour conclure un échange équitable et réciproque avec les détenteurs de cette étiquette quant à l’utilisation de ce matériel. Cet échange peut inclure l’accès à des ressources pédagogiques ou autres qui sont souvent difficiles d’accès.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 20,
+            "labelName": "TK Open to Collaboration (TK CB)",
+            "labelTranslatedName": "ST OUVERTS À LA COLLABORATION (ST CB)",
+            "labelCode": "tkcb",
+            "labelTranslatedText": "Cette étiquette est utilisée afin de confirmer l’ouverture exprimée, de la part de [nom de la communauté ou de l’entité autorisée], pour de futurs engagements, collaborations et partenariats autour d’opportunités de recherche.",
+            "translated_language": "French",
+            "languageTag": "fr"
+        },
+        {
+            "id": 21,
+            "labelName": "TK Attribution (TK A)",
+            "labelTranslatedName": "CT ATRIBUCIÓN (CT A)",
+            "labelCode": "tka",
+            "labelTranslatedText": "Esta etiqueta corrige errores históricos de atribución respecto a la autoría del material circulante mediante el reposicionamiento de los nombres de las personas y/o comunidades involucradas en la creación de este material. Esta etiqueta le pide a usuarios externos considerar y atribuir correctamente la autoría de este material, e incorporar los nombres de su o sus creadores ante cualquier uso de este trabajo en el futuro.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 22,
+            "labelName": "TK Clan (TK CL)",
+            "labelTranslatedName": "CT CLAN (CT C)",
+            "labelCode": "tkcl",
+            "labelTranslatedText": "Esta Etiqueta está siendo usada para indicar que este material no es de uso público. La Etiqueta informa a potenciales usuarios que el material en cuestión solo puede ser usado y compartido bajo condiciones específicas basadas en membresía y relaciones definidas por un Clan. Este material no es, ni nunca debió haber sido, de uso público y libre acceso. Esta Etiqueta le pide a quienes visualizan este contenido que respeten los valores culturales y las expectativas relacionadas con la circulación y uso definidas por uno o más Clanes, sus miembros y relaciones internas.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 23,
+            "labelName": "TK Family (TK F)",
+            "labelTranslatedName": "CT FAMILIA (CT F)",
+            "labelCode": "tkf",
+            "labelTranslatedText": "Esta etiqueta indica que debido a su carácter tradicional, este material no es y nunca debió ser de uso público. La etiqueta CT Familia corrige la inadecuada circulación de este material y a la vez informa a posibles usuarios que este material sólo debiese ser usado por miembros de una misma familia. Cada comunidad determina qué miembros de la familia tienen derecho a acceder este material de acuerdo a protocolos locales de acceso y uso. Esta etiqueta le pide al usuario reflexionar acerca de cómo va a hacer uso de este material y respetar los diferentes valores culturales y expectativas en relación a su circulación y uso.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 24,
+            "labelName": "TK Multiple Communities (TK MC)",
+            "labelTranslatedName": "CT MÚLTIPLES COMUNIDADES",
+            "labelCode": "tkmc",
+            "labelTranslatedText": "Responsabilidad y propiedad sobre este material es compartido a través de varias comunidades. Su uso estará sujeto a discusiones y negociaciones con las múltiples comunidades aquí mencionadas [agregar nombres]. Decisiones acerca del uso de este material deben ser tomadas en forma colectiva. Como usuario externo de este material, se le require reconocer y respetar los protocolos culturales en relación a su uso y dejar en claro sus intenciones con las comunidades relevantes y respectivas.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 25,
+            "labelName": "TK Community Voice (TK CV)",
+            "labelTranslatedName": "CT VOZ COMUNITARIA (CT VC)",
+            "labelCode": "tkcv",
+            "labelTranslatedText": "Esta Etiqueta está siendo usada para fomentar el compartir de historias y múltiples voces acerca de este material. Cualquier miembro de la comunidad está invitado a contribuir con nuestro conocimiento comunitario acerca de este evento, fotografía, grabación u objeto patrimonial. La acción de compartir nuestras voces nos ayuda a recuperar nuestras historias y conocimiento. El acto de compartir es un proceso interno de la comunidad.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 26,
+            "labelName": "TK Creative (TK CR)",
+            "labelTranslatedName": "CT CREATIVO (CT CR)",
+            "labelCode": "tkcr",
+            "labelTranslatedText": "Esta Etiqueta se utiliza para reconocer la relación entre las prácticas creativas de [nombre] y [nombre de comunidad] y las responsabilidades culturales ligadas a ello.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 27,
+            "labelName": "TK Verified (TK V)",
+            "labelTranslatedName":"CT VERIFICADO (CT V)",
+            "labelCode": "tkv",
+            "labelTranslatedText": "Esta etiqueta indica que la manera en la que este material está siendo representado respeta las expectativas y protocolos culturales de la comunidad de origen. Esta etiqueta comunica que el individuo, familia o comunidad creadores del material circulante consideran que este está siendo representado de manera justa, razonable y respetuosa.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 28,
+            "labelName": "TK Non-Verified (TK NV)",
+            "labelTranslatedName": "CT NO VERIFICADO (CT NV)",
+            "labelCode": "tknv",
+            "labelTranslatedText": "Esta Etiqueta está siendo usada porque hay dudas respecto a la precision y /o formas de representación del material en cuestión. La creación de este material no contó con el consentimiento informado o el seguimiento de protocolos comunitarios de investigación y compromiso. Como consecuencia, cuestionamientos sobre su precision y quién/cómo representa a la comunidad están siendo generados.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 29,
+            "labelName": "TK Seasonal (TK S)",
+            "labelTranslatedName": "CT ESTACIONAL (CT E)",
+            "labelCode": "tks",
+            "labelTranslatedText": "Esta etiqueta indica que de acuerdo al conocimiento tradicional de la comunidad de origen, este material sólo debe ser usado, visto o escuchado durante épocas específicas del año y en respuesta a condiciones de estación. Este es el caso, por ejemplo, de ceremonias tradicionales que tienen lugar en épocas del año específicas. Esta etiqueta indica las complejas relaciones entre tierra, medio ambiente y producción de conocimiento que afectan a este material, y hace visibles las relaciones entre este material y el contexto específico en el que fue originado, especialmente las enseñanzas que este material representa y transmite.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 30,
+            "labelName": "TK Women General (TK WG)",
+            "labelTranslatedName": "CT MUJERES GENERAL (CT MG)",
+            "labelCode": "tkwg",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante se rige por restricciones de género específicas y que sólo debiese ser accedido y usado por las mujeres miembros de una comunidad. Si usted no es miembro de la comunidad de origen y ha accedido este material, se le solicita no descargarlo, copiarlo, mezclarlo o difundirlo sin autorización. Esta etiqueta le pide evaluar si usted tiene derecho a utilizar este material y a la vez respetar los diferentes valores culturales y expectativas de la comunidad de origen sobre la circulación y uso de este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 31,
+            "labelName": "TK Men General (TK MG)",
+            "labelTranslatedName": "CT HOMBRES GENERAL (CT HG)",
+            "labelCode": "tkmg",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante se rige por restricciones de género específicas y sólo debiese ser accedido y usado por hombres miembros de una comunidad. Si usted no es miembro de la comunidad de origen y ha accedido este material, se le solicita no descargarlo, copiarlo, mezclarlo o difundirlo sin autorización. Esta etiqueta le pide evaluar si usted tiene derecho a utilizar este material y a la vez respetar los diferentes valores culturales y expectativas sobre la circulación y uso de este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 32,
+            "labelName": "TK Men Restricted (TK MR)",
+            "labelTranslatedName": "CT HOMBRES RESTRINGIDO (CT HR)",
+            "labelCode": "tkmr",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante tiene restricciones de género y se rige por leyes comunitarias de acceso específicas. Dada la naturaleza de este material, sólo debiese ser accedido y usado por hombres autorizados y/o iniciados de una comunidad. Si usted es un usuario externo que ha accedido este material, se le solicita no descargarlo, copiarlo, mezclarlo o difundirlo. Este material no es de libre acceso ni siquiera para los miembros de la comunidad de origen, y por lo tanto tampoco debiese ser considerado de libre acceso fuera de la comunidad. Esta etiqueta le pide a usuarios externos evaluar si tienen derecho a utilizar este material así como respetar los diferentes valores y expectativas de circulación y usos culturales de este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        
+        },
+        {
+            "id": 33,
+            "labelName": "TK Women Restricted (TK WR)",
+            "labelTranslatedName": "CT MUJERES RESTRINGIDO (CT MR)",
+            "labelCode": "tkwr",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante se rige por leyes comunitarias de acceso y uso y tiene restricciones de género específicas. Dada la naturaleza de este material, sólo debiese ser accedido y usado por mujeres autorizadas y/o iniciadas de una comunidad. Si usted es externo a la comunidad y ha accedido este material, se le solicita no descargarlo, copiarlo, mezclarlo o difundirlo. Este material no es de libre acceso ni siquiera para los miembros de la comunidad de origen, y por lo tanto no debiese ser considerado de libre acceso fuera de la comunidad. Esta etiqueta le pide a usuarios externos respetar los diferentes valores y expectativas de circulación y usos culturales de este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 34,
+            "labelName": "TK Culturally Sensitive (TK CS)",
+            "labelTranslatedName": "CT CULTURALMENTE SENSIBLE (CT CS)",
+            "labelCode": "tkcs",
+            "labelTranslatedText": "Esta Etiqueta está siendo usada para indicar que este material es cultural o históricamente sensible. El uso de esta Etiqueta demanda que este material sea accedido, usado, y puesto en circulación con extremo cuidado y respeto, especialmente cuando el material ha sido recientemente devuelto o puesto en contacto con la comunidad de origen. En algunas circunstancias, este Etiqueta indica que se requiere del permiso de la comunidad para poder usar este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 35,
+            "labelName": "TK Secret / Sacred (TK SS)",
+            "labelTranslatedName": "CT SECRETO / SAGRADO (CT SS)",
+            "labelCode": "tkss",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante contiene importantes componentes secretos o sagrados. Esta etiqueta cumple con el fin de transmitir la importancia de este material y sus condiciones de circulación, y a la vez informar a usuarios externos a la comunidad que debido a su condición de material secreto y/o sagrado no es, y nunca estará disponible para uso público. Esta etiqueta exige respetar los diferentes valores y expectativas de la comunidad de origen sobre la circulación y usos culturales de este material.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 36,
+            "labelName": "TK Open to Commercialization (TK OC)",
+            "labelTranslatedName": "CT COMERCIAL (CT C)",
+            "labelCode": "tkoc",
+            "labelTranslatedText": "Esta etiqueta indica que el material en cuestión está disponible para uso comercial. Es importante tomar en cuenta que este material puede estar protegido bajo copyright y que la comunidad de origen no necesariamente es dueña de dichos derechos. Es por esto que le recomendamos a usuarios externos aclarar cualquier restricción respecto al uso comercial de este material con el dueño del copyright. Independientemente de los derechos de copyright, esta etiqueta le pide al usuario externo poner especial atención a los protocolos culturales de la comunidad a fin de prevenir el uso irrespetuoso y ofensivo del material. Esta etiqueta contiene la información de contacto para que usuarios puedan entrar en diálogo con los creadores originales de este material, y así confirmar que el uso que se le dará será respetuoso y adecuado.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 37,
+            "labelName": "TK Non-Commercial (TK NC)",
+            "labelTranslatedName": "CT NO COMERCIAL (CT NC)",
+            "labelCode": "tknc",
+            "labelTranslatedText": "Esta etiqueta indica que el material en cuestión no puede ser usado para usos comerciales. Al usuario externo sólo se le permite usar este material para fines educacionales, tales como investigación, estudio o difusión. Esta etiqueta le pide al usuario pensar y actuar de manera justa y responsable hacia este material y su comunidad de origen.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 38,
+            "labelName": "TK Community Use Only (TK CO)",
+            "labelTranslatedName": "CT SÓLO PARA USO DE LA COMUNIDAD (CT SC)",
+            "labelCode": "tkco",
+            "labelTranslatedText": "Esta etiqueta indica que el material circulante es de carácter tradicional y no está disponible para uso público. En particular, esta etiqueta indica que este material sólo debiera ser accedido y usado por miembros de una misma comunidad. Este material no es, ni nunca debiese haber estado disponible para uso público. Esta etiqueta ayuda a usuarios externos pensar en cómo se va a utilizar este material y pide respetar los diferentes valores culturales y expectativas de la comunidad de origen sobre su circulación y uso.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 39,
+            "labelName": "TK Outreach (TK O)",
+            "labelTranslatedName": "CT DIFUSIÓN (CT D)",
+            "labelCode": "tko",
+            "labelTranslatedText": "Esta etiqueta indica que tradicionalmente este material no está públicamente disponible, ayudando a corregir malentendidos respecto a las posibilidades de circulación para este material e informar a usuarios externos a la comunidad que este material sólo puede ser usado para actividades educativas y de difusión. Esta etiqueta le pide al usuario respetar las condiciones de circulación específicas de este material y en lo posible, crear medios para su intercambio justo y recíproco para con los portadores de este conocimiento tradicional. Este intercambio puede incluir el acceso a recursos educacionales difíciles de acceder por parte de la comunidad bajo otras circunstancias.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 40,
+            "labelName": "TK Open to Collaboration (TK CB)",
+            "labelTranslatedName": "CT ABIERTO A COLABORACIÓN (CT CB)",
+            "labelCode": "tkcb",
+            "labelTranslatedText": "Esta Etiqueta se utiliza para dejar claro que [nombre de comunidad o autoridad] está dispuesta a participar, colaborar y cooperar en posibles investigaciones.",
+            "translated_language": "Spanish",
+            "languageTag": "es"
+        },
+        {
+            "id": 41,
+            "labelName": "TK Attribution (TK A)",
+            "labelTranslatedName": "TK WHAKAPUAKI (TK W)",
+            "labelCode": "tka",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakatika i ngā hē o mua, i te ngaronga rānei o tētahi āhua e pā ana ki tēnei rawa. Ko te hāngai tonu ki ngā ingoa o te hunga, ki te hapori rānei, nā rātou tēnei rawa, i toi ai rānei i roto i a rātou. He āki hoki i te hunga whakamahi o anamata, kia tika te whakapuaki i ngā ingoa me ngā āhuatanga e tika ana.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 42,
+            "labelName": "TK Clan (TK CL)",
+            "labelTranslatedName": "TK HAPŪ (TK H)",
+            "labelCode": "tkcl",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere. Ko tā tēnei tohu, he whakamōhio atu i te hunga kaiwhakamahi, nā te mea he rawa tēnei nā tētahi hapū, iwi hoki, he here motuhake tāna mō tōna whakamahinga me tōna tuaritanga. Ehara i te mea he utu kore tēnei rawa, mā te hapori nui tonu rānei i tua whakarere, tae noa mai ki tēnei wā. Ko tā tēnei tohu, he āki i te kaiwhakamahi, kia whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē me tōna whakamahinga, i runga i ngā tikanga whakamahi i whakatakotoria e ngā hapū, iwi, uri, rūnanga, whakahaere hoki/rānei, nā rātou tēnei taonga.s",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 43,
+            "labelName": "TK Family (TK F)",
+            "labelTranslatedName": "TK WHĀNAU (TK WH)",
+            "labelCode": "tkf",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere. He tohu whakatika pōhēhē tēnei, ehara mā te katoa tēnei rawa, engari, mā ngā uri kē o ngā whānau i tohua iho. Mā ia rohe hei kōwhiri ake, ko wai mā ēnei uri/whānau, me pēhea hoki tā rātou whakamahi. Ehara i te mea he utu kore tēnei rawa, mā te hapori nui tonu rānei i tua whakarere, tae noa mai ki tēnei wā. Ko tā tēnei tohu, he wero i te hinengaro, ka pēhea tō whakamahi i te rawa nei, me tō whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 44,
+            "labelName": "TK Multiple Communities (TK MC)",
+            "labelTranslatedName": "TK NGĀ HAPORI HUHUA (TK NHH)",
+            "labelCode": "tkmc",
+            "labelTranslatedText": "Nō ngā hapori huhua te mana whakamahi, whakahaere hoki o rawa nei. Mā te whiriwhiri kōrero tahi ki ēnei hapori nei (whakaurua ngā ingoa) e hua ai te whakatau, ko wai mā e taea nei te whakamahi. Mā te katoa hei whiriwhiri ko wai mā e taea nei te whakamahi. Mēnā ka whakamahia te rawa nei e tētahi nō waho, me mātua tiaki, me āta whakaaro hoki ki ngā tikanga mō runga i te mea rā, me mārama hoki ki ngā hapori e tika ana, ka pēhea tō whakamahi i te rawa nei.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 45,
+            "labelName": "TK Community Voice (TK CV)",
+            "labelTranslatedName": "TK TE REO O TE HAPORI (TK TRTH)",
+            "labelCode": "tkcv",
+            "labelTranslatedText": "Ko tā tēnei tohu, he āki kia whānui te tuarihia o ngā kōrero mō tēnei taonga. E mea ana tēnei tohu, kāore i tutuki noa ngā kōrero me ngā whakamārama e haere tahi ana me tēnei rawa. E pōhiritia nei te hapori whānui ki te tuku i ō rātou mōhiotanga kia haupū tahi ai ngā kōrero katoa a te hapori mō tēnei huinga, whakaahua, rīkoata, taonga tuku iho rānei. Mā te wānanga tahi i waenganui i te hapori e oho mai ai ngā mōhiotanga me ngā kōrero tuku iho. He mahi tara ā-whare tēnei.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 46,
+            "labelName": "TK Creative (TK CR)",
+            "labelTranslatedName": "TK AUAHA (TK CR)",
+            "labelCode": "tkcr",
+            "labelTranslatedText": "Ka whakamahia tēnei tohu hei whakaū i te mana o te honohononga i waenga i ngā mahinga toi a [ingoa] me [ingoa hapori], me ngā tikanga ā-iwi i runga i aua mahinga toi.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 47,
+            "labelName": "TK Verified (TK V)",
+            "labelTranslatedName":"TK KUA MANA (TK KM)",
+            "labelCode": "tkv",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakaū kia tika te hāpai i te rawa nei i runga i ngā here ki ngā hapori me ngā tikanga ahurea. He whakamōhio atu i a koe ake te kaiwhakamahi, i te whānau, i te hapori rānei e kawea ana i roto i tēnei rawa kia taurite, kia whai whakaaro, kia aroha hoki te whakamahia.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 48,
+            "labelName": "TK Non-Verified (TK NV)",
+            "labelTranslatedName": "TK WHAKAMANA KORE (TK WHK)",
+            "labelCode": "tknv",
+            "labelTranslatedText": "Mēnā ka whakamahia tēnei tohu, kua kitea ētahi āwangawanga mō te tōtika, ngā whakatau hoki/rānei ki tēnei rawa. Kīhai tēnei rawa i hangā mā roto i tētahi whakaae whai whakaaro, i ngā tikanga ā-hapori rānei mō te rangahau. Me te aha, kua puta ētahi pātai mō tōna tika, me tōna hāngai ki te hunga nāna nei i hanga.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 49,
+            "labelName": "TK Seasonal (TK S)",
+            "labelTranslatedName": "TK WĀ KAUPEKA (TK WK)",
+            "labelCode": "tks",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, he mea rongo, tiki rānei tēnei rawa i tua whakarere, i tētahi kaupeka noa o te tau hei whakatau i ngā huringa o te taiao i taua wā. Hei tauira ake, tū ngā huihuinga motuhake ki ētahi kaupeka o te tau. E whakamārama ana i roto i tēnei tohu, kotahi tonu te whenua me te mātauranga. Ko tāna hoki, he mau i ngā honohononga i waenganui i ngā rawa me ētahi horopaki i takea mai ai taua rawa, inā hoki, ko āna herenga akoako ngātahi kei roto pū i a ia.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 50,
+            "labelName": "TK Women General (TK WG)",
+            "labelTranslatedName": "TK WĀHINE WHĀNUI (TK WW)",
+            "labelCode": "tkwg",
+            "labelTranslatedText": "Kia whai wāhi ki tēnei rawa, he here ā-wahine tāna. Whakamahia ai te rawa nei e ngā wāhine o te hapori. Mēnā, ehara nō te hapori koe, ā, kua whai wāhi koe ki te rawa nei, me kaua koe e tango, e kape, e raweke, e tuari rānei i ōna kiko. Me whakaae rawa tō pēra. Ko tā tēnei tohu, he wero i te hinengaro, mēnā he tika tō whakamahi i te rawa nei, kia whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 51,
+            "labelName": "TK Men General (TK MG)",
+            "labelTranslatedName": "TK TĀNE WHĀNUI (TK TW)",
+            "labelCode": "tkmg",
+            "labelTranslatedText": "Kia whai wāhi ki tēnei rawa, he here ā-tāne tāna. Whakamahia ai te rawa nei e ngā tāne o te hapori. Mēnā, ehara nō te hapori koe, ā, kua whai wāhi koe ki te rawa nei, me kaua koe e tango, e kape, e raweke, e tuari rānei i ōna kiko. Me whakaae rawa tō pēra. Ko tā tēnei tohu, he wero i te hinengaro, mēnā he tika tō whakamahi i te rawa nei, kia whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 52,
+            "labelName": "TK Men Restricted (TK MR)",
+            "labelTranslatedName": "TK TĀNE RĀHUI (TK TR)",
+            "labelCode": "tkmr",
+            "labelTranslatedText": "Kia whai wāhi ki tēnei rawa, he here ā-wahine tāna. He hiranga, he motuhake, he tapu hoki/rānei tēnei rawa e whītiki nei ki ētahi kawa ā-hapori e tohu nei ko wai te hunga ka whai wāhi ki a ia. Nā te tapu o te rawa nei, mā ngā tāne anake (ngā mea hoki i whakamātauhia) o te hapori tēnei taonga. Mēnā, ehara nō te hapori koe, ā, kua whai wāhi koe ki te rawa nei, me kaua koe e tango, e kape, e raweke, e tuari rānei i ōna kiko. Kāore tēnei rawa i tuwhera whānui ki te tūmatanui ki roto tonu i te hapori, kāti, me kaua rawa e pōhēhē, kua tuwhera tēnei rawa ki a wai rānei i waho i te hapori. Ko tā tēnei tohu, he wero i te hinengaro, mēnā he tika tō whakamahi i te rawa nei, kia whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 53,
+            "labelName": "TK Women Restricted (TK WR)",
+            "labelTranslatedName": "TK WĀHINE RĀHUI (TK WR)",
+            "labelCode": "tkwr",
+            "labelTranslatedText": "Me whakamahi tēnei tohu hei whakamōhio atu i te hunga whakamahi, he tino tapu ngā kaupapa o te rawa nei. He rāhui tō tēnei tohu, e mea ana, tērā ētahi here whakauru, here whakamahi hoki i runga tonu i ngā tikanga tawhito. He whakamārama atu tēnei tohu ki te hunga whakamahi, tērā ngā tikanga me ngā here motuhake hei whakamahi i te taonga nei. E puea ake ana tēnei tohu hei whakaatu ake, tērā ētahi mōhiotanga i rāhuitia ki te tāne, ki te wahine rānei, otirā, ko ētahi mōhiotanga i tuarihia noatia ki waenganui i ētahi wāhanga o te hapori. Mā ngā wāhine i whakaaetia (i whakamātauhia hoki/rānei) kia whai wāhi rātou ki tēnei rawa.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 54,
+            "labelName": "TK Culturally Sensitive (TK CS)",
+            "labelTranslatedName": "TK TIKANGA TAPU (TK TT)",
+            "labelCode": "tkcs",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakamōhio i te hunga whakamahi, tērā ētahi tikanga tapu ki tēnei rawa. Ko te āki i raro i tēnei tohu, inā whakamahia te taonga nei, manaakitia. Kia tika te whakamahi, te tuari hoki. Menā he taonga, kātahi anō ka hoki ki āna kaipupuri, me āta whakaute. I ōna wā, he tikanga motuhake me whai e te kaitono, i te hapori tonu nā rātou tēnei taonga.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 55,
+            "labelName": "TK Secret / Sacred (TK SS)",
+            "labelTranslatedName": "TK MOTUHAKE/TAPU (TK MT)",
+            "labelCode": "tkss",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere, nā te mea he wāhanga motuhake, tapu rānei kei roto i a ia. He tohu whakatika pōhēhē tēnei tohu mō tōna hiranga, tae atu ki ōna here tuari. He whakamārama atu ki te kaiwhakamahi, nā tōna tapu, ehara i te mea he utu kore tēnei rawa, mā te hapori nui tonu rānei i tua whakarere, tae noa mai ki tēnei wā. Ko tā tēnei tohu, he wero i te hinengaro, mēnā he tika kia whakamahia tēnei taonga, me tō whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 56,
+            "labelName": "TK Open to Commercialization (TK OC)",
+            "labelTranslatedName": "TK UMANGA (TK U)",
+            "labelCode": "tkoc",
+            "labelTranslatedText": "He mea whakawātea tēnei tohu hei whakamahi mō te umanga tonu. Ahakoa kāore te manatā o tēnei rawa i taka ki raro i te hapori, i hua ai te taonga nei, tērā rānei, kua ūhia tonutia ia ki tētahi manatā kē, nō reira, inā whakamahia te rawa nei, me ea tēnei wāhi i te kaiwhakamahi me ngā kaipupuri manatā. Ahakoa te manatā, me āta maimoa e koe ngā tikanga ā-hapori ki tēnei rawa, me kaua hoki e tuku kia whakahāweatia te taonga nei e pāmamae ai rānei te hapori i ngā mahi whakaparahako. Ki ngā wā e tika ana, ka meinga ngā pārongo whakapā hei whai māu kia mārama ai te titiro, e kore tō whakamahinga i te rawa nei e taka ki te hē, e whakahāwea rānei i ngā tikanga ahurea.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 57,
+            "labelName": "TK Non-Commercial (TK NC)",
+            "labelTranslatedName": "TK UMANGA-KORE (TK UK)",
+            "labelCode": "tknc",
+            "labelTranslatedText": "He mea whakawātea tēnei tohu hei whakamahi mō te umanga-kore. E taea nei te whakamahi i a ia mō ngā take rangahau, akoako, kauhau, matapaki ā-ipurangi, whārangi ipurangi umanga-kore hoki/rānei. Ko tā tēnei tohu, he āki i te kaiwhakamahi, kia tika te tiaki i te taonga nei me te whai whakaaro ki ngā kaitiaki taketake.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 58,
+            "labelName": "TK Community Use Only (TK CO)",
+            "labelTranslatedName": "TK MĀ TE HAPORI ANAKE (TK MTHA)",
+            "labelCode": "tkco",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere. He tohu whakatika pōhēhē tēnei mō te tuaritanga o tēnei rawa, arā, he whakamārama ki te hunga whakamahi, tērā ētahi tikanga motuhake tuari mō tēnei rawa ki roto i te hapori. Ehara i te mea he utu kore tēnei rawa, mā te hapori nui tonu rānei i tua whakarere, tae noa mai ki tēnei wā. Ko tā tēnei tohu, he wero i te hinengaro, ka pēhea tō whakamahi i te rawa nei, me tō whai whakaaro ki ngā tikanga, ki ngā uaratanga mō te tuari ki tangata kē, ki te whakamahi hoki.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 59,
+            "labelName": "TK Outreach (TK O)",
+            "labelTranslatedName": "TK TORO (TK T)",
+            "labelCode": "tko",
+            "labelTranslatedText": "Whakamahia ai tēnei tohu hei whakaatu ake, kāore tēnei rawa i whakamahia whānuitia e te hapori nui tonu i tua whakarere. He tohu whakatika pōhēhē tēnei mō te tuaritanga o tēnei rawa, arā, he whakamārama ki te hunga whakamahi, ka taea e rātou te whakamahi ki ngā akoako toro. Ko tā tēnei tohu, he āki atu kia tika te tiaki i ngā tikanga tuari mō tēnei rawa, ā, ki ngā wā e taea ana, me whai whakaaro ki ētahi huarahi tau-utuutu me ngā kaipupuri TK e tika ana hei whakaea i tāu nā whakamahi i te taonga nei. Ko te tau-utuutu nei, ko te whai wāhi rānei ki ētahi rauemi mātauranga, he uaua kē kia whai wāhi atu ki ērā mea i ētahi wā anō.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 60,
+            "labelName": "TK Open to Collaboration (TK CB)",
+            "labelTranslatedName": "TK MAHI NGĀTAHI (TK CB)",
+            "labelCode": "tkcb",
+            "labelTranslatedText": "Ko tā tēnei tohu, he whakaū i te āheinga o te [ingoa hapori, mana whakahaere rānei] kia mahi ngātahi ai ki ētahi atu rōpū, tāngata, hapori, tērā he rangahau, he taumahi rānei ki te hapori.",
+            "translated_language": "Māori",
+            "languageTag": "mi"
+        },
+        {
+            "id": 61,
+            "labelName": "TK Attribution (TK A)",
+            "labelTranslatedName": "TK Attribution (TK A)",
+            "labelCode": "tka",
+            "labelTranslatedText": "This Label is being used to correct historical mistakes or exclusions pertaining to this material. This is especially in relation to the names of the people involved in performing or making this work and/or correctly naming the community from which it originally derives. As a user you are being asked to also apply the correct attribution in any future use of this work.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 62,
+            "labelName": "TK Clan (TK CL)",
+            "labelTranslatedName": "TK Clan (TK CL)",
+            "labelCode": "tkcl",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available. The Label lets future users know that this material has specific conditions for use and sharing because of clan membership and/or relationships. This material is not, and never was, free, public, or available for everyone. This Label asks viewers of these materials to respect the cultural values and expectations about circulation and use defined by designated clans, members, and their internal relations.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 63,
+            "labelName": "TK Family (TK F)",
+            "labelTranslatedName": "TK Family (TK F)",
+            "labelCode": "tkf",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available. The Label is correcting a misunderstanding about the circulation options for this material and letting any users know that this material has specific conditions for sharing between family members. Who these family members are, and how sharing occurs will be defined in each locale. This material is not, and never was, free, public, or available for everyone at anytime. This Label asks you to think about how you are going to use this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 64,
+            "labelName": "TK Multiple Communities (TK MC)",
+            "labelTranslatedName": "TK Multiple Communities (TK MC)",
+            "labelCode": "tkmc",
+            "labelTranslatedText": "Responsibility and ownership over this material is spread across several distinct communities. Use will be dependent upon discussion and negotiation with the multiple communities named herein [insert names]. Decisions about use will need to be decided collectively. As an external user of this material you are asked to recognize and respect cultural protocols in relation to the use of this material and clear your intended use with the relevant communities.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 65,
+            "labelName": "TK Community Voice (TK CV)",
+            "labelTranslatedName": "TK Community Voice (TK CV)",
+            "labelCode": "tkcv",
+            "labelTranslatedText": "This Label is being used to encourage the sharing of stories and voices about this material. The Label indicates that existing knowledge or descriptions are incomplete or partial. Any community member is invited and welcome to contribute to our community knowledge about this event, photograph, recording or heritage item. Sharing our voices helps us reclaim our histories and knowledge. This sharing is an internal process.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 66,
+            "labelName": "TK Creative (TK CR)",
+            "labelTranslatedName": "TK Creative (TK CR)",
+            "labelCode": "tkcr",
+            "labelTranslatedText": "This Label is being used to acknowledge the relationship between the creative practices of [name] and [community name] and the associated cultural responsibilities.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 67,
+            "labelName": "TK Verified (TK V)",
+            "labelTranslatedName": "TK Verified (TK V)",
+            "labelCode": "tkv",
+            "labelTranslatedText": "This Label affirms that the representation and presentation of this material is in keeping with community expectations and cultural protocols. It lets you know that for the individual, family or community represented in this material, use is considered fair, reasonable and respectful.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 68,
+            "labelName": "TK Non-Verified (TK NV)",
+            "labelTranslatedName": "TK Non-Verified (TK NV)",
+            "labelCode": "tknv",
+            "labelTranslatedText": "This Label is being used because there are concerns about accuracy and/or representations made in this material. This material was not created through informed consent or community protocols for research and engagement. Therefore, questions about its accuracy and who/how it represents this community are being raised.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 69,
+            "labelName": "TK Seasonal (TK S)",
+            "labelTranslatedName": "TK Seasonal (TK S)",
+            "labelCode": "tks",
+            "labelTranslatedText": "This Label is being used to indicate that this material traditionally and usually is heard and/or utilized at a particular time of year and in response to specific seasonal changes and conditions. For instance, many important ceremonies are held at very specific times of the year. This Label is being used to indicate sophisticated relationships between land and knowledge creation. It is also being used to highlight the relationships between recorded material and the specific contexts where it derives, especially the interconnected and embodied teachings that it conveys.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 70,
+            "labelName": "TK Women General (TK WG)",
+            "labelTranslatedName": "TK Women General (TK WG)",
+            "labelCode": "tkwg",
+            "labelTranslatedText": "This material has specific gender restrictions on access. It is usually only to be accessed and used by women in the community. If you are not from the community and you have accessed this material, you are requested not to download, copy, remix or otherwise circulate this material to others without permission. This Label asks you to think about whether you should be using this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 71,
+            "labelName": "TK Men General (TK MG)",
+            "labelTranslatedName": "TK Men General (TK MG)",
+            "labelCode": "tkmg",
+            "labelTranslatedText": "This material has specific gender restrictions on access. It is usually only to be accessed and used by men in the community. If you are not from the community and you have accessed this material, you are requested to not download, copy, remix or otherwise circulate this material to others without permission. This Label asks you to think about whether you should be using this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 72,
+            "labelName": "TK Men Restricted (TK MR)",
+            "labelTranslatedName": "TK Men Restricted (TK MR)",
+            "labelCode": "tkmr",
+            "labelTranslatedText": "This material has specific gender restrictions on access. It is regarded as important secret and/or ceremonial material that has community-based laws in relation to who can access it. Given its nature it is only to be accessed and used by authorized [and/or initiated] men in the community. If you are an external third party user and you have accessed this material, you are requested to not download, copy, remix or otherwise circulate this material to others. This material is not freely available within the community and it therefore should not be considered freely available outside of the community. This Label asks you to think about whether you should be using this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 73,
+            "labelName": "TK Women Restricted (TK WR)",
+            "labelTranslatedName": "TK Women Restricted (TK WR)",
+            "labelCode": "tkwr",
+            "labelTranslatedText": "This material has specific gender restrictions on access. It is regarded as important secret and/or ceremonial material that has community-based laws in relation to who can access it. Given its nature it is only to be accessed and used by authorized [and/or initiated] women in the community. If you are an external third party user and you have accessed this material, you are requested to not download, copy, remix or otherwise circulate this material to others. This material is not freely available within the community and it therefore should not be considered freely available outside of the community. This Label asks you to think about whether you should be using this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 74,
+            "labelName": "TK Culturally Sensitive (TK CS)",
+            "labelTranslatedName": "TK Culturally Sensitive (TK CS)",
+            "labelCode": "tkcs",
+            "labelTranslatedText": "This Label is being used to indicate that this material has cultural and/or historical sensitivities. The Label asks for care to be taken when this material is accessed, used, and circulated, especially when materials are first returned or reunited with communities of origin. In some instances, this Label will indicate that there are specific permissions for use of this material required directly from the community itself.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 75,
+            "labelName": "TK Secret / Sacred (TK SS)",
+            "labelTranslatedName": "TK Secret / Sacred (TK SS)",
+            "labelCode": "tkss",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available because it contains important secret or sacred components. The Label is correcting a misunderstanding about the significance of this material and therefore its circulation conditions. It is letting users know that because of its secret/sacred status it is not, and was never free, public, or available for everyone at anytime. This Label asks you to think about whether you should be using this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 76,
+            "labelName": "TK Open to Commercialization (TK OC)",
+            "labelTranslatedName": "TK Open to Commercialization (TK OC)",
+            "labelCode": "tkoc",
+            "labelTranslatedText": "This Label is being used to indicate that [community name or authorized party] is open to commercialization opportunities that might derive from any cultural material with traditional knowledge to which this Label is connected to. As a primary party for any partnership and collaboration opportunities that emerge from the use of this cultural material and traditional knowledge, we retain an expressed interest in any future negotiations.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 77,
+            "labelName": "TK Non-Commercial (TK NC)",
+            "labelTranslatedName": "TK Non-Commercial (TK NC)",
+            "labelCode": "tknc",
+            "labelTranslatedText": "This material has been designated as being available for non-commercial use. You are allowed to use this material for non-commercial purposes including for research, study, or public presentation and/or online in blogs or non-commercial websites. This Label asks you to think and act with fairness and responsibility towards this material and the original custodians.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 78,
+            "labelName": "TK Community Use Only (TK CO)",
+            "labelTranslatedName": "TK Community Use Only (TK CO)",
+            "labelCode": "tkco",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available. The Label is correcting a misunderstanding about the circulation options for this material and letting any users know that this material has specific conditions for circulation within the community. It is not, and never was, free, public, or available for everyone at anytime. This Label asks you to think about how you are going to use this material and to respect different cultural values and expectations about circulation and use.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 79,
+            "labelName": "TK Outreach (TK O)",
+            "labelTranslatedName": "TK Outreach (TK O)",
+            "labelCode": "tko",
+            "labelTranslatedText": "This Label is being used to indicate that this material is traditionally and usually not publicly available. The Label is correcting a misunderstanding about the circulation options for this material and letting any users know that this material can be used for educational outreach activities. This Label asks you to respect the designated circulation conditions for this material and additionally, where possible, to develop a means for fair and equitable reciprocal exchange for the use of this material with the relevant TK holders. This exchange might include access to educational or other resources that are difficult to access under normal circumstances.",
+            "translated_language": "English",
+            "languageTag": "en"
+        },
+        {
+            "id": 80,
+            "labelName": "TK Open to Collaboration (TK CB)",
+            "labelTranslatedName": "TK Open to Collaboration (TK CB)",
+            "labelCode": "tkcb",
+            "labelTranslatedText": "This Label is being used to make clear [community name or authorizing body] is open to future engagement, collaboration, and partnership around research opportunities.",
+            "translated_language": "English",
+            "languageTag": "en"
+        }
+    ]
+}

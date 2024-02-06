@@ -4,7 +4,7 @@ def is_user_researcher(user):
     if Researcher.objects.filter(user=user).exists():
         return Researcher.objects.select_related('user').get(user=user)
     else:
-        return False
+        return None
 
 def checkif_user_researcher(current_researcher, user):
     if Researcher.objects.filter(user=user).exists():

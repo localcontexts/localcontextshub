@@ -1,0 +1,112 @@
+{% extends 'register-base.html' %} {% block title %} Community boundary {% endblock %} {% load static %} {% block card %}
+    <style>
+        .communityBoundarySelect{
+            display: flex;
+        }
+        .communityBoundarySelect input{
+            width: 25px;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .communityBoundaryLabel{
+            width: 30%;
+            padding-left: 10px;
+            margin: auto;
+        }
+        .communityBoundaryText{
+            width: 80%;
+            padding-left: 20px;
+        }
+        #buttonRow{
+            margin-top: 20px
+        }
+
+        a.disabled-btn{
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #skip-this-step{
+            margin-left: 20px;
+        }
+    </style>
+    <div class="w-90">
+        <h2 class="no-top-margin">Community boundary</h2>
+
+        <p>
+            Local Contexts wants to help communities and projects become more discoverable and accessible for users
+            of the hub. There are two options to add your community boundary.
+            Please select which option best suits your community.
+            <br><br>   
+
+                <form id="radio_btn_select">
+                    <strong>Option 1: Searching the Native Land Digital Database </strong><br><br>
+                    <fieldset>
+
+                        <div class="communityBoundarySelect">
+                            <input type="radio" name="selectBoundary" data-next="{% url 'add-community-boundary' %}"/>
+                            <div class="communityBoundaryLabel">
+                                <strong>Native Land Digital</strong>
+                            </div>
+                            <div class="communityBoundaryText">
+                                Native Land Digital is an Indigenous led mapping tool that maps
+                                Indigenous territories, treaties and languages around the world.
+                                <a class="default-a" target="_blank" href="https://native-land.ca/">See more information here</a>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <br>
+                    <strong>Option 2: Uploading a shape file </strong><br><br>
+                    <fieldset>
+
+                        <div class="communityBoundarySelect">
+                            <input type="radio" name="selectBoundary" data-next="{% url 'upload-boundary-file' %}"/>
+                            <div class="communityBoundaryLabel">
+                                <strong>Shape file</strong>
+                            </div>
+                            <div class="communityBoundaryText">
+                                A shapefile is a vector data file format commonly used for geospatial analysis.
+                                Shapefiles store the location, geometry, and attribution
+                                of point, line, and polygon features.
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+
+        </p>            
+    </div>
+
+    <div class="flex-this w-90" id="buttonRow">
+
+        <div class="w-90 flex-this flex-start">
+            <div>
+                <a
+                    id="community-boundary-continue-btn"
+                    class="primary-btn action-btn disabled-btn"
+                >
+                    Continue <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="margin-right-8" id="skip-this-step">
+                <a class="primary-btn white-btn" href="{% url 'confirm-community' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    const selectors = document.querySelectorAll('.communityBoundarySelect input')
+    const continueButton = document.querySelector('#community-boundary-continue-btn')
+
+    selectors.forEach(function(selector) {
+        selector.addEventListener('click', () => {
+            continueButton.classList.remove('disabled-btn')
+            const nextUrl = event.target.dataset.next
+            document.querySelector('#community-boundary-continue-btn').setAttribute('href', nextUrl)
+        })
+    })
+    </script>
+{% endblock %}

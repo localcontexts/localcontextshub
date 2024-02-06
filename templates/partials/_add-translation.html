@@ -21,8 +21,8 @@
                         <label class='block'>Translated Language <small>(select from dropdown)</small></label>
                         <div class="tooltip" style="margin-top: 5px; margin-left: 5px;"><strong>i</strong>
                             <span class="tooltiptext">
-                                Can't find the language you are looking for?<br>
-                                Contact us at support@localcontexts.org
+                                Select the language for this Label. English, Māori, French, and Spanish translations of the Label name and template text will be loaded if selected. Can't find the language you are looking for?<br>
+                                Please contact us: support@localcontexts.org
                             </span>
                         </div>                          
                     </div>
@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="w-80 margin-top-8"><label>Translated text</label><br>{{ tran_form.translated_text }}</div>
+            <div class="w-80 margin-top-8"><label>Translated text</label><br>  <div id="id_form-0-language_support" class="msg-red w-50 font-size-14" style="display: none"></div>{{ tran_form.translated_text }}</div>
         </div>
 
         <div id="lastDiv" class="flex-this flex-end w-80"><button id="add-translation-btn" class="primary-btn green-btn"><i class="fa fa-plus" aria-hidden="true"></i> Add Translation</button></div>

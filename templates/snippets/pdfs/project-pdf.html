@@ -109,7 +109,7 @@
                     <strong>Project Links</strong><br>
                     <ul>
                         {% for url in project.urls %}
-                            <li><a href="{{ url }}" class="darkteal-text underline-hover" target="_blank" rel="noopener">{{ url }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a></li>
+                            <li><a href="{{ url }}" class="default-a" target="_blank" rel="noopener">{{ url }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}
@@ -126,7 +126,7 @@
                         {% if notice.notice_type == 'biocultural' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with white letters BC in the middle">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Biocultural Notice</h1>
@@ -137,7 +137,7 @@
                         {% if notice.notice_type == 'traditional_knowledge' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with white letters TK in the middle">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Traditional Knowledge Notice</h1>
@@ -148,7 +148,7 @@
                         {% if notice.notice_type == 'attribution_incomplete' %}
                             <tr>
                                 <td class="image-td">
-                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px">
+                                    <img loading="lazy" src="{{ notice.img_url }}" width="200px" alt="black square with an unfinished square in the middle in white">
                                 </td>
                                 <td class="text-td">
                                     <h1 class="no-bottom-margin">Attribution Incomplete Notice</h1>
@@ -164,7 +164,7 @@
                 {% for bclabel in project.bc_labels.all %}
                     <tr>
                         <td class="image-td">
-                            <img loading="lazy" src="{{ bclabel.img_url }}" width="200px">
+                            <img loading="lazy" src="{{ bclabel.img_url }}" alt="{{ bclabel.name }} Label" width="200px">
                         </td>
                         <td class="text-td">
                             <h1 class="no-bottom-margin">{{ bclabel.name }} ({{ bclabel.community.community_name }})</h1>
@@ -185,7 +185,7 @@
                 {% for tklabel in project.tk_labels.all %}
                     <tr>
                         <td class="image-td">
-                            <img loading="lazy" src="{{ tklabel.img_url }}" width="200px">
+                            <img loading="lazy" src="{{ tklabel.img_url }}" alt="{{ tklabel.name }} Label" width="200px">
                         </td>
                         <td class="text-td">
                             <h1 class="no-bottom-margin">{{ tklabel.name }} ({{ tklabel.community.community_name }})</h1>
