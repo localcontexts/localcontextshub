@@ -4,7 +4,8 @@ from projects.models import ProjectContributors
 from .models import Notice
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from .utils import generate_zip, render_to_pdf, get_labels_json, get_alt_text
+from .utils import generate_zip, render_to_pdf, get_alt_text
+from tklabels.utils import data as labels_data
 import requests
 import os
 from django.shortcuts import render
@@ -98,7 +99,7 @@ def download_project_zip(project):
     baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/'
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
-    data = get_labels_json()
+    data = labels_data
     project_bclabels, project_tklabels = get_alt_text(data, project_bclabels, project_tklabels)
     project_creator = project.project_creator_project.first()
     contributors = ProjectContributors.objects.prefetch_related('communities', 'institutions', 'researchers').get(project=project)
