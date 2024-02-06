@@ -31,7 +31,7 @@ def connect_researcher(request):
     form = ConnectResearcherForm(request.POST or None)
     env = dev_prod_or_local(request.get_host())
     
-    if researcher == False:
+    if not researcher:
         if request.method == "POST":
             if form.is_valid():
                 orcid_id = request.POST.get('orcidId')
