@@ -99,8 +99,7 @@ def download_project_zip(project):
     baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/'
     project_bclabels = project.bc_labels.all()
     project_tklabels = project.tk_labels.all()
-    data = labels_data
-    project_bclabels, project_tklabels = get_alt_text(data, project_bclabels, project_tklabels)
+    project_bclabels, project_tklabels = get_alt_text(labels_data, project_bclabels, project_tklabels)
     project_creator = project.project_creator_project.first()
     contributors = ProjectContributors.objects.prefetch_related('communities', 'institutions', 'researchers').get(project=project)
     project_people = project.additional_contributors.all()
