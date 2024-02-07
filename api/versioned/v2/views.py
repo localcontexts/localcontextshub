@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = {1, 2}  # Replace with the actual list of valid user IDs
+    VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
 
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
