@@ -12,6 +12,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 import requests
 import json
@@ -207,6 +208,20 @@ def resend_activation_email(request, active_users):
     subject = 'Activate Your Local Contexts Hub Profile'
     send_mailgun_template_email(to_email, subject, 'activate_profile', data)
 
+
+def send_password_reset_email(request, context):
+    to_email = context['email']
+    domain = domain = context['domain']
+    uid = context['uid']
+    token = context['token']
+    protocol = context['protocol']
+    reset_path = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+    reset_url = f'{protocol}://{domain}{reset_path}'
+    user = User.objects.filter(email__iexact=to_email).first().username
+    subject = 'Reset Password Link For Your Local Contexts Hub Profile'
+
+    data = {'user': user, 'reset_url': reset_url}
+    send_mailgun_template_email(to_email, subject, 'password_reset', data)
 
 # User has activated account and has logged in: Welcome email
 def send_welcome_email(request, user):   
