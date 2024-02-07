@@ -35,31 +35,49 @@ class ApiKeyAuthentication(BaseAuthentication):
 
 
 class APIOverview(APIView):
+
     def get(self, request, format=None):
         api_urls = {
-            'server': reverse('api-overview', request=request, format=format),
-            'projects_list': '/projects/',
-            'project_detail': '/projects/<PROJECT_UNIQUE_ID>/',
-            'multi_project_detail': '/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
-            'projects_by_user_id': '/projects/users/<USER_ID>/',
-            'projects_by_institution_id': '/projects/institutions/<INSTITUTION_ID>/',
-            'projects_by_researcher_id': '/projects/researchers/<RESEARCHER_ID>/',
-            'open_to_collaborate_notice': '/notices/open_to_collaborate/',
-            'api_documentation': 'https://github.com/biocodellc/localcontexts_db/wiki/API-Documentation',
-            'usage_guides': 'https://localcontexts.org/support/downloadable-resources',
+            'server':
+            reverse('api-overview', request=request, format=format),
+            'projects_list':
+            '/projects/',
+            'project_detail':
+            '/projects/<PROJECT_UNIQUE_ID>/',
+            'multi_project_detail':
+            '/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
+            'projects_by_user_id':
+            '/projects/users/<USER_ID>/',
+            'projects_by_institution_id':
+            '/projects/institutions/<INSTITUTION_ID>/',
+            'projects_by_researcher_id':
+            '/projects/researchers/<RESEARCHER_ID>/',
+            'open_to_collaborate_notice':
+            '/notices/open_to_collaborate/',
+            'api_documentation':
+            'https://github.com/biocodellc/localcontexts_db/wiki/API-Documentation',
+            'usage_guides':
+            'https://localcontexts.org/support/downloadable-resources',
         }
         return Response(api_urls)
 
 
 class OpenToCollaborateNotice(APIView):
+
     def get(self, request):
         api_urls = {
-            'notice_type': 'open_to_collaborate',
-            'name': 'Open to Collaborate Notice',
-            'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-            'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
-            'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
-            'usage_guide_ci_notices': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
+            'notice_type':
+            'open_to_collaborate',
+            'name':
+            'Open to Collaborate Notice',
+            'default_text':
+            'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
+            'img_url':
+            f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
+            'svg_url':
+            f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
+            'usage_guide_ci_notices':
+            f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
         }
         return Response(api_urls)
 
@@ -104,14 +122,18 @@ class ProjectsByIdViewSet(ViewSet):
     def projects_by_user(self, request, pk):
         try:
             useracct = User.objects.get(id=pk)
-            projects = Project.objects.filter(project_creator=useracct).exclude(project_privacy='Private')
+            projects = Project.objects.filter(
+                project_creator=useracct).exclude(project_privacy='Private')
             serializer = ProjectOverviewSerializer(projects, many=True)
             return Response(serializer.data)
 
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def projects_by_institution(self, request, institution_id, providers_id=None):
+    def projects_by_institution(self,
+                                request,
+                                institution_id,
+                                providers_id=None):
         try:
             institution = Institution.objects.get(id=institution_id)
 
@@ -157,8 +179,11 @@ class ProjectsByIdViewSet(ViewSet):
 
                 return Response(serializer.data)
             else:
-                raise PermissionDenied(
-                    {"message": "You don't have permission to view this project", "providers_id": providers_id})
+                raise PermissionDenied({
+                    "message":
+                    "You don't have permission to view this project",
+                    "providers_id": providers_id
+                })
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -176,21 +201,31 @@ class MultiProjectListDetail(ViewSet):
                 for x in unique_id:
                     q = Q(unique_id=x)
                     query |= q
-                project = project.filter(query).exclude(project_privacy='Private')
+                project = project.filter(query).exclude(
+                    project_privacy='Private')
             notices = project.filter(
-                Q(project_notice__isnull=False) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True)))
-            labels = project.filter(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)).distinct()
+                Q(project_notice__isnull=False)
+                & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True)))
+            labels = project.filter(
+                Q(bc_labels__isnull=False)
+                | Q(tk_labels__isnull=False)).distinct()
             no_notice_labels = project.filter(
-                Q(project_notice__isnull=True) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True))).distinct()
+                Q(project_notice__isnull=True)
+                & (Q(bc_labels__isnull=True)
+                   & Q(tk_labels__isnull=True))).distinct()
 
             notices_serializer = ProjectSerializer(notices, many=True)
             labels_serializer = ProjectNoNoticeSerializer(labels, many=True)
-            no_notice_labels_serializer = ProjectNoNoticeSerializer(no_notice_labels, many=True)
+            no_notice_labels_serializer = ProjectNoNoticeSerializer(
+                no_notice_labels, many=True)
 
             return Response({
-                "notices_only": notices_serializer.data,
-                "labels_only": labels_serializer.data,
-                "no_labels_or_notices": no_notice_labels_serializer.data
+                "notices_only":
+                notices_serializer.data,
+                "labels_only":
+                labels_serializer.data,
+                "no_labels_or_notices":
+                no_notice_labels_serializer.data
             })
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -205,7 +240,8 @@ class MultiProjectListDetail(ViewSet):
                 for x in unique_id:
                     q = Q(unique_id=x)
                     query |= q
-                project = project.filter(query).exclude(project_privacy='Private')
+                project = project.filter(query).exclude(
+                    project_privacy='Private')
 
             serializer = ProjectDateModified(project, many=True)
             return Response(serializer.data)
@@ -220,11 +256,16 @@ class GetUserAPIView(APIView):
     def get(self, request):
         email = request.query_params.get('email', None)
         if not email:
-            return Response({"error": "Email parameter is required in the query parameters."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "error":
+                    "Email parameter is required in the query parameters."
+                },
+                status=status.HTTP_400_BAD_REQUEST)
         try:
             user = User.objects.get(email=email)
             serializer = GetUserSerializer(user)
             return Response(serializer.data)
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found"},
+                            status=status.HTTP_404_NOT_FOUND)

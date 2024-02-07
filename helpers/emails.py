@@ -39,7 +39,8 @@ def send_mailgun_template_email(email, subject, template_name, data):
         })
 
 
-def send_tagged_mailgun_template_email(email, subject, template_name, data, tag):
+def send_tagged_mailgun_template_email(email, subject, template_name, data,
+                                       tag):
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
@@ -63,11 +64,12 @@ def send_simple_email(email, subject, template):
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
-        data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-              "to": [email],
-              "subject": subject,
-              "html": template}
-    )
+        data={
+            "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+            "to": [email],
+            "subject": subject,
+            "html": template
+        })
 
 
 # Send email with attachment
@@ -75,18 +77,23 @@ def send_email_with_attachment(file, to_email, subject, template):
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
-        files=[("attachment", (file.name, file.read())), ],
-        data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-              "to": to_email,
-              #   "bcc": "bar@example.com",
-              "subject": subject,
-              "html": template})
+        files=[
+            ("attachment", (file.name, file.read())),
+        ],
+        data={
+            "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+            "to": to_email,
+            #   "bcc": "bar@example.com",
+            "subject": subject,
+            "html": template
+        })
 
 
 # Send email to any Mailing List (test, researchers, newsletter)
 def send_mailing_list_email(mailing_list, subject, template, tag=None):
     response = requests.get(
-        ("https://api.mailgun.net/v3/lists/{}@localcontextshub.org/members".format(mailing_list)),
+        ("https://api.mailgun.net/v3/lists/{}@localcontextshub.org/members".
+         format(mailing_list)),
         auth=('api', settings.MAILGUN_API_KEY),
     )
     email = "{}@localcontextshub.org".format(mailing_list)
@@ -103,12 +110,13 @@ def add_to_newsletter_mailing_list(email, name, variables):
     return requests.post(
         "https://api.mailgun.net/v3/lists/newsletter@localcontextshub.org/members",
         auth=("api", settings.MAILGUN_API_KEY),
-        data={"subscribed": True,
-              "upsert": True,
-              "address": email,
-              "name": name,
-              "vars": variables}
-    )
+        data={
+            "subscribed": True,
+            "upsert": True,
+            "address": email,
+            "name": name,
+            "vars": variables
+        })
 
 
 # Get member info from newsletter mailing list
@@ -125,11 +133,12 @@ def unsubscribe_from_mailing_list(email, name):
     return requests.post(
         "https://api.mailgun.net/v3/lists/newsletter@localcontextshub.org/members",
         auth=("api", settings.MAILGUN_API_KEY),
-        data={"subscribed": False,
-              "upsert": True,
-              "address": email,
-              "name": name}
-    )
+        data={
+            "subscribed": False,
+            "upsert": True,
+            "address": email,
+            "name": name
+        })
 
 
 '''
@@ -142,8 +151,11 @@ def manage_researcher_mailing_list(email, subscribed):
     return requests.post(
         "https://api.mailgun.net/v3/lists/researchers@localcontextshub.org/members",
         auth=("api", settings.MAILGUN_API_KEY),
-        data={"subscribed": subscribed, "upsert": True, "address": email, }
-    )
+        data={
+            "subscribed": subscribed,
+            "upsert": True,
+            "address": email,
+        })
 
 
 # Send all Institution and community applications to support or the site admin
@@ -153,14 +165,18 @@ def send_hub_admins_application_email(request, organization, data):
 
     if isinstance(organization, Community):
         subject = f'New Community Application: {data.community_name}'
-        template = render_to_string('snippets/emails/internal/community-application.html', {'data': data})
+        template = render_to_string(
+            'snippets/emails/internal/community-application.html',
+            {'data': data})
     else:
         if data.is_ror:
             subject = f'New Institution Application: {data.institution_name}'
         else:
             subject = f'New Institution Application (non-ROR): {data.institution_name}'
 
-        template = render_to_string('snippets/emails/internal/institution-application.html', {'data': data})
+        template = render_to_string(
+            'snippets/emails/internal/institution-application.html',
+            {'data': data})
 
     # Send to support if in production
     if dev_prod_or_local(request.get_host()) == 'PROD':
@@ -168,29 +184,34 @@ def send_hub_admins_application_email(request, organization, data):
 
         # If file, send as attachment
         if data.support_document:
-            send_email_with_attachment(data.support_document, email, subject, template)
+            send_email_with_attachment(data.support_document, email, subject,
+                                       template)
         else:
             send_simple_email(email, subject, template)
     else:
         # Send to site admin only (will be typically for testing)
         if data.support_document:
-            send_email_with_attachment(data.support_document, settings.SITE_ADMIN_EMAIL, subject, template)
+            send_email_with_attachment(data.support_document,
+                                       settings.SITE_ADMIN_EMAIL, subject,
+                                       template)
         else:
             send_simple_email(settings.SITE_ADMIN_EMAIL, subject, template)
 
 
 # Send email to support when a Researcher connects to the Hub in PRODUCTION
 def send_email_to_support(researcher):
-    template = render_to_string('snippets/emails/internal/researcher-account-connection.html',
-                                {'researcher': researcher})
+    template = render_to_string(
+        'snippets/emails/internal/researcher-account-connection.html',
+        {'researcher': researcher})
     name = get_users_name(researcher.user)
     title = f'{name} has created a Researcher Account'
     send_simple_email('support@localcontexts.org', title, template)
 
 
 def send_researcher_survey(researcher):
-    send_mailgun_template_email(researcher.user.email, 'Local Contexts Hub: Researcher survey', 'researcher_survey',
-                                None)
+    send_mailgun_template_email(researcher.user.email,
+                                'Local Contexts Hub: Researcher survey',
+                                'researcher_survey', None)
 
 
 """
@@ -233,7 +254,8 @@ def resend_activation_email(request, active_users):
 def send_welcome_email(request, user):
     subject = 'Welcome to Local Contexts Hub!'
     url = get_site_url(request, 'login')
-    send_mailgun_template_email(user.email, subject, 'welcome', {"login_url": url})
+    send_mailgun_template_email(user.email, subject, 'welcome',
+                                {"login_url": url})
 
 
 # Email to invite user to join the hub
@@ -244,8 +266,13 @@ def send_invite_user_email(request, data):
         subject = 'You have been invited to join the Local Contexts Hub'
         name = get_users_name(data.sender)
         url = get_site_url(request, 'register')
-        variables = {"register_url": url, "name": name, "message": data.message}
-        send_mailgun_template_email(data.email, subject, 'invite_new_user', variables)
+        variables = {
+            "register_url": url,
+            "name": name,
+            "message": data.message
+        }
+        send_mailgun_template_email(data.email, subject, 'invite_new_user',
+                                    variables)
 
 
 # Anywhere JoinRequest instance is created,
@@ -275,11 +302,13 @@ def send_join_request_email_admin(request, join_request, organization):
             'requester_email': request.user.email,
             'login_url': login_url
         }
-        send_mailgun_template_email(send_to_email, subject, 'join_request', data)
+        send_mailgun_template_email(send_to_email, subject, 'join_request',
+                                    data)
 
 
 # REGISTRY Contact organization email
-def send_contact_email(request, to_email, from_name, from_email, message, account):
+def send_contact_email(request, to_email, from_name, from_email, message,
+                       account):
     environment = dev_prod_or_local(request.get_host())
 
     if not environment == "SANDBOX":
@@ -293,18 +322,21 @@ def send_contact_email(request, to_email, from_name, from_email, message, accoun
         if isinstance(account, Researcher):
             account_name = 'your researcher account'
 
-        data = {"from_name": from_name, "message": message, "account_name": account_name}
+        data = {
+            "from_name": from_name,
+            "message": message,
+            "account_name": account_name
+        }
 
-        return requests.post(
-            settings.MAILGUN_BASE_URL,
-            auth=("api", settings.MAILGUN_API_KEY),
-            data={
-                "from": from_string,
-                "to": to_email,
-                "subject": subject,
-                "template": "registry_contact",
-                "t:variables": json.dumps(data)
-            })
+        return requests.post(settings.MAILGUN_BASE_URL,
+                             auth=("api", settings.MAILGUN_API_KEY),
+                             data={
+                                 "from": from_string,
+                                 "to": to_email,
+                                 "subject": subject,
+                                 "template": "registry_contact",
+                                 "t:variables": json.dumps(data)
+                             })
 
 
 """
@@ -340,7 +372,8 @@ def send_member_invite_email(request, data, account):
             'login_url': login_url
         }
         subject = f'You have been invited to join {org_name}'
-        send_mailgun_template_email(data.receiver.email, subject, 'member_invite', variables)
+        send_mailgun_template_email(data.receiver.email, subject,
+                                    'member_invite', variables)
 
 
 """
@@ -370,7 +403,8 @@ def send_email_notice_placed(request, project, community, account):
             'community_name': community.community_name,
             'login_url': login_url
         }
-        send_mailgun_template_email(community.community_creator.email, subject, 'notice_placed', data)
+        send_mailgun_template_email(community.community_creator.email, subject,
+                                    'notice_placed', data)
 
 
 """
@@ -390,7 +424,8 @@ def send_email_labels_applied(request, project, community):
             'project_title': project.title,
             'login_url': login_url
         }
-        send_mailgun_template_email(project.project_creator.email, subject, 'labels_applied', data)
+        send_mailgun_template_email(project.project_creator.email, subject,
+                                    'labels_applied', data)
 
 
 # Label has been approved or not
@@ -421,7 +456,8 @@ def send_email_label_approved(request, label, note_id):
             'label_note': label_note,
             'login_url': login_url
         }
-        send_mailgun_template_email(label.created_by.email, subject, 'label_approved', data)
+        send_mailgun_template_email(label.created_by.email, subject,
+                                    'label_approved', data)
 
 
 # You are now a member of institution/community email
@@ -459,7 +495,8 @@ def send_membership_email(request, account, receiver, role):
             'community': community,
             'institution': institution
         }
-        send_mailgun_template_email(receiver.email, subject, 'member_info', data)
+        send_mailgun_template_email(receiver.email, subject, 'member_info',
+                                    data)
 
 
 def send_contributor_email(request, account, proj_id, is_adding):
@@ -467,7 +504,8 @@ def send_contributor_email(request, account, proj_id, is_adding):
 
     if not environment == "SANDBOX":
         from projects.models import Project
-        project = Project.objects.select_related('project_creator').get(unique_id=proj_id)
+        project = Project.objects.select_related('project_creator').get(
+            unique_id=proj_id)
         creator_account = ''
         account_name = ''
 
@@ -526,7 +564,8 @@ def send_project_person_email(request, to_email, proj_id, account):
     if not environment == "SANDBOX":
         from projects.models import Project
         registered = User.objects.filter(email=to_email).exists()
-        project = Project.objects.select_related('project_creator').get(unique_id=proj_id)
+        project = Project.objects.select_related('project_creator').get(
+            unique_id=proj_id)
 
         project_creator = get_users_name(project.project_creator)
         register_url = get_site_url(request, 'register')
@@ -549,7 +588,8 @@ def send_project_person_email(request, to_email, proj_id, account):
                 'project_title': project.title,
                 'account_name': account_name
             }
-            send_mailgun_template_email(to_email, subject, 'contributor_project_person', data)
+            send_mailgun_template_email(to_email, subject,
+                                        'contributor_project_person', data)
 
 
 """

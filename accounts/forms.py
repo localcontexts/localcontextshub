@@ -6,7 +6,9 @@ from .models import Profile, SignUpInvitation
 
 
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True, max_length=150, help_text='Required')
+    email = forms.EmailField(required=True,
+                             max_length=150,
+                             help_text='Required')
 
     class Meta:
         model = User
@@ -28,6 +30,7 @@ class RegistrationForm(UserCreationForm):
 
 
 class UserCreateProfileForm(forms.ModelForm):
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name']
@@ -35,6 +38,7 @@ class UserCreateProfileForm(forms.ModelForm):
 
 # updating user instance (same as above but includes email)
 class UserUpdateForm(forms.ModelForm):
+
     class Meta:
         model = User
         fields = ['email', 'first_name', 'last_name']
@@ -54,9 +58,13 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileCreationForm(forms.ModelForm):
+
     class Meta:
         model = Profile
-        fields = ['position', 'affiliation', 'city_town', 'state_province_region', 'country']
+        fields = [
+            'position', 'affiliation', 'city_town', 'state_province_region',
+            'country'
+        ]
         widgets = {
             'position': forms.TextInput(attrs={'style': 'width: 100%;'}),
             'affiliation': forms.TextInput(attrs={'class': 'w-100'}),
@@ -66,10 +74,13 @@ class ProfileCreationForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+
     class Meta:
         model = Profile
-        fields = ['position', 'affiliation', 'preferred_language', 'languages_spoken', 'city_town',
-                  'state_province_region', 'country']
+        fields = [
+            'position', 'affiliation', 'preferred_language',
+            'languages_spoken', 'city_town', 'state_province_region', 'country'
+        ]
         widgets = {
             'position': forms.TextInput(attrs={'class': 'w-100'}),
             'affiliation': forms.TextInput(attrs={'class': 'w-100'}),
@@ -81,22 +92,43 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 class ResendEmailActivationForm(forms.Form):
-    email = forms.EmailField(label=_('Email'), required=True,
-                             widget=forms.EmailInput(attrs={'class': 'w-100', 'placeholder': 'email@domain.com'}))
+    email = forms.EmailField(
+        label=_('Email'),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-100',
+            'placeholder': 'email@domain.com'
+        }))
 
 
 class SignUpInvitationForm(forms.ModelForm):
+
     class Meta:
         model = SignUpInvitation
         fields = ['email', 'message']
         widgets = {
-            'message': forms.Textarea(attrs={'rows': 4, 'cols': 65}),
+            'message': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 65
+            }),
             'email': forms.EmailInput(attrs={'size': 65}),
         }
 
 
 class ContactOrganizationForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
-    email = forms.EmailField(label=_('Email Address'), required=True,
-                             widget=forms.EmailInput(attrs={'class': 'w-100', 'placeholder': 'email@domain.com'}))
-    message = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 65, 'class': 'w-100'}))
+    name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'w-100',
+        'autocomplete': 'off',
+    }))
+    email = forms.EmailField(
+        label=_('Email Address'),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-100',
+            'placeholder': 'email@domain.com'
+        }))
+    message = forms.CharField(widget=forms.Textarea(attrs={
+        "rows": 4,
+        "cols": 65,
+        'class': 'w-100'
+    }))
