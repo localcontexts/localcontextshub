@@ -1,4 +1,4 @@
-# !/bin/sh
+#!/bin/sh
 
 echo 'FORMATTING PYTHON FILES'
 # this makes eligible files PEP8 compliant automatically
