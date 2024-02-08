@@ -1,6 +1,7 @@
 [flake8]
 max-line-length = 79
 exclude =
+    account/apps.py
     tests
     migrations
     __pycache__
