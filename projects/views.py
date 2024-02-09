@@ -3,8 +3,6 @@ from django.shortcuts import render, redirect
 from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
 from helpers.models import Notice
-from bclabels.models import BCLabel
-from tklabels.models import TKLabel
 from django.http import Http404
 from accounts.models import UserAffiliation
 from researchers.models import Researcher
@@ -82,7 +80,7 @@ def download_project(request, unique_id):
             return download_project_zip(project)
     except:
         raise Http404()
-
+    
 def embed_project(request, unique_id):
     layout = request.GET.get('lt')
     lang = request.GET.get('lang')
