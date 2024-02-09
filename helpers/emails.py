@@ -217,7 +217,7 @@ def send_password_reset_email(request, context):
     protocol = context['protocol']
     reset_path = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
     reset_url = f'{protocol}://{domain}{reset_path}'
-    user = User.objects.filter(email__iexact=to_email).first().username
+    user = User.objects.get(email=to_email).username
     subject = 'Reset Password Link For Your Local Contexts Hub Profile'
 
     data = {'user': user, 'reset_url': reset_url}
