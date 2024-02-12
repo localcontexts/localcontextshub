@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
-from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm
+from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm, PasswordResetView
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
@@ -18,6 +18,8 @@ from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 
 from unidecode import unidecode
 from django.db.models import Q
@@ -204,6 +206,16 @@ class CustomSocialConnectionsView(ConnectionsView):
             messages.error(request, 'Please set password first to unlink an account')
             return redirect('link-account')
         return super().dispatch(request, *args, **kwargs)
+
+class CustomPasswordResetView(PasswordResetView):
+    email_template_name = 'password_reset'
+    from_email = settings.EMAIL_HOST_USER
+    template_name = "accounts/password-reset.html"
+    form_class = CustomPasswordResetForm
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 @login_required(login_url='login')
 def dashboard(request):

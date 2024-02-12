@@ -42,7 +42,7 @@ urlpatterns = [
     path('newsletter/preferences/<emailb64>/', views.newsletter_unsubscription, name='newsletter-unsubscription'),
 
 
-    path('reset-password/', auth_views.PasswordResetView.as_view(template_name="accounts/password-reset.html", from_email=settings.EMAIL_HOST_USER), name="reset_password"),
+    path('reset-password/', views.CustomPasswordResetView.as_view(), name="reset_password"),
     path('reset-password-sent/', auth_views.PasswordResetDoneView.as_view(template_name="accounts/password-reset-sent.html"), name="password_reset_done"),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="accounts/password-reset-confirm.html"), name="password_reset_confirm"),
     path('reset-password-complete/', auth_views.PasswordResetCompleteView.as_view(template_name="accounts/password-reset-done.html"), name="password_reset_complete"),
