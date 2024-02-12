@@ -1,5 +1,7 @@
 import json
 import zipfile
+import requests
+from django.conf import settings
 from django.template.loader import get_template
 from io import BytesIO
 from accounts.models import UserAffiliation
@@ -400,3 +402,19 @@ def get_alt_text(data, bclabels, tklabels):
             label.alt_text = "TK label icon" 
     
     return bclabels, tklabels  
+
+def validate_email(email):
+    url = f"{settings.MAILGUN_V4_BASE_URL}/address/validate"
+    auth = ("api", settings.MAILGUN_API_KEY)
+    params = {"address": email}
+    
+    response = requests.get(url, auth=auth, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data.get("result") == "deliverable":
+            return True
+        else:
+            return False
+    else:
+        print("Request failed with status code:", response.status_code)
+        return False
