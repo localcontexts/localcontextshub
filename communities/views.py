@@ -70,7 +70,7 @@ def connect_community(request):
             user_is_member = community.is_user_in_community(request.user)
 
             if request_exists or user_is_member:
-                messages.add_message(request, messages.ERROR, "Either you have already sent this request or are currently a member of this community.")
+                messages.add_message(request, messages.ERROR, 'Either you have already sent this request or are currently a member of this community.')
                 return redirect('connect-community')
             else:
                 if form.is_valid():
@@ -82,10 +82,10 @@ def connect_community(request):
 
                     send_action_notification_join_request(data) # Send action notification to community
                     send_join_request_email_admin(request, data, community) # Send community creator email
-                    messages.add_message(request, messages.SUCCESS, "Request to join community sent!")
+                    messages.add_message(request, messages.SUCCESS, 'Request to join community sent!')
                     return redirect('connect-community')
         else:
-            messages.add_message(request, messages.ERROR, 'Community not in registry')
+            messages.add_message(request, messages.ERROR, 'Community not in registry.')
             return redirect('connect-community')
 
     context = { 'community': community, 'communities': communities, 'form': form,}
@@ -225,7 +225,7 @@ def public_community_view(request, pk):
 
                         # Request To Join community
                         if JoinRequest.objects.filter(user_from=request.user, community=community).exists():
-                            messages.add_message(request, messages.ERROR, "You have already sent a request to this community")
+                            messages.add_message(request, messages.ERROR, 'You have already sent a request to this community.')
                             return redirect('public-community', community.id)
                         else:
                             data.user_from = request.user
@@ -237,7 +237,7 @@ def public_community_view(request, pk):
                             send_join_request_email_admin(request, data, community) # Send email to community creator
                             return redirect('public-community', community.id)
                 else:
-                    messages.add_message(request, messages.ERROR, 'Something went wrong')
+                    messages.add_message(request, messages.ERROR, 'Something went wrong.')
                     return redirect('public-community', community.id)
         else:
             context = { 
@@ -282,7 +282,7 @@ def update_community(request, pk):
         else:
             if update_form.is_valid():
                 update_form.save()
-                messages.add_message(request, messages.SUCCESS, 'Updated!')
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
                 return redirect('update-community', community.id)
     else:
         update_form = UpdateCommunityForm(instance=community)
@@ -355,12 +355,12 @@ def community_members(request, pk):
                         
                         send_account_member_invite(data) # Send action notification
                         send_member_invite_email(request, data, community) # Send email to target user
-                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}')
+                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}!')
                         return redirect('members', community.id)
                     else: 
                         messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {community.community_name}.')
             else:
-                messages.add_message(request, messages.INFO, 'Something went wrong')
+                messages.add_message(request, messages.INFO, 'Something went wrong.')
 
     context = {
         'community': community,
@@ -478,7 +478,7 @@ def customize_label(request, pk, label_code):
     name = get_users_name(request.user)
 
     if does_label_type_exist(community, label_code): # check if label of this type already exists
-        messages.error(request, 'A Label of this type has already been customized by your community')
+        messages.error(request, 'A Label of this type has already been customized by your community.')
         return redirect('select-label', community.id)
     else:
         form_class, label_display, label_type = get_form_and_label_type(label_code)

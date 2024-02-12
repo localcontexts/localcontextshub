@@ -66,10 +66,10 @@ def register(request):
                 user = form.save(commit=False)
 
                 if User.objects.filter(email=user.email).exists():
-                    messages.error(request, 'A user with this email already exists')
+                    messages.error(request, 'A user with this email already exists.')
                     return redirect('register')
                 elif User.objects.filter(username__iexact=user.username.lower()).exists():
-                    messages.error(request, 'A user with this username already exists')
+                    messages.error(request, 'A user with this username already exists.')
                     return redirect('register')
                 else:
                     user.is_active = False
@@ -103,7 +103,7 @@ class ActivateAccountView(View):
         if user is not None and generate_token.check_token(user, token):
             user.is_active=True
             user.save()
-            messages.add_message(request, messages.INFO, 'Profile activation successful. You may now log in.')
+            messages.add_message(request, messages.INFO, 'Profile activation successful. You are now able to login.')
             return redirect('login')
         return render(request, 'snippets/activate-failed.html', status=401)
 
@@ -122,7 +122,7 @@ def verify(request):
 
             if active_users:
                 resend_activation_email(request, active_users)
-                messages.add_message(request, messages.INFO, 'Activation Email Sent!')
+                messages.add_message(request, messages.INFO, 'Activation email sent!')
                 return redirect('verify')
             else:
                 messages.add_message(request, messages.ERROR, 'Email did not match any registration email.')
@@ -157,7 +157,7 @@ def login(request):
                     return redirect(get_next_path(request, default_path='dashboard'))
             else:
                 if not user.last_login:
-                    messages.error(request, 'Your account is not active. Please verify your email.')
+                    messages.error(request, 'Your account is not active yet. Please verify your email.')
                     if SignUpInvitation.objects.filter(email=user.email).exists():
                         for invite in SignUpInvitation.objects.filter(email=user.email):
                             invite.delete()
@@ -165,10 +165,10 @@ def login(request):
                     send_activation_email(request, user)
                     return redirect('verify')
                 else:
-                    messages.error(request, 'Your account is not active. Please contact support@localcontexts.org')
+                    messages.error(request, 'Your account is not active. Please contact support@localcontexts.org.')
                     return redirect('login')
         else:
-            messages.error(request, 'Your username or password does not match an account')
+            messages.error(request, 'Your username or password does not match an account.')
             return redirect('login')
     else:
         return render(request, "accounts/login.html", {'envi': envi })
@@ -203,7 +203,7 @@ class CustomSocialConnectionsView(ConnectionsView):
             messages.info(request, 'The social account has been disconnected.')
             return redirect('link-account')
         else:
-            messages.error(request, 'Please set password first to unlink an account')
+            messages.error(request, 'Please set password first to unlink an account.')
             return redirect('link-account')
         return super().dispatch(request, *args, **kwargs)
 
@@ -281,7 +281,7 @@ def update_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.add_message(request, messages.SUCCESS, 'Profile Updated!')
+            messages.add_message(request, messages.SUCCESS, 'Profile updated!')
             return redirect('update-profile')
     else:
         user_form = UserUpdateForm(instance=request.user)
@@ -304,10 +304,10 @@ def change_password(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            messages.add_message(request, messages.SUCCESS, 'Password Successfully Changed!')
+            messages.add_message(request, messages.SUCCESS, 'Password successfully changed!')
             return redirect('change-password')
         else:
-            messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.ERROR, 'Something went wrong.')
             return redirect('change-password')
     return render(request, 'accounts/change-password.html', {'profile': profile, 'form':form })
 
@@ -320,7 +320,7 @@ def deactivate_user(request):
         user.is_active = False
         user.save()
         auth.logout(request)
-        messages.add_message(request, messages.INFO, 'Your account has been deactivated.')
+        messages.add_message(request, messages.INFO, 'Your account has been deactivated. If this was a mistake please contact support@localcontexts.org.')
         return redirect('login')
     return render(request, 'accounts/deactivate.html', { 'profile': profile })
 
@@ -388,14 +388,14 @@ def invite_user(request):
             data.sender = request.user
 
             if User.objects.filter(email=data.email).exists():
-                messages.add_message(request, messages.ERROR, 'This user is already in the Hub')
+                messages.add_message(request, messages.ERROR, 'This user is already in the Hub.')
                 return redirect(selected_path)
             else:
                 if SignUpInvitation.objects.filter(email=data.email).exists():
-                    messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email')
+                    messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email.')
                     return redirect(selected_path)
                 else:
-                    messages.add_message(request, messages.SUCCESS, 'Invitation Sent')
+                    messages.add_message(request, messages.SUCCESS, 'Invitation sent!')
                     send_invite_user_email(request, data)
                     data.save()
                     return redirect(selected_path)
@@ -594,15 +594,15 @@ def newsletter_unsubscription(request, emailb64):
                 if 'updatebtn' in request.POST:
                     if 'unsubscribe' in request.POST:
                         unsubscribe_from_mailing_list(str(email), str(name))
-                        messages.add_message(request, messages.SUCCESS, 'You unsubscribed successfully')
+                        messages.add_message(request, messages.SUCCESS, 'You unsubscribed successfully!')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     elif 'topic' in request.POST:
                         variables = manage_mailing_list(request, first_name, email)
                         add_to_newsletter_mailing_list(str(email), str(name), str(variables))
-                        messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated.')
+                        messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated!')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     else:
-                        messages.add_message(request, messages.ERROR, 'Please select any option')
+                        messages.add_message(request, messages.ERROR, 'Please select at least one option.')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
             return render(request, 'accounts/newsletter-unsubscription.html', context)
         except:
@@ -620,7 +620,7 @@ def api_keys(request):
             api_key, key = APIKey.objects.create_key(name=request.user.username)
             profile.api_key = key
             profile.save()
-            messages.add_message(request, messages.SUCCESS, 'API Key Generated!')
+            messages.add_message(request, messages.SUCCESS, 'API Key generated!')
             page_key = profile.api_key
             return redirect('api-key')
 
@@ -632,7 +632,7 @@ def api_keys(request):
             api_key.delete()
             profile.api_key = None
             profile.save()
-            messages.add_message(request, messages.SUCCESS, 'API Key Deleted!')
+            messages.add_message(request, messages.SUCCESS, 'API Key deleted!')
             return redirect('api-key')
 
         elif 'copybtn' in request.POST:
