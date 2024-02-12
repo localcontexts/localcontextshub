@@ -7,10 +7,10 @@
                     <div class="msg-red"><small>{{ message }}</small></div>
                 {% endif %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                    <div class="msg-blue"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close">&times;</span></div>
+                    <div class="msg-blue"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close"><i class="fa-sharp fa-regular fa-xmark"></i></span></div>
                 {% endif %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <div class="msg-green"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close">&times;</span></div>
+                    <div class="msg-green"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close"><i class="fa-sharp fa-regular fa-xmark"></i></span></div>
                 {% endif %}
             </div>
         </div>

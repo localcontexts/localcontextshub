@@ -10,7 +10,8 @@
             "labelCategory": "provenance",
             "audioFileName": "BC-Provenance-Label-1.mp3",
             "imgFileName": "bc-provenance.png",
-            "svgFileName": "bc-provenance.svg"
+            "svgFileName": "bc-provenance.svg",
+            "labelAlternateText": "BC Provenance Label icon. Black tag shape with six perpendicular white lines of increasing width. On left side are three white dots."
         },
         {
             "id": 2,
@@ -22,7 +23,8 @@
             "labelCategory": "provenance",
             "audioFileName": "BC-Multiple-Communities-Label.mp3",
             "imgFileName": "bc-multiple-community.png",
-            "svgFileName": "bc-multiple-community.svg"
+            "svgFileName": "bc-multiple-community.svg",
+            "labelAlternateText": "BC Multiple Communities Label icon. Black tag shape with four white over-under woven patchworks arranged in a 2x2 square. On left side are three white dots."
         },
         {
             "id": 3,
@@ -34,7 +36,8 @@
             "labelCategory": "permission",
             "audioFileName": "BC-Open-to-Collaboration-Label.mp3",
             "imgFileName": "bc-open-to-collaboration.png",
-            "svgFileName": "bc-open-to-collaboration.svg"
+            "svgFileName": "bc-open-to-collaboration.svg",
+            "labelAlternateText": "BC Open to Collaboration Label icon. Black tag shape with three white overlapping figures in center made up of hexagons on bottom and circles on top. On left side are three white dots."
         },
         {
             "id": 4,
@@ -46,7 +49,8 @@
             "labelCategory": "permission",
             "audioFileName": "BC-Open-to-Commercialization-Label.mp3",
             "imgFileName": "bc-open-to-commercialization.png",
-            "svgFileName": "bc-open-to-commercialization.svg"
+            "svgFileName": "bc-open-to-commercialization.svg",
+            "labelAlternateText": "BC Open to Commercialization Label icon. Black tag shape with a white dollar sign in center. On left side are three white dots."
         },
         {
             "id": 5,
@@ -58,7 +62,8 @@
             "labelCategory": "permission",
             "audioFileName": "BC-Research-Use-Label.mp3",
             "imgFileName": "bc-research-use.png",
-            "svgFileName": "bc-research-use.svg"
+            "svgFileName": "bc-research-use.svg",
+            "labelAlternateText": "BC Research Use Label icon. Black tag shape with four rectangles inside two concentric circles. On left side are three white dots."
         },
         {
             "id": 6,
@@ -70,7 +75,8 @@
             "labelCategory": "protocol",
             "audioFileName": "BC-Consent-Verified-Label-1.mp3",
             "imgFileName": "bc-consent-verified.png",
-            "svgFileName": "bc-consent-verified.svg"
+            "svgFileName": "bc-consent-verified.svg",
+            "labelAlternateText": "BC Consent Verified Label icon. Black tag shape with a white checkmark in center. On left side are three white dots."
         },
         {
             "id": 7,
@@ -82,7 +88,8 @@
             "labelCategory": "protocol",
             "audioFileName": "BC-Consent-Non-Verified.mp3",
             "imgFileName": "bc-consent-non-verified.png",
-            "svgFileName": "bc-consent-non-verified.svg"
+            "svgFileName": "bc-consent-non-verified.svg",
+            "labelAlternateText": "BC Consent Non-Verified Label icon. Black tag shape with a white checkmark and a diagonal line through it in the center. On left side are three white dots."
         },
         {
             "id": 8,
@@ -94,7 +101,8 @@
             "labelCategory": "provenance",
             "audioFileName": "BC-Clan.mp3",
             "imgFileName": "bc-clan.png",
-            "svgFileName": "bc-clan.svg"
+            "svgFileName": "bc-clan.svg",
+            "labelAlternateText": "BC Clan Label icon. Black tag shape with a circle made of small white dots in center. On left side are three larger white dots."
         },
         {
             "id": 9,
@@ -106,7 +114,8 @@
             "labelCategory": "permission",
             "audioFileName": "BC-Outreach.mp3",
             "imgFileName": "bc-outreach.png",
-            "svgFileName": "bc-outreach.svg"
+            "svgFileName": "bc-outreach.svg",
+            "labelAlternateText": "BC Outreach Label icon. Black tag shape with a white hand that has two dots stretching outward from each finger. On left side are three white dots."
         },
         {
             "id": 10,
@@ -118,7 +127,8 @@
             "labelCategory": "permission",
             "audioFileName": "BC-Non-Commercial.mp3",
             "imgFileName": "bc-non-commercial.png",
-            "svgFileName": "bc-non-commercial.svg"
+            "svgFileName": "bc-non-commercial.svg",
+            "labelAlternateText": "BC Non-Commercial Label icon. Black tag shape with a white dollar sign and a diagonal line through it in center. On left side are three white dots."
         }
 
     ],
@@ -133,7 +143,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Attribution-Label.mp3",
             "imgFileName": "tk-attribution.png",
-            "svgFileName": "tk-attribution.svg"
+            "svgFileName": "tk-attribution.svg",
+            "labelAlternateText": "TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right."
         },
         {
             "id": 2,
@@ -145,7 +156,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Clan-Label.mp3",
             "imgFileName": "tk-clan.png",
-            "svgFileName": "tk-clan.svg"
+            "svgFileName": "tk-clan.svg",
+            "labelAlternateText": "TK Clan Label icon. Black tag shape with a circle made of small white dots in the center."
         },
         {
             "id": 3,
@@ -157,7 +169,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Family-Label.mp3",
             "imgFileName": "tk-family.png",
-            "svgFileName": "tk-family.svg"
+            "svgFileName": "tk-family.svg",
+            "labelAlternateText": "TK Family Label icon. Black tag shape with a circle made of alternating small and big white dots in the center."
         },
         {
             "id": 4,
@@ -169,7 +182,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Multiple-Communities-Label.mp3",
             "imgFileName": "tk-multiple-communities.png",
-            "svgFileName": "tk-multiple-communities.svg"
+            "svgFileName": "tk-multiple-communities.svg",
+            "labelAlternateText": "TK Multiple Communities Label icon. Black tag shape with four white over-under woven patchworks arranged in a 2x2 square."
         },
         {
             "id": 5,
@@ -181,7 +195,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Community-Voice-Label.mp3",
             "imgFileName": "tk-community-voice.png",
-            "svgFileName": "tk-community-voice.svg"
+            "svgFileName": "tk-community-voice.svg",
+            "labelAlternateText": "TK Community Voice Label icon. Black tag shape with three different sized human figures in white and dialogue bubbles that overlap."
         },
         {
             "id": 6,
@@ -193,7 +208,8 @@
             "labelCategory": "provenance",
             "audioFileName": "TK-Creative.mp3",
             "imgFileName": "tk-creative.png",
-            "svgFileName": "tk-creative.svg"
+            "svgFileName": "tk-creative.svg",
+            "labelAlternateText": "TK Creative Label icon. Black tag shape with a white circle made up of eight small dots on one half, a solid line on the other half, and each half bifurcated with two bigger dots."
         },
         {
             "id": 7,
@@ -205,7 +221,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Verified-Label.mp3",
             "imgFileName": "tk-verified.png",
-            "svgFileName": "tk-verified.svg"
+            "svgFileName": "tk-verified.svg",
+            "labelAlternateText": "TK Verified Label icon. Black tag shape with a white checkmark in center."
         },
         {
             "id": 8,
@@ -217,7 +234,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Non-Verified-Label.mp3",
             "imgFileName": "tk-non-verified.png",
-            "svgFileName": "tk-non-verified.svg"
+            "svgFileName": "tk-non-verified.svg",
+            "labelAlternateText": "TK Non-Verified Label icon. Black tag shape with a white checkmark and diagonal line through it in center."
         },
         {
             "id": 9,
@@ -229,7 +247,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Seasonal-Label.mp3",
             "imgFileName": "tk-seasonal.png",
-            "svgFileName": "tk-seasonal.svg"
+            "svgFileName": "tk-seasonal.svg",
+            "labelAlternateText": "TK Seasonal Label icon. Black background with simple illustrations of a tree with bare branches and another tree with a circle representing leaves."
         },
         {
             "id": 10,
@@ -241,7 +260,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Women-General-Label.mp3",
             "imgFileName": "tk-women-general.png",
-            "svgFileName": "tk-women-general.svg"
+            "svgFileName": "tk-women-general.svg",
+            "labelAlternateText": "TK Women General Label icon. Black tag shape with a white figure made up of a triangle on bottom and circle on top."
         },
         {
             "id": 11,
@@ -253,7 +273,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Men-General-Label.mp3",
             "imgFileName": "tk-men-general.png",
-            "svgFileName": "tk-men-general.svg"
+            "svgFileName": "tk-men-general.svg",
+            "labelAlternateText": "TK Men General Label icon. Black tag shape with a white figure made up of a square on bottom and circle on top."
         },
         {
             "id": 12,
@@ -265,7 +286,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Men-Restricted-Label.mp3",
             "imgFileName": "tk-men-restricted.png",
-            "svgFileName": "tk-men-restricted.svg"
+            "svgFileName": "tk-men-restricted.svg",
+            "labelAlternateText": "TK Men Restricted Label icon. Black tag shape with two white figures made up of two squares on bottom and two circles on top with a double-sided arrow connecting both figures."
         },
         {
             "id": 13,
@@ -277,7 +299,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Women-Restricted-Label.mp3",
             "imgFileName": "tk-women-restricted.png",
-            "svgFileName": "tk-women-restricted.svg"
+            "svgFileName": "tk-women-restricted.svg",
+            "labelAlternateText": "TK Women Restricted Label icon. Black tag shape with two white figures made up of two triangles on bottom and two circles on top with a double-sided arrow connecting both figures."
         },
         {
             "id": 14,
@@ -289,7 +312,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-Culturally-Sensitive-Label-1.mp3",
             "imgFileName": "tk-culturally-sensitive.png",
-            "svgFileName": "tk-culturally-sensitive.svg"
+            "svgFileName": "tk-culturally-sensitive.svg",
+            "labelAlternateText": "TK Culturally Sensitive Label icon. Black tag shape with four hands in a circle surrounding a white cube."
         },
         {
             "id": 15,
@@ -301,7 +325,8 @@
             "labelCategory": "protocol",
             "audioFileName": "TK-SecretSacred-Label.mp3",
             "imgFileName": "tk-secret-sacred.png",
-            "svgFileName": "tk-secret-sacred.svg"
+            "svgFileName": "tk-secret-sacred.svg",
+            "labelAlternateText": "TK Secret / Sacred Label icon. Black tag shape with a large white cube in center."
         },
         {
             "id": 16,
@@ -313,7 +338,8 @@
             "labelCategory": "permission",
             "audioFileName": "TK-Open-to-Commercialization-Label.mp3",
             "imgFileName": "tk-commercial.png",
-            "svgFileName": "tk-commercial.svg"
+            "svgFileName": "tk-commercial.svg",
+            "labelAlternateText": "TK Open to Commercialization Label icon. Black tag shape with a white dollar sign in center."
         },
         {
             "id": 17,
@@ -325,7 +351,8 @@
             "labelCategory": "permission",
             "audioFileName": "TK-Non-Commercial-Label.mp3",
             "imgFileName": "tk-non-commercial.png",
-            "svgFileName": "tk-non-commercial.svg"
+            "svgFileName": "tk-non-commercial.svg",
+            "labelAlternateText": "TK Non-Commercial Label icon. Black tag shape with a white dollar sign and a diagonal line through it in center."
         },
         {
             "id": 18,
@@ -337,7 +364,8 @@
             "labelCategory": "permission",
             "audioFileName": "TK-Community-Use-Only.mp3",
             "imgFileName": "tk-community-use-only.png",
-            "svgFileName": "tk-community-use-only.svg"
+            "svgFileName": "tk-community-use-only.svg",
+            "labelAlternateText": "TK Community Use Only Label icon. Black tag shape with four criss-crossed white lines in center."
         },
         {
             "id": 19,
@@ -349,7 +377,8 @@
             "labelCategory": "permission",
             "audioFileName": "TK-Outreach-Label.mp3",
             "imgFileName": "tk-outreach.png",
-            "svgFileName": "tk-outreach.svg"
+            "svgFileName": "tk-outreach.svg",
+            "labelAlternateText": "TK Outreach Label icon. Black tag shape with a white hand that has two dots stretching outward from each finger."
         },
         {
             "id": 20,
@@ -361,7 +390,8 @@
             "labelCategory": "permission",
             "audioFileName": "TK-Open-to-Collab.mp3",
             "imgFileName": "tk-open-to-collaboration.png",
-            "svgFileName": "tk-open-to-collaboration.svg"
+            "svgFileName": "tk-open-to-collaboration.svg",
+            "labelAlternateText": "TK Open to Collaboration Label icon. Black tag shape with three white overlapping figures in center made up of hexagons on bottom and circles on top."
         }
     ]
 }
