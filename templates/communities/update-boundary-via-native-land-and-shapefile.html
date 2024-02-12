@@ -3,11 +3,12 @@
     .region-container{
         margin-top: 20px;
     }
-    #region-results-wrapper{
+    .region-results-wrapper{
         position: relative;
     }
-    #region-results{
-        max-height: 300px;
+    .region-results{
+        max-height: 190px;
+        background: white;
         overflow-y: scroll;
         position: absolute;
         width: 100%;
@@ -16,18 +17,36 @@
         border-top: transparent;
         z-index: 1;
     }
+    .result-item{
+        padding-top: 5px;
+        padding-left: 20px;
+        padding-bottom: 5px;
+        background: white;
+        transition: 0.3s;
+        cursor: pointer;
+        user-select: none;
+    }
+    .result-item:hover {
+        background: #d7e7e4;
+    }
 
-    #selected-title{
+    .selected-title{
         padding: 12px;
         border: 3px solid #007385;
         background: aliceblue;
         border-radius: 5px;
         user-select: none;
     }
-    #selected-title-wrapper{
+    .selected-title-ellipsis{
+        width: 430px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .selected-title-wrapper{
         position: relative;
     }
-    #nld-link{
+    .nld-link{
         right: 8px;
         position: absolute;
         top: 14px;
@@ -36,16 +55,16 @@
         cursor: pointer;
     }
 
-    #community-boundary-search {
+    .community-boundary-search {
         position: relative;
     }
 
-    #community-boundary-search input{
+    .community-boundary-search input{
         width: 100%;
         padding: 20px;
     }
 
-    #community-boundary-search i{
+    .community-boundary-search i{
         position: absolute;
         right: 10px;
         top: 14px;
@@ -92,29 +111,6 @@
         font-size: 24px;
         margin-right: 12px;
     }
-
-    #selected-title-wrapper{
-        position: relative;
-    }
-    #selected-title{
-        padding: 12px;
-        border: 3px solid #007385;
-        background: aliceblue;
-        border-radius: 5px;
-        user-select: none;
-    }
-    #nld-link{
-        right: 8px;
-        position: absolute;
-        top: 14px;
-        font-weight: bold;
-        color: #007385;
-        cursor: pointer;
-    }
-    .hidden{
-        visibility: hidden;
-    }
-
     .save-cancel-container {
         margin-top: 20px;
     }
@@ -122,14 +118,14 @@
 <span class="boundary-selection-unit">
     <div class="region-container">
         <label class="pad-top-1-5">Search the Native Land Digital database</label><br>
-        <div id="community-boundary-search">
+        <div class="community-boundary-search">
             <input class="input-field search" type="text"
                    placeholder="Search by address, community name or town"
             >
             <i class="fa fa-search icon"></i>
         </div>
-        <div id="region-results-wrapper">
-            <div id="region-results"></div>
+        <div class="region-results-wrapper">
+            <div class="region-results"></div>
         </div>
     </div>
     <div class="browse-files-container">
@@ -161,9 +157,9 @@
                 <label class="pad-top-1-5">Selected Location</label>
             </strong><br>
 
-            <div id="selected-title-wrapper">
-                <div id="selected-title">Place Holder</div>
-                <a id="nld-link" target="_blank">
+            <div class="selected-title-wrapper">
+                <div class="selected-title">Place Holder</div>
+                <a class="nld-link" target="_blank">
                     View Location in NLD &nbsp;
                     <i class="fa fa-arrow-up-right-from-square"></i>
                 </a>
@@ -186,3 +182,62 @@
         </div>
     </div>
 </span>
+<script>
+  fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+
+    document.querySelector('.region-container input.search').addEventListener("keyup", (event) => {
+        let html = ''
+        const textInput = event.target.value
+        const inputLength = textInput.length
+        if (inputLength >= 3) {
+            var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
+            results.forEach(result => {
+            html += `
+                <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug(this)">
+                ${result.post_title} (territories)</br />
+                </div>
+            `
+            })
+        } else if (inputLength === 0){
+            html = ''
+        }
+        event.target.closest('.boundary-selection-unit').querySelector('.region-results').innerHTML = html
+    })
+
+  })
+
+    const target = document.querySelector('.region-results')
+    document.addEventListener('click', (event) => {
+        const withinboundary = event.composedPath().includes(target)
+        if (!withinboundary) {
+            // click outside element
+            hideSearchDropDown()
+        }
+    })
+
+    function hideSearchDropDown() {
+       document.querySelector('.region-results').innerHTML = ''
+    }
+    function showSelectedSlug() {
+        document.querySelector('.selected-location').classList.remove('hidden')
+    }
+    function enableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+    }
+
+    function selectSlug(self) {
+        const selectionUnit = self.closest('.boundary-selection-unit')
+        const title = event.target.dataset.title
+        const slug = event.target.dataset.slug
+        const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+        selectionUnit.querySelector('.nld-link').setAttribute('href', url)
+        selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
+
+        // set selected data for selection
+        selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
+
+        hideSearchDropDown()
+        showSelectedSlug()
+        enableContinueButton()
+    }
+</script>
