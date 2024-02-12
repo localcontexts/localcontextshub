@@ -71,13 +71,13 @@
                             {% for notice in project.project_notice.all %}
                                 {% if not notice.archived %}
                                     {% if notice.notice_type == 'biocultural' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px" alt="black square with white letters BC in the middle"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'traditional_knowledge' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px" alt="black square with white letters TK in the middle"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'attribution_incomplete' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px" alt="black square with an unfinished square in the middle in white"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}

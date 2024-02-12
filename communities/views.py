@@ -20,6 +20,7 @@ from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
+from tklabels.utils import data as labels_data
 from accounts.utils import get_users_name
 from notifications.utils import *
 from helpers.downloads import download_labels_zip
@@ -446,6 +447,7 @@ def select_label(request, pk):
     member_role = check_member_role(request.user, community)
     can_download = community.is_approved and dev_prod_or_local(request.get_host()) != 'SANDBOX'
     is_sandbox = dev_prod_or_local(request.get_host()) == 'SANDBOX'
+    bclabels, tklabels = get_alt_text(labels_data, bclabels, tklabels)
 
     if request.method == "POST":
         bclabel_code = request.POST.get('bc-label-code')
@@ -1279,6 +1281,7 @@ def labels_pdf(request, pk):
     if community.is_approved:
         bclabels = BCLabel.objects.filter(community=community, is_approved=True)
         tklabels = TKLabel.objects.filter(community=community, is_approved=True)
+        bclabels, tklabels = get_alt_text(labels_data, bclabels, tklabels)
 
         template_path = 'snippets/pdfs/community-labels.html'
         context = {'community': community, 'bclabels': bclabels, 'tklabels': tklabels,}
