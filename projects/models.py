@@ -29,11 +29,11 @@ class Project(models.Model):
         ('Exhibition', 'Exhibition'),
         ('Other', 'Other'),
     )
-    PRIVACY_LEVEL = {
+    PRIVACY_LEVEL = (
         ('Public', 'Public'),
         ('Contributor', 'Contributor'),
         ('Private', 'Private'),
-    }
+    )
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=True, db_index=True, verbose_name="Unique ID (UUID)")
     project_creator = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="project_creator")
     project_page = models.URLField(blank=True, null=True)
