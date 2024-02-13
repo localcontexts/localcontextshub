@@ -101,17 +101,18 @@
         }
     </style>
     <div class="w-90" id="define-community-body">
-        <h2 class="no-top-margin">Add Community boundary</h2>
+        <h2 class="no-top-margin">Upload Shapefile</h2>
         <p id="define-community-top-text">
-            Add your community boundary by uploading a shape file below. We accept file types like (.zip).
-            You can create shape files on third-party websites like QGIS, LINK2, and LINK3.
+            Add your community boundary by uploading a shapefile.
+            A shapefile is a vector data file format commonly used for geospatial analysis.
+            You can create shapefiles on third-party websites like ArcGIS and QGIS.
         </p>
         <div id="navigate-to-option">
-            Or <a class="default-a" href="{% url 'add-community-boundary' %}">search NLD database</a>
+            Or <a class="default-a" href="{% url 'add-community-boundary' %}">search Native Land database</a>
         </div>
 
         <div id="browse-files-container">
-            <label class="pad-top-1-5">Upload shape file (. zip)</label><br>
+            <label class="pad-top-1-5">Upload shapefile (. zip)</label><br>
             <div id="community-boundary-upload">
                 <input class="input-field" type="text"
                        id="select-file-input"
@@ -258,7 +259,7 @@
             }
 
           if(listOfFeatures.length > 1) {
-              alert('Warning:\nThere Are More Than 1 Boundary Present. Only The First Will Be Used.')
+              alert('Warning:\nThere is more than 1 boundary present. Only the first will be used.')
             }
           const distinctBoundaryReordered = firstBoundary.map(function(coordinate){
               // reverse so code extracts (lat-lon)'s
@@ -266,7 +267,7 @@
             }
           )
 
-          // upload shape file to session for community
+          // upload shapefile to session for community
           await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
 
         successMessage.classList.toggle('invisible')
@@ -277,7 +278,7 @@
 
       } catch (e) {
         failureMessage.classList.toggle('invisible')
-        console.log('Error extracting boundary data from Shape File', e)
+        console.log('Error extracting boundary data from Shapefile', e)
         disableContinueButton()
         await resetboundary()
       }
