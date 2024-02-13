@@ -49,7 +49,7 @@
 <button type="file" id="upload-shape-file-data"
         onclick="triggerShapeFileInput(); event.preventDefault()"
 >
-    Upload Shape File Data
+    Upload Shapefile Data
 </button>
 <a
     id="view-saved-boundary"
@@ -120,7 +120,7 @@ async function uploadShapeFileData(self) {
     textArea.value = firstBoundaryPolygonStr
 
   } catch (e) {
-    console.log('Error extracting boundary data from Shape File', e)
+    console.log('Error extracting boundary data from Shapefile', e)
   }
 
   // set value to null so user can resubmit
