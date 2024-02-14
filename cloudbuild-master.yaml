@@ -57,6 +57,7 @@ steps:
         export DB_HOST=$$DB_SQL_PROXY
         /workspace/cloud_sql_proxy -dir=/workspace -instances=$$DB_CONNECTION_NAME \
           & sleep 2 \
+          && python3 ./manage.py migrate \
           && python3 ./manage.py makemigrations \
           && python3 ./manage.py migrate
     waitFor: ["setup-envs", "install-deps", "install-proxy", "deploy"]
