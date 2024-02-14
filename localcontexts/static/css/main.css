@@ -1618,3 +1618,14 @@ i[data-tooltip]:hover:after {
 .confirmation-alert button {
     margin-right: 10px;
 }
+
+.spinner-container {
+    z-index: 10 !important;
+    position: absolute;
+    display: block !important;
+}
+
+.spinner{
+    z-index:-1; 
+    display:none;
+}
