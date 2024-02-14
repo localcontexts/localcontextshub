@@ -1,10 +1,13 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+
+from helpers.exceptions import UnconfirmedAccountException
 from institutions.models import Institution
 from communities.models import Community
 from researchers.models import Researcher
 from helpers.utils import discoverable_project_view
+
 
 class ProjectArchived(models.Model):
     project_uuid = models.UUIDField(null=True, blank=True, db_index=True)
@@ -26,11 +29,11 @@ class Project(models.Model):
         ('Exhibition', 'Exhibition'),
         ('Other', 'Other'),
     )
-    PRIVACY_LEVEL = {
+    PRIVACY_LEVEL = (
         ('Public', 'Public'),
         ('Contributor', 'Contributor'),
         ('Private', 'Private'),
-    }
+    )
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=True, db_index=True, verbose_name="Unique ID (UUID)")
     project_creator = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="project_creator")
     project_page = models.URLField(blank=True, null=True)
@@ -97,7 +100,7 @@ class Project(models.Model):
             return discoverable_project_view(self, user)
         elif self.project_privacy == 'Private':
             return False
-    
+
     def get_template_name(self, user):
         if self.project_privacy == 'Public':
             return 'partials/_project-actions.html'
@@ -166,6 +169,33 @@ class ProjectCreator(models.Model):
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name='institution_created_project', null=True, blank=True)
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, related_name='researcher_created_project', null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_creator_project', null=True, blank=True)
+
+    def account_is_confirmed(self):
+        """
+        when account is a community or institution, return True when it is approved.
+        otherwise, always return True
+            -assumption:
+                when an account is a parent project or a researcher,
+                it is considered already approved
+        """
+        account = self.community or self.institution
+        if account:
+            return account.is_approved
+
+        return True
+
+    def validate_user_access(self, user):
+        is_created_by = {
+            'community': self.community,
+            'institution': self.institution,
+            'researcher': self.researcher
+        }
+        if self.account_is_confirmed():
+            return
+
+        if not self.is_user_in_creator_account(user, is_created_by):
+            message = 'Account Is Not Confirmed And User Is Not In Account'
+            raise UnconfirmedAccountException(message)
 
     def which_account_type_created(self):
         #  returns dictionary

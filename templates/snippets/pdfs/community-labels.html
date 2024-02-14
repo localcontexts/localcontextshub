@@ -60,7 +60,7 @@
             {% for bclabel in bclabels %}
                 <tr>
                     <td class="image-td">
-                        <img loading="lazy" src="{{ bclabel.img_url }}" width="200px">
+                        <img loading="lazy" src="{{ bclabel.img_url }}" width="200px" alt="{{ bclabel.alt_text }}">
                     </td>
                     <td class="text-td">
                         <h1 class="no-bottom-margin">{{ bclabel.name }}</h1>
@@ -78,7 +78,7 @@
             {% for tklabel in tklabels %}
                 <tr>
                     <td class="image-td">
-                        <img loading="lazy" src="{{ tklabel.img_url }}" width="200px">
+                        <img loading="lazy" src="{{ tklabel.img_url }}" width="200px" alt="{{ tklabel.alt_text }}">
                     </td>
                     <td class="text-td">
                         <h1 class="no-bottom-margin">{{ tklabel.name }}</h1>

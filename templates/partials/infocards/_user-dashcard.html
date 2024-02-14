@@ -41,7 +41,7 @@
                 <div class="margin-right-8"><a href="{% url 'dashboard' %}" class="primary-btn white-btn">Back to Profile</a></div>
             {% else %}
                 <!-- Notifications -->
-                {% include 'snippets/notifications.html' %}
+                {% include 'snippets/notifications.html' with scope=user %}
                     
                 <div><a href="{% url 'update-profile' %}" class="primary-btn green-btn">Edit profile <i class="fa fa-pencil" aria-hidden="true"></i></a></div>
             {% endif %}
@@ -52,19 +52,19 @@
         <div class="suggestion-box">
             <small class="block">
                 <span class="bold">Build your profile</span> so that other users on the hub can know more about you<br>
-                <a class="darkteal-text underline-hover bold" href="{% url 'update-profile' %}">Edit profile</a>
+                <a class="default-a" href="{% url 'update-profile' %}">Edit profile</a>
             </small>
         </div>
         <div class="suggestion-box">
             <small class="block">
                 <span class="bold">Create an account</span> for either a community, institution, or researcher<br>
-                <a class="darkteal-text underline-hover bold" href="{% url 'select-account' %}">Create an account</a>
+                <a class="default-a" href="{% url 'select-account' %}">Create an account</a>
             </small>
         </div>
         <div class="suggestion-box">
             <small class="block">
                 <span class="bold">Join an existing account</span> that you may already be connected to<br>
-                <a class="darkteal-text underline-hover bold" href="{% url 'registry' %}">Search the Local Contexts registry</a>
+                <a class="default-a" href="{% url 'registry' %}">Search the Local Contexts registry</a>
             </small>
         </div>
     </div>

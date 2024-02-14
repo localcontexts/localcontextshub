@@ -1,0 +1,132 @@
+{% load static %}
+<style>
+    .boundary-container{
+        display: flex;
+        margin-bottom: 10px;
+        width: 100%
+    }
+    .boundary-textarea{
+        width: 90%
+    }
+
+    #upload-shape-file-data{
+        padding: 10px;
+        cursor: pointer;
+        background: lightblue;
+        border-radius: 5px;
+        margin-left: 20px;
+    }
+    #upload-shape-file-data:hover {
+        background: #8ebccb;
+    }
+
+    #view-saved-boundary{
+        font-weight: bold;
+        display: inline;
+        font-size: 14px;
+    }
+    #view-saved-boundary {
+        margin-left: 20px;
+    }
+    #view-saved-boundary:hover {
+        cursor: pointer;
+        color: #4d4f74;
+    }
+</style>
+<div id="boundary-container">
+    {% for boundary_id, boundary in boundary.items %}
+        <div class="boundary-container"><textarea
+        class="boundary-textarea" name="current-boundary:{{boundary_id}}" rows="4"
+        cols="50">{{ boundary |join:", " }}</textarea></div>
+    {% endfor %}
+    {% if not boundary %}
+        <div class="boundary-container"><textarea
+        class="boundary-textarea" name="new-boundary" rows="4"
+        cols="50"></textarea></div>
+    {% endif %}
+</div>
+
+<button type="file" id="upload-shape-file-data"
+        onclick="triggerShapeFileInput(); event.preventDefault()"
+>
+    Upload Shapefile Data
+</button>
+<a
+    id="view-saved-boundary"
+    target="_blank"
+    href="{% url 'community-boundary-view' community_id %}">
+    View Boundary
+</a>
+<input
+        type="file" id="shapefile-input" name="shapefile" style="display: none"
+        onchange="uploadShapeFileData(this)"
+        accept=".zip"
+>
+<script>
+function triggerShapeFileInput() {
+   document.getElementById('shapefile-input').click()
+}
+function previewBoundary(self) {
+  const parentBoundaryContainer = self.closest('.boundary-container')
+  const textArea = parentBoundaryContainer.querySelector('textarea')
+  const boundary = textArea.value
+  if (!boundary) {
+    alert('Boundary Is Not Defined')
+    return
+  }
+
+  // open boundary preview
+  const url = `{% url 'boundary-view' %}?boundary=[${boundary}]`
+  window.open(url, '_blank');
+}
+async function uploadShapeFileData(self) {
+  var files = event.target.files;
+  var file = files[0];
+
+  try {
+    const shapeFileData = await file.arrayBuffer()
+    const geoJsonData = await shp(shapeFileData)
+
+    // merge geoJson to get unique contours
+    let listOfFeatures = geoJsonData.features
+
+    if (geoJsonData.length) {
+        // flatten features from multiple geoJson objects
+        listOfFeatures = []
+        for (const geoJsonObject of geoJsonData) {
+          for (const featureIndex in geoJsonObject.features) {
+            listOfFeatures.push(geoJsonObject.features[featureIndex])
+          }
+        }
+    }
+    const firstBoundaryGeometry = listOfFeatures[0]
+    let firstBoundary = [].concat(...firstBoundaryGeometry.geometry.coordinates).map(arr => arr)
+
+    if (firstBoundaryGeometry.geometry.type === 'MultiPolygon') {
+      // when polygon is made up of multiple polygons, use the first
+      firstBoundary = firstBoundary[0]
+    }
+
+    if(listOfFeatures.length > 1) {
+      alert('Warning:\nThere Are More Than 1 Boundary Present. Only The First Will Be Used.')
+    }
+
+    const firstBoundaryPolygonStr = firstBoundary.map(function(coordinate){
+      // reverse so code extracts (lat-lon)'s
+      return `(${coordinate[1]}, ${coordinate[0]}) `}
+    )
+
+    const textArea = document.querySelector('.boundary-container textarea')
+    textArea.value = firstBoundaryPolygonStr
+
+  } catch (e) {
+    console.log('Error extracting boundary data from Shapefile', e)
+  }
+
+  // set value to null so user can resubmit
+  // same file if needed
+  self.value = null
+  return false
+}
+</script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>

@@ -20,6 +20,7 @@ from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
 from bclabels.models import BCLabel
+from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
 from helpers.models import *
 from institutions.models import Institution
@@ -968,10 +969,13 @@ class HubActivityAdmin(admin.ModelAdmin):
             account_name = Community.objects.values_list('community_name', flat=True).get(id=obj.community_id)
             account_link = 'communities/community'
         elif obj.action_account_type == 'researcher' or obj.action_type == 'New Researcher':
-            researcher = is_user_researcher(obj.action_user_id)
-            account_id = researcher.id
-            account_name = 'Researcher'
-            account_link = 'researchers/researcher'
+            if is_user_researcher(obj.action_user_id):
+                researcher = is_user_researcher(obj.action_user_id)
+                account_id = researcher.id
+                account_name = 'Researcher'
+                account_link = 'researchers/researcher'
+            else:
+                pass
         
         if obj.project_id and obj.action_type != 'Engagement Notice Added':
             project = Project.objects.values_list('title', 'project_page').get(id=obj.project_id)
@@ -1019,6 +1023,7 @@ class HubActivityAdmin(admin.ModelAdmin):
             action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
 
         return action_message
+        
     action.short_description = "Action"
     
 admin_site.register(HubActivity, HubActivityAdmin)
@@ -1062,9 +1067,10 @@ admin_site.register(BCLabel, BCLabelAdmin)
 
 # COMMUNITIES ADMIN
 class CommunityAdmin(admin.ModelAdmin):
+    form = CommunityModelForm
     list_display = ('community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved', 'created', 'country')
     search_fields = ('community_name', 'contact_name', 'contact_email',)
-    readonly_fields = ('native_land_slug',)
+
 
 class JoinRequestAdmin(admin.ModelAdmin):
     list_display = ('community', 'institution', 'user_from', 'user_to', 'status', 'date_sent')

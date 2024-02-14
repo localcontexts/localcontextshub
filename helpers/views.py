@@ -1,8 +1,10 @@
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.conf import settings
-from communities.models import InviteMember
+from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
 from .downloads import download_otc_notice, download_cc_notices
@@ -85,3 +87,42 @@ def download_institution_support_letter(request):
             return response
     except:
         raise Http404()
+
+
+@login_required(login_url='login')
+def community_boundary_view(request, community_id):
+    try:
+        community = Community.objects.get(id=community_id)
+        if not community.is_user_in_community(request.user):
+            message = 'User Does Not Have Access To Community Boundary'
+            print(f'{message}: {request.user}')
+            raise Exception(message)
+
+        boundary = community.boundary.get_coordinates(as_tuple=False)
+        context = {
+            'boundary': boundary
+        }
+        return render(request, 'boundary/boundary-view.html', context)
+    except:
+        raise Http404()
+
+
+@login_required(login_url='login')
+def boundary_view(request):
+    try:
+        boundary = request.GET.get('boundary')
+        if boundary:
+            boundary = [json.loads(
+                boundary.replace('(', '[').replace(')', ']')
+            )]
+        else:
+            boundary = []
+
+        context = {
+            'boundary': boundary
+        }
+        return render(request, 'boundary/boundary-view.html', context)
+    except Exception as e:
+        message = 'Invalid Boundary Format'
+        print(f'{message}: {e}')
+        raise Exception(message)

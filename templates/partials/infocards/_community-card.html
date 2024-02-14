@@ -23,26 +23,40 @@
         </div>
 
         <div class="dashcard-btn-container">
-            <div class="margin-left-16">
+            <div class="margin-left-16 flex-this gap-1">
                 {% if '/registry/' in request.path %}
-                    <a 
-                        class="primary-btn action-btn"
-                        href="{% url 'public-community' community.id %}" 
-                    >View public page</a>
-                {% endif %}
- 
-                {% if '/dashboard/' in request.path %}
-                    {% if approved_label %}
-                        {% if request.user in community.get_collaborator or request.user == community.community_creator %}
-                            <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
-                        {% endif %}
-                    {% else %}
-                        <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
-                    {% endif %} 
+                    <div class="margin-left-16"> 
+                        <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'public-community' community.id %}" 
+                        >View public page</a>
+                    </div> 
                 {% endif %}
 
-                {% if request.user in  community.get_viewers and approved_label %}
-                    <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
+                <div class="margin-right-8">                 
+                    {% if '/dashboard/' in request.path %}
+                        {% if approved_label %}
+                            {% if request.user in community.get_collaborator or request.user == community.community_creator %}
+                                <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
+                            {% endif %}
+                        {% else %}
+                            <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
+                        {% endif %} 
+                    {% endif %}
+                    
+                    {% if request.user in  community.get_viewers and approved_label %}
+                        <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
+                    {% endif %}
+                </div>
+                {% if '/dashboard/' in request.path %}
+                    <!-- Notification -->
+                    {% include 'snippets/notifications.html' with scope=community %}
+                    <!-- Settings -->
+                    {% if request.user == community.community_creator or member_role == 'admin' %}
+                        <div>
+                            <a href="{% url 'update-community' community.id %}" class=" border-raduis50 darkteal-text primary-btn white-btn"><i class=" no-margin fa fa-cog" aria-hidden="true"></i></a>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

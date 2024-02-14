@@ -5,7 +5,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >> {{ community.community_name }}  
@@ -23,39 +23,51 @@
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
                                 <div class="margin-top-8 margin-bottom-8">
-                                    <a id="openRequestToJoinModalBtn" class="darkteal-text underline-hover pointer">Request to join</a>
+                                    <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                            
                         </div>
                         <div class="margin-left-16">
-                            <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% if env == "SANDBOX" %}
+                                <div class="btn-with-helptext">
+                                    <a class="primary-btn disabled-btn">Contact Us</a>
+                                    <span class="btn-help-text">
+                                        Contacting other accounts is not available in the Sandbox.
+                                    </span>
+                                </div>
+                            {% else %}
+                                <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div id="contactModal" class="modal hide">
-                        <div class="modal-defaults contact-modal flex-this column w-100">
-                            <div class="w-100">
-                                <div class="flex-this space-between">
-                                    <div class="w-80">
-                                        <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                        <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
+                    {% if not env == "SANDBOX" %}
+                        <div id="contactModal" class="modal hide">
+                            <div class="modal-defaults contact-modal flex-this column w-100">
+                                <div class="w-100">
+                                    <div class="flex-this space-between">
+                                        <div class="w-80">
+                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                            <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
+                                        </div>
+                                        <div>
+                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                    </div>
-                                </div>
 
-                                <form id="sendMsgForm" method="POST" action="">
-                                    {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <input type="hidden" name="contact_btn">
-                                    <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                </form>    
+                                    <form id="sendMsgForm" method="POST" action="">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <input type="hidden" name="contact_btn">
+                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                                    </form>    
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
+
                 {% else %}
-                    <div class="loc grey-text bold margin-bottom-16">
+                    <div class="loc bold margin-bottom-16">
                         <small>
                             You are a member of this community
                         </small>
@@ -64,7 +76,7 @@
             {% else %}
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
-                        <a href="{% url 'login' %}" class="bold darkteal-text underline-hover">
+                        <a href="{% url 'login' %}" class="default-a">
                             Login
                         </a> 
                         to contact
@@ -125,7 +137,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold  margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >> {{ institution.institution_name }}
@@ -142,40 +154,52 @@
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
                                 <div class="margin-top-8 margin-bottom-8">
-                                    <a id="openRequestToJoinModalBtn" class="darkteal-text underline-hover pointer">Request to join</a>
+                                    <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                                
                         </div>
                         
                         <div class="margin-left-16">
-                            <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% if env == "SANDBOX" %}
+                                <div class="btn-with-helptext">
+                                    <a class="primary-btn disabled-btn">Contact Us</a>
+                                    <span class="btn-help-text">
+                                        Contacting other accounts is not available in the Sandbox.
+                                    </span>
+                                </div>
+                            {% else %}
+                                <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div id="contactModal" class="modal hide">
-                        <div class="modal-defaults contact-modal flex-this column w-100">
-                            <div class="w-100">
-                                <div class="flex-this space-between">
-                                    <div class="w-70">
-                                        <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                        <p>This message will be sent to the administrator of {{ institution.institution_name }}.</p>  
+                    {% if not env == "SANDBOX" %}
+                        <div id="contactModal" class="modal hide">
+                            <div class="modal-defaults contact-modal flex-this column w-100">
+                                <div class="w-100">
+                                    <div class="flex-this space-between">
+                                        <div class="w-70">
+                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                            <p>This message will be sent to the administrator of {{ institution.institution_name }}.</p>  
+                                        </div>
+                                        <div>
+                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                    </div>
-                                </div>
 
-                                <form id="sendMsgForm" method="POST" action="">
-                                    {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <input type="hidden" name="contact_btn">
-                                    <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                </form>    
+                                    <form id="sendMsgForm" method="POST" action="">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <input type="hidden" name="contact_btn">
+                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                                    </form>    
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
+
                 {% else %}
-                    <div class="loc grey-text bold margin-bottom-16">
+                    <div class="loc bold margin-bottom-16">
                         <small>
                             You are a member of this institution
                         </small>
@@ -184,7 +208,7 @@
             {% else %}
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
-                        <a href="{% url 'login' %}" class="bold darkteal-text underline-hover">
+                        <a href="{% url 'login' %}" class="default-a">
                             Login
                         </a> 
                         to contact
@@ -215,15 +239,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
+                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
+                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -233,11 +257,11 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
+                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
-                                    <a href="{{ notice.url }}" class="darkteal-text underline-hover">
+                                    <a href="{{ notice.url }}" class="default-a">
                                         {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
                                     </a>
                                 </li>
@@ -253,7 +277,7 @@
         <div class="flex-this space-between">
             <div class="loc grey-text bold margin-bottom-16">
                 <small>
-                    <a href="{% url 'registry' %}" class="bold darkteal-text underline-hover">
+                    <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
                     </a> 
                     >>    
@@ -265,34 +289,49 @@
             {% if request.user.is_authenticated %}
                 {% if researcher.contact_email_public %}
                     {% if not researcher.user == request.user %}
+
                         <div class="margin-left-16">
-                            <a id="openContactModalBtn" class="primary-btn action-btn">Contact Me</a>
+                            {% if env == "SANDBOX" %}
+                                <div class="btn-with-helptext">
+                                    <a class="primary-btn disabled-btn">Contact Me</a>
+                                    <span class="btn-help-text">
+                                        Contacting other accounts is not available in the Sandbox.
+                                    </span>
+                                </div>
+
+                            {% else %}
+                                <a id="openContactModalBtn" class="primary-btn action-btn">Contact Me</a>
+                            {% endif %}
                         </div>
+                        
                     {% endif %}
                 {% endif %}
                 
-                <div id="contactModal" class="modal hide">
-                    <div class="modal-defaults contact-modal flex-this column w-100">
-                        <div class="w-100">
-                            <div class="flex-this space-between">
-                                <div>
-                                    <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                    <p>This message will be sent to {% firstof researcher.user.get_full_name researcher.user.username %}.</p>  
+                {% if not env == "SANDBOX" %}
+                    <div id="contactModal" class="modal hide">
+                        <div class="modal-defaults contact-modal flex-this column w-100">
+                            <div class="w-100">
+                                <div class="flex-this space-between">
+                                    <div>
+                                        <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                        <p>This message will be sent to {% firstof researcher.user.get_full_name researcher.user.username %}.</p>  
+                                    </div>
+                                    <div>
+                                        <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                </div>
-                            </div>
 
-                            <form id="sendMsgForm" method="POST" action="">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <input type="hidden" name="contact_btn">
-                                <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                            </form>    
+                                <form id="sendMsgForm" method="POST" action="">
+                                    {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <input type="hidden" name="contact_btn">
+                                    <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                                </form>    
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
+
             {% endif %}
 
         </div>
@@ -321,15 +360,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="black square with white letters BC in the middle"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="black square with white letters TK in the middle"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="90px"></div>
+                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -339,11 +378,11 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="black square with white rectangle being held by two hands in the middle"></div>
+                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle. "></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
-                                    <a href="{{ notice.url }}" class="darkteal-text underline-hover">
+                                    <a href="{{ notice.url }}" class="default-a">
                                         {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
                                     </a>
                                 </li>
@@ -430,7 +469,7 @@
 
                                 <div class="flex-this space-between margin-top-8 w-100">
                                     <p class="w-70 no-top-margin">
-                                        <small class="grey-text">By sending this request, you consent for your message and email address to be shared with account administrators.</small>
+                                        <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
                                     </p>
                                     <div>
                                         <input type="hidden" name="join_request">

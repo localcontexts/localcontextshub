@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
-from django.contrib.auth.views import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm, PasswordResetView
+from allauth.socialaccount.views import SignupView, ConnectionsView
 from django.contrib.auth import update_session_auth_hash
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
@@ -16,10 +18,11 @@ from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 
 from unidecode import unidecode
 from django.db.models import Q
-
 from django.contrib.auth.models import User
 from communities.models import Community, InviteMember
 from institutions.models import Institution
@@ -59,11 +62,14 @@ def register(request):
             result = json.loads(response.read().decode())
             ''' End reCAPTCHA validation '''
 
-            if result['success']:
+            if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
                 user = form.save(commit=False)
 
                 if User.objects.filter(email=user.email).exists():
-                    messages.error(request, 'A user with this email already exists')
+                    messages.error(request, 'A user with this email already exists.')
+                    return redirect('register')
+                elif User.objects.filter(username__iexact=user.username.lower()).exists():
+                    messages.error(request, 'A user with this username already exists.')
                     return redirect('register')
                 else:
                     user.is_active = False
@@ -82,7 +88,7 @@ def register(request):
                     return redirect('verify')
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
-            
+
             return redirect('register')
     return render(request, "accounts/register.html", { "form" : form })
 
@@ -100,7 +106,7 @@ class ActivateAccountView(View):
 
             add_to_active_users_mailing_list(request, user.email, None)
 
-            messages.add_message(request, messages.INFO, 'Profile activation successful. You may now log in.')
+            messages.add_message(request, messages.INFO, 'Profile activation successful. You are now able to login.')
             return redirect('login')
         return render(request, 'snippets/activate-failed.html', status=401)
 
@@ -119,7 +125,7 @@ def verify(request):
 
             if active_users:
                 resend_activation_email(request, active_users)
-                messages.add_message(request, messages.INFO, 'Activation Email Sent!')
+                messages.add_message(request, messages.INFO, 'Activation email sent!')
                 return redirect('verify')
             else:
                 messages.add_message(request, messages.ERROR, 'Email did not match any registration email.')
@@ -135,24 +141,41 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(request, username=username, password=password)
-        next_path = get_next_path(request, default_path='dashboard')
 
-        # If user is found, log in the user.
-        if user is not None:
-            if not user.last_login:
-                auth.login(request, user)
-                # Welcome email
-                send_welcome_email(request, user)
-                return redirect('create-profile')
+        if user is None:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                user = None
+
+        if user is not None and user.check_password(password):
+            if user.is_active:
+                if not user.last_login:
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    # Welcome email
+                    send_welcome_email(request, user)
+                    return redirect('create-profile')
+                else:
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    return redirect(get_next_path(request, default_path='dashboard'))
             else:
-                auth.login(request, user)
-                return redirect(next_path)
+                if not user.last_login:
+                    messages.error(request, 'Your account is not active yet. Please verify your email.')
+                    if SignUpInvitation.objects.filter(email=user.email).exists():
+                        for invite in SignUpInvitation.objects.filter(email=user.email):
+                            invite.delete()
+
+                    send_activation_email(request, user)
+                    return redirect('verify')
+                else:
+                    messages.error(request, 'Your account is not active. Please contact support@localcontexts.org.')
+                    return redirect('login')
         else:
-            messages.error(request, 'Your username or password does not match an account')
+            messages.error(request, 'Your username or password does not match an account.')
             return redirect('login')
     else:
         return render(request, "accounts/login.html", {'envi': envi })
-    
+
 @login_required(login_url='login')
 def logout(request):
     if request.method == 'POST':
@@ -166,6 +189,37 @@ def landing(request):
 def select_account(request):
     return render(request, 'accounts/select-account.html')
 
+class CustomSocialSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "You have already created your account using username and password. Please use those to login instead. You can still connect your account with Google once you login.")
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+class CustomSocialConnectionsView(ConnectionsView):
+    def dispatch(self, request, *args, **kwargs):
+        provider = kwargs['provider']
+        social_account = SocialAccount.objects.filter(provider=provider, user=request.user).first()
+        has_password = request.user.has_usable_password()
+        if social_account and has_password:
+            social_account.delete()
+            messages.info(request, 'The social account has been disconnected.')
+            return redirect('link-account')
+        else:
+            messages.error(request, 'Please set password first to unlink an account.')
+            return redirect('link-account')
+        return super().dispatch(request, *args, **kwargs)
+
+class CustomPasswordResetView(PasswordResetView):
+    email_template_name = 'password_reset'
+    from_email = settings.EMAIL_HOST_USER
+    template_name = "accounts/password-reset.html"
+    form_class = CustomPasswordResetForm
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
@@ -173,24 +227,24 @@ def dashboard(request):
     researcher = is_user_researcher(user)
 
     affiliation = user.user_affiliations.prefetch_related(
-        'communities', 
-        'institutions', 
-        'communities__admins', 
-        'communities__editors', 
+        'communities',
+        'institutions',
+        'communities__admins',
+        'communities__editors',
         'communities__viewers',
-        'institutions__admins', 
-        'institutions__editors', 
+        'institutions__admins',
+        'institutions__editors',
         'institutions__viewers'
         ).all().first()
 
-    user_communities = affiliation.communities.all()    
+    user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
 
     if request.method == 'POST':
         profile.onboarding_on = False
         profile.save()
 
-    context = { 
+    context = {
         'profile': profile,
         'user_communities': user_communities,
         'user_institutions': user_institutions,
@@ -231,10 +285,7 @@ def update_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.add_message(request, messages.SUCCESS, 'Profile Updated!')
-            return redirect('update-profile')
-        else:
-            messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.SUCCESS, 'Profile updated!')
             return redirect('update-profile')
     else:
         user_form = UserUpdateForm(instance=request.user)
@@ -246,19 +297,24 @@ def update_profile(request):
 @login_required(login_url='login')
 def change_password(request):
     profile = Profile.objects.select_related('user').get(user=request.user)
+    has_usable_password = request.user.has_usable_password()
 
-    form = PasswordChangeForm(request.user, request.POST or None)
+    if not has_usable_password:
+        form = SetPasswordForm(request.user, request.POST or None)
+    else:
+        form = PasswordChangeForm(request.user, request.POST or None)
+
     if request.method == 'POST':
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            messages.add_message(request, messages.SUCCESS, 'Password Successfully Changed!')
+            messages.add_message(request, messages.SUCCESS, 'Password successfully changed!')
             return redirect('change-password')
         else:
-            messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.ERROR, 'Something went wrong.')
             return redirect('change-password')
     return render(request, 'accounts/change-password.html', {'profile': profile, 'form':form })
-    
+
 
 @login_required(login_url='login')
 def deactivate_user(request):
@@ -270,7 +326,7 @@ def deactivate_user(request):
         remove_from_active_users_mailing_list(request, user.email, user.get_full_name()) #update mailing list with name
 
         auth.logout(request)
-        messages.add_message(request, messages.INFO, 'Your account has been deactivated.')
+        messages.add_message(request, messages.INFO, 'Your account has been deactivated. If this was a mistake please contact support@localcontexts.org.')
         return redirect('login')
     return render(request, 'accounts/deactivate.html', { 'profile': profile })
 
@@ -283,6 +339,16 @@ def manage_organizations(request):
     if Researcher.objects.filter(user=request.user).exists():
         researcher = Researcher.objects.get(user=request.user)
     return render(request, 'accounts/manage-orgs.html', { 'profile': profile, 'affiliations': affiliations, 'researcher': researcher, 'users_name': users_name })
+
+@login_required(login_url='login')
+def link_account(request):
+    has_social_account = SocialAccount.objects.filter(user=request.user).exists()
+    provider = None
+    if has_social_account:
+        social_account = SocialAccount.objects.filter(user=request.user).first()
+        provider = social_account.provider
+
+    return render(request, 'accounts/link-account.html', {'socialaccount':has_social_account, 'provider': provider})
 
 @login_required(login_url='login')
 def member_invitations(request):
@@ -328,14 +394,14 @@ def invite_user(request):
             data.sender = request.user
 
             if User.objects.filter(email=data.email).exists():
-                messages.add_message(request, messages.ERROR, 'This user is already in the Hub')
+                messages.add_message(request, messages.ERROR, 'This user is already in the Hub.')
                 return redirect(selected_path)
-            else: 
+            else:
                 if SignUpInvitation.objects.filter(email=data.email).exists():
-                    messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email')
+                    messages.add_message(request, messages.ERROR, 'An invitation has already been sent to this email.')
                     return redirect(selected_path)
                 else:
-                    messages.add_message(request, messages.SUCCESS, 'Invitation Sent')
+                    messages.add_message(request, messages.SUCCESS, 'Invitation sent!')
                     send_invite_user_email(request, data)
                     data.save()
                     return redirect(selected_path)
@@ -356,7 +422,7 @@ def registry(request, filtertype=None):
         if ('q' in request.GET) and (filtertype != None):
             q = request.GET.get('q')
             return redirect('/registry/?q=' + q)
-        
+
         elif ('q' in request.GET) and (filtertype == None):
             q = request.GET.get('q')
             q = unidecode(q) #removes accents from search query
@@ -396,7 +462,7 @@ def registry(request, filtertype=None):
             'items' : page,
             'filtertype' : filtertype
         }
-        
+
         return render(request, 'accounts/registry.html', context)
 
     except:
@@ -473,7 +539,7 @@ def newsletter_subscription(request):
                 messages.add_message(request, messages.ERROR, 'Please select at least one topic.')
                 return redirect('newsletter-subscription')
             else:
-                if result['success']:
+                if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
                     first_name = request.POST['first_name']
                     last_name = request.POST['last_name']
                     name= str(first_name) + str(' ') + str(last_name)
@@ -517,7 +583,7 @@ def newsletter_unsubscription(request, emailb64):
                         labels = variables[item]
                     if item == 'first_name':
                         first_name = variables[item]
-            
+
                 context = {
                     'email': email,
                     'tech': tech,
@@ -534,15 +600,15 @@ def newsletter_unsubscription(request, emailb64):
                 if 'updatebtn' in request.POST:
                     if 'unsubscribe' in request.POST:
                         unsubscribe_from_mailing_list(str(email), str(name))
-                        messages.add_message(request, messages.SUCCESS, 'You unsubscribed successfully')
+                        messages.add_message(request, messages.SUCCESS, 'You unsubscribed successfully!')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     elif 'topic' in request.POST:
                         variables = manage_mailing_list(request, first_name, email)
                         add_to_newsletter_mailing_list(str(email), str(name), str(variables))
-                        messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated.')
+                        messages.add_message(request, messages.SUCCESS, 'Your preferences have been updated!')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
                     else:
-                        messages.add_message(request, messages.ERROR, 'Please select any option')
+                        messages.add_message(request, messages.ERROR, 'Please select at least one option.')
                         return redirect('newsletter-unsubscription', emailb64=emailb64)
             return render(request, 'accounts/newsletter-unsubscription.html', context)
         except:
@@ -560,7 +626,7 @@ def api_keys(request):
             api_key, key = APIKey.objects.create_key(name=request.user.username)
             profile.api_key = key
             profile.save()
-            messages.add_message(request, messages.SUCCESS, 'API Key Generated!')
+            messages.add_message(request, messages.SUCCESS, 'API Key generated!')
             page_key = profile.api_key
             return redirect('api-key')
 
@@ -572,7 +638,7 @@ def api_keys(request):
             api_key.delete()
             profile.api_key = None
             profile.save()
-            messages.add_message(request, messages.SUCCESS, 'API Key Deleted!')
+            messages.add_message(request, messages.SUCCESS, 'API Key deleted!')
             return redirect('api-key')
 
         elif 'copybtn' in request.POST:

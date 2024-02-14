@@ -71,13 +71,13 @@
                             {% for notice in project.project_notice.all %}
                                 {% if not notice.archived %}
                                     {% if notice.notice_type == 'biocultural' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'traditional_knowledge' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'attribution_incomplete' %}
-                                        <div class="margin-left-8"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px"></div>
+                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -100,9 +100,9 @@
         <p class="no-top-margin w-70">
             {% if bclabels or tklabels %}
                 Your community can apply Labels to Projects, please choose from your customized Labels below.<br>
-                If you would like to customize more Labels, you can do so <a class="darkteal-text underline-hover" href="{% url 'select-label' community.id %}">here</a>.
+                If you would like to customize more Labels, you can do so <a class="default-a" href="{% url 'select-label' community.id %}">here</a>.
             {% else %}
-                It looks like currently you do not have any Labels customized. To customize a new Label, click <a class="darkteal-text underline-hover" href="{% url 'select-label' community.id %}">here</a>.
+                It looks like currently you do not have any Labels customized. To customize a new Label, click <a class="default-a" href="{% url 'select-label' community.id %}">here</a>.
             {% endif %}
 
             {% include 'partials/_alerts.html' %}

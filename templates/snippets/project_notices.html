@@ -11,7 +11,7 @@
                 {% if researcher %}
                     href="{% url 'researcher-notices' researcher.id %}"
                 {% endif %}
-                class="darkteal-text underline-hover"
+                class="default-a"
             >go to the Notices page</a>.
         </p>
     </div>
@@ -19,7 +19,7 @@
     <!-- NOTICE CHECKBOXES -->
     <div class="flex-this w-40 space-between margin-left-16 margin-bottom-16">     
         <div class="flex-this column center-text">
-            <div><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="73px" alt="black square with white letters TK in the middle"></div>
+            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="73px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
             <div><p id="title-tk-notice" class="grey-text">Traditional<br> Knowledge Notice</p></div>
             <div class="notice-checkbox-container">
 
@@ -40,7 +40,7 @@
         </div>
 
         <div class="flex-this column center-text margin-left-16">
-            <div><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="73px" alt="black square with white letters BC in the middle"></div>
+            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="73px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
             <div><p id="title-bc-notice" class="grey-text">Biocultural<br> Notice</p></div>
             <div class="notice-checkbox-container">
 
@@ -62,7 +62,7 @@
         </div>
 
         <div class="flex-this column center-text margin-left-16 align-center">
-            <div><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="73px"></div>
+            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="73px"></div>
             <div><p id="title-attr-notice" class="grey-text">Attribution Incomplete <br> Notice</p></div>
             <div class="notice-checkbox-container">
 
@@ -95,7 +95,7 @@
                     class="show"
                 >
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                        <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" alt="black square with white letters TK in the middle"></div>
+                        <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                         <div class="w-80 pad-top-1">
                             <h3 class="no-top-margin">{{ notice.name }}</h3>
                             <p>
@@ -185,7 +185,7 @@
                     class="show"
                 >
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                        <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" alt="black square with white letters BC in the middle"></div>
+                        <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                         <div class="w-80 pad-top-1">
                             <h3 class="no-top-margin">{{ notice.name }}</h3>
                             <p>
@@ -275,7 +275,7 @@
                     class="show"
                 >
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                        <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="black square with white letters BC in the middle"></div>
+                        <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                         <div class="w-80 pad-top-1">
                             <h3 class="no-top-margin">{{ notice.name }}</h3>
                             <p>
@@ -372,7 +372,7 @@
                 class="hide"
             >
                 <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                    <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" alt="black square with white letters TK in the middle"></div>
+                    <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     <div class="w-80 pad-top-1">
                         <div>
                             <h3 class="no-top-margin">{{ notice.noticeName }}</h3>
@@ -449,7 +449,7 @@
                 class="hide"
             >
                 <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                    <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" alt="black square with white letters BC in the middle"></div>
+                    <div class="w-15 pad-top-1"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     <div class="w-80 pad-top-1">
                         <div>
                             <h3 class="no-top-margin">Biocultural Notice</h3>
@@ -524,7 +524,7 @@
                 class="hide"
             >
                 <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
-                    <div class="w-15 pad-top-1"><img loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="black square with white letters BC in the middle"></div>
+                    <div class="w-15 pad-top-1"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                     <div class="w-80 pad-top-1">
                         <div>
                             <h3 class="no-top-margin">{{ notice.noticeName }}</h3>

@@ -31,7 +31,7 @@ def connect_researcher(request):
     form = ConnectResearcherForm(request.POST or None)
     env = dev_prod_or_local(request.get_host())
     
-    if researcher == False:
+    if not researcher:
         if request.method == "POST":
             if form.is_valid():
                 orcid_id = request.POST.get('orcidId')
@@ -96,7 +96,7 @@ def public_researcher_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = researcher.contact_email
 
-                        send_contact_email(to_email, from_name, from_email, message, researcher)
+                        send_contact_email(request, to_email, from_name, from_email, message, researcher)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-researcher', researcher.id)
                     else:
@@ -104,7 +104,7 @@ def public_researcher_view(request, pk):
                             messages.add_message(request, messages.ERROR, 'Unable to send an empty message.')
                             return redirect('public-researcher', researcher.id)
                 else:
-                    messages.add_message(request, messages.ERROR, 'Something went wrong')
+                    messages.add_message(request, messages.ERROR, 'Something went wrong.')
                     return redirect('public-researcher', researcher.id)
         else:
             context = { 
@@ -114,6 +114,7 @@ def public_researcher_view(request, pk):
                 'tknotice': tknotice,
                 'attrnotice': attrnotice,
                 'otc_notices': otc_notices,
+                'env': dev_prod_or_local(request.get_host()),
             }
             return render(request, 'public.html', context)
 
@@ -125,6 +126,7 @@ def public_researcher_view(request, pk):
             'attrnotice': attrnotice,
             'otc_notices': otc_notices,
             'form': form, 
+            'env': dev_prod_or_local(request.get_host()),
         }
         return render(request, 'public.html', context)
     except:
@@ -171,7 +173,7 @@ def update_researcher(request, pk):
                         researcher.orcid = orcid_id
                         researcher.save()
 
-                    messages.add_message(request, messages.SUCCESS, 'Updated!')
+                    messages.add_message(request, messages.SUCCESS, 'Settings updated!')
                     return redirect('update-researcher', researcher.id)
         else:
             update_form = UpdateResearcherForm(instance=researcher)
@@ -600,7 +602,8 @@ def project_actions(request, pk, project_uuid):
 
                             # Create email 
                             send_email_notice_placed(request, project, community, researcher)
-                            return redirect('researcher-project-actions', researcher.id, project.unique_id)
+
+                        return redirect('researcher-project-actions', researcher.id, project.unique_id)
                     elif 'link_projects_btn' in request.POST:
                         selected_projects = request.POST.getlist('projects_to_link')
 

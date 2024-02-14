@@ -1,7 +1,6 @@
 appdirs==1.4.4
-apscheduler==3.10.4
 arabic-reshaper==3.0.0
-asgiref==3.2.10
+asgiref==3.3.2
 astroid==2.4.2
 boto3==1.26.77
 botocore==1.29.77
@@ -10,7 +9,8 @@ certifi==2023.7.22
 charset-normalizer==2.0.6
 distlib==0.3.0
 dj-database-url==0.5.0
-Django==3.1.14
+Django==3.2
+django-allauth==0.59.0
 django-appconf==1.0.4
 django-dbbackup==4.0.2
 django-chartjs==2.3.0
@@ -18,7 +18,8 @@ django-classy-tags==2.0.0
 django-cleanup==5.1.0
 django-cookie-consent==0.2.6
 django-cors-headers==3.11.0
-django-countries==6.1.3
+django-countries==7.5.1
+django-dbbackup==4.0.2
 django-debug-toolbar==3.2.4
 django-guardian==2.3.0
 django-maintenance-mode==0.16.0
@@ -27,6 +28,8 @@ django-widget-tweaks==1.4.8
 djangorestframework==3.12.2
 djangorestframework-api-key==2.2.0
 filelock==3.0.12
+factory-boy==3.3.0
+Faker==20.0.0
 future==0.18.3
 google-api-core==1.32.0
 google-auth==1.30.0
@@ -55,12 +58,17 @@ pylint-plugin-utils==0.6
 pyparsing==2.4.7
 PyPDF2==1.27.9
 pytest==7.4.3
+pytest-cov==4.1.0
+pytest-django==4.7.0
+pytest-html==4.1.1
+pytest-metadata==3.0.0
 pytest-runner==5.3.1
 python-bidi==0.4.2
 python-dateutil==2.8.1
 pytz==2020.1
 reportlab>=3.6.13
 requests==2.31.0
+requests-oauthlib==1.3.1
 rsa==4.7.2
 s3transfer==0.6.0
 setuptools==65.5.1

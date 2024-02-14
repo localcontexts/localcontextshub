@@ -383,3 +383,20 @@ def discoverable_project_view(project, user):
         discoverable = False
 
     return discoverable
+
+def get_alt_text(data, bclabels, tklabels):
+    for label in bclabels:
+        item = next((x for x in data['bcLabels'] if x['labelName'] == label.name), None)
+        if item is not None:
+            label.alt_text = item['labelAlternateText']
+        else:
+            label.alt_text = "BC label icon"  
+    
+    for label in tklabels:
+        item = next((x for x in data['tkLabels'] if x['labelName'] == label.name), None)
+        if item is not None:
+            label.alt_text = item['labelAlternateText']
+        else:
+            label.alt_text = "TK label icon" 
+    
+    return bclabels, tklabels  

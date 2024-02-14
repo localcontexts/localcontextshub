@@ -44,7 +44,7 @@ def connect_institution(request):
             user_is_member = institution.is_user_in_institution(request.user)
 
             if request_exists or user_is_member:
-                messages.add_message(request, messages.ERROR, "Either you have already sent this request or are currently a member of this institution.")
+                messages.add_message(request, messages.ERROR, 'Either you have already sent this request or are currently a member of this institution.')
                 return redirect('connect-institution')
             else:
                 if form.is_valid():
@@ -56,10 +56,10 @@ def connect_institution(request):
 
                     send_action_notification_join_request(data) # Send action notification to institution
                     send_join_request_email_admin(request, data, institution) # Send institution creator email
-                    messages.add_message(request, messages.SUCCESS, "Request to join institution sent!")
+                    messages.add_message(request, messages.SUCCESS, 'Request to join institution sent!')
                     return redirect('connect-institution')
         else:
-            messages.add_message(request, messages.ERROR, 'Institution not in registry')
+            messages.add_message(request, messages.ERROR, 'Institution not in registry.')
             return redirect('connect-institution')
 
     context = { 'institution': institution, 'institutions': institutions, 'form': form,}
@@ -160,6 +160,7 @@ def confirm_institution(request, institution_id):
 
 def public_institution_view(request, pk):
     try:
+        environment = dev_prod_or_local(request.get_host())
         institution = Institution.objects.get(id=pk)
 
         # Do notices exist
@@ -190,7 +191,7 @@ def public_institution_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = institution.institution_creator.email
                         
-                        send_contact_email(to_email, from_name, from_email, message, institution)
+                        send_contact_email(request, to_email, from_name, from_email, message, institution)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-institution', institution.id)
                     else:
@@ -202,7 +203,7 @@ def public_institution_view(request, pk):
                     if join_form.is_valid():
                         data = join_form.save(commit=False)
                         if JoinRequest.objects.filter(user_from=request.user, institution=institution).exists():
-                            messages.add_message(request, messages.ERROR, "You have already sent a request to this institution")
+                            messages.add_message(request, messages.ERROR, 'You have already sent a request to this institution.')
                             return redirect('public-institution', institution.id)
                         else:
                             data.user_from = request.user
@@ -214,7 +215,7 @@ def public_institution_view(request, pk):
                             send_join_request_email_admin(request, data, institution) # Send email to institution creator
                             return redirect('public-institution', institution.id)
                 else:
-                    messages.add_message(request, messages.ERROR, 'Something went wrong')
+                    messages.add_message(request, messages.ERROR, 'Something went wrong.')
                     return redirect('public-institution', institution.id)
 
         else:
@@ -225,6 +226,7 @@ def public_institution_view(request, pk):
                 'tknotice': tknotice,
                 'attrnotice': attrnotice,
                 'otc_notices': otc_notices,
+                'env': environment,
             }
             return render(request, 'public.html', context)
 
@@ -238,6 +240,7 @@ def public_institution_view(request, pk):
             'tknotice': tknotice,
             'attrnotice': attrnotice,
             'otc_notices': otc_notices,
+            'env': environment,
         }
         return render(request, 'public.html', context)
     except:
@@ -260,7 +263,7 @@ def update_institution(request, pk):
         else:
             if update_form.is_valid():
                 update_form.save()
-                messages.add_message(request, messages.SUCCESS, 'Updated!')
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
                 return redirect('update-institution', institution.id)
     else:
         update_form = UpdateInstitutionForm(instance=institution)
@@ -394,12 +397,12 @@ def institution_members(request, pk):
                         
                         send_account_member_invite(data) # Send action notification
                         send_member_invite_email(request, data, institution) # Send email to target user
-                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}')
+                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}.')
                         return redirect('institution-members', institution.id)
                     else: 
                         messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {institution.institution_name}.')
             else:
-                messages.add_message(request, messages.INFO, 'Something went wrong')
+                messages.add_message(request, messages.INFO, 'Something went wrong.')
 
     context = { 
         'institution': institution,
@@ -408,6 +411,7 @@ def institution_members(request, pk):
         'join_requests_count': join_requests_count,
         'users': users,
         'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
     }    
     return render(request, 'institutions/members.html', context)
 
@@ -843,7 +847,8 @@ def project_actions(request, pk, project_uuid):
 
                         # Create email 
                         send_email_notice_placed(request, project, community, institution)
-                        return redirect('institution-project-actions', institution.id, project.unique_id)
+                        
+                    return redirect('institution-project-actions', institution.id, project.unique_id)
                 elif 'link_projects_btn' in request.POST:
                     selected_projects = request.POST.getlist('projects_to_link')
 

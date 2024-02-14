@@ -17,181 +17,181 @@
 <div class="content-card-v2 content-card-space">
     <h3 class="no-top-margin">Step 1. Select a Label to customize</h3>
     <div class="margin-bottom-16 margin-top-16 w-100 about-this-label">    
-        <div class="flex-this margin-left-16 margin-right-16">
+        <div class="flex-this margin-left-16 margin-right-16 pointer-event-none">
 
             <div id="target-img-div" class="margin-top-16">
-                <img 
+                <img
                     loading="lazy"
                     {% if label_code == 'bcr' %}
                         id="bcr" 
                         src="{% static 'images/bc-labels/bc-research-use.png' %}"  
-                        alt="BC Research Use (BC R) Label" 
+                        alt="BC Research Use Label icon. Black tag shape with four rectangles inside two concentric circles. On left side are three white dots." 
                     {% endif %}
                     {% if label_code == 'bccv' %}
                         id="bccv" 
                         src="{% static 'images/bc-labels/bc-consent-verified.png' %}" 
-                        alt="BC Consent Verified (BC CV) Label"
+                        alt="BC Consent Verified Label icon. Black tag shape with a white checkmark in center. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bcoc' %}
                         id="bcoc" 
                         src="{% static 'images/bc-labels/bc-open-to-commercialization.png' %}" 
-                        alt="BC Open to Commercialization (BC OC) Label"
+                        alt="BC Open to Commercialization Label icon. Black tag shape with a white dollar sign in center. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bccb' %}
                         id="bccb" 
                         src="{% static 'images/bc-labels/bc-open-to-collaboration.png' %}" 
-                        alt="BC Open to Collaboration (BC CB) Label"
+                        alt="BC Open to Collaboration Label icon. Black tag shape with three white overlapping figures in center made up of hexagons on bottom and circles on top. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bcmc' %}
                         id="bcmc" 
                         src="{% static 'images/bc-labels/bc-multiple-community.png' %}" 
-                        alt="BC Multiple Communities (BC MC) Label"
+                        alt="BC Multiple Communities Label icon. Black tag shape with four white over-under woven patchworks arranged in a 2x2 square. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bcp' %}
                         id="bcp" 
                         src="{% static 'images/bc-labels/bc-provenance.png' %}" 
-                        alt="BC Provenance (BC P) Label"
+                        alt="BC Provenance Label icon. Black tag shape with six perpendicular white lines of increasing width. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bccl' %}
                         id="bccl" 
                         src="{% static 'images/bc-labels/bc-clan.png' %}" 
-                        alt="BC Clan (BC CL) Label"
+                        alt="BC Clan Label icon. Black tag shape with a circle made of small white dots in center. On left side are three larger white dots."
                     {% endif %}
                     {% if label_code == 'bco' %}
                         id="bco" 
                         src="{% static 'images/bc-labels/bc-outreach.png' %}" 
-                        alt="BC Outreach (BC O) Label"
+                        alt="BC Outreach Label icon. Black tag shape with a white hand that has two dots stretching outward from each finger. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bccnv' %}
                         id="bccnv" 
                         src="{% static 'images/bc-labels/bc-consent-non-verified.png' %}" 
-                        alt="BC Consent Non-Verified (BC CNV) Label"
+                        alt="BC Consent Non-Verified Label icon. Black tag shape with a white checkmark and a diagonal line through it in the center. On left side are three white dots."
                     {% endif %}
                     {% if label_code == 'bcnc' %}
                         id="bcnc" 
                         src="{% static 'images/bc-labels/bc-non-commercial.png' %}" 
-                        alt="BC Non-Commercial (BC NC) Label"
+                        alt="BC Non-Commercial Label icon. Black tag shape with a white dollar sign and a diagonal line through it in center. On left side are three white dots."
                     {% endif %}
 
                     {% if label_code == 'tka' %}
                         id="tka" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-attribution.png' %}" 
-                        alt="TK Attribution (TK A) Label"
+                        alt="TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right."
                     {% endif %}
                     {% if label_code == 'tkcl' %}
                         id="tkcl" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-clan.png' %}" 
-                        alt="TK Clan (TK CL) Label"
+                        alt="TK Clan Label icon. Black tag shape with a circle made of small white dots in the center."
                     {% endif %}
                     {% if label_code == 'tkf' %}
                         id="tkf" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-family.png' %}" 
-                        alt="TK Family (TK F) Label"
+                        alt="TK Family Label icon. Black tag shape with a circle made of alternating small and big white dots in the center."
                     {% endif %}
                     {% if label_code == 'tkmc' %}
                         id="tkmc" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-multiple-community.png' %}" 
-                        alt="TK Multiple Communities (TK MC) Label"
+                        alt="TK Multiple Communities Label icon. Black tag shape with four white over-under woven patchworks arranged in a 2x2 square."
                     {% endif %}
                     {% if label_code == 'tko' %}
                         id="tko" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-outreach.png' %}" 
-                        alt="TK Outreach (TK O) Label"
+                        alt="TK Outreach Label icon. Black tag shape with a white hand that has two dots stretching outward from each finger."
                     {% endif %}
                     {% if label_code == 'tknv' %}
                         id="tknv" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-non-verified.png' %}" 
-                        alt="TK Non-Verified (TK NV) Label"
+                        alt="TK Non-Verified Label icon. Black tag shape with a white checkmark and diagonal line through it in center."
                     {% endif %}
                     {% if label_code == 'tkv' %}
                         id="tkv" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-verified.png' %}" 
-                        alt="TK Verified (TK V) Label"
+                        alt="TK Verified Label icon. Black tag shape with a white checkmark in center."
                     {% endif %}
                     {% if label_code == 'tknc' %}
                         id="tknc" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-non-commercial.png' %}" 
-                        alt="TK Non-Commercial (TK NC) Label"
+                        alt="TK Non-Commercial Label icon. Black tag shape with a white dollar sign and a diagonal line through it in center."
                     {% endif %}
                     {% if label_code == 'tkoc' %}
                         id="tkoc" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-commercial.png' %}" 
-                        alt="TK Open to Commercialization (TK OC) Label"
+                        alt="TK Open to Commercialization Label icon. Black tag shape with a white dollar sign in center."
                     {% endif %}
                     {% if label_code == 'tkcs' %}
                         id="tkcs" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-culturally-sensitive.png' %}" 
-                        alt="TK Culturally Sensitive (TK CS) Label"
+                        alt="TK Culturally Sensitive Label icon. Black tag shape with four hands in a circle surrounding a white cube."
                     {% endif %}
                     {% if label_code == 'tkcv' %}
                         id="tkcv" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-community-voice.png' %}" 
-                        alt="TK Community Voice (TK CV) Label" 
+                        alt="TK Community Voice Label icon. Black tag shape with three different sized human figures in white and dialogue bubbles that overlap." 
                     {% endif %}
                     {% if label_code == 'tkco' %}
                         id="tkco" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-community-use-only.png' %}" 
-                        alt="TK Community Use Only (TK CO) Label"
+                        alt="TK Community Use Only Label icon. Black tag shape with four criss-crossed white lines in center."
                     {% endif %}
                     {% if label_code == 'tks' %}
                         id="tks" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-seasonal.png' %}" 
-                        alt="TK Seasonal (TK S) Label"
+                        alt="TK Seasonal Label icon. Black background with simple illustrations of a tree with bare branches and another tree with a circle representing leaves."
                     {% endif %}
                     {% if label_code == 'tkwg' %}
                         id="tkwg" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-women-general.png' %}" 
-                        alt="TK Weomen General (TK WG) Label"
+                        alt="TK Women General Label icon. Black tag shape with a white figure made up of a triangle on bottom and circle on top."
                     {% endif %}
                     {% if label_code == 'tkmg' %}
                         id="tkmg" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-men-general.png' %}" 
-                        alt="TK Men General (TK MG) Label"
+                        alt="TK Men General Label icon. Black tag shape with a white figure made up of a square on bottom and circle on top."
                     {% endif %}
                     {% if label_code == 'tkmr' %}
                         id="tkmr" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-men-restricted.png' %}" 
-                        alt="TK Men Restricted (TK MR) Label"
+                        alt="TK Men Restricted Label icon. Black tag shape with two white figures made up of two squares on bottom and two circles on top with a double-sided arrow connecting both figures."
                     {% endif %}
                     {% if label_code == 'tkwr' %}
                         id="tkwr" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-women-restricted.png' %}" 
-                        alt="TK Women Restricted (TK WR) Label"
+                        alt="TK Women Restricted Label icon. Black tag shape with two white figures made up of two triangles on bottom and two circles on top with a double-sided arrow connecting both figures."
                     {% endif %}
                     {% if label_code == 'tkss' %}
                         id="tkss" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-secret-sacred.png' %}" 
-                        alt="TK Secret Sacred (TK SS) Label"
+                        alt="TK Secret / Sacred Label icon. Black tag shape with a large white cube in center."
                     {% endif %}
                     {% if label_code == 'tkcb' %}
                         id="tkcb" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-open-to-collaboration.png' %}" 
-                        alt="TK Open to Collaboration (TK CB) Label"
+                        alt="TK Open to Collaboration Label icon. Black tag shape with three white overlapping figures in center made up of hexagons on bottom and circles on top."
                     {% endif %}
                     {% if label_code == 'tkcr' %}
                         id="tkcr" 
                         class="label-large" 
                         src="{% static 'images/tk-labels/tk-creative.png' %}" 
-                        alt="TK Creative (TK CR) Label"
+                        alt="TK Creative Label icon. Black tag shape with a white circle made up of eight small dots on one half, a solid line on the other half, and each half bifurcated with two bigger dots."
                     {% endif %}
                 >
             </div>
@@ -232,8 +232,7 @@
                         <label class='block'>Label Language <small>(select from dropdown)</small></label>
                         <div class="tooltip" style="margin-top: 5px; margin-left: 5px;"><strong>i</strong>
                             <span class="tooltiptext">
-                                Can't find the language you are looking for?<br>
-                                Contact us at support@localcontexts.org
+                                Select the language for this Label. English,<br> Māori, French, and Spanish translations <br>of the Label name and template text will be <br>loaded if selected. Can't find the language <br>you are looking for? <br> Please contact us: support@localcontexts.org
                             </span>
                         </div>                          
                     </div>
@@ -257,6 +256,7 @@
                             <a href="https://localcontexts.org/privacy-policy/" class="white-text underline-hover" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                         </span>
                     </div> 
+                    <div id="languageError" class="msg-red w-50 font-size-14" style="display:none;"></div>
                     {{ form.label_text }}
                 </div>
 
