@@ -11,7 +11,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         return '/create-profile/'
 
     def respond_user_inactive(self, request, user):
-        messages.error(request, 'Your username or password does not match an account')
+        messages.error(request, 'Your username or password does not match an account.')
         return redirect('login')
     
     def post_login(

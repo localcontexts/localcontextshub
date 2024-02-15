@@ -1108,8 +1108,8 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
                 li.classList.add('show')
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
-                    <div><p class="center-name">${item}</p></div>
-                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer">&times;</div>
+                    <div><p class="center-name word-break">${item}</p></div>
+                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
                 </div>
                 <input type="hidden" value="${item.trim()}" name="project_urls">`
     

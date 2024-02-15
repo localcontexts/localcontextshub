@@ -28,7 +28,7 @@
 
 /* Form Container || THE WHITE PART */
 .registration-form-container {
-    padding: 35px;
+    padding: 35px 35px 0px 35px;
     max-width: 65%;
     min-width: 65%;
     border-radius: 0px 5px 5px 0px;

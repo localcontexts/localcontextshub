@@ -31,7 +31,7 @@ def connect_researcher(request):
     form = ConnectResearcherForm(request.POST or None)
     env = dev_prod_or_local(request.get_host())
     
-    if researcher == False:
+    if not researcher:
         if request.method == "POST":
             if form.is_valid():
                 orcid_id = request.POST.get('orcidId')
@@ -104,7 +104,7 @@ def public_researcher_view(request, pk):
                             messages.add_message(request, messages.ERROR, 'Unable to send an empty message.')
                             return redirect('public-researcher', researcher.id)
                 else:
-                    messages.add_message(request, messages.ERROR, 'Something went wrong')
+                    messages.add_message(request, messages.ERROR, 'Something went wrong.')
                     return redirect('public-researcher', researcher.id)
         else:
             context = { 
@@ -173,7 +173,7 @@ def update_researcher(request, pk):
                         researcher.orcid = orcid_id
                         researcher.save()
 
-                    messages.add_message(request, messages.SUCCESS, 'Updated!')
+                    messages.add_message(request, messages.SUCCESS, 'Settings updated!')
                     return redirect('update-researcher', researcher.id)
         else:
             update_form = UpdateResearcherForm(instance=researcher)

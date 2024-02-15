@@ -31,16 +31,26 @@
         }
     </style>
     <div class="w-90">
-        <h2 class="no-top-margin">Community boundary</h2>
+        <h2 class="no-top-margin">Add community boundary</h2>
+        <p>
+            Enhance your community’s visibility on the Hub by adding your community boundaries.
+            In future development of the Hub, this information will help to connect you with your
+            collections and data held outside your community.
+        </p>
 
         <p>
-            Local Contexts wants to help communities and projects become more discoverable and accessible for users
-            of the hub. There are two options to add your community boundary.
-            Please select which option best suits your community.
-            <br><br>   
-
+            We are using the term community boundary to represent the spatial areas which the community
+            has relationships with and/or responsibilities for. This could represent legal
+            territorial boundaries or traditional areas of interest, areas where you would be
+            interested in Projects.
+        </p>
+        <i>
+            Note: We acknowledge that the interests of different communities may overlap and at times the
+            representation of community boundaries may be a source of tension.
+        </i>
+        <p>
                 <form id="radio_btn_select">
-                    <strong>Option 1: Searching the Native Land Digital Database </strong><br><br>
+                    <strong>Option 1: Search the Native Land Digital database </strong><br><br>
                     <fieldset>
 
                         <div class="communityBoundarySelect">
@@ -49,27 +59,26 @@
                                 <strong>Native Land Digital</strong>
                             </div>
                             <div class="communityBoundaryText">
-                                Native Land Digital is an Indigenous led mapping tool that maps
-                                Indigenous territories, treaties and languages around the world.
-                                <a class="default-a" target="_blank" href="https://native-land.ca/">See more information here</a>
+                                Native Land Digital is an Indigenous-led mapping tool that maps Indigenous
+                                territories, treaties, and languages around the world.
+                                <a class="default-a" target="_blank" href="https://native-land.ca/">See more information here.</a>
                             </div>
                         </div>
 
                     </fieldset>
 
                     <br>
-                    <strong>Option 2: Uploading a shape file </strong><br><br>
+                    <strong>Option 2: Upload a shapefile </strong><br><br>
                     <fieldset>
 
                         <div class="communityBoundarySelect">
                             <input type="radio" name="selectBoundary" data-next="{% url 'upload-boundary-file' %}"/>
                             <div class="communityBoundaryLabel">
-                                <strong>Shape file</strong>
+                                <strong>Shapefile</strong>
                             </div>
                             <div class="communityBoundaryText">
                                 A shapefile is a vector data file format commonly used for geospatial analysis.
-                                Shapefiles store the location, geometry, and attribution
-                                of point, line, and polygon features.
+                                You can create shapefiles on third-party websites like ArcGIS and QGIS.
                             </div>
                         </div>
 

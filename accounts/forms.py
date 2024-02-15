@@ -1,8 +1,13 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from .models import Profile, SignUpInvitation
+from helpers.emails import send_password_reset_email
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, max_length=150, help_text='Required')
@@ -40,6 +45,15 @@ class UserUpdateForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'w-100'}),
             'last_name': forms.TextInput(attrs={'class': 'w-100'}),
         }
+
+    def clean(self):
+        super(UserUpdateForm, self).clean()
+        email = self.cleaned_data.get('email')
+
+        if len(email) == 0:
+            self._errors['email'] = self.error_class(['Email Is Required'])
+        return self.cleaned_data
+
 
 class ProfileCreationForm(forms.ModelForm):
     class Meta:
@@ -83,3 +97,35 @@ class ContactOrganizationForm(forms.Form):
     email = forms.EmailField(label=_('Email Address'), required=True, widget=forms.EmailInput(attrs={'class': 'w-100', 'placeholder': 'email@domain.com'}))
     message= forms.CharField(widget=forms.Textarea(attrs={"rows":4, "cols":65, 'class': 'w-100'}))
     
+class CustomPasswordResetForm(PasswordResetForm):
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+            email_template_name=None,
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None, html_email_template_name=None,
+             extra_email_context=None):
+        """
+        Generate a one-use only link for resetting password and send it to the
+        user.
+        """
+        email = self.cleaned_data["email"]
+        if not domain_override:
+            current_site = get_current_site(request)
+            site_name = current_site.name
+            domain = current_site.domain
+        else:
+            site_name = domain = domain_override
+        email_field_name = User.get_email_field_name()
+        for user in self.get_users(email):
+            user_email = getattr(user, email_field_name)
+            context = {
+                'email': user_email,
+                'domain': domain,
+                'site_name': site_name,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'token': token_generator.make_token(user),
+                'protocol': 'https' if use_https else 'http',
+                **(extra_email_context or {}),
+            }
+            send_password_reset_email(request, context)

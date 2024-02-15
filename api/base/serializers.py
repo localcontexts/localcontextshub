@@ -6,6 +6,7 @@ from helpers.models import LabelTranslation, Notice, NoticeTranslation
 from projects.models import Project, ProjectCreator
 from institutions.models import Institution
 from researchers.models import Researcher
+from django.contrib.auth.models import User
 
 class InstitutionSerializer(serializers.ModelSerializer):
     institution_name = SerializerMethodField()
@@ -126,3 +127,8 @@ class ProjectNoNoticeSerializer(serializers.ModelSerializer):
     
     def get_sub_projects(self, obj):
         return [p.unique_id for p in Project.objects.filter(source_project_uuid=obj.unique_id)]
+
+class GetUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
