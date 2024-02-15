@@ -73,7 +73,7 @@ def register(request):
                     messages.error(request, 'A user with this username already exists.')
                     return redirect('register')
                 elif not validate_email(email=user.email):
-                    messages.error(request, 'The email you entered is invlaid')
+                    messages.error(request, 'The email you entered is invalid')
                     return redirect('register')
                 else:
                     user.is_active = False
