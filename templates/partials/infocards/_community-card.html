@@ -52,7 +52,7 @@
                     <!-- Notification -->
                     {% include 'snippets/notifications.html' with scope=community %}
                     <!-- Settings -->
-                    {% if request.user == community.community_creator or member_role == 'admin' %}
+                    {% if request.user == community.community_creator or request.user in community.get_admins %}
                         <div>
                             <a href="{% url 'update-community' community.id %}" class=" border-raduis50 darkteal-text primary-btn white-btn"><i class=" no-margin fa fa-cog" aria-hidden="true"></i></a>
                         </div>
