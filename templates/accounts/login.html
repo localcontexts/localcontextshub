@@ -32,14 +32,14 @@
 
                     <div class="flex-this justify-center"> <button class="primary-btn action-btn margin-top-2 w-100 signin-btn">Sign in</button></div>
                 </div>
-                <!-- <div class="flex-this justify-center align-center gap-1">
+                <div class="flex-this justify-center align-center gap-1">
                     <div class="horizental-line"> </div>
                 <p>or</p>
                 <div class="horizental-line"> </div>
-                </div> -->
-                <!-- <div class="flex-this">
+                </div>
+                <div class="flex-this">
                     <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Sign in With Google</span></a>
-                </div> -->
+                </div>
             </div>
             <input type="hidden" name="next" value="{{ request.GET.next }}"/>
         </form>
