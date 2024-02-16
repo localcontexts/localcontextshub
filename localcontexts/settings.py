@@ -207,6 +207,7 @@ MESSAGE_TAGS = {
 # MailGun Configs
 MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY')
 MAILGUN_BASE_URL = os.environ.get('MAILGUN_BASE_URL')
+MAILGUN_V4_BASE_URL = os.environ.get('MAILGUN_V4_BASE_URL')
 MAILGUN_TEMPLATE_URL = os.environ.get('MAILGUN_TEMPLATE_URL')
 
 # Config for sending out emails

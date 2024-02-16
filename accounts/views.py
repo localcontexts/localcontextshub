@@ -33,6 +33,7 @@ from projects.models import Project
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
+from helpers.utils import validate_email
 
 from helpers.emails import *
 from .models import *
@@ -70,6 +71,9 @@ def register(request):
                     return redirect('register')
                 elif User.objects.filter(username__iexact=user.username.lower()).exists():
                     messages.error(request, 'A user with this username already exists.')
+                    return redirect('register')
+                elif not validate_email(email=user.email):
+                    messages.error(request, 'The email you entered is invalid')
                     return redirect('register')
                 else:
                     user.is_active = False
