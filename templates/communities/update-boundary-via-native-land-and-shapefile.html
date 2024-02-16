@@ -202,6 +202,8 @@
     </div>
 </span>
 <script>
+    let BoundaryPayLoad = null
+
     fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
     document.querySelector('.region-container input.search').addEventListener("keyup", (event) => {
@@ -247,18 +249,56 @@
         document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
     }
 
-    function selectSlug(self) {
+    async function getNativeLandBoundary(selectionUnit, href, slug) {
+        /*
+        * This code attempts to get the actual boundary data from Native Land.
+        * If it fails to do so, it raises an error
+        * */
+        try {
+            // do post call to get boundary
+            const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+            const boundaryResponse = await fetch(url)
+            const boundaryData = await boundaryResponse.json()
+
+            if (boundaryData.length === 0) {
+                const errorMessage = 'Selected location does not have any Native Land boundary'
+                alert(errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            const boundary = boundaryData[0]
+            const boundaryCoordinates = boundary.geometry.coordinates[0]
+            // reorder so (lon, lat)'s become (lat, lon)'s
+            boundaryCoordinates.map(row=>row.reverse())
+
+            // set Boundary with payload
+            BoundaryPayLoad = {
+                source: url,
+                name: boundary.properties.Name,
+                boundary: boundaryCoordinates
+            }
+
+        } catch (error) {
+            console.error('Error Fetching boundary:', error)
+        }
+    }
+
+    async function selectSlug(self) {
         const selectionUnit = self.closest('.boundary-selection-unit')
         const title = event.target.dataset.title
         const slug = event.target.dataset.slug
-        const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
-        selectionUnit.querySelector('.nld-link').setAttribute('href', url)
+        const href = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+
+        hideSearchDropDown()
+        await getNativeLandBoundary(selectionUnit, href, slug)
+
+        selectionUnit.querySelector('.nld-link').setAttribute('href', href)
         selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
 
         // set selected data for selection
         selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
 
-        hideSearchDropDown()
+
         showSelectedSlug()
         enableContinueButton()
 
@@ -266,13 +306,13 @@
         selectionUnit.querySelector('.feedback').classList.add('invisible')
     }
 
-    // code below mostly for shapefile
+    // code below for shapefile
 
     function triggerShapeFileInput(self) {
         self.closest('.boundary-selection-unit').querySelector('.shapefile-input').click()
     }
 
-    async function registerBoundary(boundaryName, boundary, removePreexisting=true) {
+    async function setBoundary(boundaryName, boundary, removePreexisting=true) {
     const payload = {
         source: 'shape-file',
         name: boundaryName,
@@ -293,11 +333,6 @@
             throw new Error('Error Setting boundary')
         }
 
-    }
-
-    async function resetboundary(){
-        // when setting boundary fails, the boundary are reset
-        await registerBoundary('No boundary', [], true)
     }
 
     async function uploadShapeFileData(self) {
@@ -347,8 +382,12 @@
             }
           )
 
-          // upload shapefile to session for community
-          await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
+        // set Boundary with payload
+        BoundaryPayLoad = {
+            source: 'Shapefile',
+            name: fileName,
+            boundary: distinctBoundaryReordered
+        }
 
         successMessage.classList.toggle('invisible')
         // show and label ui elements
@@ -360,7 +399,6 @@
         failureMessage.classList.toggle('invisible')
         console.log('Error extracting boundary data from Shapefile', e)
         disableContinueButton()
-        await resetboundary()
       }
         self.closest('.boundary-selection-unit').querySelector('.select-file-input').value = file.name
         // set value to null so user can resubmit
@@ -370,3 +408,4 @@
     }
 
 </script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>
