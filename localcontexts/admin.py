@@ -959,6 +959,9 @@ class HubActivityAdmin(admin.ModelAdmin):
     
     def action(self, obj):
         user_name = get_users_name(User.objects.get(id=obj.action_user_id))
+        account_link = ''
+        account_name = ''
+        account_id = ''
 
         if obj.action_account_type == 'institution':
             account_id = obj.institution_id
