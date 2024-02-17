@@ -125,6 +125,10 @@
     .save-cancel-container {
         margin-top: 20px;
     }
+
+    .disabled-btn{
+        pointer-events: none;
+    }
 </style>
 <span class="boundary-selection-unit">
     <div class="region-container">
@@ -190,13 +194,13 @@
             <a
                 id="community-boundary-continue-btn"
                 class="primary-btn action-btn disabled-btn margin-right-8"
-                onclick="setBoundary()"
+                onclick="setBoundary(this)"
             >
                 Change Boundary
             </a>
         </div>
-        <div id="skip-this-step">
-            <a class="primary-btn white-btn" >Cancel</a>
+        <div>
+            <a id="cancel-btn" class="primary-btn white-btn disabled-btn" onclick="cancelChange(this)">Cancel</a>
         </div>
     </div>
 </span>
@@ -241,11 +245,19 @@
     function showSelectedSlug() {
         document.querySelector('.selected-location').classList.remove('invisible')
     }
+    function enableCancelButton(){
+        document.querySelector('#cancel-btn').classList.remove('disabled-btn')
+    }
+    function disableCancelButton(){
+        document.querySelector('#cancel-btn').classList.add('disabled-btn')
+    }
     function enableContinueButton(){
         document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+        enableCancelButton()
     }
     function disableContinueButton(){
         document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
+        disableCancelButton()
     }
 
     async function getNativeLandBoundary(selectionUnit, href, slug) {
@@ -302,7 +314,8 @@
         enableContinueButton()
 
         // hide feedback messages
-        selectionUnit.querySelector('.feedback').classList.add('invisible')
+        selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+        selectionUnit.querySelector('.feedback.success').classList.add('invisible')
     }
 
     // code below for shapefile
@@ -383,7 +396,8 @@
         return false
     }
 
-    async function setBoundary() {
+    async function setBoundary(self) {
+
         // do post call to set boundary in request
         const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
             method: 'POST',
@@ -401,6 +415,24 @@
 
        // reload page
        location.reload()
+    }
+    function cancelChange(self) {
+        const selectionUnit = self.closest('.boundary-selection-unit')
+
+      // hide feedback messages
+      selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+      selectionUnit.querySelector('.feedback.success').classList.add('invisible')
+
+      // hide selected location
+      selectionUnit.querySelector('.selected-location').classList.add('invisible')
+
+      // hide selected Native Land location
+      selectionUnit.querySelector('.community-boundary-search .input-field.search').value = ''
+
+      // hide uploaded file name
+      selectionUnit.querySelector('.community-boundary-upload .input-field.select-file-input').value = ''
+
+      disableContinueButton()
     }
 </script>
 <script src="{% static 'javascript/shpjs.js' %}"></script>
