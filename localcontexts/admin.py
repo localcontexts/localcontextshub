@@ -14,6 +14,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation
+from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from accounts.utils import get_users_name
 from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
@@ -1206,3 +1207,16 @@ class TKLabelAdmin(admin.ModelAdmin):
     search_fields = ('name', 'community__community_name', 'created_by__username', 'label_type')
 
 admin_site.register(TKLabel, TKLabelAdmin)
+
+# DJANGOJOB ADMIN
+class DjangoJobAdmin(admin.ModelAdmin):
+    list_display = ('id', 'next_run_time')
+    readonly_fields = ('id', 'next_run_time')
+    search_fields = ('id', 'next_run_time')
+
+admin_site.register(DjangoJob, DjangoJobAdmin)
+
+class DjangoJobExecutionAdmin(admin.ModelAdmin):
+    list_display = ('job', 'status', 'run_time')
+
+admin_site.register(DjangoJobExecution, DjangoJobExecutionAdmin)

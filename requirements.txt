@@ -20,6 +20,7 @@ django-cookie-consent==0.2.6
 django-cors-headers==3.11.0
 django-countries==7.5.1
 django-dbbackup==4.0.2
+django-apscheduler==0.6.2
 django-debug-toolbar==3.2.4
 django-guardian==2.3.0
 django-maintenance-mode==0.16.0

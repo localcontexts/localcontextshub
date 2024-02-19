@@ -73,6 +73,7 @@ INSTALLED_APPS = [
 
     'django_countries',
     'django_cleanup',
+    'django_apscheduler',
     'storages',
 
     'rest_framework',
