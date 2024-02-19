@@ -3,6 +3,7 @@ from institutions.models import Institution
 from researchers.models import Researcher
 from django.contrib.auth.models import User
 from helpers.models import LabelNote
+from notifications.models import ActionNotification
 
 from localcontexts.utils import dev_prod_or_local
 from accounts.utils import get_users_name
@@ -360,6 +361,13 @@ def send_email_notice_placed(request, project, community, account):
         }
         send_mailgun_template_email(community.community_creator.email, subject, 'notice_placed', data)
 
+#Project status has been changed
+def send_email_project_status(request, project, communities):
+    from communities.utils import get_community
+    for community in communities:
+        community = get_community(community)
+        title = f"A {project} was customized by {request.user}."
+        ActionNotification.objects.create(community=community, sender=request.user, notification_type="Projects", title=title, reference_id=project.unique_id)
 
 """
     EMAILS FOR COMMUNITY APP

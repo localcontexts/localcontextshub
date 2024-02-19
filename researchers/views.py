@@ -452,6 +452,7 @@ def edit_project(request, researcher_id, project_uuid):
 
         if request.method == 'POST':
             if form.is_valid() and formset.is_valid():
+                has_changes = form.has_changed()
                 data = form.save(commit=False)
                 project_links = request.POST.getlist('project_urls')
                 data.urls = project_links
@@ -459,6 +460,7 @@ def edit_project(request, researcher_id, project_uuid):
 
                 editor_name = get_users_name(request.user)
                 ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
+                communities = ProjectStatus.objects.filter(project=data).select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(
@@ -482,8 +484,10 @@ def edit_project(request, researcher_id, project_uuid):
                 # Which notices were selected to change
                 notices_selected = request.POST.getlist('checkbox-notice')
                 translations_selected = request.POST.getlist('checkbox-translation')
-                crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
+                has_changes = crud_notices(request, notices_selected, translations_selected, researcher, data, notices, has_changes)
 
+                if has_changes:
+                    send_email_project_status(request, project, communities)
             return redirect('researcher-project-actions', researcher.id, project.unique_id)
  
 
