@@ -12,6 +12,8 @@ from helpers.downloads import download_project_zip
 from localcontexts.utils import dev_prod_or_local
 from .utils import can_download_project, return_project_labels_by_community
 
+from maintenance_mode.decorators import force_maintenance_mode_off
+
 
 def view_project(request, unique_id):
     try:
@@ -83,6 +85,7 @@ def download_project(request, unique_id):
     except:
         raise Http404()
 
+@force_maintenance_mode_off
 def embed_project(request, unique_id):
     layout = request.GET.get('lt')
     lang = request.GET.get('lang')
