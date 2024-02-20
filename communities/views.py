@@ -20,6 +20,7 @@ from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
+from tklabels.utils import data as labels_data
 from accounts.utils import get_users_name
 from notifications.utils import *
 from helpers.downloads import download_labels_zip
@@ -69,7 +70,7 @@ def connect_community(request):
             user_is_member = community.is_user_in_community(request.user)
 
             if request_exists or user_is_member:
-                messages.add_message(request, messages.ERROR, "Either you have already sent this request or are currently a member of this community.")
+                messages.add_message(request, messages.ERROR, 'Either you have already sent this request or are currently a member of this community.')
                 return redirect('connect-community')
             else:
                 if form.is_valid():
@@ -81,10 +82,10 @@ def connect_community(request):
 
                     send_action_notification_join_request(data) # Send action notification to community
                     send_join_request_email_admin(request, data, community) # Send community creator email
-                    messages.add_message(request, messages.SUCCESS, "Request to join community sent!")
+                    messages.add_message(request, messages.SUCCESS, 'Request to join community sent!')
                     return redirect('connect-community')
         else:
-            messages.add_message(request, messages.ERROR, 'Community not in registry')
+            messages.add_message(request, messages.ERROR, 'Community not in registry.')
             return redirect('connect-community')
 
     context = { 'community': community, 'communities': communities, 'form': form,}
@@ -180,11 +181,12 @@ def confirm_community(request):
 
 
 def public_community_view(request, pk):
-    try: 
+    try:
+        environment = dev_prod_or_local(request.get_host())
         community = Community.objects.get(id=pk)
         bclabels = BCLabel.objects.filter(community=community, is_approved=True)
         tklabels = TKLabel.objects.filter(community=community, is_approved=True)
-                
+
         projects_list = list(chain(
             community.community_created_project.all().values_list('project__unique_id', flat=True), # community created project ids
             community.tklabel_community.all().values_list('project_tklabels__unique_id', flat=True), # projects where tk labels have been applied
@@ -209,7 +211,7 @@ def public_community_view(request, pk):
                         message = form.cleaned_data['message']
                         to_email = community.community_creator.email
 
-                        send_contact_email(to_email, from_name, from_email, message, community)
+                        send_contact_email(request, to_email, from_name, from_email, message, community)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-community', community.id)
                     else:
@@ -223,7 +225,7 @@ def public_community_view(request, pk):
 
                         # Request To Join community
                         if JoinRequest.objects.filter(user_from=request.user, community=community).exists():
-                            messages.add_message(request, messages.ERROR, "You have already sent a request to this community")
+                            messages.add_message(request, messages.ERROR, 'You have already sent a request to this community.')
                             return redirect('public-community', community.id)
                         else:
                             data.user_from = request.user
@@ -235,25 +237,27 @@ def public_community_view(request, pk):
                             send_join_request_email_admin(request, data, community) # Send email to community creator
                             return redirect('public-community', community.id)
                 else:
-                    messages.add_message(request, messages.ERROR, 'Something went wrong')
+                    messages.add_message(request, messages.ERROR, 'Something went wrong.')
                     return redirect('public-community', community.id)
         else:
-            context = { 
-                'community': community, 
+            context = {
+                'community': community,
                 'bclabels' : bclabels,
                 'tklabels' : tklabels,
                 'projects' : projects,
+                'env': environment,
             }
             return render(request, 'public.html', context)
 
-        context = { 
-            'community': community, 
+        context = {
+            'community': community,
             'bclabels' : bclabels,
             'tklabels' : tklabels,
             'projects' : projects,
-            'form': form, 
+            'form': form,
             'join_form': join_form,
             'user_communities': user_communities,
+            'env': environment,
         }
         return render(request, 'public.html', context)
     except:
@@ -270,7 +274,7 @@ def update_community(request, pk):
 
     if request.method == "POST":
         update_form = UpdateCommunityForm(request.POST, request.FILES, instance=community)
-        
+
         if 'clear_image' in request.POST:
             community.image = None
             community.save()
@@ -278,7 +282,7 @@ def update_community(request, pk):
         else:
             if update_form.is_valid():
                 update_form.save()
-                messages.add_message(request, messages.SUCCESS, 'Updated!')
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
                 return redirect('update-community', community.id)
     else:
         update_form = UpdateCommunityForm(instance=community)
@@ -290,43 +294,6 @@ def update_community(request, pk):
     }
     return render(request, 'communities/update-community.html', context)
 
-
-@login_required(login_url='login')
-@member_required(roles=['admin'])
-def update_community_boundary(request, pk):
-    community = get_community(pk)
-    context = {
-        'community': community,
-        'main_area': 'boundary',
-    }
-    return render(request, 'communities/update-community.html', context)
-
-
-@login_required(login_url='login')
-@member_required(roles=['admin'])
-def update_community_boundary_data(request, pk):
-    community = get_community(pk)
-    data = json.loads(request.body)
-    community.name_of_boundary = data.get('name')
-    community.source_of_boundary = data.get('source')
-    community.boundary.coordinates = data.get('boundary')
-    community.boundary.save()
-    community.save()
-    return HttpResponse(status=204)
-
-
-@login_required(login_url='login')
-@member_required(roles=['admin'])
-def reset_community_boundary(request, pk):
-    community = get_community(pk)
-    community.name_of_boundary = ''
-    community.source_of_boundary = ''
-    community.boundary.coordinates = []
-    community.boundary.save()
-    community.save()
-    return HttpResponse(status=204)
-
-
 # Members
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
@@ -336,8 +303,8 @@ def community_members(request, pk):
 
     # Get list of users in this community, alphabetized by name
     members = list(chain(
-        community.admins.all().values_list('id', flat=True), 
-        community.editors.all().values_list('id', flat=True), 
+        community.admins.all().values_list('id', flat=True),
+        community.editors.all().values_list('id', flat=True),
         community.viewers.all().values_list('id', flat=True),
     ))
     members.append(community.community_creator.id) # include community creator
@@ -385,15 +352,15 @@ def community_members(request, pk):
                         data.status = 'sent'
                         data.community = community
                         data.save()
-                        
+
                         send_account_member_invite(data) # Send action notification
                         send_member_invite_email(request, data, community) # Send email to target user
-                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}')
+                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}!')
                         return redirect('members', community.id)
-                    else: 
+                    else:
                         messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {community.community_name}.')
             else:
-                messages.add_message(request, messages.INFO, 'Something went wrong')
+                messages.add_message(request, messages.INFO, 'Something went wrong.')
 
     context = {
         'community': community,
@@ -401,7 +368,8 @@ def community_members(request, pk):
         'form': form,
         'join_requests_count': join_requests_count,
         'users': users,
-        'invite_form': SignUpInvitationForm()
+        'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
     }
     return render(request, 'communities/members.html', context)
 
@@ -459,7 +427,7 @@ def remove_member(request, pk, member_id):
     if JoinRequest.objects.filter(user_from=member, community=community).exists():
         join_request = JoinRequest.objects.get(user_from=member, community=community)
         join_request.delete()
-    
+
     title = f'You have been removed as a member from {community.community_name}.'
     UserNotification.objects.create(from_user=request.user, to_user=member, title=title, notification_type="Remove", community=community)
 
@@ -479,6 +447,7 @@ def select_label(request, pk):
     member_role = check_member_role(request.user, community)
     can_download = community.is_approved and dev_prod_or_local(request.get_host()) != 'SANDBOX'
     is_sandbox = dev_prod_or_local(request.get_host()) == 'SANDBOX'
+    bclabels, tklabels = get_alt_text(labels_data, bclabels, tklabels)
 
     if request.method == "POST":
         bclabel_code = request.POST.get('bc-label-code')
@@ -489,7 +458,7 @@ def select_label(request, pk):
 
         if tklabel_code:
             return redirect('customize-label', community.id, tklabel_code)
-    
+
     context = {
         'community': community,
         'member_role': member_role,
@@ -509,7 +478,7 @@ def customize_label(request, pk, label_code):
     name = get_users_name(request.user)
 
     if does_label_type_exist(community, label_code): # check if label of this type already exists
-        messages.error(request, 'A Label of this type has already been customized by your community')
+        messages.error(request, 'A Label of this type has already been customized by your community.')
         return redirect('select-label', community.id)
     else:
         form_class, label_display, label_type = get_form_and_label_type(label_code)
@@ -539,11 +508,11 @@ def customize_label(request, pk, label_code):
                     elif label_code.startswith('bc'):
                         instance.bclabel = data
                     instance.save()
-                
+
                 # Create notification
                 ActionNotification.objects.create(community=community, sender=request.user, notification_type="Labels", title=title, reference_id=data.unique_id)
                 return redirect('select-label', community.id)
-            
+
         context = {
             'member_role': member_role,
             'community': community,
@@ -572,7 +541,7 @@ def approve_label(request, pk, label_id):
     if TKLabel.objects.filter(unique_id=label_id).exists():
         tklabel = TKLabel.objects.select_related('approved_by').get(unique_id=label_id)
         latest_approved_version = LabelVersion.objects.filter(tklabel=tklabel, is_approved=True).order_by('-version').first()
-    
+
     version_translations = LabelTranslationVersion.objects.filter(version_instance=latest_approved_version)
     form = LabelNoteForm(request.POST or None)
 
@@ -628,7 +597,7 @@ def approve_label(request, pk, label_id):
                 send_email_label_approved(request, tklabel, None)
 
             return redirect('select-label', community.id)
-    
+
     context = {
         'community': community,
         'member_role': member_role,
@@ -651,7 +620,7 @@ def edit_label(request, pk, label_id):
     formset = ''
     member_role = check_member_role(request.user, community)
     add_translation_formset = AddLabelTranslationFormSet(request.POST or None)
-    
+
     if request.method == 'GET':
         add_translation_formset = AddLabelTranslationFormSet(queryset=LabelTranslation.objects.none())
 
@@ -699,7 +668,7 @@ def edit_label(request, pk, label_id):
                 return redirect('edit-label', community.id, bclabel.unique_id)
             elif tklabel:
                 tklabel.audiofile = None
-                tklabel.save()                
+                tklabel.save()
                 return redirect('edit-label', community.id, tklabel.unique_id)
             else:
                 pass
@@ -715,7 +684,7 @@ def edit_label(request, pk, label_id):
                         instance.bclabel = bclabel
                     elif TKLabel.objects.filter(unique_id=label_id).exists():
                         instance.tklabel = tklabel
-                    
+
                     instance.save()
 
                 return redirect('select-label', community.id)
@@ -814,13 +783,13 @@ def projects(request, pk):
 
     if sort_by == 'all':
         return redirect('community-projects', community.id)
-    
+
     elif sort_by == 'has_labels':
         projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
             ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
             ).exclude(unique_id__in=archived).exclude(tk_labels=None).order_by('-date_added')
         bool_dict['has_labels'] = True
-    
+
     elif sort_by == 'has_notices':
         # FIXME: This should exclude community created projects?
         projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, tk_labels=None, bc_labels=None).exclude(unique_id__in=archived).order_by('-date_added')
@@ -904,7 +873,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
             # Define project_page field
             data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
-            
+
             # Handle multiple urls, save as array
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
@@ -922,7 +891,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                 source.related_projects.add(data)
                 source.save()
                 data.save()
-                
+
                 ProjectActivity.objects.create(project=data, activity=f'Project "{source.title}" was connected to Project by {creator_name} | {community.community_name}')
                 ProjectActivity.objects.create(project=source, activity=f'Project "{data.title}" was connected to Project by {creator_name} | {community.community_name}')
 
@@ -945,7 +914,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, community, data)
-            
+
             # Project person formset
             instances = formset.save(commit=False)
             for instance in instances:
@@ -961,7 +930,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             title = f'A new project was created by {name}: {truncated_project_title} ...'
             ActionNotification.objects.create(title=title, sender=request.user, community=community, notification_type='Projects', reference_id=data.unique_id)
             return redirect('community-projects', community.id)
-    
+
     context = {
         'community': community,
         'member_role': member_role,
@@ -1015,8 +984,8 @@ def edit_project(request, pk, project_uuid):
 
     context = {
         'member_role': member_role,
-        'community': community, 
-        'project': project, 
+        'community': community,
+        'project': project,
         'form': form,
         'formset': formset,
         'contributors': contributors,
@@ -1028,17 +997,17 @@ def project_actions(request, pk, project_uuid):
     try:
         community = get_community(pk)
         project = Project.objects.prefetch_related(
-                'bc_labels', 
-                'tk_labels', 
-                'bc_labels__community', 
+                'bc_labels',
+                'tk_labels',
+                'bc_labels__community',
                 'tk_labels__community',
-                'bc_labels__bclabel_translation', 
+                'bc_labels__bclabel_translation',
                 'tk_labels__tklabel_translation',
                 ).get(unique_id=project_uuid)
 
         member_role = check_member_role(request.user, community)
         if not member_role or not request.user.is_authenticated or not project.can_user_access(request.user):
-            return redirect('view-project', project_uuid)    
+            return redirect('view-project', project_uuid)
         else:
             notices = Notice.objects.filter(project=project, archived=False)
             creator = ProjectCreator.objects.get(project=project)
@@ -1052,7 +1021,7 @@ def project_actions(request, pk, project_uuid):
             label_groups = return_project_labels_by_community(project)
             can_download = can_download_project(request, creator)
 
-            # for related projects list 
+            # for related projects list
             project_ids = list(set(community.community_created_project.all().values_list('project__unique_id', flat=True)
                 .union(community.communities_notified.all().values_list('project__unique_id', flat=True))
                 .union(community.contributing_communities.all().values_list('project__unique_id', flat=True))))
@@ -1089,12 +1058,12 @@ def project_actions(request, pk, project_uuid):
                             return redirect('community-project-actions', community.id, project.unique_id)
                         else:
                             return redirect('community-project-actions', community.id, project.unique_id)
-                        
+
                 elif "notify-btn" in request.POST:
                     project_status = request.POST.get('project-status')
-                    set_project_status(request.user, project, community, creator, project_status)                            
+                    set_project_status(request.user, project, community, creator, project_status)
                     return redirect('community-project-actions', community.id, project.unique_id)
-                
+
                 elif 'link_projects_btn' in request.POST:
                     selected_projects = request.POST.getlist('projects_to_link')
 
@@ -1107,14 +1076,14 @@ def project_actions(request, pk, project_uuid):
 
                         activities.append(ProjectActivity(project=project, activity=f'Project "{project_to_add.title}" was connected to Project by {name} | {community.community_name}'))
                         activities.append(ProjectActivity(project=project_to_add, activity=f'Project "{project.title}" was connected to Project by {name} | {community.community_name}'))
-                                
+
                     ProjectActivity.objects.bulk_create(activities)
                     project.save()
                     return redirect('community-project-actions', community.id, project.unique_id)
-                
+
                 elif 'delete_project' in request.POST:
                     return redirect('community-delete-project', community.id, project.unique_id)
-                
+
                 elif 'remove_contributor' in request.POST:
                     contribs = ProjectContributors.objects.get(project=project)
                     contribs.communities.remove(community)
@@ -1163,10 +1132,6 @@ def delete_project(request, pk, project_uuid):
     community = Community.objects.get(id=pk)
     project = Project.objects.get(unique_id=project_uuid)
 
-    if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
-        for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
-            notification.delete()
-    
     project.delete()
     return redirect('community-projects', community.id)
 
@@ -1202,7 +1167,7 @@ def apply_labels(request, pk, project_uuid):
 
     member_role = check_member_role(request.user, community)
     if community.is_approved == False:
-        return redirect('restricted')    
+        return redirect('restricted')
     else:
         form = CreateProjectNoteForm(request.POST or None)
 
@@ -1221,7 +1186,7 @@ def apply_labels(request, pk, project_uuid):
                 project.save()
 
             add_remove_labels(request, project, community)
-            
+
             if notices:
                 if not project.has_labels():
                     for notice in notices:
@@ -1237,7 +1202,7 @@ def apply_labels(request, pk, project_uuid):
                     for notice in notices:
                         notice.archived = True
                         notice.save()
-                    
+
                     # If community is added as a contrib but not notified, they can apply labels and this will create a status for them.
                     #reset status
                     if ProjectStatus.objects.filter(project=project, community=community).exists():
@@ -1303,7 +1268,7 @@ def connections(request, pk):
         'communities': communities,
     }
     return render(request, 'communities/connections.html', context)
-        
+
 # show community Labels in a PDF
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
@@ -1312,6 +1277,7 @@ def labels_pdf(request, pk):
     if community.is_approved:
         bclabels = BCLabel.objects.filter(community=community, is_approved=True)
         tklabels = TKLabel.objects.filter(community=community, is_approved=True)
+        bclabels, tklabels = get_alt_text(labels_data, bclabels, tklabels)
 
         template_path = 'snippets/pdfs/community-labels.html'
         context = {'community': community, 'bclabels': bclabels, 'tklabels': tklabels,}

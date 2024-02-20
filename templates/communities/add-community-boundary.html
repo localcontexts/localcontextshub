@@ -6,7 +6,7 @@
 
         #define-community-body{
             position: relative;
-            height: 100%;
+            height: 80%;
         }
         #navigate-to-option{
             position: absolute;
@@ -22,7 +22,7 @@
             position: relative;
         }
         #region-results{
-            max-height: 300px;
+            max-height: 150px;
             overflow-y: scroll;
             position: absolute;
             width: 100%;
@@ -30,7 +30,6 @@
             border-radius: 2px;
             border-top: transparent;
             z-index: 1;
-            background: white;
         }
         .result-item{
             padding-top: 5px;
@@ -102,21 +101,22 @@
         }
     </style>
     <div class="w-90" id="define-community-body">
-        <h2 class="no-top-margin">Add Community boundary</h2>
+        <h2 class="no-top-margin">Search the Native Land Digital database</h2>
         <p id="define-community-top-text">
-            Find your community boundary with ease using the Native Land Digital database. Check
-            out their website map before confirming your selection. If your boundary isn't accurate,
-            please reach out to Native Land Digital for assistance.
+            Search the Native Land Digital database to select your community’s boundary.
+            After making a selection, view the location on Native Land Digital’s website to confirm
+            the selected boundary is appropriate. If your boundary is not appropriate,
+            please contact <a class="default-a" href="https://native-land.ca/contact/" target="_blank">Native Land Digital</a>.
         </p>
         <div id="navigate-to-option">
-            Or <a class="default-a" href="{% url 'upload-boundary-file' %}">upload shape file</a>
+            Or <a class="default-a" href="{% url 'upload-boundary-file' %}">upload shapefile</a>
         </div>
 
         <div id="region-container">
             <label class="pad-top-1-5">Search the Native Land Digital database</label><br>
             <div id="community-boundary-search">
                 <input class="input-field search" type="text"
-                       placeholder="Search by address, community name or town"
+                       placeholder="Search by address, town, or community name"
                 >
                 <i class="fa fa-search icon"></i>
             </div>
@@ -127,13 +127,13 @@
             <div id="selected-location" class="hidden">
                 <br>
                 <strong>
-                    <label class="pad-top-1-5">Selected Location</label>
+                    <label class="pad-top-1-5">Selected location</label>
                 </strong><br>
 
                 <div id="selected-title-wrapper">
                     <div id="selected-title"></div>
                     <a id="nld-link" target="_blank">
-                        View Location in NLD &nbsp;
+                        View Location&nbsp;
                         <i class="fa fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>
@@ -155,6 +155,7 @@
                     onclick="setboundary(); event.preventDefault()"
                 >
                     Confirm location <i class="fa fa-arrow-right"></i>
+                    <i class="fa fa-spinner fa-spin fa-2x spinner"></i>
                 </a>
             </div>
             <div class="margin-right-8" id="skip-this-step">
@@ -223,6 +224,8 @@
 
         async function setboundary() {
             try {
+                document.getElementById("community-boundary-continue-btn").classList.add("disabled-btn");
+                document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.add("spinner-container");
                 // do post call to get boundary
                 const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
                 const slug = document.querySelector('#selected-title').getAttribute('data-slug')
@@ -230,6 +233,8 @@
                 const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
                 const boundaryResponse = await fetch(url)
                 const boundaryData = await boundaryResponse.json()
+                document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.remove("spinner-container");
+                document.getElementById("community-boundary-continue-btn").classList.remove("disabled-btn");
 
                 if (boundaryData.length === 0) {
                     const errorMessage = 'Selected location does not have any Native Land boundary'
@@ -245,7 +250,7 @@
                 const payload = {
                     source: url,
                     name: boundary.properties.Name,
-                    boundary: [boundaryCoordinates]
+                    boundary: boundaryCoordinates
                 }
 
                 // do post call to set boundary in request
