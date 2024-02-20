@@ -124,6 +124,16 @@
 
     .save-cancel-container {
         margin-top: 20px;
+        position: relative;
+    }
+    .save-cancel-container .spinner{
+        z-index: 16;
+        position: absolute;
+        font-size: 50px;
+        left: 270px;
+    }
+    .save-cancel-container .spinner.shown{
+        display: block;
     }
 
     .disabled-btn{
@@ -202,6 +212,7 @@
         <div>
             <a id="cancel-btn" class="primary-btn white-btn disabled-btn" onclick="cancelChange(this)">Cancel</a>
         </div>
+        <i class="fa fa-spinner fa-spin fa-2x spinner"></i>
     </div>
 </span>
 <script>
@@ -260,6 +271,13 @@
         disableCancelButton()
     }
 
+    function showSpinner(){
+        document.querySelector('.save-cancel-container .spinner').classList.add('shown')
+    }
+    function hideSpinner(){
+        document.querySelector('.save-cancel-container .spinner').classList.remove('shown')
+    }
+
     async function getNativeLandBoundary(selectionUnit, href, slug) {
         /*
         * This code attempts to get the actual boundary data from Native Land.
@@ -268,8 +286,10 @@
         try {
             // do post call to get boundary
             const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+            showSpinner()
             const boundaryResponse = await fetch(url)
             const boundaryData = await boundaryResponse.json()
+            hideSpinner()
 
             if (boundaryData.length === 0) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
@@ -301,7 +321,9 @@
         const href = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
 
         hideSearchDropDown()
+        showSpinner()
         await getNativeLandBoundary(selectionUnit, href, slug)
+        hideSpinner()
 
         selectionUnit.querySelector('.nld-link').setAttribute('href', href)
         selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
@@ -336,8 +358,10 @@
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.add('invisible')
 
         try {
+          showSpinner()
           const shapeFileData = await file.arrayBuffer()
           const geoJsonData = await shp(shapeFileData)
+          hideSpinner()
 
           // merge geoJson to get unique contours
           let listOfFeatures = geoJsonData.features
@@ -399,6 +423,7 @@
     async function setBoundary(self) {
 
         // do post call to set boundary in request
+        showSpinner()
         const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
             method: 'POST',
             body: JSON.stringify(BoundaryPayLoad),
@@ -406,6 +431,7 @@
               'X-CSRFToken': '{{csrf_token}}'
             }
         })
+        hideSpinner()
 
         if (response.status !== 204) {
             const message = 'Error Changing Boundary'
