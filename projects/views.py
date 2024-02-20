@@ -14,7 +14,7 @@ from .utils import can_download_project, return_project_labels_by_community
 
 from maintenance_mode.decorators import force_maintenance_mode_off
 
-
+@force_maintenance_mode_off
 def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
