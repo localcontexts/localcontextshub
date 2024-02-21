@@ -363,6 +363,10 @@ def send_email_notice_placed(request, project, community, account):
 
 #Project status has been changed
 def send_email_project_status(request, project, communities):
+    login_url = get_site_url(request, 'login')
+    editor = request.user
+    project_description = project.description
+    project_title = project.title
     from communities.utils import get_community
     for community in communities:
         community = get_community(community)
