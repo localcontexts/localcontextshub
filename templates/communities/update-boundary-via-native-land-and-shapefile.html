@@ -46,7 +46,7 @@
     .selected-title-wrapper{
         position: relative;
     }
-    .nld-link{
+    .view-boundary-link{
         right: 8px;
         position: absolute;
         top: 14px;
@@ -183,8 +183,8 @@
 
             <div class="selected-title-wrapper">
                 <div class="selected-title">Place Holder</div>
-                <a class="nld-link" target="_blank">
-                    View Location in NLD &nbsp;
+                <a class="view-boundary-link" target="_blank">
+                    View Location &nbsp;
                     <i class="fa fa-arrow-up-right-from-square"></i>
                 </a>
             </div>
@@ -278,7 +278,7 @@
         document.querySelector('.save-cancel-container .spinner').classList.remove('shown')
     }
 
-    async function getNativeLandBoundary(selectionUnit, href, slug) {
+    async function getNativeLandBoundary(selectionUnit, slug) {
         /*
         * This code attempts to get the actual boundary data from Native Land.
         * If it fails to do so, it raises an error
@@ -308,29 +308,34 @@
                 name: boundary.properties.Name,
                 boundary: boundaryCoordinates
             }
+            setViewLocationsHref(selectionUnit, boundaryCoordinates)
 
         } catch (error) {
             console.error('Error Fetching boundary:', error)
+            hideSpinner()
         }
+    }
+
+    function setViewLocationsHref(selectionUnit, boundary) {
+        // set href for view-boundary-location
+        const href = `{% url 'boundary-view' %}?boundary=${JSON.stringify(boundary)}`
+        selectionUnit.querySelector('.view-boundary-link').setAttribute('href', href)
     }
 
     async function selectSlug(self) {
         const selectionUnit = self.closest('.boundary-selection-unit')
         const title = event.target.dataset.title
         const slug = event.target.dataset.slug
-        const href = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
 
         hideSearchDropDown()
         showSpinner()
-        await getNativeLandBoundary(selectionUnit, href, slug)
+        await getNativeLandBoundary(selectionUnit, slug)
         hideSpinner()
 
-        selectionUnit.querySelector('.nld-link').setAttribute('href', href)
         selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
 
         // set selected data for selection
         selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
-
 
         showSelectedSlug()
         enableContinueButton()
@@ -349,13 +354,14 @@
     async function uploadShapeFileData(self) {
         var files = event.target.files
         var file = files[0]
-        const successMessage = self.closest('.boundary-selection-unit').querySelector('.feedback.success')
-        const failureMessage = self.closest('.boundary-selection-unit').querySelector('.feedback.failure')
+        const selectionUnit = self.closest('.boundary-selection-unit')
+        const successMessage = selectionUnit.querySelector('.feedback.success')
+        const failureMessage = selectionUnit.querySelector('.feedback.failure')
 
         // hide feedback messages
         successMessage.classList.add('invisible')
         failureMessage.classList.add('invisible')
-        self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.add('invisible')
+        selectionUnit.querySelector('.selected-location').classList.add('invisible')
 
         try {
           showSpinner()
@@ -402,6 +408,8 @@
             boundary: distinctBoundaryReordered
         }
 
+        setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
+
         successMessage.classList.toggle('invisible')
         // show and label ui elements
         self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName
@@ -412,6 +420,7 @@
         failureMessage.classList.toggle('invisible')
         console.log('Error extracting boundary data from Shapefile', e)
         disableContinueButton()
+        hideSpinner()
       }
         self.closest('.boundary-selection-unit').querySelector('.select-file-input').value = file.name
         // set value to null so user can resubmit

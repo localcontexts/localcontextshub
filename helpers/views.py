@@ -112,9 +112,9 @@ def boundary_view(request):
     try:
         boundary = request.GET.get('boundary')
         if boundary:
-            boundary = [json.loads(
+            boundary = json.loads(
                 boundary.replace('(', '[').replace(')', ']')
-            )]
+            )
         else:
             boundary = []
 
