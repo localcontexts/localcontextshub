@@ -52,6 +52,8 @@ class UserUpdateForm(forms.ModelForm):
 
         if len(email) == 0:
             self._errors['email'] = self.error_class(['Email Is Required'])
+        elif User.objects.filter(email=email).exists():
+            self._errors['email'] = self.error_class(["Email already exists."])
         return self.cleaned_data
 
 
