@@ -61,7 +61,7 @@ def add_user_to_role(account, role, user):
     role_map = {
         'admin': account.admins,
         'editor': account.editors,
-        'viewers': account.viewers,
+        'viewer': account.viewers,
     }
     role_map[role].add(user)
     account.save()
