@@ -561,4 +561,4 @@ def send_email_verification(request, old_email, new_email, verification_url):
     
     old_subject = 'Alert Email On Change of Email For Your Local Contexts Hub Profile'
     old_email_data = {'user':request.user.username, 'old_email':old_email, 'new_email':new_email}
-    send_mailgun_template_email(old_email, old_subject,'email_on_old_email', old_email_data)
+    send_mailgun_template_email(old_email, old_subject,'notify_email_on_email_update', old_email_data)
