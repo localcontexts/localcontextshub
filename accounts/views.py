@@ -287,6 +287,9 @@ def update_profile(request):
         new_email = user_form.data['email']
         
         if new_email != old_email and new_email != '' and user_form.is_valid():
+            user_form.instance.email = old_email
+            profile_form.save()
+            user_form.save()
             token_generator = PasswordResetTokenGenerator()
             token = token_generator.make_token(request.user)
             encoded_token = urlsafe_base64_encode(force_bytes(f"{token}+{new_email}+{request.user.id}"))
