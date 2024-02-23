@@ -8,6 +8,7 @@ from helpers.emails import send_password_reset_email
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.db.models import Q
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, max_length=150, help_text='Required')
@@ -50,10 +51,9 @@ class UserUpdateForm(forms.ModelForm):
         super(UserUpdateForm, self).clean()
         email = self.cleaned_data.get('email')
         user_id = self.instance.id if self.instance else None
-
         if len(email) == 0:
             self._errors['email'] = self.error_class(['Email Is Required'])
-        elif User.objects.filter(email=email).exclude(id=user_id).exists():
+        elif User.objects.filter(email=email).exclude(Q(id=user_id) | Q(is_active=False)).exists():
             self._errors['email'] = self.error_class(["Email already exists."])
         return self.cleaned_data
 
