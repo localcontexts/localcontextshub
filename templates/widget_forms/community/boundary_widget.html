@@ -51,12 +51,14 @@
 >
     Upload Shapefile Data
 </button>
+{% if community_id %}
 <a
     id="view-saved-boundary"
     target="_blank"
     href="{% url 'community-boundary-view' community_id %}">
     View Boundary
 </a>
+{% endif %}
 <input
         type="file" id="shapefile-input" name="shapefile" style="display: none"
         onchange="uploadShapeFileData(this)"
