@@ -557,8 +557,8 @@ def send_project_person_email(request, to_email, proj_id, account):
 def send_email_verification(request, old_email, new_email, verification_url):
     subject = 'Email Verification Link For Your Local Contexts Hub Profile'
     data = {'user':request.user.username, 'verification_url':verification_url}
-    send_mailgun_template_email(new_email, subject, 'verify_email', data)
+    send_mailgun_template_email(new_email, subject, 'verify_email_update', data)
     
     old_subject = 'Alert Email On Change of Email For Your Local Contexts Hub Profile'
     old_email_data = {'user':request.user.username, 'old_email':old_email, 'new_email':new_email}
-    send_mailgun_template_email(old_email, old_subject,'old_email', old_email_data)
+    send_mailgun_template_email(old_email, old_subject,'email_on_old_email', old_email_data)
