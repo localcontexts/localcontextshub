@@ -311,20 +311,23 @@ def update_profile(request):
 
 @login_required(login_url='login')
 def confirm_email(request, uidb64, token):
-    decoded_token = urlsafe_base64_decode(token).decode('utf-8')
-    new_token, new_email, user_id_str = decoded_token.split(' ')
+    try:
+        decoded_token = urlsafe_base64_decode(token).decode('utf-8')
+        new_token, new_email, user_id_str = decoded_token.split(' ')
+    except ValueError:
+        messages.add_message(request, messages.ERROR, 'Invalid Verification token.')
+        return redirect('login')
     new_token = new_token.strip()
     new_email = new_email.strip()
     user_id = user_id_str.strip()
-    
+
+    if not User.objects.filter(pk=user_id).exists():
+        messages.add_message(request, messages.ERROR, 'User not found.')
+        return redirect('login')
     user = User.objects.get(pk=user_id)
     token_valid = PasswordResetTokenGenerator().check_token(user, new_token)
     
-    if not User.objects.filter(pk=user_id).exists():
-        meesage.error("User not found")
-        return redirect('login')
 
-    user = User.objects.get(pk=user_id)
     user.email = new_email
     user.save()
     messages.add_message(request, messages.SUCCESS, 'Email updated Successfully.')
