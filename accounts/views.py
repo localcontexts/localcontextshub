@@ -292,7 +292,7 @@ def update_profile(request):
             user_form.save()
             token_generator = PasswordResetTokenGenerator()
             token = token_generator.make_token(request.user)
-            encoded_token = urlsafe_base64_encode(force_bytes(f"{token}+{new_email}+{request.user.id}"))
+            encoded_token = urlsafe_base64_encode(force_bytes(f"{token} {new_email} {request.user.id}"))
             verification_url = f"http://{get_current_site(request).domain}/confirm-email/{request.user.pk}/{encoded_token}"
             send_email_verification(request, old_email, new_email, verification_url)
             messages.add_message(request, messages.INFO, f'A verification email has been sent to {new_email}.')
@@ -312,7 +312,7 @@ def update_profile(request):
 @login_required(login_url='login')
 def confirm_email(request, uidb64, token):
     decoded_token = urlsafe_base64_decode(token).decode('utf-8')
-    new_token, new_email, user_id_str = decoded_token.split('+')
+    new_token, new_email, user_id_str = decoded_token.split(' ')
     new_token = new_token.strip()
     new_email = new_email.strip()
     user_id = user_id_str.strip()
