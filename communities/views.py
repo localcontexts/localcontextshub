@@ -47,7 +47,7 @@ def registration_boundary(request):
     community.name_of_boundary = post_data['name']
 
     # add new boundary in this community
-    community.boundary = Boundary.objects.create(coordinates=post_data['boundary'])
+    community.create_or_update_boundary(post_data['boundary'])
     community.save()
 
     return HttpResponse(status=201)
@@ -1326,8 +1326,8 @@ def update_community_boundary_data(request, pk):
     data = json.loads(request.body)
     community.name_of_boundary = data.get('name')
     community.source_of_boundary = data.get('source')
-    community.boundary.coordinates = data.get('boundary')
-    community.boundary.save()
+    boundary_data = data.get('boundary')
+    community.create_or_update_boundary(boundary_data)
     community.save()
     return HttpResponse(status=204)
 
@@ -1338,7 +1338,6 @@ def reset_community_boundary(request, pk):
     community = get_community(pk)
     community.name_of_boundary = ''
     community.source_of_boundary = ''
-    community.boundary.coordinates = []
-    community.boundary.save()
+    community.create_or_update_boundary([])
     community.save()
     return HttpResponse(status=204)
