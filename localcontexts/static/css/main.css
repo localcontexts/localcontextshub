@@ -272,8 +272,9 @@ input:focus {
 }
 
 /* Boder-Radius */
-.border-raduis50 {
+.round-btn-small {
     border-radius: 50% !important;
+    width: 50px;
 }
 
 /* FLEX */
@@ -307,6 +308,10 @@ input:focus {
 /* GAP */
 .gap-1{
     gap: 1rem;
+}
+
+.gap-half{
+    gap: 0.5rem;
 }
 
 /* HEIGHTS */
