@@ -9,9 +9,9 @@ from projects.models import Project
 @receiver(post_delete, sender=TKLabel)
 @receiver(post_delete, sender=BCLabel)
 @receiver(post_delete, sender=Project)
-def delete_related_notifications(sender, instance, **kwargs):
-    ActionNotification.objects.filter(reference_id=str(instance.unique_id)).delete()
-
 @receiver(post_delete, sender=JoinRequest)
 def delete_related_notifications(sender, instance, **kwargs):
-    ActionNotification.objects.filter(reference_id=str(instance.id)).delete()
+    if sender in [TKLabel, BCLabel, Project]:
+        ActionNotification.objects.filter(reference_id=str(instance.unique_id)).delete()
+    elif sender == JoinRequest:
+        ActionNotification.objects.filter(reference_id=str(instance.id)).delete()
