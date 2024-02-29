@@ -271,11 +271,6 @@ input:focus {
     border-bottom: 1px solid #E6F1F3;
 }
 
-/* Boder-Radius */
-.border-raduis50 {
-    border-radius: 50% !important;
-}
-
 /* FLEX */
 .flex-this { display: flex; }
 .row { flex-direction: row; }
@@ -307,6 +302,10 @@ input:focus {
 /* GAP */
 .gap-1{
     gap: 1rem;
+}
+
+.gap-half{
+    gap: 0.5rem;
 }
 
 /* HEIGHTS */
@@ -394,6 +393,11 @@ input:focus {
 
 .orange-btn:hover:not([disabled]) {
     background-color: #f17c33;
+}
+
+.round-btn-small {
+    border-radius: 50% !important;
+    width: 50px;
 }
 
 .round-btn {
