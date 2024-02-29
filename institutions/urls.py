@@ -10,6 +10,7 @@ urlpatterns = [
 
     # Public view
     path('view/<str:pk>/', views.public_institution_view, name="public-institution"),
+    path('embed/<str:pk>/', views.embed_otc_notice, name="embed_notice"),
 
     path('update/<str:pk>/', views.update_institution, name="update-institution"),
 

@@ -20,6 +20,7 @@ from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
 from accounts.forms import ContactOrganizationForm
 
 from helpers.emails import *
+from maintenance_mode.decorators import force_maintenance_mode_off
 
 from .models import Researcher
 from .forms import *
@@ -723,3 +724,25 @@ def connections(request, pk):
             'institutions': institutions,
         }
         return render(request, 'researchers/connections.html', context)
+    
+@force_maintenance_mode_off
+def embed_otc_notice(request, pk):
+    layout = request.GET.get('lt')
+    lang = request.GET.get('lang')
+    align = request.GET.get('align')
+
+    researcher = Researcher.objects.get(id=pk)
+    otc_notices = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher)
+    
+    context = {
+        'layout' : layout,
+        'lang' : lang,
+        'align' : align,
+        'otc_notices' : otc_notices,
+        'researcher' : researcher 
+    }
+
+    response = render(request, 'accounts/embed-notice.html', context)
+    response['Content-Security-Policy'] = 'frame-ancestors https://*'
+
+    return response
