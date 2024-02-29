@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 from itertools import chain
-from .decorators import member_required
+from .decorators import member_required, subscription_required
+from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
@@ -23,7 +24,7 @@ from accounts.models import UserAffiliation
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm, CollectionsCareNoticePolicyForm
 from communities.forms import InviteMemberForm, JoinRequestForm
-from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
+from accounts.forms import ContactOrganizationForm, SignUpInvitationForm, SubscriptionForm
 from .forms import *
 
 from helpers.emails import *
@@ -155,12 +156,131 @@ def confirm_institution(request, institution_id):
             if dev_prod_or_local(request.get_host()) == 'SANDBOX':
                 data.is_approved = True
                 data.save()
-                return redirect('dashboard')
+                return redirect('confirm-subscription-institution', data.id)
             else:
                 data.save()
                 send_hub_admins_application_email(request, institution, data)
-                return redirect('dashboard')
+                return redirect('confirm-subscription-institution', data.id)
     return render(request, 'accounts/confirm-account.html', {'form': form, 'institution': institution,})
+
+@login_required(login_url='login')
+def confirm_subscription_institution(request, institution_id):
+    join_flag = False
+    institution = get_object_or_404(Institution, id=institution_id)
+    initial_data = {
+        'first_name': request.user._wrapped.first_name,
+        'last_name': request.user._wrapped.last_name,
+        'email': request.user._wrapped.email, 
+        'account_type': 'Insitution Account',
+        'organization_name': institution.institution_name
+        } 
+    form = SubscriptionForm(request.POST or None, initial=initial_data)
+    if request.method == "POST":
+        # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req =  urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+
+        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
+            if form.is_valid():
+                account_type_key = form.cleaned_data['account_type']
+                inquiry_type_key = form.cleaned_data['inquiry_type']
+                
+                account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
+                inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
+                form.cleaned_data['account_type'] = account_type_display
+                form.cleaned_data['inquiry_type'] = inquiry_type_display
+                
+                first_name = form.cleaned_data['first_name']
+                if not form.cleaned_data['last_name']:
+                    form.cleaned_data['last_name'] = first_name
+
+                if institution.institution_creator == request.user._wrapped:
+                    if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
+                        institution.is_subscribed = True
+                        institution.save()
+                        messages.add_message(request, messages.INFO, 'The subscription form is submitted successfully. Local Contexts HUB will contact with you.')
+                        return redirect('dashboard')
+                elif request.user._wrapped not in institution.get_admins():
+                    join_flag = True
+                    messages.add_message(request, messages.INFO, 'An institution by this name already exists.Please join that insitute.')
+                    return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+
+    return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+        # if form.is_valid():
+        #     # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
+        #     ''' Begin reCAPTCHA validation '''
+        #     recaptcha_response = request.POST.get('g-recaptcha-response')
+        #     url = 'https://www.google.com/recaptcha/api/siteverify'
+        #     values = {
+        #         'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        #         'response': recaptcha_response
+        #     }
+        #     data = urllib.parse.urlencode(values).encode()
+        #     req =  urllib.request.Request(url, data=data)
+        #     response = urllib.request.urlopen(req)
+        #     result = json.loads(response.read().decode())
+        #     ''' End reCAPTCHA validation '''
+
+        #     if True:
+                # subscription = form.save(commit=False)
+                # Salesforce OAuth2 Authentication to obtain access token
+                
+
+
+                # # Create Account in Salesforce
+                # account_data = {
+                #     'Name': form.cleaned_data['organization_name']
+                #     # Add other account fields as needed
+                # }
+
+                # create_account_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/data/v48.0/sobjects/Account/'
+                # headers = {
+                #     'Authorization': f'Bearer {access_token}',
+                #     'Content-Type': 'application/json'
+                # }
+
+                # create_account_req = urllib.request.Request(create_account_url, data=json.dumps(account_data).encode(), headers=headers)
+                # try:
+                #     create_account_response = urllib.request.urlopen(create_account_req)
+                #     account_result = json.loads(create_account_response.read().decode())
+                #     account_id = account_result['id']
+                # except urllib.error.HTTPError as e:
+                #     # Handle HTTP errors
+                #     print(f"HTTP Error: {e.code} - {e.reason}")
+                #     return render(request, 'error.html', {'error': e})
+
+                # import pdb
+                # pdb.set_trace()
+                # # Create Contact in Salesforce
+                # contact_data = {
+                #     'LastName': form.cleaned_data['last_name'],
+                #     'Email': form.cleaned_data['email'],
+                #     'AccountId': account_id
+                #     # Add other contact fields as needed
+                # }
+
+                # create_contact_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/data/v48.0/sobjects/Contact/'
+                # create_contact_req = urllib.request.Request(create_contact_url, data=json.dumps(contact_data).encode(), headers=headers)
+                # try:
+                #     create_contact_response = urllib.request.urlopen(create_contact_req)
+                #     contact_result = json.loads(create_contact_response.read().decode())
+                #     contact_id = contact_result['id']
+                # except urllib.error.HTTPError as e:
+                #     # Handle HTTP errors
+                #     print(f"HTTP Error: {e.code} - {e.reason}")
+                #     return render(request, 'error.html', {'error': e})
+
+    return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution': institution})
 
 def public_institution_view(request, pk):
     try:
@@ -253,6 +373,7 @@ def public_institution_view(request, pk):
 # Update institution
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def update_institution(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -283,6 +404,7 @@ def update_institution(request, pk):
 # Notices
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def institution_notices(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -335,6 +457,7 @@ def institution_notices(request, pk):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
@@ -344,6 +467,7 @@ def delete_otc_notice(request, pk, notice_id):
 # Members
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def institution_members(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -421,6 +545,7 @@ def institution_members(request, pk):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def member_requests(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -445,6 +570,7 @@ def member_requests(request, pk):
 
 @login_required(login_url='login')
 @member_required(roles=['admin'])
+@subscription_required()
 def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
     join_request = JoinRequest.objects.get(id=join_id)
@@ -453,6 +579,7 @@ def delete_join_request(request, pk, join_id):
     
 @login_required(login_url='login')
 @member_required(roles=['admin'])
+@subscription_required()
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
@@ -485,6 +612,7 @@ def remove_member(request, pk, member_id):
 # Projects page 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -589,6 +717,7 @@ def institution_projects(request, pk):
 # Create Project
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def create_project(request, pk, source_proj_uuid=None, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -684,6 +813,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def edit_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
@@ -899,6 +1029,7 @@ def project_actions(request, pk, project_uuid):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def archive_project(request, pk, project_uuid):
     if not ProjectArchived.objects.filter(institution_id=pk, project_uuid=project_uuid).exists():
         ProjectArchived.objects.create(institution_id=pk, project_uuid=project_uuid, archived=True)
@@ -913,6 +1044,7 @@ def archive_project(request, pk, project_uuid):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
@@ -926,6 +1058,7 @@ def delete_project(request, pk, project_uuid):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
+@subscription_required()
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     institution = get_institution(pk)
     target_project = Project.objects.get(unique_id=target_proj_uuid)
@@ -941,6 +1074,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_required()
 def connections(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)

@@ -1,0 +1,130 @@
+{% extends 'register-base.html' %} {% load static %} {% block title %} Subscription {% endblock %} 
+{% block card %}
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script type="text/javascript">
+  var nonRorInstitutes = JSON.parse('{{ non_ror_institutes | safe }}')
+  grecaptcha.ready(function () {
+    grecaptcha
+      .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+        action: "subscription",
+      })
+      .then(function (token) {
+        document.getElementById("g-recaptcha-response").value = token;
+      });
+  });
+</script>
+
+  <div class="flex-this column w-90">
+    <div>
+      <h2 class="no-top-margin">Subscription Information</h2>
+    </div>
+    <div class="w-80">
+      <p class="no-top-margin">
+        The information you provide here will be shared with other accounts you decide to join to help them identify who you are.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-container flex-this column w-90">
+    <form  method="POST" enctype="multipart/form-data" class="flex-this column w-100">
+      {% csrf_token %}
+      <div>
+        <div class="flex-this column w-100">
+          <div class="flex-this w-100 space-between">
+            <div class="w-50 margin-right-1">
+              <label for="id_first_name">First name</label>
+              {{ form.first_name }}{% if form.first_name.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.first_name.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+            <div class="w-50 margin-left-1">
+              <label for="id_last_name">Last name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.first_name.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div class="w-100 ">
+              <label for="id_email">Email</label>
+              {{ form.email }}{% if form.email.errors %}
+              <div class="msg-red w-100">
+                <small>{{ form.email.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          
+          </div>
+
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div class="w-50 margin-right-1">
+              <label for="id_account_type">Account Type</label>
+              {{ form.account_type }}
+              {% if form.account_type.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.account_type.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+            <div class="w-50 margin-left-1">
+              <label for="id_inquiry_type">Inquiry Type</label>
+              {{ form.inquiry_type }}
+              {% if form.inquiry_type.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.inquiry_type.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          
+          </div>
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div id="ror-input-container" class="w-100">
+              <label for="id_organization_name">Organization Name</label>
+              {{ form.organization_name }}
+              <div id="suggestionsContainer"></div>
+            </div>
+          </div>
+        </div>
+        <input
+        type="hidden"
+        name="g-recaptcha-response"
+        id="g-recaptcha-response"
+        />
+        <div class="flex-this flex-end">
+          <button class="primary-btn action-btn margin-top-2">
+            Continue <i class="fa fa-arrow-right"></i>
+          </button>
+        </div>
+        {% include 'partials/_alerts.html' %}
+      <div>
+    </form>
+    </div>
+  </div>
+{% if institution %}
+  <div id="disclaimerAlert" class="modal">
+    <div class="modal-defaults deactivate-modal flex-this column w-100">
+      <div class="w-100">
+        <div>
+          <h5 class="primary-black-text no-top-margin">The institution you selected is already registered on the HUB. You can join this institution.</h5>  
+        </div>
+        <div class="flex-this w-100 text-align-center">
+          <a 
+          class="primary-btn action-btn"
+          href="{% url 'public-institution' institution.id %}"
+          >Join institution</a>    
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<script>
+  const nameInputField = document.getElementById('organizationInput')
+  const suggestionsContainer = document.getElementById('suggestionsContainer')
+</script>
+{% endblock %}

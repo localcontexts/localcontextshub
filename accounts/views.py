@@ -25,6 +25,8 @@ from django.db.models import Q
 
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from allauth.socialaccount.models import SocialAccount
+from django.shortcuts import get_object_or_404
+from django.core import serializers
 
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
@@ -41,6 +43,7 @@ from projects.models import Project
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
 from helpers.utils import validate_email, validate_recaptcha
+from helpers.utils import validate_email, create_salesforce_account_or_lead
 
 from helpers.emails import (send_activation_email, generate_token,
                             resend_activation_email, send_welcome_email,
@@ -278,6 +281,7 @@ def dashboard(request):
 
     user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
+    unsubscribed_institute = Institution.objects.filter(institution_creator=user, is_subscribed=False).first()
 
     if request.method == 'POST':
         profile.onboarding_on = False
@@ -288,6 +292,7 @@ def dashboard(request):
         'user_communities': user_communities,
         'user_institutions': user_institutions,
         'researcher': researcher,
+        'unsubscribed_institute': unsubscribed_institute,
     }
     return render(request, "accounts/dashboard.html", context)
 
@@ -829,3 +834,63 @@ def api_keys(request):
                 'has_key': True
             }
             return render(request, 'accounts/apikey.html', context)
+
+def subscription_inquiry(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    form = SubscriptionForm(request.POST or None)
+    non_ror_institutes = serializers.serialize("json", Institution.objects.filter(is_ror = False))
+
+    if request.method == "POST":
+        # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req =  urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+
+        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
+            if form.is_valid():
+                
+                account_type_key = form.cleaned_data['account_type']
+                inquiry_type_key = form.cleaned_data['inquiry_type']
+
+                account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
+                inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
+                form.cleaned_data['account_type'] = account_type_display
+                form.cleaned_data['inquiry_type'] = inquiry_type_display
+
+                first_name = form.cleaned_data['first_name']
+                last_name = form.cleaned_data['last_name']
+                email = form.cleaned_data['email']
+                organization = form.cleaned_data['organization_name']
+
+                if not last_name:
+                    form.cleaned_data['last_name'] = first_name
+                account_exists = User.objects.filter(email=email).exists()
+                institution = Institution.objects.filter(institution_name=organization)
+
+                if account_exists and institution:
+                    messages.add_message(request, messages.INFO, 'Your Account already exists on HUB. Please login.')
+                    return redirect('confirm-subscription-institution', institution_id = institution[0].id)
+                elif account_exists and not institution:
+                    messages.add_message(request, messages.INFO, 'Your Account already exists on HUB. Please login to create the insitute.')
+                    return redirect('select-account')
+                
+                if institution:
+                    messages.add_message(request, messages.INFO, 'An institution by this name already exists. Please join that insitute.')
+                    return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution[0],})
+                else:
+                    subscription = form
+                    create_salesforce_account_or_lead(data=form.cleaned_data)
+                    messages.add_message(request, messages.INFO, 'The subscription form is submitted successfully. Local Contexts HUB will contact with you.')
+                    return redirect('subscription-inquiry')
+    return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, })
