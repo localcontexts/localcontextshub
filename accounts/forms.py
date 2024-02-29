@@ -178,3 +178,22 @@ class CustomPasswordResetForm(PasswordResetForm):
                 **(extra_email_context or {}),
             }
             send_password_reset_email(request, context)
+            
+class SubscriptionForm(forms.Form):
+        ACCOUNT_TYPE_CHOICES = (
+            ('institution_account', 'Institution Account'),
+            ('community_account', 'Community Account'),
+            ('researcher_account', 'Researcher Account'))
+        INQUIRY_TYPE_CHOICES = (
+            ('subscriber', 'Subscription'),
+            ('member', 'Membership'),
+            ('service_provider', 'Service Partner'),
+            ('something_else', ' Something Else'),
+            ('not_sure', 'Not Sure')
+        )
+        first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
+        last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
+        email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
+        account_type = forms.ChoiceField(choices=ACCOUNT_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off'}))
+        inquiry_type = forms.ChoiceField(choices=INQUIRY_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off'}))
+        organization_name = forms.CharField(widget=forms.TextInput(attrs={'id': 'organizationInput', 'class': 'w-100', 'autocomplete': 'off', }))

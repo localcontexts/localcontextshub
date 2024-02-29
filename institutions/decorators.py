@@ -14,3 +14,14 @@ def member_required(roles=[]):
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+def subscription_required():
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            institution = get_institution(kwargs.get('pk'))
+            if not institution.is_subscribed:
+                return redirect('dashboard')
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator

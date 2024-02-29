@@ -22,6 +22,9 @@ from helpers.emails import send_membership_email
 from django.contrib.staticfiles import finders
 from django.shortcuts import get_object_or_404
 
+import urllib.parse
+import urllib.request
+
 
 def check_member_role(user, organization):
     # Check for creator roles
@@ -417,4 +420,45 @@ def validate_email(email):
             return False
     else:
         print("Request failed with status code:", response.status_code)
+        return False
+
+def create_salesforce_account_or_lead(hubId='', data='', isbusiness=True):
+    salesforce_token_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/oauth2/token'
+    salesforce_token_params = {
+        'grant_type': 'client_credentials',
+        'client_id': settings.SALES_FORCE_CLIENT_ID,
+        'client_secret': settings.SALES_FORCE_SECRET_ID
+    }
+    salesforce_token_data = urllib.parse.urlencode(salesforce_token_params).encode()
+    salesforce_token_req = urllib.request.Request(salesforce_token_url, data=salesforce_token_data)
+    salesforce_token_response = urllib.request.urlopen(salesforce_token_req)
+    salesforce_token_result = json.loads(salesforce_token_response.read().decode())
+    access_token = salesforce_token_result['access_token']
+
+    lead_data = {
+        "hubId": hubId, 
+        "companyName": data['organization_name'],
+        "industry": "Technology", 
+        "phone": "123-456-7890",  
+        "email": data['email'],	 
+        "firstname" : data['first_name'], 
+        "lastName": data['last_name'], 
+        "oppName": data['organization_name'],   	
+        "inquiryType" : data['inquiry_type'],  
+        "isBusinessTrue" : isbusiness
+    }
+
+    # Make API call to create lead in Salesforce
+    create_lead_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    create_lead_req = urllib.request.Request(create_lead_url, data=json.dumps(lead_data).encode(), headers=headers)
+    try:
+        create_lead_response = urllib.request.urlopen(create_lead_req)
+        return True
+
+    except urllib.error.HTTPError as e:
+        print(f"HTTP Error: {e.code} - {e.reason} - {e.read()}")
         return False
