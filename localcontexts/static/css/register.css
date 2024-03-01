@@ -11,20 +11,49 @@
     border-radius: 5px 5px;
     max-width: 1200px;
     min-width: 1200px;
-    min-height: 650px;
-    max-height: 650px;
+    min-height: 640px;
+    max-height: 640px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     background-color: #fff;
 }
 
 /* Progress Container || THE ORANGE PART */
-#registration-progress-container {
+.registration-progress-container {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    height: 100%;
     max-width: 35%;
     min-width: 35%;
     border-radius: 5px 0px 0px 5px;
     font-size: 14px;
-    align-items: center;
 } 
+
+.login-logo-container {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+}
+
+.login-logo-container,
+.progress-ul-container {
+    height: 70%;
+    width: 100%;
+}
+
+.progress-bottom-container {
+    border-top: 2px solid #fff;
+    margin: 0;
+    padding: 0;
+    width: 90%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 30%;
+    text-align: center;
+}
 
 /* Form Container || THE WHITE PART */
 .registration-form-container {
@@ -38,27 +67,31 @@
     max-height: 650px;
 }
 
-
 /* Progress Container */
-#progress-ul-container {
+.progress-ul-container {
     width: 100%;
     justify-content: center;
+    align-items: start;
 }
 
 #progress-ul {
-    align-items: center;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
     width: 100%;
-    padding: 11% 1% 4% 6%;
+    height: 95%;
 }
 
 #progress-ul li {
+    /* border: 1px solid yellow; */
       /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
       /* Use padding to space things out rather than margins as the line would get broken up otherwise */
     position: relative;
     margin: 0;
     padding-bottom: 2em;
     padding-left: 4.91%;
-    width: 70%;
+    width: 80%;
 }
 
 #progress-ul li:before {
@@ -94,19 +127,6 @@
     width: 30px; 
     margin-left: -24px; 
     padding-right: 8px;
-}
-
-#progress-bottom-container {
-    border-top: 2px solid #fff;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-#progress-bottom-container h2 {
-    text-align: center;
-    margin-top: 11%;
-    padding-bottom: 2%;
 }
 
 /* Form Section */
@@ -169,11 +189,6 @@
     z-index: 1;
 }
 
-.login-logo-container {
-    /* border: 1px solid black; */
-    margin-bottom: 70px;
-}
-
 .login-logo {
     height: 297px;
     width: 219px;
@@ -212,26 +227,21 @@ input[type=checkbox] {
 
 .white-btn-select {
    margin: 5px 10px;
-   padding: 8px;
    border-radius: 5px;
    border: 1px solid #007385;
-   width: 81px;
-   height: 40px; 
+   width: 100%;
    background-color: #fff;
    text-align: center; 
-}
-
-.white-btn-select span {
-    font-size: 14px;
-    font-weight: bold;
-    color: #007385; 
+   font-size: 14px;
+   font-weight: bold;
+   color: #007385; 
 }
 
 .white-btn-select:hover {
     background-color: #007385;
 }
 
-.white-btn-select:hover span {
+.white-btn-select:hover {
     color: #fff;
 }
 
