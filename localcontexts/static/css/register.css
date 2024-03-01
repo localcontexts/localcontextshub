@@ -84,7 +84,6 @@
 }
 
 #progress-ul li {
-    /* border: 1px solid yellow; */
       /* Turn on relative positioning so the line is placed relative to the item rather than absolutely on the page */
       /* Use padding to space things out rather than margins as the line would get broken up otherwise */
     position: relative;
