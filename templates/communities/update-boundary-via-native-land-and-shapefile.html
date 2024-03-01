@@ -250,6 +250,10 @@
         }
     })
 
+    function raiseError(selectionUnit, text) {
+       selectionUnit.querySelector('.feedback.failure').innerText = text
+       selectionUnit.querySelector('.feedback.failure').classList.remove('invisible')
+    }
     function clearNLInput(selectionUnit) {
        selectionUnit.querySelector('.input-field.search').value = ''
     }
@@ -296,6 +300,7 @@
 
             if (boundaryData.length === 0) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
+                raiseError(selectionUnit, errorMessage)
                 throw new Error(errorMessage)
             }
 
@@ -331,6 +336,11 @@
         const selectionUnit = self.closest('.boundary-selection-unit')
         const title = event.target.dataset.title
         const slug = event.target.dataset.slug
+
+
+        // hide feedback messages
+        selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+        selectionUnit.querySelector('.feedback.success').classList.add('invisible')
 
         hideSearchDropDown()
         showSpinner()
@@ -426,7 +436,7 @@
         enableContinueButton()
 
       } catch (e) {
-        failureMessage.classList.toggle('invisible')
+        raiseError(selectionUnit, 'File not accepted. Please upload another file')
         console.log('Error extracting boundary data from Shapefile', e)
         disableContinueButton()
         hideSpinner()
