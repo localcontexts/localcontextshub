@@ -250,6 +250,9 @@
         }
     })
 
+    function clearNLInput(selectionUnit) {
+       selectionUnit.querySelector('.input-field.search').value = ''
+    }
     function hideSearchDropDown() {
        document.querySelector('.region-results').innerHTML = ''
     }
@@ -293,7 +296,6 @@
 
             if (boundaryData.length === 0) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
-                alert(errorMessage)
                 throw new Error(errorMessage)
             }
 
@@ -313,7 +315,10 @@
         } catch (error) {
             console.error('Error Fetching boundary:', error)
             hideSpinner()
+            clearNLInput(selectionUnit)
+            return false
         }
+        return true
     }
 
     function setViewLocationsHref(selectionUnit, boundary) {
@@ -329,8 +334,12 @@
 
         hideSearchDropDown()
         showSpinner()
-        await getNativeLandBoundary(selectionUnit, slug)
+        const success = await getNativeLandBoundary(selectionUnit, slug)
         hideSpinner()
+
+        if (!success) {
+          return
+        }
 
         selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
 
