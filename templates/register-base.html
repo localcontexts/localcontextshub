@@ -3,7 +3,7 @@
 <section id="gradient-section" class="flex-this">
     <div class="base-card flex-this row">
 
-        <div id="registration-progress-container" class="orange-bg white-text flex-this column justify-center">
+        <div class="registration-progress-container orange-bg white-text">
             
             {% if '/login' in request.path or 'reset' in request.path %}
                 <div class="login-logo-container">
@@ -11,8 +11,8 @@
                 </div>
             {% else %}
 
-                <div id="progress-ul-container" class="flex-this">
-                    <ul id="progress-ul" class="flex-this column ul-no-bullets">
+                <div class="progress-ul-container flex-this">
+                    <ul id="progress-ul" class="ul-no-bullets">
                         <li>
                             {% if '/register' in request.path %}
                                 {% include 'snippets/bullet-big.html'%}
@@ -61,7 +61,7 @@
 
             {% endif %}
 
-            <div id="progress-bottom-container"><div><h2>Grounding Indigenous Rights</h2></div></div>
+            <div class="progress-bottom-container"><div><h2>Grounding Indigenous Rights</h2></div></div>
 
         </div>
     
