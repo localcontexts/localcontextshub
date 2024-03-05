@@ -93,8 +93,11 @@ def connect_community(request):
 
 @login_required(login_url='login')
 def preparation_step(request):
-    community = True
-    return render(request, 'accounts/preparation.html', { 'community' : community })
+    if dev_prod_or_local(request.get_host()) == "SANDBOX":
+        return redirect('create-community')
+    else:
+        community = True
+        return render(request, 'accounts/preparation.html', { 'community' : community })
 
 
 # Create Community
