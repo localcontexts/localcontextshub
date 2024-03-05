@@ -20,6 +20,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from unidecode import unidecode
 from django.db.models import Q
@@ -280,9 +281,23 @@ def update_profile(request):
     profile = Profile.objects.select_related('user').get(user=request.user)
 
     if request.method == 'POST':
+        old_email = request.user.email
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.user_profile)
-        if user_form.is_valid() and profile_form.is_valid():
+        new_email = user_form.data['email']
+        
+        if new_email != old_email and new_email != '' and user_form.is_valid():
+            user_form.instance.email = old_email
+            profile_form.save()
+            user_form.save()
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(request.user)
+            encoded_token = urlsafe_base64_encode(force_bytes(f"{token} {new_email} {request.user.id}"))
+            verification_url = f"http://{get_current_site(request).domain}/confirm-email/{request.user.pk}/{encoded_token}"
+            send_email_verification(request, old_email, new_email, verification_url)
+            messages.add_message(request, messages.INFO, f'A verification email has been sent to {new_email}.')
+            return redirect('update-profile')
+        elif user_form.is_valid() and profile_form.is_valid(): 
             user_form.save()
             profile_form.save()
             messages.add_message(request, messages.SUCCESS, 'Profile updated!')
@@ -293,6 +308,30 @@ def update_profile(request):
 
     context = { 'profile': profile, 'user_form': user_form, 'profile_form': profile_form }
     return render(request, 'accounts/update-profile.html', context)
+
+@login_required(login_url='login')
+def confirm_email(request, uidb64, token):
+    try:
+        decoded_token = urlsafe_base64_decode(token).decode('utf-8')
+        new_token, new_email, user_id_str = decoded_token.split(' ')
+    except ValueError:
+        messages.add_message(request, messages.ERROR, 'Invalid Verification token.')
+        return redirect('login')
+    new_token = new_token.strip()
+    new_email = new_email.strip()
+    user_id = user_id_str.strip()
+
+    if not User.objects.filter(pk=user_id).exists():
+        messages.add_message(request, messages.ERROR, 'User not found.')
+        return redirect('login')
+    user = User.objects.get(pk=user_id)
+    token_valid = PasswordResetTokenGenerator().check_token(user, new_token)
+    
+
+    user.email = new_email
+    user.save()
+    messages.add_message(request, messages.SUCCESS, 'Email updated Successfully.')
+    return redirect('dashboard')
 
 @login_required(login_url='login')
 def change_password(request):
