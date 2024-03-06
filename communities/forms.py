@@ -138,9 +138,7 @@ class CommunityModelForm(forms.ModelForm):
             return
 
         new_boundary = self.supplementary_boundary_data.get('new_boundary')
-        if new_boundary:
-            self.instance.boundary = Boundary(coordinates=new_boundary)
-            self.instance.boundary.save()
+        self.instance.create_or_update_boundary(new_boundary)
 
     def save(self, commit=True):
         obj = super().save(commit=False)

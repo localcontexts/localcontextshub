@@ -47,7 +47,7 @@ def registration_boundary(request):
     community.name_of_boundary = post_data['name']
 
     # add new boundary in this community
-    community.boundary = Boundary.objects.create(coordinates=post_data['boundary'])
+    community.create_or_update_boundary(post_data['boundary'])
     community.save()
 
     return HttpResponse(status=201)
@@ -1309,3 +1309,38 @@ def download_labels(request, pk):
         return redirect('restricted')
     else:
         return download_labels_zip(community)
+
+
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def update_community_boundary(request, pk):
+    community = get_community(pk)
+    context = {
+        'community': community,
+        'main_area': 'boundary',
+    }
+    return render(request, 'communities/update-community.html', context)
+
+
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def update_community_boundary_data(request, pk):
+    community = get_community(pk)
+    data = json.loads(request.body)
+    community.name_of_boundary = data.get('name')
+    community.source_of_boundary = data.get('source')
+    boundary_data = data.get('boundary')
+    community.create_or_update_boundary(boundary_data)
+    community.save()
+    return HttpResponse(status=204)
+
+
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def reset_community_boundary(request, pk):
+    community = get_community(pk)
+    community.name_of_boundary = ''
+    community.source_of_boundary = ''
+    community.create_or_update_boundary([])
+    community.save()
+    return HttpResponse(status=204)
