@@ -17,7 +17,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -100,7 +100,7 @@ def register(request):
 class ActivateAccountView(View):
     def get(self, request, uidb64, token):
         try:
-            uid=force_text(urlsafe_base64_decode(uidb64))
+            uid=force_str(urlsafe_base64_decode(uidb64))
             user=User.objects.get(pk=uid)
         except Exception as identifier:
             user=None
@@ -599,7 +599,7 @@ def newsletter_unsubscription(request, emailb64):
 
     if environment == 'PROD' or 'localhost' in request.get_host():
         try:
-            email=force_text(urlsafe_base64_decode(emailb64))
+            email=force_str(urlsafe_base64_decode(emailb64))
             response = get_newsletter_member_info(email)
             data=response.json()
             member_info = data["member"]
