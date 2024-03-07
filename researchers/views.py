@@ -445,7 +445,7 @@ def edit_project(request, researcher, project_uuid):
 
             editor_name = get_users_name(request.user)
             ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
-            communities = ProjectStatus.objects.filter(project=data, seen=True, status='labels_applied').select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
+            communities = ProjectStatus.objects.filter(project=data, seen=True, status='pending').select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
             # Adds activity to Hub Activity
             HubActivity.objects.create(
                 action_user_id=request.user.id,
