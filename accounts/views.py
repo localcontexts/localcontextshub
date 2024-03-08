@@ -1,27 +1,41 @@
+# Captcha validation imports
+import urllib
+import json
+
+# For emails
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_str, force_bytes
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages, auth
 from django.views.generic import View
-from django.contrib.auth.views import PasswordChangeForm, SetPasswordForm, PasswordResetView
+from django.contrib.auth.views import (PasswordChangeForm, SetPasswordForm,
+                                       PasswordResetView)
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 from allauth.socialaccount.views import SignupView, ConnectionsView
-from django.contrib.auth import update_session_auth_hash
 from allauth.socialaccount.models import SocialAccount
 
-from django.contrib.auth.decorators import login_required
-from .decorators import unauthenticated_user
 from rest_framework_api_key.models import APIKey
+from unidecode import unidecode
 
-from django.core.paginator import Paginator
+from institutions.models import Institution
+from localcontexts.utils import dev_prod_or_local
+from researchers.models import Researcher
+from .decorators import unauthenticated_user
 
-# For emails
-from django.utils.http import urlsafe_base64_decode
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_str
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
-
-from django.db.models import Q
-from communities.models import InviteMember
+from communities.models import InviteMember, Community
 from helpers.models import HubActivity
 from projects.models import Project
 
@@ -29,14 +43,20 @@ from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
 from helpers.utils import validate_email
 
-from helpers.emails import *
-from .models import *
-from .forms import *
-from .utils import *
+from helpers.emails import (send_activation_email, generate_token,
+                            resend_activation_email, send_welcome_email,
+                            send_email_verification, send_invite_user_email,
+                            add_to_newsletter_mailing_list,
+                            get_newsletter_member_info,
+                            unsubscribe_from_mailing_list)
+from .models import SignUpInvitation, Profile, UserAffiliation
+from .forms import (RegistrationForm, ResendEmailActivationForm,
+                    CustomPasswordResetForm, UserCreateProfileForm,
+                    ProfileCreationForm, UserUpdateForm, ProfileUpdateForm,
+                    SignUpInvitationForm)
 
-# Captcha validation imports
-import urllib
-import json
+from .utils import (get_next_path, get_users_name, return_registry_accounts,
+                    manage_mailing_list)
 
 
 @unauthenticated_user
@@ -44,7 +64,6 @@ def register(request):
     form = RegistrationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
             ''' Begin reCAPTCHA validation '''
             recaptcha_response = request.POST.get('g-recaptcha-response')
             url = 'https://www.google.com/recaptcha/api/siteverify'
@@ -102,7 +121,7 @@ class ActivateAccountView(View):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except Exception as identifier:
+        except (Exception, ):
             user = None
 
         if user is not None and generate_token.check_token(user, token):
@@ -179,9 +198,8 @@ def login(request):
             else:
                 if not user.last_login:
                     messages.error(
-                        request,
-                        'Your account is not active yet. Please verify your email.'
-                    )
+                        request, 'Your account is not active yet. '
+                        'Please verify your email.')
                     if SignUpInvitation.objects.filter(
                             email=user.email).exists():
                         for invite in SignUpInvitation.objects.filter(
@@ -192,9 +210,8 @@ def login(request):
                     return redirect('verify')
                 else:
                     messages.error(
-                        request,
-                        'Your account is not active. Please contact support@localcontexts.org.'
-                    )
+                        request, 'Your account is not active. '
+                        'Please contact support@localcontexts.org.')
                     return redirect('login')
         else:
             messages.error(
@@ -226,9 +243,10 @@ class CustomSocialSignupView(SignupView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.error(
-                request,
-                "You have already created your account using username and password. Please use those to login instead. You can still connect your account with Google once you login."
-            )
+                request, "You have already created your account using "
+                "username and password. Please use those to login instead. "
+                "You can still connect your account with "
+                "Google once you login.")
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
 
@@ -337,7 +355,9 @@ def update_profile(request):
             token = token_generator.make_token(request.user)
             encoded_token = urlsafe_base64_encode(
                 force_bytes(f"{token} {new_email} {request.user.id}"))
-            verification_url = f"http://{get_current_site(request).domain}/confirm-email/{request.user.pk}/{encoded_token}"
+            verification_url = f"http://{get_current_site(request).domain}" \
+                               f"/confirm-email/{request.user.pk}" \
+                               f"/{encoded_token}"
             send_email_verification(request, old_email, new_email,
                                     verification_url)
             messages.add_message(
@@ -378,8 +398,6 @@ def confirm_email(request, uidb64, token):
         messages.add_message(request, messages.ERROR, 'User not found.')
         return redirect('login')
     user = User.objects.get(pk=user_id)
-    token_valid = PasswordResetTokenGenerator().check_token(user, new_token)
-
     user.email = new_email
     user.save()
     messages.add_message(request, messages.SUCCESS,
@@ -423,9 +441,8 @@ def deactivate_user(request):
         user.save()
         auth.logout(request)
         messages.add_message(
-            request, messages.INFO,
-            'Your account has been deactivated. If this was a mistake please contact support@localcontexts.org.'
-        )
+            request, messages.INFO, 'Your account has been deactivated. '
+            'If this was a mistake please contact support@localcontexts.org.')
         return redirect('login')
     return render(request, 'accounts/deactivate.html', {'profile': profile})
 
@@ -549,15 +566,16 @@ def registry(request, filtertype=None):
         r = Researcher.objects.select_related('user').all().order_by(
             'user__username')
 
-        if ('q' in request.GET) and (filtertype != None):
+        if ('q' in request.GET) and (filtertype is not None):
             q = request.GET.get('q')
             return redirect('/registry/?q=' + q)
 
-        elif ('q' in request.GET) and (filtertype == None):
+        elif ('q' in request.GET) and (filtertype is None):
             q = request.GET.get('q')
-            q = unidecode(q)  #removes accents from search query
+            q = unidecode(q)  # removes accents from search query
 
-            # Filter's accounts by the search query, showing results that match with or without accents
+            # Filter's accounts by the search query,
+            # showing results that match with or without accents
             c = c.filter(community_name__unaccent__icontains=q)
             i = i.filter(institution_name__unaccent__icontains=q)
             r = r.filter(
@@ -601,7 +619,7 @@ def registry(request, filtertype=None):
 
         return render(request, 'accounts/registry.html', context)
 
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -618,14 +636,15 @@ def projects_board(request, filtertype=None):
             | Q(project_creator_project__researcher__user__isnull=False)
         ).select_related('project_creator').order_by('-date_modified')
 
-        if ('q' in request.GET) and (filtertype != None):
+        if ('q' in request.GET) and (filtertype is not None):
             q = request.GET.get('q')
             return redirect('/projects-board/?q=' + q)
-        elif ('q' in request.GET) and (filtertype == None):
+        elif ('q' in request.GET) and (filtertype is None):
             q = request.GET.get('q')
-            q = unidecode(q)  #removes accents from search query
+            q = unidecode(q)  # removes accents from search query
 
-            # Filter's accounts by the search query, showing results that match with or without accents
+            # Filter's accounts by the search query,
+            # showing results that match with or without accents
             results = projects.filter(
                 Q(title__unaccent__icontains=q)
                 | Q(description__unaccent__icontains=q))
@@ -652,7 +671,7 @@ def projects_board(request, filtertype=None):
             'filtertype': filtertype
         }
         return render(request, 'accounts/projects-board.html', context)
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -696,8 +715,8 @@ def newsletter_subscription(request):
                     add_to_newsletter_mailing_list(str(email), str(name),
                                                    str(variables))
                     message_text = mark_safe(
-                        'Thank&nbsp;you&nbsp;an&nbsp;email&nbsp;has&nbsp;been&nbsp;sent'
-                    )
+                        'Thank&nbsp;you&nbsp;an&nbsp;'
+                        'email&nbsp;has&nbsp;been&nbsp;sent')
                     messages.add_message(request, messages.SUCCESS,
                                          message_text)
                     return render(request,
@@ -724,7 +743,7 @@ def newsletter_unsubscription(request, emailb64):
             name = member_info["name"]
             variables = member_info["vars"]
             subscribed = member_info["subscribed"]
-            if subscribed == True:
+            if subscribed is True:
                 for item in variables:
                     if item == 'tech':
                         tech = variables[item]
@@ -777,7 +796,7 @@ def newsletter_unsubscription(request, emailb64):
                                         emailb64=emailb64)
             return render(request, 'accounts/newsletter-unsubscription.html',
                           context)
-        except:
+        except Exception:
             raise Http404()
 
     else:
