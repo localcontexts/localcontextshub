@@ -173,3 +173,12 @@ deployment command: `gcloud app deploy --no-promote`.
 App Engine creates a new version for each deployment. The version name is the deployment date
 and time. In order to supply a custom version name use `--version` option:
 `gcloud app deploy --version="2021-02-06-v14"`.
+
+## Setting Up Git Pre-Commit Hook
+At the project root, run this command to setup the GIT pre-commit hook.
+This lets our codebase run formatting and linting before completing a commit.
+Also, whenever the  scripts/pre-commit.sh file is updated, the command below
+must be rerun for the pre-commit hook to be updated.
+```shell
+cp -p scripts/pre-commit.sh .git/hooks/pre-commit
+```
