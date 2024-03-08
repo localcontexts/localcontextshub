@@ -14,24 +14,17 @@ from rest_framework_api_key.models import APIKey
 from django.core.paginator import Paginator
 
 # For emails
-from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_str
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
-from unidecode import unidecode
 from django.db.models import Q
-from django.contrib.auth.models import User
-from communities.models import Community, InviteMember
-from institutions.models import Institution
-from researchers.models import Researcher
+from communities.models import InviteMember
 from helpers.models import HubActivity
 from projects.models import Project
 
-from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
 from helpers.utils import validate_email
