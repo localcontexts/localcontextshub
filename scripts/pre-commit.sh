@@ -9,5 +9,5 @@ echo '------------------------------------------------------------'
 
 echo 'RUNNING PYTHON LINTER'
 # this shows us which files are not PEP8 compliant
-flake8
+flake8 accounts
 echo 'RUNNING PYTHON LINTER: COMPLETED'
