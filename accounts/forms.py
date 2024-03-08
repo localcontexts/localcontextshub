@@ -9,8 +9,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
+
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True, max_length=150, help_text='Required')
+    email = forms.EmailField(required=True,
+                             max_length=150,
+                             help_text='Required')
 
     class Meta:
         model = User
@@ -18,7 +21,7 @@ class RegistrationForm(UserCreationForm):
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'w-100'}),
         }
-    
+
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=False)
         # Cleans the data so nothing harmful can get passed though the form
@@ -30,13 +33,17 @@ class RegistrationForm(UserCreationForm):
 
         return user
 
+
 class UserCreateProfileForm(forms.ModelForm):
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name']
 
+
 # updating user instance (same as above but includes email)
 class UserUpdateForm(forms.ModelForm):
+
     class Meta:
         model = User
         fields = ['email', 'first_name', 'last_name']
@@ -58,9 +65,13 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileCreationForm(forms.ModelForm):
+
     class Meta:
         model = Profile
-        fields = ['position', 'affiliation', 'city_town', 'state_province_region', 'country']
+        fields = [
+            'position', 'affiliation', 'city_town', 'state_province_region',
+            'country'
+        ]
         widgets = {
             'position': forms.TextInput(attrs={'style': 'width: 100%;'}),
             'affiliation': forms.TextInput(attrs={'class': 'w-100'}),
@@ -68,10 +79,15 @@ class ProfileCreationForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
+
 class ProfileUpdateForm(forms.ModelForm):
+
     class Meta:
         model = Profile
-        fields = ['position', 'affiliation', 'preferred_language', 'languages_spoken', 'city_town', 'state_province_region', 'country']
+        fields = [
+            'position', 'affiliation', 'preferred_language',
+            'languages_spoken', 'city_town', 'state_province_region', 'country'
+        ]
         widgets = {
             'position': forms.TextInput(attrs={'class': 'w-100'}),
             'affiliation': forms.TextInput(attrs={'class': 'w-100'}),
@@ -81,30 +97,61 @@ class ProfileUpdateForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
+
 class ResendEmailActivationForm(forms.Form):
-    email = forms.EmailField(label=_('Email'), required=True, widget=forms.EmailInput(attrs={'class': 'w-100', 'placeholder': 'email@domain.com'}))
+    email = forms.EmailField(
+        label=_('Email'),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-100',
+            'placeholder': 'email@domain.com'
+        }))
 
 
 class SignUpInvitationForm(forms.ModelForm):
+
     class Meta:
         model = SignUpInvitation
         fields = ['email', 'message']
         widgets = {
-            'message': forms.Textarea(attrs={'rows': 4, 'cols': 65}),
+            'message': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 65
+            }),
             'email': forms.EmailInput(attrs={'size': 65}),
         }
 
+
 class ContactOrganizationForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
-    email = forms.EmailField(label=_('Email Address'), required=True, widget=forms.EmailInput(attrs={'class': 'w-100', 'placeholder': 'email@domain.com'}))
-    message= forms.CharField(widget=forms.Textarea(attrs={"rows":4, "cols":65, 'class': 'w-100'}))
-    
+    name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'w-100',
+        'autocomplete': 'off',
+    }))
+    email = forms.EmailField(
+        label=_('Email Address'),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-100',
+            'placeholder': 'email@domain.com'
+        }))
+    message = forms.CharField(widget=forms.Textarea(attrs={
+        "rows": 4,
+        "cols": 65,
+        'class': 'w-100'
+    }))
+
+
 class CustomPasswordResetForm(PasswordResetForm):
-    def save(self, domain_override=None,
+
+    def save(self,
+             domain_override=None,
              subject_template_name='registration/password_reset_subject.txt',
-            email_template_name=None,
-             use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None, html_email_template_name=None,
+             email_template_name=None,
+             use_https=False,
+             token_generator=default_token_generator,
+             from_email=None,
+             request=None,
+             html_email_template_name=None,
              extra_email_context=None):
         """
         Generate a one-use only link for resetting password and send it to the
