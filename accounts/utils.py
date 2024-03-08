@@ -32,9 +32,11 @@ def manage_mailing_list(request, first_name, emailb64):
             notice = 'yes'
         if item == 'labels':
             labels = 'yes'
-    variables = '{"first_name":"%s", "tech": "%s", "news": "%s", "events": "%s","notice": "%s","labels": "%s", "id": "%s"}' % (
-        first_name, tech, news, events, notice, labels, emailb64)
-    return (variables)
+    variables = '{"first_name":"%s", "tech": "%s", "news": "%s", ' \
+                '"events": "%s","notice": "%s","labels": "%s", ' \
+                '"id": "%s"}' % (
+                    first_name, tech, news, events, notice, labels, emailb64)
+    return variables
 
 
 def return_registry_accounts(community_accounts, researcher_accounts,

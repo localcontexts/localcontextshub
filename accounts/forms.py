@@ -27,7 +27,7 @@ class RegistrationForm(UserCreationForm):
         # Cleans the data so nothing harmful can get passed though the form
         user.email = self.cleaned_data['email']
 
-        #if we want to save
+        # if we want to save
         if commit:
             user.save()
 
