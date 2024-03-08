@@ -60,5 +60,5 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         run: |
           python manage.py migrate
-          flake8 --exit-zero    # shows errors but doesn't stop the pipeline
+          flake8 --exit-zero accounts   # --exit-zero shows errors but doesn't stop the pipeline
           pytest --cov=.  --cov-report=term-missing --cov-fail-under=15
