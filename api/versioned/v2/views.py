@@ -5,12 +5,17 @@ from rest_framework.decorators import action
 from . import serializers as v2_serializers
 from rest_framework.viewsets import ViewSet
 from rest_framework_api_key.permissions import HasAPIKey
+from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from institutions.models import Institution
+from accounts.models import Subscription
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 class ApiKeyAuthentication(BaseAuthentication):
     VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
@@ -215,3 +220,41 @@ class GetUserAPIView(APIView):
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class SubscriptionAPI(APIView):
+    authentication_classes = [ApiKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            institution_id = request.data.get('institution')
+            user_count = request.data.get('users_count')
+            api_key_count = request.data.get('api_key_count')
+            project_count = request.data.get('project_count')
+            notification_count = request.data.get('notification_count')
+            is_subscribed = request.data.get('is_subscribed')
+
+            subscription, created = Subscription.objects.get_or_create(
+                institution_id=institution_id,
+                defaults={
+                    'users_count': user_count,
+                    'api_key_count': api_key_count,
+                    'project_count': project_count,
+                    'notification_count': notification_count,
+                    'is_subscribed': is_subscribed
+                }
+            )
+
+            if created:
+                return Response(status=HTTP_201_CREATED)
+            else:
+                subscription.users_count = user_count
+                subscription.api_key_count = api_key_count
+                subscription.project_count = project_count
+                subscription.notification_count = notification_count
+                subscription.is_subscribed = is_subscribed
+                subscription.save() 
+                return Response(status=HTTP_200_OK)
+
+        except (KeyError, Institution.DoesNotExist):
+            return Response({'error': 'Institution not found'}, status=HTTP_404_NOT_FOUND)   
