@@ -1,8 +1,6 @@
 {% load static %}
 <div class="dashcard">
     <div class="flex-this">
-        <div class="dashcard-img-container">
-
         <div class="{% if  institution.is_subscribed %} dashcard-img-container {% else %} dashcard-img-container  disable {%endif%}">
             <img loading="lazy" 
                 class="profile-img" 
@@ -43,7 +41,7 @@
                         {% endif %}
                     </div>
                 {% endif %}
-
+                {% if institution.is_subscribed %}   
                 <div>
                     {% if '/dashboard/' in request.path %}
                         {% if institution_projects %}
@@ -77,6 +75,16 @@
                             </div>
                         {% endif %}
                     </div>
+                {% endif %}
+                {% else %}
+                {% if '/dashboard/' in request.path %}
+                    <div>
+                        <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'confirm-subscription-institution' institution.id  %}"
+                        >Complete Subscription Inquiry</a>
+                    </div>
+                {% endif %}
                 {% endif %}
             </div>
 
