@@ -16,9 +16,10 @@ from accounts.models import Subscription
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 
 class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
+    VALID_USER_IDS = {8}  # Replace with the actual list of valid user IDs
 
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
@@ -227,26 +228,54 @@ class SubscriptionAPI(APIView):
 
     def post(self, request):
         try:
-            institution_id = request.data.get('institution')
+            account_id = request.data.get('account_id')
+            hub_id , account_type = account_id.split('_')
             user_count = request.data.get('users_count')
             api_key_count = request.data.get('api_key_count')
             project_count = request.data.get('project_count')
             notification_count = request.data.get('notification_count')
             is_subscribed = request.data.get('is_subscribed')
 
-            subscription, created = Subscription.objects.get_or_create(
-                institution_id=institution_id,
-                defaults={
-                    'users_count': user_count,
-                    'api_key_count': api_key_count,
-                    'project_count': project_count,
-                    'notification_count': notification_count,
-                    'is_subscribed': is_subscribed
-                }
-            )
-
+            if account_type == "i":
+                subscription, created = Subscription.objects.get_or_create(
+                    institution_id=hub_id,
+                    defaults={
+                        'users_count': user_count,
+                        'api_key_count': api_key_count,
+                        'project_count': project_count,
+                        'notification_count': notification_count,
+                        'is_subscribed': is_subscribed
+                    }
+                )
+            elif account_type == "c":
+                subscription, created = Subscription.objects.get_or_create(
+                    community_id=hub_id,
+                    defaults={
+                        'users_count': user_count,
+                        'api_key_count': api_key_count,
+                        'project_count': project_count,
+                        'notification_count': notification_count,
+                        'is_subscribed': is_subscribed
+                    }
+                )
+            elif account_type == "r":
+                subscription, created = Subscription.objects.get_or_create(
+                    researcher_id=hub_id,
+                    defaults={
+                        'users_count': user_count,
+                        'api_key_count': api_key_count,
+                        'project_count': project_count,
+                        'notification_count': notification_count,
+                        'is_subscribed': is_subscribed
+                    }
+                )
+            else:
+                return Response(
+                    {'error': 'Failed to create Subscription. This record does not have valid account_type.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             if created:
-                return Response(status=HTTP_201_CREATED)
+                return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
             else:
                 subscription.users_count = user_count
                 subscription.api_key_count = api_key_count
@@ -254,7 +283,16 @@ class SubscriptionAPI(APIView):
                 subscription.notification_count = notification_count
                 subscription.is_subscribed = is_subscribed
                 subscription.save() 
-                return Response(status=HTTP_200_OK)
+                return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
 
-        except (KeyError, Institution.DoesNotExist):
-            return Response({'error': 'Institution not found'}, status=HTTP_404_NOT_FOUND)   
+        except IntegrityError as e:
+            if 'violates foreign key constraint' in str(e):
+                return Response(
+                    {'error': 'Failed to create Subscription. This record violates foreign key constraint.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return Response(
+                    {'error': 'An unexpected error occurred.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
