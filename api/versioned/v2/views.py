@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 
 class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = {8}  # Replace with the actual list of valid user IDs
+    VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
 
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
@@ -236,44 +236,30 @@ class SubscriptionAPI(APIView):
             notification_count = request.data.get('notification_count')
             is_subscribed = request.data.get('is_subscribed')
 
-            if account_type == "i":
-                subscription, created = Subscription.objects.get_or_create(
-                    institution_id=hub_id,
-                    defaults={
-                        'users_count': user_count,
-                        'api_key_count': api_key_count,
-                        'project_count': project_count,
-                        'notification_count': notification_count,
-                        'is_subscribed': is_subscribed
-                    }
-                )
-            elif account_type == "c":
-                subscription, created = Subscription.objects.get_or_create(
-                    community_id=hub_id,
-                    defaults={
-                        'users_count': user_count,
-                        'api_key_count': api_key_count,
-                        'project_count': project_count,
-                        'notification_count': notification_count,
-                        'is_subscribed': is_subscribed
-                    }
-                )
-            elif account_type == "r":
-                subscription, created = Subscription.objects.get_or_create(
-                    researcher_id=hub_id,
-                    defaults={
-                        'users_count': user_count,
-                        'api_key_count': api_key_count,
-                        'project_count': project_count,
-                        'notification_count': notification_count,
-                        'is_subscribed': is_subscribed
-                    }
-                )
-            else:
+            account_type_to_field = {
+                'i': 'institution_id',
+                'c': 'community_id',
+                'r': 'researcher_id'
+            }
+            field_name = account_type_to_field.get(account_type)
+            if not field_name:
                 return Response(
-                    {'error': 'Failed to create Subscription. This record does not have valid account_type.'},
+                    {'error': 'Failed to create Subscription. Invalid account_type provided.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            filter_kwargs = {
+                field_name: hub_id,
+                'defaults': {
+                    'users_count': user_count,
+                    'api_key_count': api_key_count,
+                    'project_count': project_count,
+                    'notification_count': notification_count,
+                    'is_subscribed': is_subscribed
+                }
+            }
+
+            subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
             if created:
                 return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
             else:
