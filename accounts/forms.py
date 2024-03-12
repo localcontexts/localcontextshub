@@ -181,10 +181,12 @@ class CustomPasswordResetForm(PasswordResetForm):
             
 class SubscriptionForm(forms.Form):
         ACCOUNT_TYPE_CHOICES = (
+            ('', 'Please select account type...'),
             ('institution_account', 'Institution Account'),
             ('community_account', 'Community Account'),
             ('researcher_account', 'Researcher Account'))
         INQUIRY_TYPE_CHOICES = (
+            ('', 'Please select inquiry type...'),
             ('subscriber', 'Subscription'),
             ('member', 'Membership'),
             ('service_provider', 'Service Partner'),
@@ -193,7 +195,19 @@ class SubscriptionForm(forms.Form):
         )
         first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
         last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
-        email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'w-100', 'autocomplete': 'off', }))
-        account_type = forms.ChoiceField(choices=ACCOUNT_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off'}))
-        inquiry_type = forms.ChoiceField(choices=INQUIRY_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off'}))
-        organization_name = forms.CharField(widget=forms.TextInput(attrs={'id': 'organizationInput', 'class': 'w-100', 'autocomplete': 'off', }))
+        email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'w-100', 'autocomplete': 'off',}))
+        account_type = forms.ChoiceField(choices=ACCOUNT_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off', 'placeholder': 'Please select account type...'}))
+        inquiry_type = forms.ChoiceField(choices=INQUIRY_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'w-100', 'autocomplete': 'off', 'placeholder': 'Please select inquiry type...'}))
+        organization_name = forms.CharField(widget=forms.TextInput(attrs={'id': 'organizationInput', 'class': 'w-100', 'autocomplete': 'off',}))
+        
+        def clean_account_type(self):
+            account_type = self.cleaned_data.get('account_type')
+            if not account_type:
+                raise ValidationError('Please select an account type.')
+            return account_type
+
+        def clean_inquiry_type(self):
+            inquiry_type = self.cleaned_data.get('inquiry_type')
+            if not inquiry_type:
+                raise ValidationError('Please select an inquiry type.')
+            return inquiry_type

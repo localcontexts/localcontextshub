@@ -2201,6 +2201,10 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
  }
 
 if (window.location.href.includes('subscription-inquiry')) {
+    function cancelDisclaimer() {
+        var joinAlert = document.getElementById('disclaimerAlert');
+        joinAlert.style.display = 'none';
+    }
     document.addEventListener('DOMContentLoaded', function() {
     const nameInputField = document.getElementById('organizationInput')
     const suggestionsContainer = document.getElementById('suggestionsContainer')
