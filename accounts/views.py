@@ -879,18 +879,17 @@ def subscription_inquiry(request):
                 institution = Institution.objects.filter(institution_name=organization)
 
                 if account_exists and institution:
-                    messages.add_message(request, messages.INFO, 'Your Account already exists on HUB. Please login.')
+                    messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login.')
                     return redirect('confirm-subscription-institution', institution_id = institution[0].id)
                 elif account_exists and not institution:
-                    messages.add_message(request, messages.INFO, 'Your Account already exists on HUB. Please login to create the insitute.')
+                    messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login to create the insitute.')
                     return redirect('select-account')
                 
                 if institution:
-                    messages.add_message(request, messages.INFO, 'An institution by this name already exists. Please join that insitute.')
                     return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution[0],})
                 else:
                     subscription = form
                     create_salesforce_account_or_lead(data=form.cleaned_data)
-                    messages.add_message(request, messages.INFO, 'The subscription form is submitted successfully. Local Contexts HUB will contact with you.')
+                    messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
                     return redirect('subscription-inquiry')
     return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, })

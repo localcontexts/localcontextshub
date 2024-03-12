@@ -171,10 +171,12 @@ def confirm_subscription_institution(request, institution_id):
         'first_name': request.user._wrapped.first_name,
         'last_name': request.user._wrapped.last_name,
         'email': request.user._wrapped.email, 
-        'account_type': 'Insitution Account',
+        'account_type': 'institution_account',
         'organization_name': institution.institution_name
-        } 
+        }
+    modified_account_type_choices = [choice for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES if choice[0] != 'member']
     form = SubscriptionForm(request.POST or None, initial=initial_data)
+    form.fields['inquiry_type'].choices = modified_account_type_choices
     if request.method == "POST":
         # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
         ''' Begin reCAPTCHA validation '''
@@ -208,11 +210,10 @@ def confirm_subscription_institution(request, institution_id):
                     if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
                         institution.is_subscribed = True
                         institution.save()
-                        messages.add_message(request, messages.INFO, 'The subscription form is submitted successfully. Local Contexts HUB will contact with you.')
+                        messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
                         return redirect('dashboard')
                 elif request.user._wrapped not in institution.get_admins():
                     join_flag = True
-                    messages.add_message(request, messages.INFO, 'An institution by this name already exists.Please join that insitute.')
                     return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
 
     return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
