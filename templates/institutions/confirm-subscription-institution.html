@@ -100,9 +100,14 @@
         id="g-recaptcha-response"
         />
         <div class="flex-this flex-end">
-          <button class="primary-btn action-btn margin-top-2">
+          <button id="continueButton" class="primary-btn action-btn margin-top-2" onclick="disableButton()">
             Continue <i class="fa fa-arrow-right"></i>
           </button>
+          <div id="loading-spinner" class="primary-btn action-btn margin-top-2 hide disabled-btn">
+            Continue <i class="fa fa-arrow-right"></i>
+            <i class="fa spinner-container fa-spinner fa-spin fa-2x spinner "></i>
+          </div>
+        </div>        
         </div>
         {% include 'partials/_alerts.html' %}
       <div>
@@ -127,4 +132,42 @@
     </div>
   </div>
 {% endif %}
+<script>
+  function disableButton() {
+    if (validateForm()) {
+      document.getElementById("continueButton").style.display = "none";
+      document.getElementById("loading-spinner").classList.remove('hide');
+    }
+  }
+
+  function validateForm() {
+    var isValid = true;
+    var inputs = document.getElementsByTagName("input");
+    var selects = document.getElementsByTagName("select");
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].hasAttribute("required") && (inputs[i].value.trim() === "" )) {
+            isValid = false;
+            break;
+        }
+
+        if (inputs[i].type === "email" && !isValidEmail(inputs[i].value.trim())) {
+            isValid = false;
+            break;
+        }
+
+    }
+    for (var i = 0; i < selects.length; i++) {
+      if (selects[i].hasAttribute("required") && (selects[i].value.trim() === "" )) {
+              isValid = false;
+              break;
+        }
+    }
+    return isValid;
+  }
+
+  function isValidEmail(email) {
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+  }
+</script>
 {% endblock %}
