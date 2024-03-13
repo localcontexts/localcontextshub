@@ -26,6 +26,7 @@
                     </div>
                 </div>
             </a>
+        {% if community %}
             <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if '/communities/update-community-boundary/' in request.path %} selected {% else %} grey-text {% endif %}">
                     <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-location-dot fa-3x"></i></div>
@@ -36,6 +37,7 @@
                     </div>
                 </div>
             </a>
+        {% endif %}
         </div>
 
         <div class="flex-this column w-80">
