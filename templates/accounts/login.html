@@ -41,7 +41,7 @@
                     <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Sign in With Google</span></a>
                 </div>
             </div>
-            <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+            <input type="hidden" name="next" value="{% if request.POST.next %}{{ request.POST.next }}{% else %}{{ request.GET.next }}{% endif %}"/>
         </form>
 
         <!-- Alerts -->

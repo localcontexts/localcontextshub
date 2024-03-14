@@ -177,6 +177,9 @@ def confirm_subscription_institution(request, institution_id):
     modified_account_type_choices = [choice for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES if choice[0] != 'member']
     form = SubscriptionForm(request.POST or None, initial=initial_data)
     form.fields['inquiry_type'].choices = modified_account_type_choices
+    form.fields['account_type'].widget.attrs.update({'class': 'w-100 readonly-input'})
+    form.fields['organization_name'].widget.attrs.update({'class': 'readonly-input'})
+    form.fields['email'].widget.attrs.update({'class': 'readonly-input'})
     if request.method == "POST":
         # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
         ''' Begin reCAPTCHA validation '''
