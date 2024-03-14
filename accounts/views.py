@@ -876,18 +876,18 @@ def subscription_inquiry(request):
                     form.cleaned_data['last_name'] = first_name
                 account_exist = User.objects.filter(email=email).first()
                 institution = Institution.objects.filter(institution_name=organization).first()
-                if institution.institution_creator == account_exist:
-                    messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login.')
-                    return redirect('confirm-subscription-institution', institution_id = institution.id)
-                elif account_exist and institution:
-                    next_url = reverse('public-institution', kwargs={'pk': institution.id})
-                    login_url = f'/login/?next={next_url}'
-                    return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'login_url': login_url, 'institution': institution,})
+                if institution and account_exist:
+                    if institution.institution_creator == account_exist:
+                        messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login.')
+                        return redirect('confirm-subscription-institution', institution_id = institution.id)
+                    elif account_exist and institution:
+                        next_url = reverse('public-institution', kwargs={'pk': institution.id})
+                        login_url = f'/login/?next={next_url}'
+                        return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'login_url': login_url, 'institution': institution,})
                 elif account_exist and not institution:
                     messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login to create the insitute.')
                     return redirect('select-account')
-                
-                if institution:
+                elif institution and not account_exist:
                     return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution,})
                 else:
                     subscription = form
