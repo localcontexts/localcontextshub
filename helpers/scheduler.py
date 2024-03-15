@@ -18,7 +18,7 @@ def start_scheduler():
     scheduler.add_job(
         cleanup_inactive_users,
         trigger=CronTrigger(hour='*/23'),
-        id="cleanup_inactive_users_24h",
+        id="cleanup_inactive_users",
         max_instances=1,
         replace_existing=True,
     )
