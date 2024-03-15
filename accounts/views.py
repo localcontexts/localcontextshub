@@ -17,9 +17,10 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from unidecode import unidecode
 from django.db.models import Q
@@ -33,6 +34,7 @@ from projects.models import Project
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
+from helpers.utils import validate_email
 
 from helpers.emails import *
 from .models import *
@@ -71,6 +73,9 @@ def register(request):
                 elif User.objects.filter(username__iexact=user.username.lower()).exists():
                     messages.error(request, 'A user with this username already exists.')
                     return redirect('register')
+                elif not validate_email(email=user.email):
+                    messages.error(request, 'The email you entered is invalid')
+                    return redirect('register')
                 else:
                     user.is_active = False
                     user.save()
@@ -95,7 +100,7 @@ def register(request):
 class ActivateAccountView(View):
     def get(self, request, uidb64, token):
         try:
-            uid=force_text(urlsafe_base64_decode(uidb64))
+            uid=force_str(urlsafe_base64_decode(uidb64))
             user=User.objects.get(pk=uid)
         except Exception as identifier:
             user=None
@@ -276,9 +281,23 @@ def update_profile(request):
     profile = Profile.objects.select_related('user').get(user=request.user)
 
     if request.method == 'POST':
+        old_email = request.user.email
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.user_profile)
-        if user_form.is_valid() and profile_form.is_valid():
+        new_email = user_form.data['email']
+        
+        if new_email != old_email and new_email != '' and user_form.is_valid():
+            user_form.instance.email = old_email
+            profile_form.save()
+            user_form.save()
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(request.user)
+            encoded_token = urlsafe_base64_encode(force_bytes(f"{token} {new_email} {request.user.id}"))
+            verification_url = f"http://{get_current_site(request).domain}/confirm-email/{request.user.pk}/{encoded_token}"
+            send_email_verification(request, old_email, new_email, verification_url)
+            messages.add_message(request, messages.INFO, f'A verification email has been sent to {new_email}.')
+            return redirect('update-profile')
+        elif user_form.is_valid() and profile_form.is_valid(): 
             user_form.save()
             profile_form.save()
             messages.add_message(request, messages.SUCCESS, 'Profile updated!')
@@ -289,6 +308,30 @@ def update_profile(request):
 
     context = { 'profile': profile, 'user_form': user_form, 'profile_form': profile_form }
     return render(request, 'accounts/update-profile.html', context)
+
+@login_required(login_url='login')
+def confirm_email(request, uidb64, token):
+    try:
+        decoded_token = urlsafe_base64_decode(token).decode('utf-8')
+        new_token, new_email, user_id_str = decoded_token.split(' ')
+    except ValueError:
+        messages.add_message(request, messages.ERROR, 'Invalid Verification token.')
+        return redirect('login')
+    new_token = new_token.strip()
+    new_email = new_email.strip()
+    user_id = user_id_str.strip()
+
+    if not User.objects.filter(pk=user_id).exists():
+        messages.add_message(request, messages.ERROR, 'User not found.')
+        return redirect('login')
+    user = User.objects.get(pk=user_id)
+    token_valid = PasswordResetTokenGenerator().check_token(user, new_token)
+    
+
+    user.email = new_email
+    user.save()
+    messages.add_message(request, messages.SUCCESS, 'Email updated Successfully.')
+    return redirect('dashboard')
 
 @login_required(login_url='login')
 def change_password(request):
@@ -556,7 +599,7 @@ def newsletter_unsubscription(request, emailb64):
 
     if environment == 'PROD' or 'localhost' in request.get_host():
         try:
-            email=force_text(urlsafe_base64_decode(emailb64))
+            email=force_str(urlsafe_base64_decode(emailb64))
             response = get_newsletter_member_info(email)
             data=response.json()
             member_info = data["member"]

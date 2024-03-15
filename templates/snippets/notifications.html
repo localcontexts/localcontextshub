@@ -13,7 +13,7 @@
 
     {% if 'dashboard' in request.path  and scope != user %}
         <div class="no-margin">
-            <a id="notification-button-{{scope|cut:"'"}}" onclick="toggleNotifications('{{ scope|cut:"'" }}')" class="primary-btn white-btn dropbtn border-raduis50">
+            <a id="notification-button-{{scope|cut:"'"}}" onclick="toggleNotifications('{{ scope|cut:"'" }}')" class="primary-btn white-btn dropbtn round-btn-small">
                 <i 
                 class="
                     {% if unread_exist_user and 'dashboard' in request.path and scope == user %} no-margin fa-solid fa-bell-on orange-text 

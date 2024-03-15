@@ -1,5 +1,6 @@
 {% load static %}
-<div class="dashcard show">
+<div class="dashcard">
+
     <div class="flex-this">
 
         <div class="dashcard-img-container">
@@ -20,12 +21,12 @@
             <div><p class="dashcard-description description-sm">
                     {% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}
             </p></div>
-        </div>
+        </div>           
 
         <div class="dashcard-btn-container">
-            <div class="margin-left-16 flex-this gap-1">
+            <div class="flex-this gap-half">
                 {% if '/registry/' in request.path %}
-                    <div class="margin-left-16"> 
+                    <div> 
                         <a 
                             class="primary-btn action-btn"
                             href="{% url 'public-community' community.id %}" 
@@ -33,7 +34,7 @@
                     </div> 
                 {% endif %}
 
-                <div class="margin-right-8">                 
+                <div>                 
                     {% if '/dashboard/' in request.path %}
                         {% if approved_label %}
                             {% if request.user in community.get_collaborator or request.user == community.community_creator %}
@@ -49,16 +50,21 @@
                     {% endif %}
                 </div>
                 {% if '/dashboard/' in request.path %}
-                    <!-- Notification -->
-                    {% include 'snippets/notifications.html' with scope=community %}
-                    <!-- Settings -->
-                    {% if request.user == community.community_creator or member_role == 'admin' %}
-                        <div>
-                            <a href="{% url 'update-community' community.id %}" class=" border-raduis50 darkteal-text primary-btn white-btn"><i class=" no-margin fa fa-cog" aria-hidden="true"></i></a>
-                        </div>
-                    {% endif %}
+                    <div class="margin-left-8 flex-this gap-half">
+                        <!-- Notification -->
+                        {% include 'snippets/notifications.html' with scope=community %}
+                        <!-- Settings -->
+                        {% if request.user == community.community_creator or request.user in community.get_admins %}
+                            <div>
+                                <a href="{% url 'update-community' community.id %}" class="round-btn-small darkteal-text primary-btn white-btn">
+                                    <i class="no-margin fa fa-cog" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endif %}                        
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
+
 </div>

@@ -98,7 +98,10 @@ def community_boundary_view(request, community_id):
             print(f'{message}: {request.user}')
             raise Exception(message)
 
-        boundary = community.boundary.get_coordinates(as_tuple=False)
+        boundary = []
+        if community.boundary:
+            boundary = community.boundary.get_coordinates(as_tuple=False)
+
         context = {
             'boundary': boundary
         }
@@ -112,9 +115,9 @@ def boundary_view(request):
     try:
         boundary = request.GET.get('boundary')
         if boundary:
-            boundary = [json.loads(
+            boundary = json.loads(
                 boundary.replace('(', '[').replace(')', ']')
-            )]
+            )
         else:
             boundary = []
 

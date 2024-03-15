@@ -1513,6 +1513,10 @@ function cancelUnlink() {
     confirmationAlert.style.display = 'none';
 }
 
+function cancelDisclaimer() {
+    var disclaimerAlert = document.getElementById('disclaimerAlert');
+    disclaimerAlert.style.display = 'none';
+}
 if (window.location.href.includes('newsletter/preferences/') ) {
     const unsubscribeChkbox = document.getElementById('unsubscribe');
     const unsubscribeBtn = document.getElementById('unsubscribebtn');

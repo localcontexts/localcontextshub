@@ -107,6 +107,18 @@ class Community(models.Model):
         approved_label = (self.tklabel_community.filter(is_approved=True).first() or self.bclabel_community.filter(is_approved=True).first()) 
         return approved_label
 
+    def create_or_update_boundary(self, boundary_coordinates):
+        boundary_coordinates = boundary_coordinates if boundary_coordinates else []
+
+        if self.boundary:
+            # update boundary when it exists
+            self.boundary.coordinates = boundary_coordinates
+        else:
+            # create boundary when it does not exist
+            self.boundary = Boundary(coordinates=boundary_coordinates)
+
+        self.boundary.save()
+
     class Meta:
         indexes = [models.Index(fields=['id', 'community_creator', 'image'])]
         verbose_name = 'Community'

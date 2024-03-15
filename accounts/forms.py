@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -49,9 +49,11 @@ class UserUpdateForm(forms.ModelForm):
     def clean(self):
         super(UserUpdateForm, self).clean()
         email = self.cleaned_data.get('email')
-
+        user_id = self.instance.id if self.instance else None
         if len(email) == 0:
             self._errors['email'] = self.error_class(['Email Is Required'])
+        elif User.objects.filter(email=email).exclude(id=user_id).exists():
+            self._errors['email'] = self.error_class(["Email already exists."])
         return self.cleaned_data
 
 

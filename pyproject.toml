@@ -1,0 +1,7 @@
+[tool.coverage.run]
+omit = [
+    '*/migrations/*',
+    '*/apps.py',
+    'tests/*',
+    'manage.py'
+]
