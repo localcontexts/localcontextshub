@@ -362,7 +362,7 @@ def send_email_notice_placed(request, project, community, account):
         send_mailgun_template_email(community.community_creator.email, subject, 'notice_placed', data)
 
 #Project status has been changed
-def send_email_project_status(request, project, communities):
+def send_action_notification_project_status(request, project, communities):
     login_url = get_site_url(request, 'login')
     editor = request.user
     project_description = project.description
