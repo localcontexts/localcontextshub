@@ -2,7 +2,7 @@ appdirs==1.4.4
 APScheduler==3.10.4
 arabic-reshaper==3.0.0
 asgiref==3.7.2
-astroid==2.4.2
+astroid==3.0.1
 boto3==1.26.77
 botocore==1.29.77
 cachetools==4.2.4
@@ -34,6 +34,7 @@ exceptiongroup==1.2.0
 factory-boy==3.3.0
 Faker==20.0.0
 filelock==3.0.12
+flake8==7.0.0
 future==0.18.3
 google-api-core==1.32.0
 google-auth==1.30.0
@@ -48,7 +49,7 @@ idna==3.2
 isort==5.4.2
 jmespath==0.10.0
 lazy-object-proxy==1.4.3
-mccabe==0.6.1
+mccabe==0.7.0
 oauthlib==3.2.2
 oscrypto==1.3.0
 packaging==21.0
@@ -58,7 +59,7 @@ protobuf==3.18.3
 psycopg2-binary==2.9.9
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pylint==2.6.0
+pylint==3.0.3
 pylint-django==2.3.0
 pylint-plugin-utils==0.6
 pyparsing==2.4.7
@@ -89,3 +90,4 @@ webencodings==0.5.1
 whitenoise==5.2.0
 wrapt==1.12.1
 xhtml2pdf==0.2.11
+yapf==0.40.2
