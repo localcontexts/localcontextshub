@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
+from django.db.models import Q
 from itertools import chain
 
 from localcontexts.utils import dev_prod_or_local
@@ -386,7 +387,7 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
             # Create notices for project
             notices_selected = request.POST.getlist('checkbox-notice')
             translations_selected = request.POST.getlist('checkbox-translation')
-            crud_notices(request, notices_selected, translations_selected, researcher, data, None)
+            crud_notices(request, notices_selected, translations_selected, researcher, data, None, False)
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, researcher, data)
@@ -445,7 +446,7 @@ def edit_project(request, researcher, project_uuid):
 
             editor_name = get_users_name(request.user)
             ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
-            communities = ProjectStatus.objects.filter(project=data, seen=True, status='pending').select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
+            communities = ProjectStatus.objects.filter( Q(status='pending') | Q(status__isnull=True),project=data, seen=True).select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
             # Adds activity to Hub Activity
             HubActivity.objects.create(
                 action_user_id=request.user.id,
@@ -468,7 +469,7 @@ def edit_project(request, researcher, project_uuid):
             has_changes = crud_notices(request, notices_selected, translations_selected, researcher, data, notices, has_changes)
 
             if has_changes:
-                    send_email_project_status(request, project, communities)
+                send_action_notification_project_status(request, project, communities)
         return redirect('researcher-project-actions', researcher.id, project.unique_id)
 
     context = {
