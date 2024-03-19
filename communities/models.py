@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.contrib.gis.db import models as gis_model
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
@@ -23,7 +24,7 @@ def community_img_path(self, filename):
     return os.path.join('users/community-images', filename)
 
 
-class Boundary(models.Model):
+class Boundary(gis_model.Model):
     coordinates = ArrayField(
         ArrayField(
             models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True),
@@ -32,6 +33,7 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
+    poly = gis_model.PolygonField()
 
     def get_coordinates(self, as_tuple=True):
         if as_tuple:
