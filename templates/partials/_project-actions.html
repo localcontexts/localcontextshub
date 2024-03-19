@@ -678,7 +678,7 @@
                 <a id="shareBtn" class="block pointer" onclick="openModal('shareProjectModal', 'closeShareProjectModal')"><i class="fa-solid fa-share-nodes"></i> Share</a>
 
                 <div id="shareProjectModal" class="modal hide">
-                    <div class="modal-defaults share-project-modal flex-this column w-100">
+                    <div class="modal-defaults share-modal flex-this column w-100">
 
                         <div class="flex-this space-between">
                             <div class="w-80">
@@ -754,19 +754,19 @@
                             <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
                             <div class="flex-this bold">Share on Social Media</div>
                             <div class="share-to-socials-container">
-                                <div class="shareToSocialsBtn" data-social="email" data-project-title="{{ project.title }}" data-project-url="{{ project.project_page }}">
+                                <div class="shareToSocialsBtn" data-type="project" data-social="email" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
                                     <i class="socials-btn fa-solid fa-envelope" title="Share via Email"></i>
                                 </div>
-                                <div class="shareToSocialsBtn" data-social="whatsapp" data-project-title="{{ project.title }}" data-project-url="{{ project.project_page }}">
+                                <div class="shareToSocialsBtn" data-type="project" data-social="whatsapp" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
                                     <i class="socials-btn fa-brands fa-whatsapp" title="Share via WhatsApp"></i>
                                 </div>
-                                <div class="shareToSocialsBtn" data-social="facebook" data-project-title="{{ project.title }}" data-project-url="{{ project.project_page }}">
+                                <div class="shareToSocialsBtn" data-type="project" data-social="facebook" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
                                     <i class="socials-btn fa-brands fa-facebook-f" title="Share on Facebook"></i>
                                 </div>
-                                <div class="shareToSocialsBtn" data-social="twitter" data-project-title="{{ project.title }}" data-project-url="{{ project.project_page }}">
+                                <div class="shareToSocialsBtn" data-type="project" data-social="twitter" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
                                     <i class="socials-btn fa-brands fa-twitter" title="Share on Twitter"></i>
                                 </div>
-                                <div class="shareToSocialsBtn" data-social="linkedin" data-project-title="{{ project.title }}" data-project-url="{{ project.project_page }}">
+                                <div class="shareToSocialsBtn" data-type="project" data-social="linkedin" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
                                     <i class="socials-btn fa-brands fa-linkedin" title="Share on LinkedIn"></i>
                                 </div>
                             </div>

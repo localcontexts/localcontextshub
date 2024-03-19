@@ -1649,17 +1649,25 @@ if (window.location.href.includes('dashboard')) {
     })
 }
 
-// addURLModal
+// Notice Modals
 if (window.location.href.includes('notices')) { 
-    // OTC Add URL modal
     const OTCModal = document.getElementById('addURLModal')
     const addURLBtn = document.getElementById('addURLBtn')
+    const shareBtn = document.getElementById('shareBtn')
 
+    // OTC Add URL modal
     addURLBtn.addEventListener('click', () => {
         if (OTCModal.classList.contains('hide')) { OTCModal.classList.replace('hide', 'show')}
     })
     const closeAddURLModal = document.getElementById('closeAddURLModal')
     closeAddURLModal.addEventListener('click', function() { OTCModal.classList.replace('show', 'hide')})
+
+    // Share OTC Notice Modal
+    shareBtn.addEventListener('click', () => {
+        if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
+    })
+    const closeshareOTCNoticeModal = document.getElementById('closeshareOTCNoticeModal')
+    closeshareOTCNoticeModal.addEventListener('click', function() { shareOTCNoticeModal.classList.replace('show', 'hide')})
 
     // CC Notices modal
     const ccNoticeModal = document.getElementById('addCCPolicyModal')
@@ -1726,8 +1734,10 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
     })
 }
 
-// Share Modal - Embed Code customization options
-if (window.location.href.includes('/projects/') && !window.location.href.includes('/projects/embed/')) {
+// Share Project Modal - Embed Code customization options
+if (
+        window.location.href.includes('/projects/') && window.location.href.includes('/projects/actions/')
+    ) {
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
@@ -1798,21 +1808,30 @@ if (shareToSocialsBtn) {
 function shareToSocialsBtnAction(btnElem) {
     btnElem.addEventListener('click', function() {
         socialType = btnElem.getAttribute("data-social")
-        projectURL = btnElem.getAttribute("data-project-url")
-        projectTitle = btnElem.getAttribute("data-project-title")
+        dataURL = btnElem.getAttribute("data-url")
+        dataTitle = btnElem.getAttribute("data-title")
+        dataType = btnElem.getAttribute("data-type")
+
         if (socialType == 'email') {
-            var emailSubject = encodeURIComponent("Local Contexts Project")
-            var emailBody = encodeURIComponent("Check out this Local Contexts Project! "+projectTitle+" at "+projectURL)
+            if( dataType == "project") {
+                var emailSubject = encodeURIComponent("Local Contexts Project")
+                var emailBody = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            }
             var mailtoLink = "mailto:?subject="+emailSubject+"&body="+emailBody
             window.location.href = mailtoLink
         } else if(socialType == 'facebook') {
-            window.open('http://www.facebook.com/sharer/sharer.php?u='+projectURL, 'Share on Facebook')
+            window.open('http://www.facebook.com/sharer/sharer.php?u='+dataURL, 'Share on Facebook')
         } else if (socialType == 'twitter') {
-            window.open('https://twitter.com/intent/tweet?url='+projectURL+'&text=Check out this @LocalContexts project! #LocalContexts #traditionalknowledge #indigenousdata', 'Share on Twitter')
+            if (dataType == "project") {
+                messageText = "Check out this @LocalContexts project! #LocalContexts #traditionalknowledge #indigenousdata"
+            }
+            window.open('https://twitter.com/intent/tweet?url='+dataURL+'&text='+messageText, 'Share on Twitter')
         } else if (socialType == 'linkedin') {
-            window.open('https://www.linkedin.com/shareArticle?url='+projectURL)
+            window.open('https://www.linkedin.com/shareArticle?url='+dataURL)
         } else if (socialType == 'whatsapp') {
-            messageText = encodeURIComponent("Check out this Local Contexts Project! "+projectTitle+" at "+projectURL)
+            if (dataType == "project") {
+                messageText = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            }
             window.location.href = 'https://api.whatsapp.com/send?text='+messageText
         }
     })

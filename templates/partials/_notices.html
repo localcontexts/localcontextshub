@@ -519,3 +519,93 @@
     </div>
 </div>
 
+<div id="shareOTCNoticeModal" class="modal hide">
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="w-80">
+                <h2 class="primary-black-text no-top-margin">Share OTC Notice</h2>  
+            </div>
+            <div>
+                <div id="closeshareOTCNoticeModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
+            </div>
+        </div>
+
+        <div class="w-100 flex-this column">
+            <div class="w-100 flex-this column margin-bottom-16">
+                <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Registry URL</label>
+
+                <div class="text-input-to-copy">
+                    <input class="w-100 grey-chip" type="text" value="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}" id="profilePageUrlToCopy" readonly>
+                    <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
+                </div>
+
+                <label class="bold margin-top-8 no-bottom-margin block">Embed Project</label>
+                <p class="font-size-14 no-top-margin margin-bottom-8">Add this project's identifiers to your website by copying the code below.</p>
+
+                <div class="text-input-to-copy">
+                    <input class="w-100 grey-chip" type="text" data-project-id="{{ project.unique_id}}" id="projectPageEmbedToCopy" readonly>
+                    <button class="copy-btn btn-in-input" data-target="projectPageEmbedToCopy">Copy Code</button>
+                </div>
+                <p class="font-size-14 margin-top-1 no-bottom-margin">Embed Options</p>
+                <div class="flex-this">
+                    <select id="embedLayoutOptions" name="layout" class="project-sort w-30 margin-top-1 margin-right-1">
+                        <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
+                        <option class="darkteal-text pointer" value="2">Icon and Title</option>
+                        <option class="darkteal-text pointer" value="3">Icon, Title and Text</option>
+                    </select>
+                    <select id="embedLanguageOptions" name="language" class="project-sort w-30 margin-top-1 margin-right-1">
+                        {% if notices %}
+                            <option class="darkteal-text pointer" value="en" selected>English</option>
+                            {% for notice in notices %}
+                                {% for translation in notice.notice_translations.all %}
+                                    <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if project.has_bclabels or project.has_tklabels %}
+                            {% for community, labels in label_groups.items %}
+                                {% for tklabel in labels.tk_labels %}
+                                    <option class="darkteal-text pointer" value="{{ tklabel.language_tag }}">{{ tklabel.language }}</option>
+                                    {% for translation in tklabel.tklabel_translation.all %}
+                                        <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for bclabel in labels.bc_labels %}
+                                    <option class="darkteal-text pointer" value="{{ bclabel.language_tag }}">{{ bclabel.language }}</option>
+                                    {% for translation in bclabel.bclabel_translation.all %}
+                                        <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <select id="embedAlignOptions" name="align" class="project-sort w-30 margin-top-1 margin-right-1">
+                        <option class="darkteal-text pointer" value="left" selected>Left Align</option>
+                        <option class="darkteal-text pointer" value="right">Right Align</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+            <div class="flex-this bold">Share on Social Media</div>
+            <div class="share-to-socials-container">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="*" data-url="*">
+                    <i class="socials-btn fa-solid fa-envelope" title="Share via Email"></i>
+                </div>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="*" data-url="*">
+                    <i class="socials-btn fa-brands fa-whatsapp" title="Share via WhatsApp"></i>
+                </div>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="*" data-url="*">
+                    <i class="socials-btn fa-brands fa-facebook-f" title="Share on Facebook"></i>
+                </div>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="*" data-url="*">
+                    <i class="socials-btn fa-brands fa-twitter" title="Share on Twitter"></i>
+                </div>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="*" data-url="*">
+                    <i class="socials-btn fa-brands fa-linkedin" title="Share on LinkedIn"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
