@@ -36,12 +36,14 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install GeoJson Dependencies
+        id: gdal
         run: |
             sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
             sudo apt-get update
             sudo apt-get install -y gdal-bin python3-gdal libgdal-dev
 
       - name: Apply Migrations and Run Tests
+        if: steps.gdal.outcome == 'success'
         env:
           PROD_KEY: ${{ secrets.PROD_KEY }}
           DEBUG_VALUE: ${{ secrets.DEBUG_VALUE }}
