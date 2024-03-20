@@ -1736,7 +1736,7 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
 
 // Share Project Modal - Embed Code customization options
 if (
-        window.location.href.includes('/projects/') && window.location.href.includes('/projects/actions/')
+        window.location.href.includes('/projects/')
     ) {
     var embedCode = document.getElementById('projectPageEmbedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
@@ -1744,20 +1744,6 @@ if (
     var alignmentDropdown = document.getElementById('embedAlignOptions')
     var langArray= new Array();
     var layoutType, languageType, alignType = null
-    projectID = embedCode.dataset.projectId
-
-    
-    embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
-
-    for (i=0;i < languageDropdown.options.length; i++) {
-        if (langArray.includes(languageDropdown.options[i].value) == false) {
-            langArray.push(languageDropdown.options[i].value)
-            languageDropdown.options[i].classList.remove("hide");
-        }
-        else {
-            languageDropdown.options[i].classList.add("hide");
-        }
-    }
 
     if (layoutDropdown) {
         layoutDropdown.addEventListener("change", function(e) {
@@ -1766,6 +1752,16 @@ if (
         })
     }
     if (languageDropdown) {
+        for (i=0;i < languageDropdown.options.length; i++) {
+            if (langArray.includes(languageDropdown.options[i].value) == false) {
+                langArray.push(languageDropdown.options[i].value)
+                languageDropdown.options[i].classList.remove("hide");
+            }
+            else {
+                languageDropdown.options[i].classList.add("hide");
+            }
+        }
+
         languageDropdown.addEventListener("change", function(e) {
             languageType = 'lang='+this.value+'&'
             updateEmbedCode()
@@ -1793,7 +1789,8 @@ if (
 
         customizationOptions = customizationOptions.slice(0,-1)
 
-        embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        projectID = embedCode.dataset.projectId
+        embedCode.value = '<iframe width="100%" height="150" src="' + window.location.origin + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
     }
 }
 
