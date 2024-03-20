@@ -132,7 +132,6 @@ class ActivateAccountView(View):
 
             add_to_active_users_mailing_list(request, user.email, None)
 
-            messages.add_message(request, messages.INFO, 'Profile activation successful. You are now able to login.')
             messages.add_message(
                 request, messages.INFO,
                 'Profile activation successful. You are now able to login.')
