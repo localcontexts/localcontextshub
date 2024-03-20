@@ -586,3 +586,12 @@ def send_project_person_email(request, to_email, proj_id, account):
 # if list, loop over each email.
 # def send_update_email(email):
 #     send_mailgun_template_email(email, 'Local Contexts Hub Updates', 'hub_updates', None)
+
+def send_email_verification(request, old_email, new_email, verification_url):
+    subject = 'Email Verification Link For Your Local Contexts Hub Profile'
+    data = {'user':request.user.username, 'new_email':new_email, 'old_email':old_email, 'verification_url':verification_url}
+    send_mailgun_template_email(new_email, subject, 'verify_email_update', data)
+    
+    old_subject = 'Change of Email For Your Local Contexts Hub Profile'
+    old_email_data = {'user':request.user.username, 'old_email':old_email, 'new_email':new_email}
+    send_mailgun_template_email(old_email, old_subject,'notify_email_on_email_update', old_email_data)

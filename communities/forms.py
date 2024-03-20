@@ -5,7 +5,7 @@ from django import forms
 from django.forms.utils import ErrorList
 
 from .models import Community, InviteMember, JoinRequest, Boundary
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 import os
 
@@ -138,9 +138,7 @@ class CommunityModelForm(forms.ModelForm):
             return
 
         new_boundary = self.supplementary_boundary_data.get('new_boundary')
-        if new_boundary:
-            self.instance.boundary = Boundary(coordinates=new_boundary)
-            self.instance.boundary.save()
+        self.instance.create_or_update_boundary(new_boundary)
 
     def save(self, commit=True):
         obj = super().save(commit=False)

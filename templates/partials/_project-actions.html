@@ -173,7 +173,15 @@
                             {% endif %}
                             {% if project.additional_contributors %}
                                 {% for contributor in project.additional_contributors.all %}
-                                    <li>{{ contributor.name }} | Contributor </li>
+                                    <li>
+                                        {% if contributor.name and contributor.email %}
+                                            {{ contributor.name }}, {{ contributor.email }}
+                                        {% elif contributor.name %}
+                                            {{ contributor.name }}
+                                        {% elif contributor.email %}
+                                            {{ contributor.email }} 
+                                        {% endif %} | Contributor
+                                    </li>
                                 {% endfor %}
                             {% endif %}
                         </ul>
@@ -1085,4 +1093,19 @@
         </div>
 
     </div>
+
+{% endif %}
+{% if status is False %}
+<div id="disclaimerAlert" class="modal">
+    <div class="modal-defaults deactivate-modal flex-this column w-100">
+        <div class="w-100">
+            <div>
+                <h5 class="primary-black-text no-top-margin">This account needs to be confirmed before public view is available to others.</h5>  
+            </div>
+            <div class="flex-this w-100 text-align-center">   
+                <div class="margin-left-1 primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}

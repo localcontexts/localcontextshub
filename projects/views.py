@@ -10,11 +10,14 @@ from helpers.downloads import download_project_zip
 from localcontexts.utils import dev_prod_or_local
 from .utils import can_download_project, return_project_labels_by_community
 
+from maintenance_mode.decorators import force_maintenance_mode_off
 
+@force_maintenance_mode_off
 def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
         creator = ProjectCreator.objects.get(project=project)
+        status = creator.account_is_confirmed()
         creator.validate_user_access(request.user)
     except (Project.DoesNotExist, UnconfirmedAccountException):
         return render(request, '404.html', status=404)
@@ -58,6 +61,7 @@ def view_project(request, unique_id):
         'template_name': template_name,
         'can_download': can_download,
         'label_groups': label_groups,
+        'status': status,
     }
 
     if template_name:
@@ -80,7 +84,8 @@ def download_project(request, unique_id):
             return download_project_zip(project)
     except:
         raise Http404()
-    
+
+@force_maintenance_mode_off
 def embed_project(request, unique_id):
     layout = request.GET.get('lt')
     lang = request.GET.get('lang')

@@ -67,8 +67,11 @@ def connect_institution(request):
 
 @login_required(login_url='login')
 def preparation_step(request):
-    institution = True
-    return render(request, 'accounts/preparation.html', { 'institution': institution })
+    if dev_prod_or_local(request.get_host()) == "SANDBOX":
+        return redirect('create-institution')
+    else:
+        institution = True
+        return render(request, 'accounts/preparation.html', { 'institution': institution })
 
 @login_required(login_url='login')
 def create_institution(request):
@@ -717,11 +720,8 @@ def edit_project(request, pk, project_uuid):
 
             instances = formset.save(commit=False)
             for instance in instances:
-                if not instance.name or not instance.email:
-                    instance.delete()
-                else:
-                    instance.project = data
-                    instance.save()
+                instance.project = data
+                instance.save()
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, institution, data)
