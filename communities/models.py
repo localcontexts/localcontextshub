@@ -33,7 +33,7 @@ class Boundary(gis_model.Model):
         ),
         blank=True, null=True
     )
-    poly = gis_model.PolygonField()
+    poly = gis_model.PolygonField(null=True)
 
     def get_coordinates(self, as_tuple=True):
         if as_tuple:
