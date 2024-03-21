@@ -42,8 +42,7 @@ from projects.models import Project
 
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
-from helpers.utils import validate_email, validate_recaptcha
-from helpers.utils import validate_email, create_salesforce_account_or_lead
+from helpers.utils import validate_email, validate_recaptcha, create_salesforce_account_or_lead
 
 from helpers.emails import (send_activation_email, generate_token,
                             resend_activation_email, send_welcome_email,
@@ -856,42 +855,29 @@ def subscription_inquiry(request):
         result = json.loads(response.read().decode())
         ''' End reCAPTCHA validation '''
 
-        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
-            if form.is_valid():
-                
-                account_type_key = form.cleaned_data['account_type']
-                inquiry_type_key = form.cleaned_data['inquiry_type']
+        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE and form.is_valid():
 
-                account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
-                inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
-                form.cleaned_data['account_type'] = account_type_display
-                form.cleaned_data['inquiry_type'] = inquiry_type_display
+            account_type_key = form.cleaned_data['account_type']
+            inquiry_type_key = form.cleaned_data['inquiry_type']
 
-                first_name = form.cleaned_data['first_name']
-                last_name = form.cleaned_data['last_name']
-                email = form.cleaned_data['email']
-                organization = form.cleaned_data['organization_name']
+            account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
+            inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
+            form.cleaned_data['account_type'] = account_type_display
+            form.cleaned_data['inquiry_type'] = inquiry_type_display
 
-                if not last_name:
-                    form.cleaned_data['last_name'] = first_name
-                account_exist = User.objects.filter(email=email).first()
-                institution = Institution.objects.filter(institution_name=organization).first()
-                if institution and account_exist:
-                    if institution.institution_creator == account_exist:
-                        messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login.')
-                        return redirect('confirm-subscription-institution', institution_id = institution.id)
-                    elif account_exist and institution:
-                        next_url = reverse('public-institution', kwargs={'pk': institution.id})
-                        login_url = f'/login/?next={next_url}'
-                        return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'login_url': login_url, 'institution': institution,})
-                elif account_exist and not institution:
-                    messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login to create the insitute.')
-                    return redirect('select-account')
-                elif institution and not account_exist:
-                    return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution,})
-                else:
-                    subscription = form
-                    create_salesforce_account_or_lead(data=form.cleaned_data)
-                    messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
-                    return redirect('subscription-inquiry')
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            organization = form.cleaned_data['organization_name']
+
+            if not last_name:
+                form.cleaned_data['last_name'] = first_name
+            account_exist = User.objects.filter(email=email).first()
+            institution = Institution.objects.filter(institution_name=organization).first()
+            try:
+                response = institute_account_subscription(request, institution, account_exist, form, non_ror_institutes)
+                return response
+            except:
+                messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please try contacting the Local Contexts HUB.')
+                return redirect('dashboard')
     return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, })

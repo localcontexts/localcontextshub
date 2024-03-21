@@ -195,30 +195,24 @@ def confirm_subscription_institution(request, institution_id):
         result = json.loads(response.read().decode())
         ''' End reCAPTCHA validation '''
 
-        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
-            if form.is_valid():
-                account_type_key = form.cleaned_data['account_type']
-                inquiry_type_key = form.cleaned_data['inquiry_type']
-                
-                account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
-                inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
-                form.cleaned_data['account_type'] = account_type_display
-                form.cleaned_data['inquiry_type'] = inquiry_type_display
-                
-                first_name = form.cleaned_data['first_name']
-                if not form.cleaned_data['last_name']:
-                    form.cleaned_data['last_name'] = first_name
-
-                if institution.institution_creator == request.user._wrapped:
-                    if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
-                        institution.is_subscribed = True
-                        institution.save()
-                        messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
-                        return redirect('dashboard')
-                elif request.user._wrapped not in institution.get_admins():
-                    join_flag = True
-                    return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
-
+        if result['success'] and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE and form.is_valid():
+            account_type_key = form.cleaned_data['account_type']
+            inquiry_type_key = form.cleaned_data['inquiry_type']
+            
+            account_type_display = dict(form.fields['account_type'].choices).get(account_type_key, '')
+            inquiry_type_display = dict(form.fields['inquiry_type'].choices).get(inquiry_type_key, '')
+            form.cleaned_data['account_type'] = account_type_display
+            form.cleaned_data['inquiry_type'] = inquiry_type_display
+            
+            first_name = form.cleaned_data['first_name']
+            if not form.cleaned_data['last_name']:
+                form.cleaned_data['last_name'] = first_name
+            try:
+                response = confirm_subscription(request, institution, join_flag, form)
+                return response
+            except:
+                messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please try contacting the Local Contexts HUB.')
+                return redirect('dashboard')
     return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
         # if form.is_valid():
         #     # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
