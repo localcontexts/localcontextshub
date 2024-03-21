@@ -44,7 +44,6 @@ jobs:
             sudo apt-get install -y postgis
 
       - name: Apply Migrations and Run Tests
-        if: steps.gdal.outcome == 'success'
         env:
           PROD_KEY: ${{ secrets.PROD_KEY }}
           DEBUG_VALUE: ${{ secrets.DEBUG_VALUE }}
