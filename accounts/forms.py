@@ -189,7 +189,7 @@ class SubscriptionForm(forms.Form):
             ('', 'Please select inquiry type...'),
             ('subscriber', 'Subscription'),
             ('member', 'Membership'),
-            ('service_provider', 'Service Provider'),
+            ('service_provider', 'Service Providers'),
             ('something_else', ' Something Else'),
             ('not_sure', 'Not Sure')
         )
