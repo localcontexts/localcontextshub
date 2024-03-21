@@ -1,4 +1,6 @@
+from django.shortcuts import render, redirect
 from .models import Institution
+from helpers.utils import create_salesforce_account_or_lead
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
@@ -23,3 +25,14 @@ def set_ror_id(institution):
             print('No matching institution found.')
     else:
         print('Error:', response.status_code)
+        
+def confirm_subscription(request, institution, join_flag, form):
+    if institution.institution_creator == request.user._wrapped:
+        if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
+            institution.is_subscribed = True
+            institution.save()
+            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
+            return redirect('dashboard')
+    elif request.user._wrapped not in institution.get_admins():
+        join_flag = True
+        return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})

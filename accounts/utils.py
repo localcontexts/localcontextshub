@@ -1,6 +1,9 @@
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from django.conf import settings
+from django.contrib import messages
 
 from communities.models import Community
 from institutions.models import Institution
@@ -72,3 +75,24 @@ def get_next_path(request, default_path: str):
         return next_path
 
     return default_path
+
+def institute_account_subscription(request, institution, account_exist, form, non_ror_institutes):
+    from helpers.utils import create_salesforce_account_or_lead
+    if institution and account_exist:
+        if institution.institution_creator == account_exist:
+            messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login.')
+            return redirect('confirm-subscription-institution', institution_id = institution.id)
+        elif account_exist and institution:
+            next_url = reverse('public-institution', kwargs={'pk': institution.id})
+            login_url = f'/login/?next={next_url}'
+            return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'login_url': login_url, 'institution': institution,})
+    elif account_exist and not institution:
+        messages.add_message(request, messages.INFO, 'Your Account already exists on Hub. Please login to create the insitute.')
+        return redirect('select-account')
+    elif institution and not account_exist:
+        return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution,})
+    else:
+        subscription = form
+        create_salesforce_account_or_lead(data=form.cleaned_data)
+        messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
+        return redirect('subscription-inquiry')
