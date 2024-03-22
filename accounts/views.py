@@ -1,6 +1,5 @@
 # Captcha validation imports
 import urllib
-import json
 
 # For emails
 from django.conf import settings
