@@ -4,7 +4,6 @@ from django_countries.fields import CountryField
 
 from communities.models import Community
 from institutions.models import Institution
-
 from researchers.models import Researcher
 
 class Profile(models.Model):
