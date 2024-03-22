@@ -41,7 +41,7 @@ from projects.models import Project
 
 from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
-from helpers.utils import validate_email
+from helpers.utils import validate_email, validate_recaptcha
 
 from helpers.emails import (send_activation_email, generate_token,
                             resend_activation_email, send_welcome_email,
@@ -64,21 +64,7 @@ def register(request):
     form = RegistrationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            ''' Begin reCAPTCHA validation '''
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            url = 'https://www.google.com/recaptcha/api/siteverify'
-            values = {
-                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
-            }
-            data = urllib.parse.urlencode(values).encode()
-            req = urllib.request.Request(url, data=data)
-            response = urllib.request.urlopen(req)
-            result = json.loads(response.read().decode())
-            ''' End reCAPTCHA validation '''
-
-            if result['success'] and result.get(
-                    'score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
+            if validate_recaptcha(request):
                 user = form.save(commit=False)
 
                 if User.objects.filter(email=user.email).exists():
@@ -684,27 +670,13 @@ def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
 
     if environment == 'PROD' or 'localhost' in request.get_host():
-        ''' Begin reCAPTCHA validation '''
-        recaptcha_response = request.POST.get('g-recaptcha-response')
-        url = 'https://www.google.com/recaptcha/api/siteverify'
-        values = {
-            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-            'response': recaptcha_response
-        }
-        data = urllib.parse.urlencode(values).encode()
-        req = urllib.request.Request(url, data=data)
-        response = urllib.request.urlopen(req)
-        result = json.loads(response.read().decode())
-        ''' End reCAPTCHA validation '''
-
         if request.method == 'POST':
             if 'topic' not in request.POST:
                 messages.add_message(request, messages.ERROR,
                                      'Please select at least one topic.')
                 return redirect('newsletter-subscription')
             else:
-                if result['success'] and result.get(
-                        'score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE:
+                if validate_recaptcha(request):
                     first_name = request.POST['first_name']
                     last_name = request.POST['last_name']
                     name = str(first_name) + str(' ') + str(last_name)

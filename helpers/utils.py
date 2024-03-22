@@ -1,4 +1,5 @@
 import json
+import urllib
 import zipfile
 import requests
 from django.conf import settings
@@ -418,3 +419,16 @@ def validate_email(email):
     else:
         print("Request failed with status code:", response.status_code)
         return False
+
+def validate_recaptcha(request_object):
+    recaptcha_response = request_object.POST.get('g-recaptcha-response')
+    url = 'https://www.google.com/recaptcha/api/siteverify'
+    values = {
+        'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        'response': recaptcha_response
+    }
+    data = urllib.parse.urlencode(values).encode()
+    req = urllib.request.Request(url, data=data)
+    response = urllib.request.urlopen(req)
+    result = json.loads(response.read().decode())
+    return result.get('success', False) and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE
