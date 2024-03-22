@@ -234,7 +234,9 @@ class SubscriptionAPI(APIView):
             api_key_count = request.data.get('api_key_count')
             project_count = request.data.get('project_count')
             notification_count = request.data.get('notification_count')
-            is_subscribed = request.data.get('is_subscribed')
+            start_date = request.data.get('start_date')
+            end_date = request.data.get('end_date')
+            date_last_updated = request.data.get('date_last_updated')
 
             account_type_to_field = {
                 'i': 'institution_id',
@@ -255,7 +257,9 @@ class SubscriptionAPI(APIView):
                     'api_key_count': api_key_count,
                     'project_count': project_count,
                     'notification_count': notification_count,
-                    'is_subscribed': is_subscribed
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'date_last_updated': date_last_updated
                 }
             }
 
@@ -267,7 +271,9 @@ class SubscriptionAPI(APIView):
                 subscription.api_key_count = api_key_count
                 subscription.project_count = project_count
                 subscription.notification_count = notification_count
-                subscription.is_subscribed = is_subscribed
+                subscription.start_date = start_date
+                subscription.end_date = end_date
+                subscription.date_last_updated = date_last_updated
                 subscription.save() 
                 return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
 
