@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 
 class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
+    VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
 
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
