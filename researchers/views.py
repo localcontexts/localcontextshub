@@ -20,6 +20,7 @@ from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
 from accounts.forms import ContactOrganizationForm
 
 from helpers.emails import *
+from .decorators import is_researcher
 
 from .models import Researcher
 from .forms import *
@@ -187,45 +188,42 @@ def update_researcher(request, pk):
         return render(request, 'researchers/update-researcher.html', context)
 
 @login_required(login_url='login')
+@is_researcher()
 def researcher_notices(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('public-researcher', researcher.id)
+    researcher = request.researcher
+    urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
+    form = OpenToCollaborateNoticeURLForm(request.POST or None)
+
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+        is_sandbox = True
+        otc_download_perm = 0
     else:
-        urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
-        form = OpenToCollaborateNoticeURLForm(request.POST or None)
+        is_sandbox = False
+        otc_download_perm = 1
 
-        if dev_prod_or_local(request.get_host()) == 'SANDBOX':
-            is_sandbox = True
-            otc_download_perm = 0
-        else: 
-            is_sandbox = False
-            otc_download_perm = 1
+    if request.method == 'POST':
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.researcher = researcher
+            data.save()
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Engagement Notice Added",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
+        return redirect('researcher-notices', researcher.id)
 
-        if request.method == 'POST':
-            if form.is_valid():
-                data = form.save(commit=False)
-                data.researcher = researcher
-                data.save()
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Engagement Notice Added",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
-            return redirect('researcher-notices', researcher.id)
-
-        context = {
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'form': form,
-            'urls': urls,
-            'otc_download_perm': otc_download_perm,
-            'is_sandbox': is_sandbox,
-        }
-        return render(request, 'researchers/notices.html', context)
+    context = {
+        'researcher': researcher,
+        'user_can_view': user_can_view,
+        'form': form,
+        'urls': urls,
+        'otc_download_perm': otc_download_perm,
+        'is_sandbox': is_sandbox,
+    }
+    return render(request, 'researchers/notices.html', context)
 
 @login_required(login_url='login')
 def delete_otc_notice(request, researcher_id, notice_id):

@@ -12,7 +12,7 @@ def is_researcher():
             researcher = Researcher.objects.get(id=researcher_pk)
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view:
-                return redirect('restricted')
+                return redirect('public-researcher', researcher_pk)
 
             return view_func(request, *args, **kwargs)
         return _wrapped_view
