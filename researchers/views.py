@@ -675,31 +675,26 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
-def connections(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
+@is_researcher()
+def connections(request, researcher):
+    institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
+    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
 
-        researchers = Researcher.objects.none()
+    community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
+    communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
 
-        institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-        institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
-    
-        community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
-        communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
-        
-        project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
-        contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
-        for c in contributors:
-            researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+    project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
+    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
 
-        context = {
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'communities': communities,
-            'researchers': researchers,
-            'institutions': institutions,
-        }
-        return render(request, 'researchers/connections.html', context)
+    researchers = []
+    for c in contributors:
+        researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+
+    context = {
+        'researcher': researcher,
+        'user_can_view': True,
+        'communities': communities,
+        'researchers': researchers,
+        'institutions': institutions,
+    }
+    return render(request, 'researchers/connections.html', context)
