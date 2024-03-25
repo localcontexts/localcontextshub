@@ -418,73 +418,69 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
     }
     return render(request, 'researchers/create-project.html', context)
 
+
 @login_required(login_url='login')
-def edit_project(request, researcher_id, project_uuid):
-    researcher = Researcher.objects.get(id=researcher_id)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if not user_can_view:
-        return redirect('restricted')
-    else:
-        project = Project.objects.get(unique_id=project_uuid)
-        form = EditProjectForm(request.POST or None, instance=project)
-        formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
-        contributors = ProjectContributors.objects.get(project=project)
-        notices = Notice.objects.none()
-        notice_translations = get_notice_translations()
-        notice_defaults = get_notice_defaults()
+@is_researcher('researcher_id')
+def edit_project(request, researcher, project_uuid):
+    project = Project.objects.get(unique_id=project_uuid)
+    form = EditProjectForm(request.POST or None, instance=project)
+    formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
+    contributors = ProjectContributors.objects.get(project=project)
+    notices = Notice.objects.none()
+    notice_translations = get_notice_translations()
+    notice_defaults = get_notice_defaults()
 
-        # Check to see if notice exists for this project and pass to template
-        if Notice.objects.filter(project=project).exists():
-            notices = Notice.objects.filter(project=project, archived=False)
+    # Check to see if notice exists for this project and pass to template
+    if Notice.objects.filter(project=project).exists():
+        notices = Notice.objects.filter(project=project, archived=False)
 
-        if request.method == 'POST':
-            if form.is_valid() and formset.is_valid():
-                data = form.save(commit=False)
-                project_links = request.POST.getlist('project_urls')
-                data.urls = project_links
-                data.save()
+    if request.method == 'POST':
+        if form.is_valid() and formset.is_valid():
+            data = form.save(commit=False)
+            project_links = request.POST.getlist('project_urls')
+            data.urls = project_links
+            data.save()
 
-                editor_name = get_users_name(request.user)
-                ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
+            editor_name = get_users_name(request.user)
+            ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
 
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Project Edited",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Project Edited",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
 
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    instance.project = data
-                    instance.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.project = data
+                instance.save()
 
-                # Add selected contributors to the ProjectContributors object
-                add_to_contributors(request, researcher, data)
-            
-                # Which notices were selected to change
-                notices_selected = request.POST.getlist('checkbox-notice')
-                translations_selected = request.POST.getlist('checkbox-translation')
-                crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
+            # Add selected contributors to the ProjectContributors object
+            add_to_contributors(request, researcher, data)
 
-            return redirect('researcher-project-actions', researcher.id, project.unique_id)
- 
+            # Which notices were selected to change
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
 
-        context = {
-            'researcher': researcher, 
-            'project': project, 
-            'notices': notices,
-            'notice_defaults': notice_defaults,
-            'form': form, 
-            'formset': formset,
-            'contributors': contributors,
-            'user_can_view': user_can_view,
-            'urls': project.urls,
-            'notice_translations': notice_translations,
+        return redirect('researcher-project-actions', researcher.id, project.unique_id)
 
-        }
-        return render(request, 'researchers/edit-project.html', context)
+    context = {
+        'researcher': researcher,
+        'project': project,
+        'notices': notices,
+        'notice_defaults': notice_defaults,
+        'form': form,
+        'formset': formset,
+        'contributors': contributors,
+        'user_can_view': True,
+        'urls': project.urls,
+        'notice_translations': notice_translations,
+    }
+    return render(request, 'researchers/edit-project.html', context)
+
 
 def project_actions(request, pk, project_uuid):
     try:
