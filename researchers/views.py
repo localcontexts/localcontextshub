@@ -189,8 +189,7 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @is_researcher()
-def researcher_notices(request, pk):
-    researcher = request.researcher
+def researcher_notices(request, researcher):
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
@@ -217,13 +216,14 @@ def researcher_notices(request, pk):
 
     context = {
         'researcher': researcher,
-        'user_can_view': user_can_view,
+        'user_can_view': True,
         'form': form,
         'urls': urls,
         'otc_download_perm': otc_download_perm,
         'is_sandbox': is_sandbox,
     }
     return render(request, 'researchers/notices.html', context)
+
 
 @login_required(login_url='login')
 def delete_otc_notice(request, researcher_id, notice_id):

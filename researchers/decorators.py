@@ -14,6 +14,10 @@ def is_researcher():
             if not user_can_view:
                 return redirect('public-researcher', researcher_pk)
 
+            # update view function args
+            kwargs['researcher'] = researcher
+            del kwargs['pk']
+
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
