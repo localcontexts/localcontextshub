@@ -147,45 +147,42 @@ def disconnect_orcid(request):
     researcher.save()
     return redirect('update-researcher', researcher.id)
 
+
 @login_required(login_url='login')
-def update_researcher(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
-        env = dev_prod_or_local(request.get_host())
-        if request.method == 'POST':
-            update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
+@is_researcher()
+def update_researcher(request, researcher):
+    env = dev_prod_or_local(request.get_host())
+    if request.method == 'POST':
+        update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
 
-            if 'clear_image' in request.POST:
-                researcher.image = None
-                researcher.save()
-                return redirect('update-researcher', researcher.id)
-            else:
-                if update_form.is_valid():
-                    data = update_form.save(commit=False)
-                    data.save()
-
-                    if not researcher.orcid:
-                        orcid_id = request.POST.get('orcidId')
-                        orcid_token = request.POST.get('orcidIdToken')
-                        researcher.orcid_auth_token = orcid_token
-                        researcher.orcid = orcid_id
-                        researcher.save()
-
-                    messages.add_message(request, messages.SUCCESS, 'Settings updated!')
-                    return redirect('update-researcher', researcher.id)
+        if 'clear_image' in request.POST:
+            researcher.image = None
+            researcher.save()
+            return redirect('update-researcher', researcher.id)
         else:
-            update_form = UpdateResearcherForm(instance=researcher)
-        
-        context = {
-            'update_form': update_form,
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'env': env
-        }
-        return render(request, 'researchers/update-researcher.html', context)
+            if update_form.is_valid():
+                data = update_form.save(commit=False)
+                data.save()
+
+                if not researcher.orcid:
+                    orcid_id = request.POST.get('orcidId')
+                    orcid_token = request.POST.get('orcidIdToken')
+                    researcher.orcid_auth_token = orcid_token
+                    researcher.orcid = orcid_id
+                    researcher.save()
+
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
+                return redirect('update-researcher', researcher.id)
+    else:
+        update_form = UpdateResearcherForm(instance=researcher)
+
+    context = {
+        'update_form': update_form,
+        'researcher': researcher,
+        'user_can_view': True,
+        'env': env
+    }
+    return render(request, 'researchers/update-researcher.html', context)
 
 @login_required(login_url='login')
 @is_researcher()
