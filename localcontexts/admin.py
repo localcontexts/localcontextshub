@@ -1045,12 +1045,12 @@ class ProfileAdmin(admin.ModelAdmin):
     readonly_fields = ('api_key',)
 
 class SubscriptionsAdmin(admin.ModelAdmin):
-    list_display = ('institution', 'community', 'researcher', 'is_subscribed')
+    list_display = ('institution', 'community', 'researcher', 'date_last_updated')
 
 admin_site.register(Profile, ProfileAdmin)
 admin_site.register(UserAffiliation)
 admin_site.register(SignUpInvitation, SignUpInvitationAdmin)
-admin_site.register(Subscription)
+admin_site.register(Subscription, SubscriptionsAdmin) 
 
 # admin_site.unregister(User)
 admin_site.register(User, UserAdminCustom)
