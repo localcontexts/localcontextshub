@@ -328,100 +328,95 @@ def researcher_projects(request, researcher):
 
 # Create Project
 @login_required(login_url='login')
-def create_project(request, pk, source_proj_uuid=None, related=None):
-    researcher = Researcher.objects.select_related('user').get(id=pk)
+@is_researcher()
+def create_project(request, researcher, source_proj_uuid=None, related=None):
+    name = get_users_name(request.user)
+    notice_defaults = get_notice_defaults()
+    notice_translations = get_notice_translations()
 
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
-        name = get_users_name(request.user)
-        notice_defaults = get_notice_defaults()
-        notice_translations = get_notice_translations()
+    if request.method == "POST":
+        form = CreateProjectForm(request.POST)
+        formset = ProjectPersonFormset(request.POST)
 
-        if request.method == "GET":
-            form = CreateProjectForm(request.POST or None)
-            formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
-        elif request.method == "POST":
-            form = CreateProjectForm(request.POST)
-            formset = ProjectPersonFormset(request.POST)
+        if form.is_valid() and formset.is_valid():
+            data = form.save(commit=False)
+            data.project_creator = request.user
 
-            if form.is_valid() and formset.is_valid():
-                data = form.save(commit=False)
-                data.project_creator = request.user
+            # Define project_page field
+            data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
 
-                # Define project_page field
-                data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
-                
-                # Handle multiple urls, save as array
-                project_links = request.POST.getlist('project_urls')
-                data.urls = project_links
+            # Handle multiple urls, save as array
+            project_links = request.POST.getlist('project_urls')
+            data.urls = project_links
 
+            data.save()
+
+            if source_proj_uuid and not related:
+                data.source_project_uuid = source_proj_uuid
+                data.save()
+                ProjectActivity.objects.create(project=data, activity=f'Sub Project "{data.title}" was added to Project by {name} | Researcher')
+
+            if source_proj_uuid and related:
+                source = Project.objects.get(unique_id=source_proj_uuid)
+                data.related_projects.add(source)
+                source.related_projects.add(data)
+                source.save()
                 data.save()
 
-                if source_proj_uuid and not related:
-                    data.source_project_uuid = source_proj_uuid
-                    data.save()
-                    ProjectActivity.objects.create(project=data, activity=f'Sub Project "{data.title}" was added to Project by {name} | Researcher')
+                ProjectActivity.objects.create(project=data, activity=f'Project "{source.title}" was connected to Project by {name} | Researcher')
+                ProjectActivity.objects.create(project=source, activity=f'Project "{data.title}" was connected to Project by {name} | Researcher')
 
-                if source_proj_uuid and related:
-                    source = Project.objects.get(unique_id=source_proj_uuid)
-                    data.related_projects.add(source)
-                    source.related_projects.add(data)
-                    source.save()
-                    data.save()
+            # Create activity
+            ProjectActivity.objects.create(project=data, activity=f'Project was created by {name} | Researcher')
 
-                    ProjectActivity.objects.create(project=data, activity=f'Project "{source.title}" was connected to Project by {name} | Researcher')
-                    ProjectActivity.objects.create(project=source, activity=f'Project "{data.title}" was connected to Project by {name} | Researcher')
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Project Created",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
 
-                # Create activity
-                ProjectActivity.objects.create(project=data, activity=f'Project was created by {name} | Researcher')
+            # Add project to researcher projects
+            creator = ProjectCreator.objects.select_related('researcher').get(project=data)
+            creator.researcher = researcher
+            creator.save()
 
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Project Created",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
+            # Create notices for project
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            crud_notices(request, notices_selected, translations_selected, researcher, data, None)
 
-                # Add project to researcher projects
-                creator = ProjectCreator.objects.select_related('researcher').get(project=data)
-                creator.researcher = researcher
-                creator.save()
+            # Add selected contributors to the ProjectContributors object
+            add_to_contributors(request, researcher, data)
 
-                # Create notices for project
-                notices_selected = request.POST.getlist('checkbox-notice')
-                translations_selected = request.POST.getlist('checkbox-translation')
-                crud_notices(request, notices_selected, translations_selected, researcher, data, None)
-            
-                # Add selected contributors to the ProjectContributors object
-                add_to_contributors(request, researcher, data)
+            # Project person formset
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.name or instance.email:
+                    instance.project = data
+                    instance.save()
+                # Send email to added person
+                send_project_person_email(request, instance.email, data.unique_id, researcher)
 
-                # Project person formset
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    if instance.name or instance.email:
-                        instance.project = data
-                        instance.save()
-                    # Send email to added person
-                    send_project_person_email(request, instance.email, data.unique_id, researcher)
-                
-                # Send notification
-                title = 'Your project has been created, remember to notify a community of your project.'
-                ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
+            # Send notification
+            title = 'Your project has been created, remember to notify a community of your project.'
+            ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
 
-                return redirect('researcher-projects', researcher.id)
+            return redirect('researcher-projects', researcher.id)
+    else:
+        form = CreateProjectForm(None)
+        formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
 
-        context = {
-            'researcher': researcher,
-            'notice_translations': notice_translations,
-            'form': form,
-            'formset': formset,
-            'notice_defaults': notice_defaults,
-            'user_can_view': user_can_view,
-        }
-        return render(request, 'researchers/create-project.html', context)
+    context = {
+        'researcher': researcher,
+        'notice_translations': notice_translations,
+        'form': form,
+        'formset': formset,
+        'notice_defaults': notice_defaults,
+        'user_can_view': True,
+    }
+    return render(request, 'researchers/create-project.html', context)
 
 @login_required(login_url='login')
 def edit_project(request, researcher_id, project_uuid):
