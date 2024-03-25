@@ -4,25 +4,19 @@ from django.contrib import messages
 from django.http import Http404
 from itertools import chain
 
-from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
-from accounts.utils import get_users_name
 from notifications.utils import send_action_notification_to_project_contribs
 
-from communities.models import Community
 from notifications.models import ActionNotification
 from helpers.models import *
-from projects.models import *
 
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
 from accounts.forms import ContactOrganizationForm
-
-from helpers.emails import *
 from .decorators import is_researcher
 
-from .models import Researcher
+from helpers.emails import *
 from .forms import *
 from .utils import *
 
