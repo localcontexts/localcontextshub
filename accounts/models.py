@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+import datetime
+from django.utils import timezone
 
 from communities.models import Community
 from institutions.models import Institution
@@ -110,4 +112,6 @@ class Subscription(models.Model):
     api_key_count = models.IntegerField()
     project_count = models.IntegerField()
     notification_count = models.IntegerField()
-    is_subscribed =  models.BooleanField(default=False)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(blank=True, null=True)
+    date_last_updated = models.DateTimeField(auto_now=True)
