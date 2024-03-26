@@ -214,74 +214,9 @@ def confirm_subscription_institution(request, institution_id):
                 response = confirm_subscription(request, institution, join_flag, form)
                 return response
             except:
-                messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please try contacting the Local Contexts HUB.')
+                messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
                 return redirect('dashboard')
     return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
-        # if form.is_valid():
-        #     # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
-        #     ''' Begin reCAPTCHA validation '''
-        #     recaptcha_response = request.POST.get('g-recaptcha-response')
-        #     url = 'https://www.google.com/recaptcha/api/siteverify'
-        #     values = {
-        #         'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-        #         'response': recaptcha_response
-        #     }
-        #     data = urllib.parse.urlencode(values).encode()
-        #     req =  urllib.request.Request(url, data=data)
-        #     response = urllib.request.urlopen(req)
-        #     result = json.loads(response.read().decode())
-        #     ''' End reCAPTCHA validation '''
-
-        #     if True:
-                # subscription = form.save(commit=False)
-                # Salesforce OAuth2 Authentication to obtain access token
-                
-
-
-                # # Create Account in Salesforce
-                # account_data = {
-                #     'Name': form.cleaned_data['organization_name']
-                #     # Add other account fields as needed
-                # }
-
-                # create_account_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/data/v48.0/sobjects/Account/'
-                # headers = {
-                #     'Authorization': f'Bearer {access_token}',
-                #     'Content-Type': 'application/json'
-                # }
-
-                # create_account_req = urllib.request.Request(create_account_url, data=json.dumps(account_data).encode(), headers=headers)
-                # try:
-                #     create_account_response = urllib.request.urlopen(create_account_req)
-                #     account_result = json.loads(create_account_response.read().decode())
-                #     account_id = account_result['id']
-                # except urllib.error.HTTPError as e:
-                #     # Handle HTTP errors
-                #     print(f"HTTP Error: {e.code} - {e.reason}")
-                #     return render(request, 'error.html', {'error': e})
-
-                # import pdb
-                # pdb.set_trace()
-                # # Create Contact in Salesforce
-                # contact_data = {
-                #     'LastName': form.cleaned_data['last_name'],
-                #     'Email': form.cleaned_data['email'],
-                #     'AccountId': account_id
-                #     # Add other contact fields as needed
-                # }
-
-                # create_contact_url = 'https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/data/v48.0/sobjects/Contact/'
-                # create_contact_req = urllib.request.Request(create_contact_url, data=json.dumps(contact_data).encode(), headers=headers)
-                # try:
-                #     create_contact_response = urllib.request.urlopen(create_contact_req)
-                #     contact_result = json.loads(create_contact_response.read().decode())
-                #     contact_id = contact_result['id']
-                # except urllib.error.HTTPError as e:
-                #     # Handle HTTP errors
-                #     print(f"HTTP Error: {e.code} - {e.reason}")
-                #     return render(request, 'error.html', {'error': e})
-
-    return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution': institution})
 
 def public_institution_view(request, pk):
     try:

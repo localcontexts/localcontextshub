@@ -93,6 +93,9 @@ def institute_account_subscription(request, institution, account_exist, form, no
         return render(request, 'accounts/subscription-inquiry.html', {'form': form, 'non_ror_institutes': non_ror_institutes, 'institution': institution,})
     else:
         subscription = form
-        create_salesforce_account_or_lead(data=form.cleaned_data)
-        messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
-        return redirect('subscription-inquiry')
+        if create_salesforce_account_or_lead(data=form.cleaned_data):
+            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
+            return redirect('subscription-inquiry')
+        else:
+            messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
+            return redirect('subscription-inquiry')
