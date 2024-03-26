@@ -45,21 +45,10 @@ from researchers.utils import is_user_researcher
 from helpers.utils import accept_member_invite
 from helpers.utils import validate_email
 
-from helpers.emails import (send_activation_email, generate_token,
-                            resend_activation_email, send_welcome_email,
-                            send_email_verification, send_invite_user_email,
-                            add_to_newsletter_mailing_list,
-                            get_newsletter_member_info,
-                            unsubscribe_from_mailing_list)
-from .models import SignUpInvitation, Profile, UserAffiliation
-from .forms import (RegistrationForm, ResendEmailActivationForm,
-                    CustomPasswordResetForm, UserCreateProfileForm,
-                    ProfileCreationForm, UserUpdateForm, ProfileUpdateForm,
-                    SignUpInvitationForm)
-
-from .utils import (get_next_path, get_users_name, return_registry_accounts,
-                    manage_mailing_list)
-
+from helpers.emails import *
+from .models import *
+from .forms import *
+from .utils import *
 
 @unauthenticated_user
 def register(request):
