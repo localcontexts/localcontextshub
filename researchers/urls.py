@@ -8,7 +8,7 @@ urlpatterns = [
     
     # Public view
     path('view/<str:pk>/', views.public_researcher_view, name="public-researcher"),
-    path('embed/<str:pk>/', views.embed_otc_notice, name="embed_notice"),
+    path('embed/<str:pk>/', views.embed_otc_notice, name="embed-notice-researcher"),
 
     path('update/<str:pk>', views.update_researcher, name="update-researcher"),
 

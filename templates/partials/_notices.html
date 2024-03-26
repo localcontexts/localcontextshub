@@ -26,7 +26,7 @@
                             class="primary-btn blue-btn">
                             Download Notice <i class="fa-solid fa-download"></i>
                         </a>
-                        <a id="shareBtn" class="primary-btn blue-btn">Share <i class="fa-solid fa-share-nodes"></i></a>
+                        <a id="shareBtn" class="primary-btn blue-btn">Share Notice <i class="fa-solid fa-share-nodes"></i></a>
                     {% else %}
                         <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_approved %}Your institution account needs to be confirmed in order to download this Notice.{% endif %}{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-solid fa-download"></i></a>
                         <a id="addURLBtn" class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_approved %}Your institution account needs to be confirmed in order to share this Notice.{% endif %}{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
@@ -540,12 +540,13 @@
                     <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
                 </div>
 
-                <label class="bold margin-top-8 no-bottom-margin block">Embed Project</label>
-                <p class="font-size-14 no-top-margin margin-bottom-8">Add this project's identifiers to your website by copying the code below.</p>
+                <label class="bold margin-top-8 no-bottom-margin block">Embed OTC Notice</label>
+                <p class="font-size-14 no-top-margin margin-bottom-8">Add this Notice to your website by copying the code below.</p>
 
                 <div class="text-input-to-copy">
-                    <input class="w-100 grey-chip" type="text" data-project-id="{{ project.unique_id}}" id="projectPageEmbedToCopy" readonly>
-                    <button class="copy-btn btn-in-input" data-target="projectPageEmbedToCopy">Copy Code</button>
+                    <input class="w-100 grey-chip" type="text" 
+                    value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}" title="Local Contexts Open to Collaborate" frameborder="0"></iframe>' data-url='{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}' title="Local Contexts Open to Collaborate" id="embedToCopy" readonly>
+                    <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                 </div>
                 <p class="font-size-14 margin-top-1 no-bottom-margin">Embed Options</p>
                 <div class="flex-this">
@@ -553,32 +554,6 @@
                         <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
                         <option class="darkteal-text pointer" value="2">Icon and Title</option>
                         <option class="darkteal-text pointer" value="3">Icon, Title and Text</option>
-                    </select>
-                    <select id="embedLanguageOptions" name="language" class="project-sort w-30 margin-top-1 margin-right-1">
-                        {% if notices %}
-                            <option class="darkteal-text pointer" value="en" selected>English</option>
-                            {% for notice in notices %}
-                                {% for translation in notice.notice_translations.all %}
-                                    <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endif %}
-                        {% if project.has_bclabels or project.has_tklabels %}
-                            {% for community, labels in label_groups.items %}
-                                {% for tklabel in labels.tk_labels %}
-                                    <option class="darkteal-text pointer" value="{{ tklabel.language_tag }}">{{ tklabel.language }}</option>
-                                    {% for translation in tklabel.tklabel_translation.all %}
-                                        <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
-                                    {% endfor %}
-                                {% endfor %}
-                                {% for bclabel in labels.bc_labels %}
-                                    <option class="darkteal-text pointer" value="{{ bclabel.language_tag }}">{{ bclabel.language }}</option>
-                                    {% for translation in bclabel.bclabel_translation.all %}
-                                        <option class="darkteal-text pointer" value="{{ translation.language_tag }}">{{ translation.language }}</option>
-                                    {% endfor %}
-                                {% endfor %}
-                            {% endfor %}
-                        {% endif %}
                     </select>
                     <select id="embedAlignOptions" name="align" class="project-sort w-30 margin-top-1 margin-right-1">
                         <option class="darkteal-text pointer" value="left" selected>Left Align</option>
@@ -590,20 +565,20 @@
             <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="*" data-url="*">
-                    <i class="socials-btn fa-solid fa-envelope" title="Share via Email"></i>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                    <i class="socials-btn fa-solid fa-envelope" style="margin-right: 10px;" title="Share via Email"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="*" data-url="*">
-                    <i class="socials-btn fa-brands fa-whatsapp" title="Share via WhatsApp"></i>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                    <i class="socials-btn fa-brands fa-whatsapp" style="margin-right: 10px;" title="Share via WhatsApp"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="*" data-url="*">
-                    <i class="socials-btn fa-brands fa-facebook-f" title="Share on Facebook"></i>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                    <i class="socials-btn fa-brands fa-facebook-f" style="margin-right: 10px;" title="Share on Facebook"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="*" data-url="*">
-                    <i class="socials-btn fa-brands fa-twitter" title="Share on Twitter"></i>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                    <i class="socials-btn fa-brands fa-twitter" style="margin-right: 10px;" title="Share on Twitter"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="*" data-url="*">
-                    <i class="socials-btn fa-brands fa-linkedin" title="Share on LinkedIn"></i>
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                    <i class="socials-btn fa-brands fa-linkedin" style="margin-right: 10px;" title="Share on LinkedIn"></i>
                 </div>
             </div>
         </div>

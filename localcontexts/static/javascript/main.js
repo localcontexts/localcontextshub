@@ -1734,11 +1734,12 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
     })
 }
 
-// Share Project Modal - Embed Code customization options
+// Share Modal - Embed Code customization options
 if (
-        window.location.href.includes('/projects/')
+        window.location.href.includes('/projects/') || 
+        window.location.href.includes('/notices/')
     ) {
-    var embedCode = document.getElementById('projectPageEmbedToCopy')
+    let embedCode = document.getElementById('embedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
     var alignmentDropdown = document.getElementById('embedAlignOptions')
@@ -1788,9 +1789,10 @@ if (
         }
 
         customizationOptions = customizationOptions.slice(0,-1)
+        dataURL = embedCode.dataset.url
+        dataTitle = embedCode.title
 
-        projectID = embedCode.dataset.projectId
-        embedCode.value = '<iframe width="100%" height="150" src="' + window.location.origin + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        embedCode.value = '<iframe width="100%" height="150" src="' + dataURL + '?' + customizationOptions + '" title="' + dataTitle + '" frameborder="0"></iframe>'
     }
 }
 
@@ -1813,22 +1815,36 @@ function shareToSocialsBtnAction(btnElem) {
             if( dataType == "project") {
                 var emailSubject = encodeURIComponent("Local Contexts Project")
                 var emailBody = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            } else if( dataType == "otc-notice") {
+                var emailSubject = encodeURIComponent("Local Contexts Open to Collaborate")
+                var emailBody = encodeURIComponent("Check out my Local Contexts profile and Open to Collaborate Notice! at "+dataURL)
             }
+
             var mailtoLink = "mailto:?subject="+emailSubject+"&body="+emailBody
             window.location.href = mailtoLink
-        } else if(socialType == 'facebook') {
+
+        } else if (socialType == 'facebook') {
             window.open('http://www.facebook.com/sharer/sharer.php?u='+dataURL, 'Share on Facebook')
+
         } else if (socialType == 'twitter') {
             if (dataType == "project") {
                 messageText = "Check out this @LocalContexts project! #LocalContexts #traditionalknowledge #indigenousdata"
+            } else if (dataType == "otc-notice") {
+                messageText = "Check out my @LocalContexts profile and Open to Collaborate Notice! #LocalContexts #traditionalknowledge #indigenousdata #opentocollaborate"
             }
+
             window.open('https://twitter.com/intent/tweet?url='+dataURL+'&text='+messageText, 'Share on Twitter')
+
         } else if (socialType == 'linkedin') {
             window.open('https://www.linkedin.com/shareArticle?url='+dataURL)
+
         } else if (socialType == 'whatsapp') {
             if (dataType == "project") {
                 messageText = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            } else if (dataType == "otc-notice") {
+                messageText = encodeURIComponent("Check out my Local Contexts profile and Open to Collaborate Notice at "+dataURL)
             }
+
             window.location.href = 'https://api.whatsapp.com/send?text='+messageText
         }
     })

@@ -708,8 +708,8 @@
                                 <p class="font-size-14 no-top-margin margin-bottom-8">Add this project's identifiers to your website by copying the code below.</p>
     
                                 <div class="text-input-to-copy">
-                                    <input class="w-100 grey-chip" value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}/projects/embed/{{project.unique_id}}" title="Local Contexts Project Identifiers" frameborder="0"></iframe>' type="text" data-project-id="{{ project.unique_id}}" id="projectPageEmbedToCopy" readonly>
-                                    <button class="copy-btn btn-in-input" data-target="projectPageEmbedToCopy">Copy Code</button>
+                                    <input class="w-100 grey-chip" value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}" title="Local Contexts Project Identifiers" frameborder="0"></iframe>' type="text" data-url='{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}' title="Local Contexts Project Identifiers" id="embedToCopy" readonly>
+                                    <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                                 </div>
                                 <p class="font-size-14 margin-top-1 no-bottom-margin">Embed Options</p>
                                 <div class="flex-this">
