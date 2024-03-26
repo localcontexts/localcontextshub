@@ -20,6 +20,7 @@ from helpers.emails import *
 from .forms import *
 from .utils import *
 
+
 @login_required(login_url='login')
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
