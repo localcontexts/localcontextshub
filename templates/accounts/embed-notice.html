@@ -7,31 +7,27 @@
     </head>
 
     <body>
-        <div class="flex-this {% if align == 'right' %}flex-end{% else %}flex-start{% endif%} wrap w-100" style="padding: 12px;padding-bottom: 0px;">
-                
-            {% if not layout or layout == "1" %}
-                <div>
-                    {% if otc_notices %}
+        {% if otc_notices %}
+            <div class="flex-this {% if align == 'right' %}flex-end{% else %}flex-start{% endif%} wrap w-100" style="padding: 12px;padding-bottom: 0px;">
+                    
+                {% if not layout or layout == "1" %}
+                    <div>
                         <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" height="60px" title="Open to Collaborate Notice" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
-                    {% endif %}
-                </div>
-            {% endif %}
+                    </div>
+                {% endif %}
 
-            {% if layout == "2" %}
-                <div class="flex-this column center-text" style="max-width: 175px;">
-                    {% if otc_notices %}
+                {% if layout == "2" %}
+                    <div class="flex-this column center-text" style="max-width: 175px;">
                         <div style="margin: 12px;">
                             <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" width="119px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
                             <p class="margin-top-8 font-size-14">Open to Collaborate Notice
                             </p>
                         </div>
-                    {% endif %}
-                </div>
-            {% endif %}
+                    </div>
+                {% endif %}
 
-            {% if layout == "3" %}
-                <div class="flex-this w-100">
-                    {% if otc_notices %}
+                {% if layout == "3" %}
+                    <div class="flex-this w-100">
                         <div style="margin: 12px;">
                             <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" width="119px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
                         </div>
@@ -46,11 +42,11 @@
                                 {% endif %}
                                 is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.</p>
                         </div>
-                    {% endif %}
-                </div>
-            {% endif %}
-                
-        </div>
+                    </div>
+                {% endif %}
+                    
+            </div>
+        {% endif %}
 
         <div class="flex-this wrap w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
             <div class="margin-left-8 margin-right-8" style="display: inherit;">
