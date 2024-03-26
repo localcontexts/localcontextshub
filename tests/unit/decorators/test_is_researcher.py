@@ -18,19 +18,26 @@ class TestIsResearcher(TestCase):
 
     @pytest.mark.django_db
     def setUp(self):
-        self.researcher_user = UserFactory()
-        self.non_researcher_user = UserFactory()
-        self.researcher = ResearcherFactory(user=self.researcher_user)
+        self.researcher1 = ResearcherFactory(user=UserFactory())
+        self.researcher2 = ResearcherFactory(user=UserFactory())
         self.request = RequestFactory()
 
     def test_researcher_has_access(self):
+        """
+        Response should be a 200 since researcher1
+        does have access to researcher1
+        """
         request = self.request.get('/')
-        request.user = self.researcher_user
-        resp = view(request, pk=self.researcher_user.id)
+        request.user = self.researcher1.user
+        resp = view(request, pk=self.researcher1.id)
         self.assertEqual(resp.status_code, 200)
 
     def test_non_researcher_does_not_have_access(self):
+        """
+        Response should be a 302 since researcher1
+        does not have access to researcher2
+        """
         request = self.request.get('/')
-        request.user = self.non_researcher_user
-        resp = view(request, pk=self.researcher_user.id)
+        request.user = self.researcher1.user
+        resp = view(request, pk=self.researcher2.id)
         self.assertEqual(resp.status_code, 302)
