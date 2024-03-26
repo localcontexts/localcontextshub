@@ -19,7 +19,7 @@ from notifications.models import ActionNotification
 from helpers.models import *
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, Subscription
 
 from projects.forms import *
 from helpers.forms import (
@@ -921,8 +921,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-
-    if request.method == "GET":
+    subscription = Subscription.objects.get(institution=institution)
+    
+    if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
     elif request.method == "POST":
@@ -942,6 +943,13 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
+            if not check_project_count(request, data, institution, subscription.project_count):
+                return redirect('institution-projects', pk=institution.id)
+
+            if data.project_privacy in ('Public', 'Contributor'):
+                subscription.project_count -= 1
+                subscription.save()
+                #API hit
             data.save()
 
             if source_proj_uuid and not related:
@@ -1056,16 +1064,20 @@ def edit_project(request, pk, project_uuid):
     notices = Notice.objects.none()
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-
+    subscription = Subscription.objects.get(institution=institution)
     # Check to see if notice exists for this project and pass to template
     if Notice.objects.filter(project=project).exists():
         notices = Notice.objects.filter(project=project, archived=False)
 
-    if request.method == "POST":
+
+    if request.method == 'POST':
+        old_project_privacy = project.project_privacy
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
+            if not can_change_project_privacy(request, old_project_privacy, form.cleaned_data.get('project_privacy'), institution):
+                return redirect('institution-projects', pk=institution.id)
             data.save()
 
             editor_name = get_users_name(request.user)
