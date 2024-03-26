@@ -528,7 +528,7 @@ def validate_recaptcha(request_object):
 
 
 def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
-    salesforce_token_url = "https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/oauth2/token"
+    salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {
         "grant_type": "client_credentials",
         "client_id": settings.SALES_FORCE_CLIENT_ID,
@@ -556,7 +556,7 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
     }
 
     # Make API call to create lead in Salesforce
-    create_lead_url = "https://localcontexts3--rohitdev.sandbox.my.salesforce.com/services/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
+    create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json",
