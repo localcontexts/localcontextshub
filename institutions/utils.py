@@ -2,6 +2,7 @@ from .models import Institution
 from django.contrib import messages
 from accounts.models import Subscription
 from projects.models import Project
+from helpers.utils import change_member_role
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
@@ -57,3 +58,17 @@ def can_change_project_privacy(request, old_project_privacy, new_privacy, instit
                                         'Your institution has reached its project limit. Please upgrade your subscription plan to create more projects.')
             return False
     return True
+
+def add_user(request, institution, member, current_role, new_role):
+    subscription = Subscription.objects.get(institution=institution)
+    if new_role not in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+    elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        subscription.users_count -=1
+        subscription.save()
+        #Major change for API HIT
+    else:
+        messages.add_message(request, messages.ERROR, 
+                            'Your institution has reached its editors and admins limit.'
+                            'Please upgrade your subscription plan to add more editors and admins.')

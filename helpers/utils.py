@@ -4,7 +4,7 @@ import requests
 from django.conf import settings
 from django.template.loader import get_template
 from io import BytesIO
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, Subscription
 from tklabels.models import TKLabel
 from bclabels.models import BCLabel
 from helpers.models import LabelTranslation, LabelVersion, LabelTranslationVersion, HubActivity
@@ -21,6 +21,7 @@ from notifications.utils import send_user_notification_member_invite_accept
 from helpers.emails import send_membership_email
 from django.contrib.staticfiles import finders
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 
 
 def check_member_role(user, organization):
@@ -66,13 +67,26 @@ def add_user_to_role(account, role, user):
     role_map[role].add(user)
     account.save()
     
-    
+def request_possible(request, org, selected_role):
+    if selected_role.lower() in ('editor', 'administrator', 'admin') and isinstance(org, Institution): 
+        subscription = Subscription.objects.get(institution=org)
+        if subscription.users_count > 0:
+            subscription.users_count -= 1
+            subscription.save()
+            return True
+        else:
+            messages.info(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+            return False
+    return True
+
 def accept_member_invite(request, invite_id):
     invite = get_object_or_404(InviteMember, id=invite_id)
     affiliation = get_object_or_404(UserAffiliation, user=invite.receiver)
-
+    
     # Which organization, add to user affiliation
     account = invite.community or invite.institution
+    if not request_possible(request, invite.institution,  invite.role):
+        return
     if invite.community:
         affiliation.communities.add(account)
     if invite.institution:
@@ -95,6 +109,8 @@ def accepted_join_request(request, org, join_request_id, selected_role):
         if selected_role is None:
             pass
         else:
+            if not request_possible(request, org, selected_role):
+                return
             # Add organization to userAffiliation and delete relevant action notification
             affiliation = UserAffiliation.objects.get(user=join_request.user_from)
             if isinstance(org, Community):
@@ -116,6 +132,7 @@ def accepted_join_request(request, org, join_request_id, selected_role):
             elif selected_role == 'Viewer':
                 org.viewers.add(join_request.user_from)
             
+            messages.add_message(request, messages.SUCCESS, 'You have successfully added a new member!')
             # Create UserNotification
             sender = join_request.user_from
             title = f"You are now a member of {org}!"

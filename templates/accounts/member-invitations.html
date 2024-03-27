@@ -1,7 +1,9 @@
 {% extends 'auth-base.html' %} {% block title %} Member Invitations {% endblock %}{% load static %}{% load custom_acct_tags %} {% block main %}
 
     {% include 'partials/infocards/_user-dashcard.html' %}
-
+    <div class="flex-this justify-center">
+    {% include 'partials/_alerts.html' %}
+    </div>
     <section>
         {% if member_invites %}
             {% for invite in member_invites %}
