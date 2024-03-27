@@ -9,6 +9,7 @@ def researcher_img_path(self, filename):
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('users/researcher-images', filename)  
 
+
 class Researcher(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     orcid = models.CharField(max_length=300, null=True, blank=True)
@@ -20,6 +21,7 @@ class Researcher(models.Model):
     primary_institution = models.CharField(max_length=250, null=True, blank=True)
     orcid_auth_token = models.TextField(null=True, blank=True)
     date_connected = models.DateTimeField(auto_now_add=True, null=True)
+    is_subscribed = models.BooleanField(default=False, null=True, blank=True)
 
     def get_projects(self):
         return  self.researcher_created_project.filter(researcher=self).exists()
