@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
+from accounts.models import Subscription
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
@@ -39,3 +40,16 @@ def confirm_subscription(request, institution, join_flag, form):
     elif request.user._wrapped not in institution.get_admins():
         join_flag = True
         return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+
+def add_user(request, institution, member, current_role, new_role):
+    subscription = Subscription.objects.get(institution=institution)
+    if new_role not in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+    elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        subscription.users_count -=1
+        subscription.save()
+    else:
+        messages.add_message(request, messages.ERROR, 
+                            'Your institution has reached its editors and admins limit.'
+                            'Please upgrade your subscription plan to add more editors and admins.')

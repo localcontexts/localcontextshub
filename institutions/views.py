@@ -631,16 +631,13 @@ def member_requests(request, pk):
     member_role = check_member_role(request.user, institution)
     join_requests = JoinRequest.objects.filter(institution=institution)
     member_invites = InviteMember.objects.filter(institution=institution)
-
-    if request.method == "POST":
-        selected_role = request.POST.get("selected_role")
-        join_request_id = request.POST.get("join_request_id")
+    editors_count = Subscription.objects.get(institution=institution).users_count
+    if request.method == 'POST':
+        selected_role = request.POST.get('selected_role')
+        join_request_id = request.POST.get('join_request_id')
 
         accepted_join_request(request, institution, join_request_id, selected_role)
-        messages.add_message(
-            request, messages.SUCCESS, "You have successfully added a new member!"
-        )
-        return redirect("institution-member-requests", institution.id)
+        return redirect('institution-member-requests', institution.id)
 
     context = {
         "member_role": member_role,
@@ -658,11 +655,10 @@ def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
     join_request = JoinRequest.objects.get(id=join_id)
     join_request.delete()
-    return redirect("institution-member-requests", institution.id)
+    return redirect('institution-member-requests', institution.id)
 
-
-@login_required(login_url="login")
-@member_required(roles=["admin"])
+@login_required(login_url='login')
+@member_required(roles=['admin'])
 @subscription_required()
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
@@ -705,9 +701,8 @@ def remove_member(request, pk, member_id):
 
 
 # Projects page
-@login_required(login_url="login")
-@member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@login_required(login_url='login')
+@member_required(roles=['admin', 'editor', 'viewer'])
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -930,6 +925,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                             'Please upgrade your subscription plan to create more Projects.')
         return redirect('institution-projects', institution.id)
     
+
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
@@ -949,11 +945,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             # Handle multiple urls, save as array
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
-
-            if subscription.project_count == 0:
-                messages.add_message(request, messages.ERROR, 'Your institution has reached its project limit.'
-                            'Please upgrade your subscription plan to create more projects.')
-                return redirect('institution-projects', institution.id)
 
             subscription.project_count -= 1
             subscription.save()
