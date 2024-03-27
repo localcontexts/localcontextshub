@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+import datetime
+from django.utils import timezone
 
 from communities.models import Community
 from institutions.models import Institution
-
+from researchers.models import Researcher
 
 class Profile(models.Model):
     user = models.OneToOneField(User,
@@ -100,4 +102,16 @@ class SignUpInvitation(models.Model):
     class Meta:
         verbose_name = "Sign Up Invitation"
         verbose_name_plural = "Sign Up Invitations"
-        ordering = ('-date_sent', )
+        ordering = ('-date_sent',)
+        
+class Subscription(models.Model):
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, default=None, null=True, related_name="subscribed_institution")
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, default=None, null=True, related_name="subscribed_community")
+    researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, default=None, null=True, related_name="subscribed_researcher")
+    users_count = models.IntegerField()
+    api_key_count = models.IntegerField()
+    project_count = models.IntegerField()
+    notification_count = models.IntegerField()
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(blank=True, null=True)
+    date_last_updated = models.DateTimeField(auto_now=True)
