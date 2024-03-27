@@ -4,13 +4,14 @@ from datetime import datetime, timedelta, timezone
 from django.db.models.functions import Extract, Concat
 from django.db.models import Count, Q, Value, F, CharField, Case, When
 from django.contrib import admin
+from django.contrib.admin.models import LogEntry
 from django.urls import path
 from django.utils.translation import gettext as _
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 from django.apps import apps
 from django.template.response import TemplateResponse
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation
@@ -1223,3 +1224,15 @@ class DjangoJobExecutionAdmin(admin.ModelAdmin):
     list_display = ('job', 'status', 'run_time')
 
 admin_site.register(DjangoJobExecution, DjangoJobExecutionAdmin)
+
+class LogEntryAdmin(admin.ModelAdmin):
+    readonly_fields = ('user', 'content_type', 'object_id', 'object_repr', 'action_flag', 'change_message')
+    search_fields = ('user__username', 'user__email', 'object_repr')
+
+    # Disallow superusers to delete Log Entries
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
+
+admin_site.register(LogEntry, LogEntryAdmin)
