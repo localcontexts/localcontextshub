@@ -11,6 +11,14 @@
             <div class='menu-button'></div>
         </label>
         <ul class="menu ul-no-bullets">
+            {% if not user.is_authenticated %}
+            <li>
+                <a 
+                    class="{% if '/subscription-inquiry/' in request.path %} active-link bold {% endif %} white-text upper" 
+                    href="{% url 'subscription-inquiry' %}"> Subscription
+                </a>
+            </li> 
+            {% endif %}
             <li>
                 <a 
                     class="{% if '/registry/' in request.path %} active-link bold {% endif %} white-text upper" 

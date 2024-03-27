@@ -39,6 +39,7 @@ class Institution(models.Model):
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="institution_approver")
     is_ror = models.BooleanField(default=True, null=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
+    is_subscribed = models.BooleanField(default=False)
 
     # Managers
     objects = models.Manager()
