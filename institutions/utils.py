@@ -45,7 +45,7 @@ def confirm_subscription(request, institution, join_flag, form):
 def check_project_count(request, data, institution, project_count):
     if data.project_privacy in ('Public', 'Contributor') and project_count == 0:
         messages.add_message(request, messages.ERROR, 
-                             'Your institution has reached its project limit.'
+                             'Your institution has reached its project limit. '
                              'Please upgrade your subscription plan to create more projects.')
         return False
     elif data.project_privacy == 'Private':
