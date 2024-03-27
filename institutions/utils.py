@@ -2,6 +2,7 @@ from .models import Institution
 from django.contrib import messages
 from accounts.models import Subscription
 from projects.models import Project
+from helpers.utils import change_member_role
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
