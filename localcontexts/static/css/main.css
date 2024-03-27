@@ -1454,6 +1454,38 @@ i[data-tooltip]:hover:after {
     pointer-events: none;
 }
 
+.otc-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.otc-dropdown-content {
+    display: none;
+    position: absolute;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right:0;
+    border-radius: 4px;
+    border: 1px #E6F1F3 solid;
+}
+
+.otc-dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.otc-dropdown .otc-dropdown-content a.blue-btn:hover {
+    background-color: #338F9D;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.otc-dropdown:hover .otc-dropdown-content {display: block;}
+
+.otc-dropdown-content .primary-btn {border-radius: 0;}
+
 /* Account settings: image upload */
 
 .img-preview__container__rectangle {

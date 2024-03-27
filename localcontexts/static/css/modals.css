@@ -43,8 +43,8 @@
 /* PROJECT ACTION PAGE: UNLINK PROJECT */
 .project-unlink-modal { width: 680px; height: 202px; }
 
-/* PROJECT ACTION PAGE: SHARE PROJECT MODAL */
-.share-project-modal { width: 700px; height: auto; }
+/* SHARE MODAL: PROJECT ACTION PAGE & NOTICES PAGE (OTC NOTICE) */
+.share-modal { width: 700px; height: auto; }
 .text-input-to-copy { position: relative;}
 .btn-in-input {
     position: absolute;

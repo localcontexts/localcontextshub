@@ -27,6 +27,7 @@ from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 from .forms import *
 
 from helpers.emails import *
+from maintenance_mode.decorators import force_maintenance_mode_off
 
 @login_required(login_url='login')
 def connect_institution(request):
@@ -964,3 +965,25 @@ def connections(request, pk):
         'institutions': institutions,
     }
     return render(request, 'institutions/connections.html', context)
+
+@force_maintenance_mode_off
+def embed_otc_notice(request, pk):
+    layout = request.GET.get('lt')
+    lang = request.GET.get('lang')
+    align = request.GET.get('align')
+
+    institution = Institution.objects.get(id=pk)
+    otc_notices = OpenToCollaborateNoticeURL.objects.filter(institution=institution)
+    
+    context = {
+        'layout' : layout,
+        'lang' : lang,
+        'align' : align,
+        'otc_notices' : otc_notices,
+        'institution' : institution 
+    }
+
+    response = render(request, 'accounts/embed-notice.html', context)
+    response['Content-Security-Policy'] = 'frame-ancestors https://*'
+
+    return response
