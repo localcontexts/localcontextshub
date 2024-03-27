@@ -56,4 +56,8 @@ def can_change_project_privacy(request, old_project_privacy, new_privacy, instit
             messages.add_message(request, messages.ERROR, 
                                         'Your institution has reached its project limit. Please upgrade your subscription plan to create more projects.')
             return False
+    elif old_project_privacy in ('Public', 'Contributor') and new_privacy == 'Private':
+        messages.add_message(request, messages.ERROR, 
+                                        'Your institution has reached its project limit. Please upgrade your subscription plan to create more projects.')
+        return False
     return True
