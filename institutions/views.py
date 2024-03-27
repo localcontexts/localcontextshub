@@ -91,7 +91,7 @@ def create_institution(request):
                 if dev_prod_or_local(request.get_host()) == 'SANDBOX':
                     data.is_approved = True
                     data.save()
-                    
+
                     # Add to user affiliations
                     affiliation.institutions.add(data)
                     affiliation.save()
@@ -112,8 +112,8 @@ def create_institution(request):
                     )
                     return redirect('confirm-institution', data.id)
     else:
-       form = CreateInstitutionForm() 
-    
+       form = CreateInstitutionForm()
+
     return render(request, 'institutions/create-institution.html', {'form': form })
 
 @login_required(login_url='login')
@@ -130,7 +130,7 @@ def create_custom_institution(request):
             # Add to user affiliations
             affiliation.institutions.add(data)
             affiliation.save()
-            
+
             # Adds activity to Hub Activity
             HubActivity.objects.create(
                 action_user_id=request.user.id,
@@ -179,7 +179,7 @@ def public_institution_view(request, pk):
         project_ids = list(set(projects_list)) # remove duplicate ids
         archived = ProjectArchived.objects.filter(project_uuid__in=project_ids, institution_id=institution.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
         projects = Project.objects.select_related('project_creator').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_modified')
-        
+
         if request.user.is_authenticated:
             user_institutions = UserAffiliation.objects.prefetch_related('institutions').get(user=request.user).institutions.all()
             form = ContactOrganizationForm(request.POST or None)
@@ -193,7 +193,7 @@ def public_institution_view(request, pk):
                         from_email = form.cleaned_data['email']
                         message = form.cleaned_data['message']
                         to_email = institution.institution_creator.email
-                        
+
                         send_contact_email(request, to_email, from_name, from_email, message, institution)
                         messages.add_message(request, messages.SUCCESS, 'Message sent!')
                         return redirect('public-institution', institution.id)
@@ -222,7 +222,7 @@ def public_institution_view(request, pk):
                     return redirect('public-institution', institution.id)
 
         else:
-            context = { 
+            context = {
                 'institution': institution,
                 'projects' : projects,
                 'bcnotice': bcnotice,
@@ -233,10 +233,10 @@ def public_institution_view(request, pk):
             }
             return render(request, 'public.html', context)
 
-        context = { 
+        context = {
             'institution': institution,
             'projects' : projects,
-            'form': form, 
+            'form': form,
             'join_form': join_form,
             'user_institutions': user_institutions,
             'bcnotice': bcnotice,
@@ -288,7 +288,7 @@ def institution_notices(request, pk):
     urls = OpenToCollaborateNoticeURL.objects.filter(institution=institution).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
     cc_policy_form = CollectionsCareNoticePolicyForm(request.POST or None, request.FILES)
-    
+
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
@@ -348,8 +348,8 @@ def institution_members(request, pk):
     member_role = check_member_role(request.user, institution)
     # Get list of users, NOT in this institution, alphabetized by name
     members = list(chain(
-        institution.admins.all().values_list('id', flat=True), 
-        institution.editors.all().values_list('id', flat=True), 
+        institution.admins.all().values_list('id', flat=True),
+        institution.editors.all().values_list('id', flat=True),
         institution.viewers.all().values_list('id', flat=True),
     ))
     members.append(institution.institution_creator.id) # include institution creator
@@ -364,7 +364,7 @@ def institution_members(request, pk):
             new_role = request.POST.get('new_role')
             user_id = request.POST.get('user_id')
             member = User.objects.get(id=user_id)
-            change_member_role(institution, member, current_role, new_role)
+            add_user(request, institution, member, current_role, new_role)
             return redirect('institution-members', institution.id)
 
         elif 'send_invite_btn' in request.POST:
@@ -397,17 +397,17 @@ def institution_members(request, pk):
                         data.status = 'sent'
                         data.institution = institution
                         data.save()
-                        
+
                         send_account_member_invite(data) # Send action notification
                         send_member_invite_email(request, data, institution) # Send email to target user
                         messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}.')
                         return redirect('institution-members', institution.id)
-                    else: 
+                    else:
                         messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {institution.institution_name}.')
             else:
                 messages.add_message(request, messages.INFO, 'Something went wrong.')
 
-    context = { 
+    context = {
         'institution': institution,
         'form': form,
         'member_role': member_role,
@@ -415,7 +415,7 @@ def institution_members(request, pk):
         'users': users,
         'invite_form': SignUpInvitationForm(),
         'env': dev_prod_or_local(request.get_host()),
-    }    
+    }
     return render(request, 'institutions/members.html', context)
 
 @login_required(login_url='login')
@@ -425,13 +425,13 @@ def member_requests(request, pk):
     member_role = check_member_role(request.user, institution)
     join_requests = JoinRequest.objects.filter(institution=institution)
     member_invites = InviteMember.objects.filter(institution=institution)
-    
+    editors_count = Subscription.objects.get(institution=institution).users_count
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
 
+        #Major change for API HIT
         accepted_join_request(request, institution, join_request_id, selected_role)
-        messages.add_message(request, messages.SUCCESS, 'You have successfully added a new member!')
         return redirect('institution-member-requests', institution.id)
 
     context = {
@@ -449,7 +449,7 @@ def delete_join_request(request, pk, join_id):
     join_request = JoinRequest.objects.get(id=join_id)
     join_request.delete()
     return redirect('institution-member-requests', institution.id)
-    
+
 @login_required(login_url='login')
 @member_required(roles=['admin'])
 def remove_member(request, pk, member_id):
@@ -481,7 +481,7 @@ def remove_member(request, pk, member_id):
     else:
         return redirect('institution-members', institution.id)
 
-# Projects page 
+# Projects page
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
 def institution_projects(request, pk):
@@ -501,13 +501,13 @@ def institution_projects(request, pk):
         'date_modified': False
     }
 
-    # 1. institution projects + 
-    # 2. projects institution has been notified of 
+    # 1. institution projects +
+    # 2. projects institution has been notified of
     # 3. projects where institution is contributor
 
     projects_list = list(chain(
-        institution.institution_created_project.all().values_list('project__unique_id', flat=True), 
-        institution.institutions_notified.all().values_list('project__unique_id', flat=True), 
+        institution.institution_created_project.all().values_list('project__unique_id', flat=True),
+        institution.institutions_notified.all().values_list('project__unique_id', flat=True),
         institution.contributing_institutions.all().values_list('project__unique_id', flat=True),
     ))
     project_ids = list(set(projects_list)) # remove duplicate ids
@@ -517,7 +517,7 @@ def institution_projects(request, pk):
     sort_by = request.GET.get('sort')
     if sort_by == 'all':
         return redirect('institution-projects', institution.id)
-    
+
     elif sort_by == 'has_labels':
         projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
             ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
@@ -548,7 +548,7 @@ def institution_projects(request, pk):
         archived_projects = ProjectArchived.objects.filter(institution_id=institution.id, archived=True).values_list('project_uuid', flat=True)
         projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived_projects).order_by('-date_added')
         bool_dict['is_archived'] = True
-    
+
     elif sort_by == 'title_az':
         projects = projects.order_by('title')
         bool_dict['title_az'] = True
@@ -570,7 +570,7 @@ def institution_projects(request, pk):
         bool_dict['date_modified'] = True
 
     page = paginate(request, projects, 10)
-    
+
     if request.method == 'GET':
         results = return_project_search_results(request, projects)
 
@@ -595,7 +595,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
     subscription = Subscription.objects.get(institution=institution)
-    
+
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
@@ -609,7 +609,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
             # Define project_page field
             data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
-            
+
             # Handle multiple urls, save as array
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
@@ -659,7 +659,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             notices_selected = request.POST.getlist('checkbox-notice')
             translations_selected = request.POST.getlist('checkbox-translation')
             crud_notices(request, notices_selected, translations_selected, institution, data, None)
-            
+
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, institution, data)
 
@@ -669,7 +669,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                 if instance.name or instance.email:
                     instance.project = data
                     instance.save()
-                
+
                 # Send email to added person
                 send_project_person_email(request, instance.email, data.unique_id, institution)
 
@@ -740,15 +740,15 @@ def edit_project(request, pk, project_uuid):
             notices_selected = request.POST.getlist('checkbox-notice')
             translations_selected = request.POST.getlist('checkbox-translation')
             crud_notices(request, notices_selected, translations_selected, institution, data, notices)
-            
+
         return redirect('institution-project-actions', institution.id, project.unique_id)
 
 
     context = {
         'member_role': member_role,
-        'institution': institution, 
-        'project': project, 
-        'notices': notices, 
+        'institution': institution,
+        'project': project,
+        'notices': notices,
         'notice_defaults': notice_defaults,
         'form': form,
         'formset': formset,
@@ -762,17 +762,17 @@ def project_actions(request, pk, project_uuid):
     try:
         institution = get_institution(pk)
         project = Project.objects.prefetch_related(
-                'bc_labels', 
-                'tk_labels', 
-                'bc_labels__community', 
+                'bc_labels',
+                'tk_labels',
+                'bc_labels__community',
                 'tk_labels__community',
-                'bc_labels__bclabel_translation', 
+                'bc_labels__bclabel_translation',
                 'tk_labels__tklabel_translation',
                 ).get(unique_id=project_uuid)
 
         member_role = check_member_role(request.user, institution)
         if not member_role or not request.user.is_authenticated or not project.can_user_access(request.user):
-            return redirect('view-project', project_uuid)    
+            return redirect('view-project', project_uuid)
         else:
             notices = Notice.objects.filter(project=project, archived=False)
             creator = ProjectCreator.objects.get(project=project)
@@ -786,7 +786,7 @@ def project_actions(request, pk, project_uuid):
             label_groups = return_project_labels_by_community(project)
             can_download = can_download_project(request, creator)
 
-            # for related projects list 
+            # for related projects list
             project_ids = list(set(institution.institution_created_project.all().values_list('project__unique_id', flat=True)
                 .union(institution.institutions_notified.all().values_list('project__unique_id', flat=True))
                 .union(institution.contributing_institutions.all().values_list('project__unique_id', flat=True))))
@@ -821,8 +821,8 @@ def project_actions(request, pk, project_uuid):
                         data.save()
                         send_action_notification_to_project_contribs(project)
                         return redirect('institution-project-actions', institution.id, project.unique_id)
-                
-                elif 'notify_btn' in request.POST: 
+
+                elif 'notify_btn' in request.POST:
                     # Set private project to contributor view
                     if project.project_privacy == 'Private':
                         project.project_privacy = 'Contributor'
@@ -837,7 +837,7 @@ def project_actions(request, pk, project_uuid):
                         # Add communities that were notified to entities_notified instance
                         community = Community.objects.get(id=community_id)
                         entities_notified.communities.add(community)
-                        
+
                         # Add activity
                         ProjectActivity.objects.create(project=project, activity=f'{community.community_name} was notified by {name}')
 
@@ -856,9 +856,9 @@ def project_actions(request, pk, project_uuid):
                         ActionNotification.objects.create(community=community, notification_type='Projects', reference_id=str(project.unique_id), sender=request.user, title=title)
                         entities_notified.save()
 
-                        # Create email 
+                        # Create email
                         send_email_notice_placed(request, project, community, institution)
-                        
+
                     return redirect('institution-project-actions', institution.id, project.unique_id)
                 elif 'link_projects_btn' in request.POST:
                     selected_projects = request.POST.getlist('projects_to_link')
@@ -872,14 +872,14 @@ def project_actions(request, pk, project_uuid):
 
                         activities.append(ProjectActivity(project=project, activity=f'Project "{project_to_add.title}" was connected to Project by {name} | {institution.institution_name}'))
                         activities.append(ProjectActivity(project=project_to_add, activity=f'Project "{project.title}" was connected to Project by {name} | {institution.institution_name}'))
-                                
+
                     ProjectActivity.objects.bulk_create(activities)
                     project.save()
                     return redirect('institution-project-actions', institution.id, project.unique_id)
-                
+
                 elif 'delete_project' in request.POST:
                     return redirect('inst-delete-project', institution.id, project.unique_id)
-                
+
                 elif 'remove_contributor' in request.POST:
                     contribs = ProjectContributors.objects.get(project=project)
                     contribs.institutions.remove(institution)
@@ -930,7 +930,7 @@ def delete_project(request, pk, project_uuid):
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
             notification.delete()
-    
+
     project.delete()
     return redirect('institution-projects', institution.id)
 
@@ -961,7 +961,7 @@ def connections(request, pk):
 
     communities = Community.objects.select_related('community_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=community_ids)
     researchers = Researcher.objects.select_related('user').filter(id__in=researcher_ids)
-    
+
     project_ids = institution.contributing_institutions.values_list('project__unique_id', flat=True)
     contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
     for c in contributors:
