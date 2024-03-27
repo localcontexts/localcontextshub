@@ -3,6 +3,7 @@ from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
 from accounts.models import Subscription
+from helpers.utils import change_member_role
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
