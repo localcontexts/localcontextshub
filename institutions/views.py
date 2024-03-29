@@ -943,13 +943,14 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
-            if not check_project_count(request, data, institution, subscription.project_count):
-                return redirect('institution-projects', pk=institution.id)
+            if subscription.project_count == 0:
+                messages.add_message(request, messages.ERROR, 'Your institution has reached its project limit.'
+                            'Please upgrade your subscription plan to create more projects.')
+                return redirect('institution-projects', institution.id)
 
-            if data.project_privacy in ('Public', 'Contributor'):
-                subscription.project_count -= 1
-                subscription.save()
-                #API hit
+            subscription.project_count -= 1
+            subscription.save()
+            #API hit
             data.save()
 
             if source_proj_uuid and not related:
@@ -1076,8 +1077,6 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
-            if not can_change_project_privacy(request, old_project_privacy, form.cleaned_data.get('project_privacy'), institution):
-                return redirect('institution-projects', pk=institution.id)
             data.save()
 
             editor_name = get_users_name(request.user)
@@ -1390,7 +1389,7 @@ def archive_project(request, pk, project_uuid):
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
-
+    subscription = Subscription.objects.get(institution=institution)
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(
             reference_id=project.unique_id
@@ -1398,8 +1397,9 @@ def delete_project(request, pk, project_uuid):
             notification.delete()
 
     project.delete()
-    return redirect("institution-projects", institution.id)
-
+    subscription.project_count +=1
+    subscription.save()
+    return redirect('institution-projects', institution.id)
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
