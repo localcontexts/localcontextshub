@@ -950,6 +950,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
+            if subscription.project_count == 0:
+                messages.add_message(request, messages.ERROR, 'Your institution has reached its project limit.'
+                            'Please upgrade your subscription plan to create more projects.')
+                return redirect('institution-projects', institution.id)
+
             subscription.project_count -= 1
             subscription.save()
             #API hit
