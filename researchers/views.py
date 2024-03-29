@@ -18,13 +18,14 @@ from projects.models import *
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
 from accounts.forms import ContactOrganizationForm
+from .decorators import is_researcher
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
-
 from .models import Researcher
 from .forms import *
 from .utils import *
+
 
 @login_required(login_url='login')
 def connect_researcher(request):
@@ -147,86 +148,80 @@ def disconnect_orcid(request):
     researcher.save()
     return redirect('update-researcher', researcher.id)
 
+
 @login_required(login_url='login')
-def update_researcher(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
-        env = dev_prod_or_local(request.get_host())
-        if request.method == 'POST':
-            update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
+@is_researcher()
+def update_researcher(request, researcher):
+    env = dev_prod_or_local(request.get_host())
+    if request.method == 'POST':
+        update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
 
-            if 'clear_image' in request.POST:
-                researcher.image = None
-                researcher.save()
-                return redirect('update-researcher', researcher.id)
-            else:
-                if update_form.is_valid():
-                    data = update_form.save(commit=False)
-                    data.save()
-
-                    if not researcher.orcid:
-                        orcid_id = request.POST.get('orcidId')
-                        orcid_token = request.POST.get('orcidIdToken')
-                        researcher.orcid_auth_token = orcid_token
-                        researcher.orcid = orcid_id
-                        researcher.save()
-
-                    messages.add_message(request, messages.SUCCESS, 'Settings updated!')
-                    return redirect('update-researcher', researcher.id)
+        if 'clear_image' in request.POST:
+            researcher.image = None
+            researcher.save()
+            return redirect('update-researcher', researcher.id)
         else:
-            update_form = UpdateResearcherForm(instance=researcher)
-        
-        context = {
-            'update_form': update_form,
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'env': env
-        }
-        return render(request, 'researchers/update-researcher.html', context)
+            if update_form.is_valid():
+                data = update_form.save(commit=False)
+                data.save()
+
+                if not researcher.orcid:
+                    orcid_id = request.POST.get('orcidId')
+                    orcid_token = request.POST.get('orcidIdToken')
+                    researcher.orcid_auth_token = orcid_token
+                    researcher.orcid = orcid_id
+                    researcher.save()
+
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
+                return redirect('update-researcher', researcher.id)
+    else:
+        update_form = UpdateResearcherForm(instance=researcher)
+
+    context = {
+        'update_form': update_form,
+        'researcher': researcher,
+        'user_can_view': True,
+        'env': env
+    }
+    return render(request, 'researchers/update-researcher.html', context)
 
 @login_required(login_url='login')
-def researcher_notices(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('public-researcher', researcher.id)
+@is_researcher()
+def researcher_notices(request, researcher):
+    urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
+    form = OpenToCollaborateNoticeURLForm(request.POST or None)
+
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+        is_sandbox = True
+        otc_download_perm = 0
     else:
-        urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
-        form = OpenToCollaborateNoticeURLForm(request.POST or None)
+        is_sandbox = False
+        otc_download_perm = 1
 
-        if dev_prod_or_local(request.get_host()) == 'SANDBOX':
-            is_sandbox = True
-            otc_download_perm = 0
-        else: 
-            is_sandbox = False
-            otc_download_perm = 1
+    if request.method == 'POST':
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.researcher = researcher
+            data.save()
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Engagement Notice Added",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
+        return redirect('researcher-notices', researcher.id)
 
-        if request.method == 'POST':
-            if form.is_valid():
-                data = form.save(commit=False)
-                data.researcher = researcher
-                data.save()
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Engagement Notice Added",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
-            return redirect('researcher-notices', researcher.id)
+    context = {
+        'researcher': researcher,
+        'user_can_view': True,
+        'form': form,
+        'urls': urls,
+        'otc_download_perm': otc_download_perm,
+        'is_sandbox': is_sandbox,
+    }
+    return render(request, 'researchers/notices.html', context)
 
-        context = {
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'form': form,
-            'urls': urls,
-            'otc_download_perm': otc_download_perm,
-            'is_sandbox': is_sandbox,
-        }
-        return render(request, 'researchers/notices.html', context)
 
 @login_required(login_url='login')
 def delete_otc_notice(request, researcher_id, notice_id):
@@ -237,268 +232,256 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-def researcher_projects(request, pk):
-    researcher = Researcher.objects.prefetch_related('user').get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if not user_can_view:
-        return redirect('restricted')
-    else:
-        bool_dict = {
-            'has_labels': False,
-            'has_notices': False,
-            'created': False,
-            'contributed': False,
-            'is_archived': False,
-            'title_az': False,
-            'visibility_public': False,
-            'visibility_contributor': False,
-            'visibility_private': False,
-            'date_modified': False
-        }
-    
+@is_researcher()
+def researcher_projects(request, researcher):
+    bool_dict = {
+        'has_labels': False,
+        'has_notices': False,
+        'created': False,
+        'contributed': False,
+        'is_archived': False,
+        'title_az': False,
+        'visibility_public': False,
+        'visibility_contributor': False,
+        'visibility_private': False,
+        'date_modified': False
+    }
+
+    projects_list = list(chain(
+        researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # researcher projects
+        researcher.researchers_notified.all().values_list('project__unique_id', flat=True), # projects researcher has been notified of
+        researcher.contributing_researchers.all().values_list('project__unique_id', flat=True), # projects where researcher is contributor
+    ))
+    project_ids = list(set(projects_list)) # remove duplicate ids
+    archived = ProjectArchived.objects.filter(project_uuid__in=project_ids, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
+    projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_added')
+
+    sort_by = request.GET.get('sort')
+
+    if sort_by == 'all':
+        return redirect('researcher-projects', researcher.id)
+
+    elif sort_by == 'has_labels':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
+            ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
+            ).exclude(unique_id__in=archived).exclude(tk_labels=None).order_by('-date_added')
+        bool_dict['has_labels'] = True
+
+    elif sort_by == 'has_notices':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, tk_labels=None, bc_labels=None).exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['has_notices'] = True
+
+    elif sort_by == 'created':
+        created_projects = researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=created_projects).exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['created'] = True
+
+    elif sort_by == 'contributed':
+        contrib = researcher.contributing_researchers.all().values_list('project__unique_id', flat=True)
         projects_list = list(chain(
-            researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # researcher projects
-            researcher.researchers_notified.all().values_list('project__unique_id', flat=True), # projects researcher has been notified of
-            researcher.contributing_researchers.all().values_list('project__unique_id', flat=True), # projects where researcher is contributor
+            researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # check researcher created projects
+            ProjectArchived.objects.filter(project_uuid__in=contrib, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
         ))
         project_ids = list(set(projects_list)) # remove duplicate ids
-        archived = ProjectArchived.objects.filter(project_uuid__in=project_ids, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
-        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_added')
-        
-        sort_by = request.GET.get('sort')
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=contrib).exclude(unique_id__in=project_ids).order_by('-date_added')
+        bool_dict['contributed'] = True
 
-        if sort_by == 'all':
-            return redirect('researcher-projects', researcher.id)
-        
-        elif sort_by == 'has_labels':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
-                ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
-                ).exclude(unique_id__in=archived).exclude(tk_labels=None).order_by('-date_added')
-            bool_dict['has_labels'] = True
-        
-        elif sort_by == 'has_notices':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, tk_labels=None, bc_labels=None).exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['has_notices'] = True
+    elif sort_by == 'archived':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived).order_by('-date_added')
+        bool_dict['is_archived'] = True
 
-        elif sort_by == 'created':
-            created_projects = researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=created_projects).exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['created'] = True
+    elif sort_by == 'title_az':
+        projects = projects.order_by('title')
+        bool_dict['title_az'] = True
 
-        elif sort_by == 'contributed':
-            contrib = researcher.contributing_researchers.all().values_list('project__unique_id', flat=True)
-            projects_list = list(chain(
-                researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # check researcher created projects
-                ProjectArchived.objects.filter(project_uuid__in=contrib, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
-            ))
-            project_ids = list(set(projects_list)) # remove duplicate ids
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=contrib).exclude(unique_id__in=project_ids).order_by('-date_added')
-            bool_dict['contributed'] = True
+    elif sort_by == 'visibility_public':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_public'] = True
 
-        elif sort_by == 'archived':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived).order_by('-date_added')
-            bool_dict['is_archived'] = True
-        
-        elif sort_by == 'title_az':
-            projects = projects.order_by('title')
-            bool_dict['title_az'] = True
+    elif sort_by == 'visibility_contributor':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Contributor').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_contributor'] = True
 
-        elif sort_by == 'visibility_public':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_public'] = True
+    elif sort_by == 'visibility_private':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Private').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_private'] = True
 
-        elif sort_by == 'visibility_contributor':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Contributor').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_contributor'] = True
+    elif sort_by == 'date_modified':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_modified')
+        bool_dict['date_modified'] = True
 
-        elif sort_by == 'visibility_private':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Private').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_private'] = True
+    page = paginate(request, projects, 10)
 
-        elif sort_by == 'date_modified':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_modified')
-            bool_dict['date_modified'] = True
-    
-        page = paginate(request, projects, 10)
-        
-        if request.method == 'GET':
-            results = return_project_search_results(request, projects)
+    results = []
+    if request.method == 'GET':
+        results = return_project_search_results(request, projects)
 
-        context = {
-            'projects': projects,
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'items': page,
-            'results': results,
-            'bool_dict': bool_dict,
-        }
-        return render(request, 'researchers/projects.html', context)
+    context = {
+        'projects': projects,
+        'researcher': researcher,
+        'user_can_view': True,
+        'items': page,
+        'results': results,
+        'bool_dict': bool_dict,
+    }
+    return render(request, 'researchers/projects.html', context)
 
 
 # Create Project
 @login_required(login_url='login')
-def create_project(request, pk, source_proj_uuid=None, related=None):
-    researcher = Researcher.objects.select_related('user').get(id=pk)
+@is_researcher()
+def create_project(request, researcher, source_proj_uuid=None, related=None):
+    name = get_users_name(request.user)
+    notice_defaults = get_notice_defaults()
+    notice_translations = get_notice_translations()
 
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
-        name = get_users_name(request.user)
-        notice_defaults = get_notice_defaults()
-        notice_translations = get_notice_translations()
+    if request.method == "POST":
+        form = CreateProjectForm(request.POST)
+        formset = ProjectPersonFormset(request.POST)
 
-        if request.method == "GET":
-            form = CreateProjectForm(request.POST or None)
-            formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
-        elif request.method == "POST":
-            form = CreateProjectForm(request.POST)
-            formset = ProjectPersonFormset(request.POST)
+        if form.is_valid() and formset.is_valid():
+            data = form.save(commit=False)
+            data.project_creator = request.user
 
-            if form.is_valid() and formset.is_valid():
-                data = form.save(commit=False)
-                data.project_creator = request.user
+            # Define project_page field
+            data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
 
-                # Define project_page field
-                data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
-                
-                # Handle multiple urls, save as array
-                project_links = request.POST.getlist('project_urls')
-                data.urls = project_links
+            # Handle multiple urls, save as array
+            project_links = request.POST.getlist('project_urls')
+            data.urls = project_links
 
+            data.save()
+
+            if source_proj_uuid and not related:
+                data.source_project_uuid = source_proj_uuid
+                data.save()
+                ProjectActivity.objects.create(project=data, activity=f'Sub Project "{data.title}" was added to Project by {name} | Researcher')
+
+            if source_proj_uuid and related:
+                source = Project.objects.get(unique_id=source_proj_uuid)
+                data.related_projects.add(source)
+                source.related_projects.add(data)
+                source.save()
                 data.save()
 
-                if source_proj_uuid and not related:
-                    data.source_project_uuid = source_proj_uuid
-                    data.save()
-                    ProjectActivity.objects.create(project=data, activity=f'Sub Project "{data.title}" was added to Project by {name} | Researcher')
+                ProjectActivity.objects.create(project=data, activity=f'Project "{source.title}" was connected to Project by {name} | Researcher')
+                ProjectActivity.objects.create(project=source, activity=f'Project "{data.title}" was connected to Project by {name} | Researcher')
 
-                if source_proj_uuid and related:
-                    source = Project.objects.get(unique_id=source_proj_uuid)
-                    data.related_projects.add(source)
-                    source.related_projects.add(data)
-                    source.save()
-                    data.save()
+            # Create activity
+            ProjectActivity.objects.create(project=data, activity=f'Project was created by {name} | Researcher')
 
-                    ProjectActivity.objects.create(project=data, activity=f'Project "{source.title}" was connected to Project by {name} | Researcher')
-                    ProjectActivity.objects.create(project=source, activity=f'Project "{data.title}" was connected to Project by {name} | Researcher')
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Project Created",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
 
-                # Create activity
-                ProjectActivity.objects.create(project=data, activity=f'Project was created by {name} | Researcher')
+            # Add project to researcher projects
+            creator = ProjectCreator.objects.select_related('researcher').get(project=data)
+            creator.researcher = researcher
+            creator.save()
 
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Project Created",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
+            # Create notices for project
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            crud_notices(request, notices_selected, translations_selected, researcher, data, None)
 
-                # Add project to researcher projects
-                creator = ProjectCreator.objects.select_related('researcher').get(project=data)
-                creator.researcher = researcher
-                creator.save()
+            # Add selected contributors to the ProjectContributors object
+            add_to_contributors(request, researcher, data)
 
-                # Create notices for project
-                notices_selected = request.POST.getlist('checkbox-notice')
-                translations_selected = request.POST.getlist('checkbox-translation')
-                crud_notices(request, notices_selected, translations_selected, researcher, data, None)
-            
-                # Add selected contributors to the ProjectContributors object
-                add_to_contributors(request, researcher, data)
-
-                # Project person formset
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    if instance.name or instance.email:
-                        instance.project = data
-                        instance.save()
-                    # Send email to added person
-                    send_project_person_email(request, instance.email, data.unique_id, researcher)
-                
-                # Send notification
-                title = 'Your project has been created, remember to notify a community of your project.'
-                ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
-
-                return redirect('researcher-projects', researcher.id)
-
-        context = {
-            'researcher': researcher,
-            'notice_translations': notice_translations,
-            'form': form,
-            'formset': formset,
-            'notice_defaults': notice_defaults,
-            'user_can_view': user_can_view,
-        }
-        return render(request, 'researchers/create-project.html', context)
-
-@login_required(login_url='login')
-def edit_project(request, researcher_id, project_uuid):
-    researcher = Researcher.objects.get(id=researcher_id)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if not user_can_view:
-        return redirect('restricted')
-    else:
-        project = Project.objects.get(unique_id=project_uuid)
-        form = EditProjectForm(request.POST or None, instance=project)
-        formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
-        contributors = ProjectContributors.objects.get(project=project)
-        notices = Notice.objects.none()
-        notice_translations = get_notice_translations()
-        notice_defaults = get_notice_defaults()
-
-        # Check to see if notice exists for this project and pass to template
-        if Notice.objects.filter(project=project).exists():
-            notices = Notice.objects.filter(project=project, archived=False)
-
-        if request.method == 'POST':
-            if form.is_valid() and formset.is_valid():
-                data = form.save(commit=False)
-                project_links = request.POST.getlist('project_urls')
-                data.urls = project_links
-                data.save()
-
-                editor_name = get_users_name(request.user)
-                ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
-
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="Project Edited",
-                    project_id=data.id,
-                    action_account_type = 'researcher'
-                )
-
-                instances = formset.save(commit=False)
-                for instance in instances:
+            # Project person formset
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.name or instance.email:
                     instance.project = data
                     instance.save()
+                # Send email to added person
+                send_project_person_email(request, instance.email, data.unique_id, researcher)
 
-                # Add selected contributors to the ProjectContributors object
-                add_to_contributors(request, researcher, data)
-            
-                # Which notices were selected to change
-                notices_selected = request.POST.getlist('checkbox-notice')
-                translations_selected = request.POST.getlist('checkbox-translation')
-                crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
+            # Send notification
+            title = 'Your project has been created, remember to notify a community of your project.'
+            ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
 
-            return redirect('researcher-project-actions', researcher.id, project.unique_id)
- 
+            return redirect('researcher-projects', researcher.id)
+    else:
+        form = CreateProjectForm(None)
+        formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
 
-        context = {
-            'researcher': researcher, 
-            'project': project, 
-            'notices': notices,
-            'notice_defaults': notice_defaults,
-            'form': form, 
-            'formset': formset,
-            'contributors': contributors,
-            'user_can_view': user_can_view,
-            'urls': project.urls,
-            'notice_translations': notice_translations,
+    context = {
+        'researcher': researcher,
+        'notice_translations': notice_translations,
+        'form': form,
+        'formset': formset,
+        'notice_defaults': notice_defaults,
+        'user_can_view': True,
+    }
+    return render(request, 'researchers/create-project.html', context)
 
-        }
-        return render(request, 'researchers/edit-project.html', context)
+
+@login_required(login_url='login')
+@is_researcher('researcher_id')
+def edit_project(request, researcher, project_uuid):
+    project = Project.objects.get(unique_id=project_uuid)
+    form = EditProjectForm(request.POST or None, instance=project)
+    formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
+    contributors = ProjectContributors.objects.get(project=project)
+    notices = Notice.objects.none()
+    notice_translations = get_notice_translations()
+    notice_defaults = get_notice_defaults()
+
+    # Check to see if notice exists for this project and pass to template
+    if Notice.objects.filter(project=project).exists():
+        notices = Notice.objects.filter(project=project, archived=False)
+
+    if request.method == 'POST':
+        if form.is_valid() and formset.is_valid():
+            data = form.save(commit=False)
+            project_links = request.POST.getlist('project_urls')
+            data.urls = project_links
+            data.save()
+
+            editor_name = get_users_name(request.user)
+            ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
+
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="Project Edited",
+                project_id=data.id,
+                action_account_type = 'researcher'
+            )
+
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.project = data
+                instance.save()
+
+            # Add selected contributors to the ProjectContributors object
+            add_to_contributors(request, researcher, data)
+
+            # Which notices were selected to change
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
+
+        return redirect('researcher-project-actions', researcher.id, project.unique_id)
+
+    context = {
+        'researcher': researcher,
+        'project': project,
+        'notices': notices,
+        'notice_defaults': notice_defaults,
+        'form': form,
+        'formset': formset,
+        'contributors': contributors,
+        'user_can_view': True,
+        'urls': project.urls,
+        'notice_translations': notice_translations,
+    }
+    return render(request, 'researchers/edit-project.html', context)
+
 
 def project_actions(request, pk, project_uuid):
     try:
@@ -693,34 +676,30 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
-def connections(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
+@is_researcher()
+def connections(request, researcher):
+    institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
+    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
 
-        researchers = Researcher.objects.none()
+    community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
+    communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
 
-        institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-        institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
-    
-        community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
-        communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
-        
-        project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
-        contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
-        for c in contributors:
-            researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+    project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
+    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
 
-        context = {
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'communities': communities,
-            'researchers': researchers,
-            'institutions': institutions,
-        }
-        return render(request, 'researchers/connections.html', context)
+    researchers = []
+    for c in contributors:
+        researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+
+    context = {
+        'researcher': researcher,
+        'user_can_view': True,
+        'communities': communities,
+        'researchers': researchers,
+        'institutions': institutions,
+    }
+    return render(request, 'researchers/connections.html', context)
+
     
 @force_maintenance_mode_off
 def embed_otc_notice(request, pk):
