@@ -370,7 +370,7 @@ def send_action_notification_project_status(request, project, communities):
     from communities.utils import get_community
     for community in communities:
         community = get_community(community)
-        title = f"A {project} was customized by {request.user}."
+        title = f"{request.user} has edited a Project:'{project}'."
         ActionNotification.objects.create(community=community, sender=request.user, notification_type="Projects", title=title, reference_id=project.unique_id)
 
 """
