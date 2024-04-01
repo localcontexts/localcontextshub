@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
@@ -44,8 +45,10 @@ def confirm_subscription(request, institution, join_flag, form):
 
 def add_user(request, institution, member, current_role, new_role):
     subscription = Subscription.objects.get(institution=institution)
-    if new_role not in ('editor', 'administrator', 'admin'):
+    if new_role not in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
+        subscription.users_count += 1
+        subscription.save()
     elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
         subscription.users_count -=1

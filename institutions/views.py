@@ -526,6 +526,7 @@ def delete_otc_notice(request, pk, notice_id):
 def institution_members(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    subscription = Subscription.objects.get(institution=institution)
     # Get list of users, NOT in this institution, alphabetized by name
     members = list(
         chain(
@@ -582,7 +583,10 @@ def institution_members(request, pk):
                     join_request_exists = JoinRequest.objects.filter(
                         user_from=selected_user, institution=institution
                     ).exists()  # Check to see if join request already exists
-
+                    if subscription.users_count == 0 and request.POST.get('role') in ('editor', 'administrator', 'admin'):
+                        messages.add_message(request, messages.INFO, 'Your institution has reached its editors and admins limit.'
+                            'Please upgrade your subscription plan to add more editors and admins.')
+                        return redirect('institution-members', institution.id)
                     if (
                         not invitation_exists and not join_request_exists
                     ):  # If invitation and join request does not exist, save form
@@ -663,12 +667,17 @@ def delete_join_request(request, pk, join_id):
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
+    subscription = Subscription.objects.get(institution=institution)
     # what role does member have
     # remove from role
     if member in institution.admins.all():
         institution.admins.remove(member)
+        subscription.users_count += 1
+        subscription.save()
     if member in institution.editors.all():
         institution.editors.remove(member)
+        subscription.users_count += 1
+        subscription.save()
     if member in institution.viewers.all():
         institution.viewers.remove(member)
 
