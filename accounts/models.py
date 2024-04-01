@@ -101,3 +101,13 @@ class SignUpInvitation(models.Model):
         verbose_name = "Sign Up Invitation"
         verbose_name_plural = "Sign Up Invitations"
         ordering = ('-date_sent', )
+
+
+class InactiveUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=150)
+    email = models.EmailField()
+    date_joined = models.DateTimeField()
+
+    def __str__(self):
+        return self.username
