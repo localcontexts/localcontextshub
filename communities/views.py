@@ -1312,9 +1312,11 @@ def download_labels(request, pk):
 @member_required(roles=['admin'])
 def update_community_boundary(request, pk):
     community = get_community(pk)
+    member_role = check_member_role(request.user, community)
     context = {
         'community': community,
         'main_area': 'boundary',
+        'member_role': member_role,
     }
     return render(request, 'communities/update-community.html', context)
 

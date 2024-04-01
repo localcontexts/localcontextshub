@@ -14,17 +14,17 @@
                 <div>
                     {% if notices %}
                         {% for notice in notices %}
-                            <img loading="lazy" class="img-sizedown-small pointer" src="{{ notice.img_url }}" alt="" style="margin:12px;">
+                            <img loading="lazy" class="pointer" height="60px" src="{{ notice.img_url }}" alt="" style="margin:12px;">
                         {% endfor %}
                     {% endif %}
 
                     {% if project.has_bclabels or project.has_tklabels %}
                         {% for community, labels in label_groups.items %}
                             {% for tklabel in labels.tk_labels %}
-                                <img loading="lazy" class="img-sizedown-small pointer" src="{{ tklabel.img_url }}" alt="" style="margin:12px;">
+                                <img loading="lazy" class="pointer" height="60px" src="{{ tklabel.img_url }}" alt="" style="margin:12px;">
                             {% endfor %}
                             {% for bclabel in labels.bc_labels %}
-                                <img loading="lazy" class="img-sizedown-small pointer" src="{{ bclabel.img_url }}" alt="" style="margin:12px;">
+                                <img loading="lazy" class="pointer" height="60px" src="{{ bclabel.img_url }}" alt="" style="margin:12px;">
                             {% endfor %}
                         {% endfor %}
                     {% endif %}
