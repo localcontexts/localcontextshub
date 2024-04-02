@@ -241,25 +241,7 @@ def confirm_subscription_institution(request, institution_id):
     form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
     form.fields["email"].widget.attrs.update({"class": "readonly-input"})
     if request.method == "POST":
-        # h/t: https://simpleisbetterthancomplex.com/tutorial/2017/02/21/how-to-add-recaptcha-to-django-site.html
-        """Begin reCAPTCHA validation"""
-        recaptcha_response = request.POST.get("g-recaptcha-response")
-        url = "https://www.google.com/recaptcha/api/siteverify"
-        values = {
-            "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-            "response": recaptcha_response,
-        }
-        data = urllib.parse.urlencode(values).encode()
-        req = urllib.request.Request(url, data=data)
-        response = urllib.request.urlopen(req)
-        result = json.loads(response.read().decode())
-        """ End reCAPTCHA validation """
-
-        if (
-            result["success"]
-            and result.get("score", 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE
-            and form.is_valid()
-        ):
+        if validate_recaptcha(request) and form.is_valid():
             account_type_key = form.cleaned_data["account_type"]
             inquiry_type_key = form.cleaned_data["inquiry_type"]
 
