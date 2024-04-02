@@ -43,23 +43,11 @@ from helpers.models import HubActivity
 from projects.models import Project
 
 from researchers.utils import is_user_researcher
-from helpers.utils import accept_member_invite
-from helpers.utils import validate_email, validate_recaptcha, create_salesforce_account_or_lead
-
-from helpers.emails import (send_activation_email, generate_token,
-                            resend_activation_email, send_welcome_email,
-                            send_email_verification, send_invite_user_email,
-                            add_to_newsletter_mailing_list,
-                            get_newsletter_member_info,
-                            unsubscribe_from_mailing_list)
-from .models import SignUpInvitation, Profile, UserAffiliation
-from .forms import (RegistrationForm, ResendEmailActivationForm,
-                    CustomPasswordResetForm, UserCreateProfileForm,
-                    ProfileCreationForm, UserUpdateForm, ProfileUpdateForm,
-                    SignUpInvitationForm)
-
-from .utils import (get_next_path, get_users_name, return_registry_accounts,
-                    manage_mailing_list)
+from helpers.utils import (
+    accept_member_invite,
+    validate_email,
+    validate_recaptcha
+)
 
 from helpers.emails import (
     send_activation_email,
@@ -805,18 +793,21 @@ def hub_counter(request):
 def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
 
-    if environment == 'PROD' or 'localhost' in request.get_host():
-        if request.method == 'POST':
-            if 'topic' not in request.POST:
-                messages.add_message(request, messages.ERROR,
-                                     'Please select at least one topic.')
-                return redirect('newsletter-subscription')
+    if environment == "PROD" or "localhost" in request.get_host():
+        if request.method == "POST":
+            if "topic" not in request.POST:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Please select at least one topic.",
+                )
+                return redirect("newsletter-subscription")
             else:
                 if validate_recaptcha(request):
-                    first_name = request.POST['first_name']
-                    last_name = request.POST['last_name']
-                    name = str(first_name) + str(' ') + str(last_name)
-                    email = request.POST['email']
+                    first_name = request.POST["first_name"]
+                    last_name = request.POST["last_name"]
+                    name = str(first_name) + str(" ") + str(last_name)
+                    email = request.POST["email"]
                     emailb64 = urlsafe_base64_encode(force_bytes(email))
                     variables = manage_mailing_list(
                         request, first_name, emailb64
