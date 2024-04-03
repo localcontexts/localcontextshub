@@ -1665,3 +1665,8 @@ i[data-tooltip]:hover:after {
     z-index:-1; 
     display:none;
 }
+
+.disable{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
