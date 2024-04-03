@@ -713,6 +713,7 @@ def view_label(request, pk, label_uuid):
     projects = Project.objects.none()
     creator_name = ''
     approver_name = ''
+    last_editor_name = '' 
     bclabels = BCLabel.objects.none()
     tklabels = TKLabel.objects.none()
     label_versions = LabelVersion.objects.none()
@@ -726,7 +727,7 @@ def view_label(request, pk, label_uuid):
         label_versions = LabelVersion.objects.filter(bclabel=bclabel).order_by('version')
         bclabels = BCLabel.objects.filter(community=community).exclude(unique_id=label_uuid).values('unique_id', 'name', 'label_type', 'is_approved')
         tklabels = TKLabel.objects.filter(community=community).values('unique_id', 'name', 'label_type', 'is_approved')
-    if TKLabel.objects.filter(unique_id=label_uuid).exists():
+    elif TKLabel.objects.filter(unique_id=label_uuid).exists():
         tklabel = TKLabel.objects.select_related('created_by', 'approved_by').get(unique_id=label_uuid)
         projects = tklabel.project_tklabels.all()
         creator_name = get_users_name(tklabel.created_by)
@@ -735,6 +736,8 @@ def view_label(request, pk, label_uuid):
         label_versions = LabelVersion.objects.filter(tklabel=tklabel).order_by('version')
         tklabels = TKLabel.objects.filter(community=community).exclude(unique_id=label_uuid).values('unique_id', 'name', 'label_type', 'is_approved')
         bclabels = BCLabel.objects.filter(community=community).values('unique_id', 'name', 'label_type', 'is_approved')
+    else:
+        return redirect('select-label', community.id)
 
     context = {
         'community': community,
