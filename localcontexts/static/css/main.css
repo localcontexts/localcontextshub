@@ -1670,3 +1670,8 @@ i[data-tooltip]:hover:after {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.project-actions-alert {
+    margin: 8px auto;
+    width: 1250px;
+}

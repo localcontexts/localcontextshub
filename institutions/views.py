@@ -1244,9 +1244,9 @@ def project_actions(request, pk, project_uuid):
                 elif 'notify_btn' in request.POST:
                     subscription = Subscription.objects.get(institution=institution) 
                     if subscription.notification_count == 0:
-                        messages.add_message(request, messages.INFO, 'Your institution has reached its notification limit.'
+                        messages.add_message(request, messages.ERROR, 'Your institution has reached its notification limit.'
                             'Please upgrade your subscription plan to notify more communities.')
-                        return redirect('institution-projects', institution.id)
+                        return redirect('institution-project-actions', institution.id, project.unique_id)
                     # Set private project to contributor view
                     if project.project_privacy == "Private":
                         project.project_privacy = "Contributor"
@@ -1300,7 +1300,7 @@ def project_actions(request, pk, project_uuid):
                     notification_condition(request, notification_count, communities_selected)
                     subscription.notification_count -= notification_count
                     subscription.save()
-                    return redirect('institution-projects', institution.id)
+                    return redirect('institution-project-actions', institution.id, project.unique_id)
                 elif 'link_projects_btn' in request.POST:
                     selected_projects = request.POST.getlist('projects_to_link')
 
