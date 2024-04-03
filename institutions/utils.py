@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
+from django.contrib import messages
 from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
@@ -57,3 +58,20 @@ def add_user(request, institution, member, current_role, new_role):
         messages.add_message(request, messages.ERROR, 
                             'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
+
+def notification_condition(request, notification_count, communities_selected):
+    if notification_count < len(communities_selected):
+        remaining_notifications = len(communities_selected) - notification_count
+        if notification_count == 1 and remaining_notifications == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        elif notification_count == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        elif remaining_notifications == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        else:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+    else:
+        if notification_count == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community.')
+        else:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities.')

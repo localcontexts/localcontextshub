@@ -1243,7 +1243,7 @@ def project_actions(request, pk, project_uuid):
                 
                 elif 'notify_btn' in request.POST:
                     subscription = Subscription.objects.get(institution=institution) 
-                    if subscription.notification_count ==0:
+                    if subscription.notification_count == 0:
                         messages.add_message(request, messages.INFO, 'Your institution has reached its notification limit.'
                             'Please upgrade your subscription plan to notify more communities.')
                         return redirect('institution-projects', institution.id)
@@ -1253,16 +1253,14 @@ def project_actions(request, pk, project_uuid):
                         project.save()
 
                     communities_selected = request.POST.getlist('selected_communities')
-                    notification_count = len(communities_selected)
-                    subscription.notification_count = subscription.notification_count - notification_count
-                    subscription.save()
+                    notification_count = min(subscription.notification_count, len(communities_selected))
                     # Reference ID and title for notification
                     title = (
                         str(institution.institution_name)
                         + " has notified you of a Project."
                     )
 
-                    for community_id in communities_selected:
+                    for community_id in communities_selected[:notification_count]:
                         # Add communities that were notified to entities_notified instance
                         community = Community.objects.get(id=community_id)
                         entities_notified.communities.add(community)
@@ -1296,16 +1294,15 @@ def project_actions(request, pk, project_uuid):
                         )
                         entities_notified.save()
 
-                        # Create email
-                        send_email_notice_placed(
-                            request, project, community, institution
-                        )
-
-                    return redirect(
-                        "institution-project-actions", institution.id, project.unique_id
-                    )
-                elif "link_projects_btn" in request.POST:
-                    selected_projects = request.POST.getlist("projects_to_link")
+                        # Create email 
+                        send_email_notice_placed(request, project, community, institution)
+                    
+                    notification_condition(request, notification_count, communities_selected)
+                    subscription.notification_count -= notification_count
+                    subscription.save()
+                    return redirect('institution-projects', institution.id)
+                elif 'link_projects_btn' in request.POST:
+                    selected_projects = request.POST.getlist('projects_to_link')
 
                     activities = []
                     for uuid in selected_projects:
