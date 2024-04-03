@@ -55,5 +55,5 @@ def add_user(request, institution, member, current_role, new_role):
         subscription.save()
     else:
         messages.add_message(request, messages.ERROR, 
-                            'Your institution has reached its editors and admins limit.'
+                            'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')

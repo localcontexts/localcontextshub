@@ -584,7 +584,7 @@ def institution_members(request, pk):
                         user_from=selected_user, institution=institution
                     ).exists()  # Check to see if join request already exists
                     if subscription.users_count == 0 and request.POST.get('role') in ('editor', 'administrator', 'admin'):
-                        messages.add_message(request, messages.INFO, 'Your institution has reached its editors and admins limit.'
+                        messages.add_message(request, messages.ERROR, 'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
                         return redirect('institution-members', institution.id)
                     if (
