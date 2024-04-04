@@ -2231,3 +2231,74 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
         }
     }
  }
+
+if (window.location.href.includes('subscription-inquiry')) {
+    function cancelDisclaimer() {
+        var joinAlert = document.getElementById('disclaimerAlert');
+        joinAlert.style.display = 'none';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+    const nameInputField = document.getElementById('organizationInput')
+    const suggestionsContainer = document.getElementById('suggestionsContainer')
+    
+    let delayTimer
+
+    nameInputField.addEventListener('input', () => {
+        clearTimeout(delayTimer)
+
+        const inputValue = nameInputField.value
+        if (inputValue.length >= 3) { // Minimum characters required before making a request
+            let queryURL = 'https://api.ror.org/organizations?query='
+
+            delayTimer = setTimeout(() => {
+            
+                var matchingInstitutions = nonRorInstitutes.filter(function(item) {
+                return item.fields.institution_name.toLowerCase().includes(inputValue.toLowerCase());
+            });
+            
+            fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
+                .then(response => response.json())
+                .then(data => {
+                    showSuggestions(data.items, matchingInstitutions)
+                    
+                })
+                .catch(error => { console.error(error)})
+            }, 300) // Delay in milliseconds before making the request
+        } else { clearSuggestions() }
+    })
+
+    function showSuggestions(items, matchingInstitutions) {
+        // Clear previous suggestions
+        clearSuggestions()
+        // Get the first 5 most relevant itemss
+        const combinedItems = items.concat(matchingInstitutions);
+        const relevantItems = combinedItems.slice(0, 5)
+
+        relevantItems.forEach(item => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.classList.add('suggestion-item');
+    
+            let displayName = "";
+            let displayDetails = "";
+    
+            if (typeof(item) === 'object' && item.hasOwnProperty('name')) {
+                displayName = item.name;
+                displayDetails = `${item.types.join(", ")}, ${item.country.country_name}`;
+            } 
+            else if (typeof(item) === 'object' && item.hasOwnProperty('fields')) {
+                displayName = item.fields.institution_name;
+                displayDetails = `${item.fields.city_town}, ${item.fields.country}`;
+            }    
+            suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
+    
+            suggestionItem.addEventListener('click', () => {
+                nameInputField.value = displayName;
+                clearSuggestions();
+            });
+    
+            suggestionsContainer.appendChild(suggestionItem);
+        });
+    }
+    
+    function clearSuggestions() { suggestionsContainer.innerHTML = '' }
+    })}

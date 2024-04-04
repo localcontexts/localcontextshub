@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('get-user/', GetUserAPIView.as_view(), name='get-user'),
     path('projects/', ProjectList.as_view(), name="api-projects"),
+    path('subscription', SubscriptionAPI.as_view(), name="subscription"),
     path('projects/<uuid:unique_id>/', ProjectDetail.as_view(), name="api-project-detail"),
     # ADD path('projects/<str:providers_id>/', ProjectDetail.as_view(), name="api-project-detail"),
     # DELETE path('projects/external/<str:providers_id>/', project_detail_providers, name="api-project-detail-providers"),

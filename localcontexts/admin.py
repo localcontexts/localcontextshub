@@ -13,7 +13,7 @@ from django.template.response import TemplateResponse
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
-from accounts.models import Profile, UserAffiliation, SignUpInvitation
+from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from accounts.utils import get_users_name
 from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
@@ -1044,9 +1044,13 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'position', 'affiliation', 'is_researcher')
     readonly_fields = ('api_key',)
 
+class SubscriptionsAdmin(admin.ModelAdmin):
+    list_display = ('institution', 'community', 'researcher', 'date_last_updated')
+
 admin_site.register(Profile, ProfileAdmin)
 admin_site.register(UserAffiliation)
 admin_site.register(SignUpInvitation, SignUpInvitationAdmin)
+admin_site.register(Subscription, SubscriptionsAdmin) 
 
 # admin_site.unregister(User)
 admin_site.register(User, UserAdminCustom)

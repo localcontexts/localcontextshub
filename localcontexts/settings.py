@@ -211,6 +211,11 @@ MAILGUN_BASE_URL = os.environ.get('MAILGUN_BASE_URL')
 MAILGUN_V4_BASE_URL = os.environ.get('MAILGUN_V4_BASE_URL')
 MAILGUN_TEMPLATE_URL = os.environ.get('MAILGUN_TEMPLATE_URL')
 
+# Sales force creds
+SALES_FORCE_CLIENT_ID = os.environ.get('SALES_FORCE_CLIENT_ID')
+SALES_FORCE_SECRET_ID = os.environ.get('SALES_FORCE_SECRET_ID')
+SALES_FORCE_BASE_URL = os.environ.get('SALES_FORCE_BASE_URL')
+
 # Config for sending out emails
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
@@ -219,6 +224,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 EMAIL_USE_TLS = True
+
+SF_VALID_USER_IDS = os.environ.get('SF_VALID_USER_IDS')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
