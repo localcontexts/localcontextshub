@@ -6,6 +6,7 @@ from helpers.models import LabelTranslation, Notice, NoticeTranslation
 from projects.models import Project, ProjectCreator
 from institutions.models import Institution
 from researchers.models import Researcher
+from accounts.models import Subscription
 from django.contrib.auth.models import User
 
 class InstitutionSerializer(serializers.ModelSerializer):
@@ -132,3 +133,8 @@ class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
+
+class GetSubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ['institution', 'community', 'researcher', 'users_count', 'api_key_count', 'project_count', 'notification_count', 'start_date', 'end_date', 'date_last_updated']

@@ -12,6 +12,7 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from institutions.models import Institution
 from accounts.models import Subscription
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -225,6 +226,21 @@ class GetUserAPIView(APIView):
 class SubscriptionAPI(APIView):
     authentication_classes = [ApiKeyAuthentication]
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        date_last_updated = request.query_params.get('date_last_updated')
+        if date_last_updated is not None:
+            try:
+                date_last_updated = datetime.strptime(date_last_updated, '%Y-%m-%dT%H:%M:%SZ')
+            except ValueError:
+                return Response({'error': 'Invalid date format. Use YYYY-MM-DDTHH:MM:SSZ'}, status=status.HTTP_400_BAD_REQUEST)
+
+            subscriptions = Subscription.objects.filter(date_last_updated__gt=date_last_updated)
+            serializer = GetSubscriptionSerializer(subscriptions, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'date_last_updated parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+
 
     def post(self, request):
         try:
