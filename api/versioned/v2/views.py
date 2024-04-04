@@ -5,15 +5,21 @@ from rest_framework.decorators import action
 from . import serializers as v2_serializers
 from rest_framework.viewsets import ViewSet
 from rest_framework_api_key.permissions import HasAPIKey
+from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from institutions.models import Institution
+from accounts.models import Subscription
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 
 class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = {10}  # Replace with the actual list of valid user IDs
+    VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
 
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
@@ -215,3 +221,70 @@ class GetUserAPIView(APIView):
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class SubscriptionAPI(APIView):
+    authentication_classes = [ApiKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            account_id = request.data.get('account_id')
+            hub_id , account_type = account_id.split('_')
+            user_count = request.data.get('users_count')
+            api_key_count = request.data.get('api_key_count')
+            project_count = request.data.get('project_count')
+            notification_count = request.data.get('notification_count')
+            start_date = request.data.get('start_date')
+            end_date = request.data.get('end_date')
+            date_last_updated = request.data.get('date_last_updated')
+
+            account_type_to_field = {
+                'i': 'institution_id',
+                'c': 'community_id',
+                'r': 'researcher_id'
+            }
+            field_name = account_type_to_field.get(account_type)
+            if not field_name:
+                return Response(
+                    {'error': 'Failed to create Subscription. Invalid account_type provided.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            filter_kwargs = {
+                field_name: hub_id,
+                'defaults': {
+                    'users_count': user_count,
+                    'api_key_count': api_key_count,
+                    'project_count': project_count,
+                    'notification_count': notification_count,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'date_last_updated': date_last_updated
+                }
+            }
+
+            subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
+            if created:
+                return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
+            else:
+                subscription.users_count = user_count
+                subscription.api_key_count = api_key_count
+                subscription.project_count = project_count
+                subscription.notification_count = notification_count
+                subscription.start_date = start_date
+                subscription.end_date = end_date
+                subscription.date_last_updated = date_last_updated
+                subscription.save() 
+                return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
+
+        except IntegrityError as e:
+            if 'violates foreign key constraint' in str(e):
+                return Response(
+                    {'error': 'Failed to create Subscription. This record violates foreign key constraint.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return Response(
+                    {'error': 'An unexpected error occurred.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
