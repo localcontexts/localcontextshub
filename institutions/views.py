@@ -710,6 +710,7 @@ def remove_member(request, pk, member_id):
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    subscription = Subscription.objects.get(institution=institution)
 
     bool_dict = {
         "has_labels": False,
@@ -901,12 +902,13 @@ def institution_projects(request, pk):
         results = return_project_search_results(request, projects)
 
     context = {
-        "projects": projects,
-        "institution": institution,
-        "member_role": member_role,
-        "items": page,
-        "results": results,
-        "bool_dict": bool_dict,
+        'projects': projects,
+        'institution': institution,
+        'member_role': member_role,
+        'items': page,
+        'results': results,
+        'bool_dict': bool_dict,
+        'subscription': subscription,
     }
     return render(request, "institutions/projects.html", context)
 
@@ -922,6 +924,8 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
     subscription = Subscription.objects.get(institution=institution)
+    if subscription.project_count == 0:
+        return redirect('institution-projects', institution.id)
     
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
@@ -944,8 +948,8 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             data.urls = project_links
 
             if subscription.project_count == 0:
-                messages.add_message(request, messages.ERROR, 'Your institution has reached its project limit.'
-                            'Please upgrade your subscription plan to create more projects.')
+                messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit.'
+                            'Please upgrade your subscription plan to create more Projects.')
                 return redirect('institution-projects', institution.id)
 
             subscription.project_count -= 1
