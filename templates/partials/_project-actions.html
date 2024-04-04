@@ -792,7 +792,7 @@
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
                                 {% else %}
-                                    The account that created this Project needs to be confirmed before download is available.
+                                    {{ download_restricted_message }}
                                 {% endif %}
                             </span>
                         </div> 
