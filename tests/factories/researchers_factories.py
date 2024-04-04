@@ -2,7 +2,7 @@ import factory
 from django.core.files.base import ContentFile
 from researchers.models import Researcher
 from factories.accounts_factories import UserFactory
-
+from faker import Faker
 
 class ResearcherFactory(factory.django.DjangoModelFactory):
     '''This factory is for the Researcher model'''
