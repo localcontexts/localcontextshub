@@ -35,8 +35,8 @@ class Researcher(models.Model):
     class Meta:
         indexes = [models.Index(fields=['id', 'user', 'image'])]
 
-    def validate_is_subscribed(self, disable_validation: bool = False):
-        if disable_validation:
+    def validate_is_subscribed(self, bypass_validation: bool = False):
+        if bypass_validation:
             return
 
         if self.is_subscribed:
