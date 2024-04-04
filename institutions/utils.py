@@ -2,8 +2,6 @@ from django.shortcuts import render, redirect
 from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
-from accounts.models import Subscription
-from projects.models import Project
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)

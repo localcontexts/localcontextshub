@@ -37,6 +37,7 @@ from .forms import *
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
+from django.db import transaction
 
 
 @login_required(login_url="login")
@@ -1066,14 +1067,11 @@ def edit_project(request, pk, project_uuid):
     notices = Notice.objects.none()
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-    subscription = Subscription.objects.get(institution=institution)
     # Check to see if notice exists for this project and pass to template
     if Notice.objects.filter(project=project).exists():
         notices = Notice.objects.filter(project=project, archived=False)
 
-
     if request.method == 'POST':
-        old_project_privacy = project.project_privacy
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
@@ -1387,6 +1385,7 @@ def archive_project(request, pk, project_uuid):
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 @subscription_required()
+@transaction.atomic
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
