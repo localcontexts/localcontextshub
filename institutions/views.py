@@ -925,7 +925,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     notice_defaults = get_notice_defaults()
     subscription = Subscription.objects.get(institution=institution)
     if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit.'
+        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
                             'Please upgrade your subscription plan to create more Projects.')
         return redirect('institution-projects', institution.id)
     
