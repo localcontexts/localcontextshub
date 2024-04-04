@@ -9,7 +9,7 @@
             {% if community or institution %}
                 {% if member_role == 'admin' or member_role == 'editor' %}
                     <div class="flex-this align-center">
-                        <a class="{% if subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn green-btn margin-top-2 a-disabled pointer-event-none {% endif %}"
+                        <a class="{% if subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn green-btn margin-top-2 a-disabled {% endif %}"
                             {% if community %} href="{% url 'create-project' community.id %}" {% endif %}
                             {% if institution %} href="{% url 'inst-create-project' institution.id %}" {% endif %}
                         >
