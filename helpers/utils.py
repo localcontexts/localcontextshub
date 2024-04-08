@@ -90,7 +90,7 @@ def request_possible(request, org, selected_role):
             subscription.save()
             return True
         else:
-            messages.info(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+            messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
             return False
     return True
 
