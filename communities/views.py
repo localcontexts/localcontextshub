@@ -485,14 +485,15 @@ def customize_label(request, pk, label_code):
         return redirect('select-label', community.id)
     else:
         form_class, label_display, label_type = get_form_and_label_type(label_code)
-        form = form_class(request.POST or None, request.FILES)
         title = f"A {label_display} was customized by {name} and is waiting approval by another member of the community."
 
         if request.method == "GET":
             add_translation_formset = AddLabelTranslationFormSet(queryset=LabelTranslation.objects.none())
+            form = form_class()
 
         elif request.method == "POST":
             add_translation_formset = AddLabelTranslationFormSet(request.POST)
+            form = form_class(request.POST or None, request.FILES)
 
             if form.is_valid() and add_translation_formset.is_valid():
                 data = form.save(commit=False)
