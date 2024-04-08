@@ -19,7 +19,7 @@ from notifications.models import ActionNotification
 from helpers.models import *
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, Subscription
 
 from projects.forms import *
 from helpers.forms import (
@@ -37,6 +37,7 @@ from .forms import *
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
+from django.db import transaction
 
 
 @login_required(login_url="login")
@@ -710,6 +711,7 @@ def remove_member(request, pk, member_id):
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    subscription = Subscription.objects.get(institution=institution)
 
     bool_dict = {
         "has_labels": False,
@@ -901,12 +903,13 @@ def institution_projects(request, pk):
         results = return_project_search_results(request, projects)
 
     context = {
-        "projects": projects,
-        "institution": institution,
-        "member_role": member_role,
-        "items": page,
-        "results": results,
-        "bool_dict": bool_dict,
+        'projects': projects,
+        'institution': institution,
+        'member_role': member_role,
+        'items': page,
+        'results': results,
+        'bool_dict': bool_dict,
+        'subscription': subscription,
     }
     return render(request, "institutions/projects.html", context)
 
@@ -921,8 +924,13 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-
-    if request.method == "GET":
+    subscription = Subscription.objects.get(institution=institution)
+    if subscription.project_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
+                            'Please upgrade your subscription plan to create more Projects.')
+        return redirect('institution-projects', institution.id)
+    
+    if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
     elif request.method == "POST":
@@ -942,6 +950,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
+            subscription.project_count -= 1
+            subscription.save()
+            #API hit
             data.save()
 
             if source_proj_uuid and not related:
@@ -1056,12 +1067,11 @@ def edit_project(request, pk, project_uuid):
     notices = Notice.objects.none()
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-
     # Check to see if notice exists for this project and pass to template
     if Notice.objects.filter(project=project).exists():
         notices = Notice.objects.filter(project=project, archived=False)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
@@ -1375,10 +1385,11 @@ def archive_project(request, pk, project_uuid):
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 @subscription_required()
+@transaction.atomic
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
-
+    subscription = Subscription.objects.get(institution=institution)
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(
             reference_id=project.unique_id
@@ -1386,8 +1397,9 @@ def delete_project(request, pk, project_uuid):
             notification.delete()
 
     project.delete()
-    return redirect("institution-projects", institution.id)
-
+    subscription.project_count +=1
+    subscription.save()
+    return redirect('institution-projects', institution.id)
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
