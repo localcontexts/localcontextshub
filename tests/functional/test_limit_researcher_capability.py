@@ -60,3 +60,28 @@ class TestViewProject(TransactionTestCase):
         }
         response = self.client.get(reverse('view-project', kwargs=kwargs))
         self.assertEqual(response.context['can_download'], True)
+
+
+class TestCreateProject(TransactionTestCase):
+    def setUp(self):
+        self.client = Client()
+        self.subscribed_researcher = ResearcherFactory(user=UserFactory(), is_subscribed=True)
+        self.subscribed_researcher_project = ProjectFactory(project_creator=self.subscribed_researcher.user)
+        self.unsubscribed_researcher = ResearcherFactory(user=UserFactory(), is_subscribed=False)
+        self.unsubscribed_researcher_project = ProjectFactory(project_creator=self.unsubscribed_researcher.user)
+
+    def test_create_project_as_unsubscribed(self):
+        self.client.force_login(user=self.unsubscribed_researcher.user)
+        kwargs = {
+            'pk': self.unsubscribed_researcher_project.id,
+        }
+        with self.assertRaises(UnsubscribedAccountException):
+            self.client.get(reverse('researcher-create-project', kwargs=kwargs))
+
+    def test_create_project_as_subscribed(self):
+        self.client.force_login(user=self.subscribed_researcher.user)
+        kwargs = {
+            'pk': self.subscribed_researcher_project.id,
+        }
+        response = self.client.get(reverse('researcher-create-project', kwargs=kwargs))
+        self.assertEqual(response.status_code, 200)
