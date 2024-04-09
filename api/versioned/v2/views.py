@@ -19,25 +19,25 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 
-class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
+# class ApiKeyAuthentication(BaseAuthentication):
+#     VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
 
-    def authenticate(self, request):
-        api_key = request.headers.get('X-Api-Key')
+#     def authenticate(self, request):
+#         api_key = request.headers.get('X-Api-Key')
 
-        if not api_key:
-            return None
+#         if not api_key:
+#             return None
 
-        try:
-            user = User.objects.get(user_profile__api_key=api_key)
-        except User.DoesNotExist:
-            raise AuthenticationFailed('Invalid API key')
+#         try:
+#             user = User.objects.get(user_profile__api_key=api_key)
+#         except User.DoesNotExist:
+#             raise AuthenticationFailed('Invalid API key')
 
-        # Check if the authenticated user is in the list of valid user IDs
-        if user.id not in self.VALID_USER_IDS:
-            raise AuthenticationFailed('Unauthorized user')
+#         # Check if the authenticated user is in the list of valid user IDs
+#         if user.id not in self.VALID_USER_IDS:
+#             raise AuthenticationFailed('Unauthorized user')
 
-        return (user, None)
+#         return (user, None)
 
 class APIOverview(APIView):
     def get(self, request, format=None):
@@ -209,7 +209,7 @@ class MultiProjectListDetail(ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class GetUserAPIView(APIView):
-    authentication_classes = [ApiKeyAuthentication]
+    # authentication_classes = [ApiKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -224,7 +224,7 @@ class GetUserAPIView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
 class SubscriptionAPI(APIView):
-    authentication_classes = [ApiKeyAuthentication]
+    # authentication_classes = [ApiKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

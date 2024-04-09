@@ -17,6 +17,7 @@ from projects.models import *
 from communities.models import Community, JoinRequest
 from notifications.models import ActionNotification
 from helpers.models import *
+from api.models import AccountAPIKey
 
 from django.contrib.auth.models import User
 from accounts.models import UserAffiliation, Subscription
@@ -33,6 +34,7 @@ from accounts.forms import (
     SignUpInvitationForm,
     SubscriptionForm,
 )
+from api.forms import APIKeyGeneratorForm
 from .forms import *
 
 from helpers.emails import *
@@ -1499,3 +1501,33 @@ def embed_otc_notice(request, pk):
     response["Content-Security-Policy"] = "frame-ancestors https://*"
 
     return response
+
+# Create API Key
+@login_required(login_url="login")
+@member_required(roles=["admin"])
+def api_keys(request, pk, related=None):
+    institution = get_institution(pk)
+    member_role = check_member_role(request.user, institution)
+    
+    if request.method == 'GET':
+        form = APIKeyGeneratorForm(request.GET or None)
+        
+    elif request.method == "POST":
+        form = APIKeyGeneratorForm(request.POST)
+
+        if form.is_valid():
+            data = form.save(commit=False)
+            api_key, key = AccountAPIKey.objects.create_key(
+                name = data.name,
+                institution_id = institution.id 
+            )
+
+        return redirect("update-institution", institution.id)
+    
+    context = {
+        "institution": institution,
+        "form": form,
+        "main_area" : "api_key",
+        "member_role": member_role,
+    }
+    return render(request, 'institutions/update-institution.html', context)

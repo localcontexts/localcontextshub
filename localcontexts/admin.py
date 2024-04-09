@@ -17,6 +17,7 @@ from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscrip
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from accounts.utils import get_users_name
 from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
+from api.models import AccountAPIKey
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
@@ -1056,7 +1057,7 @@ admin_site.register(Subscription, SubscriptionsAdmin)
 admin_site.register(User, UserAdminCustom)
 
 # API KEYS ADMIN
-admin_site.register(APIKey, APIKeyModelAdmin)
+admin_site.register(AccountAPIKey, APIKeyModelAdmin)
 
 # AUTH ADMIN
 class MyGroupAdmin(GroupAdmin):
