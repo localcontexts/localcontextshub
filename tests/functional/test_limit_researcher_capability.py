@@ -57,7 +57,7 @@ class TestFeatures(TransactionTestCase):
     def test_create_project_as_unsubscribed(self):
         self.client.force_login(user=self.unsubscribed_researcher.user)
         kwargs = {
-            'pk': self.unsubscribed_researcher_project.id,
+            'pk': self.unsubscribed_researcher.id,
         }
         with self.assertRaises(UnsubscribedAccountException):
             self.client.get(reverse('researcher-create-project', kwargs=kwargs))
@@ -65,7 +65,7 @@ class TestFeatures(TransactionTestCase):
     def test_create_project_as_subscribed(self):
         self.client.force_login(user=self.subscribed_researcher.user)
         kwargs = {
-            'pk': self.subscribed_researcher_project.id,
+            'pk': self.subscribed_researcher.id,
         }
         response = self.client.get(reverse('researcher-create-project', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)
@@ -73,7 +73,7 @@ class TestFeatures(TransactionTestCase):
     def test_edit_project_as_unsubscribed(self):
         self.client.force_login(user=self.unsubscribed_researcher.user)
         kwargs = {
-            'pk': self.unsubscribed_researcher_project.id,
+            'pk': self.unsubscribed_researcher.id,
         }
         with self.assertRaises(UnsubscribedAccountException):
             self.client.get(reverse('researcher-create-project', kwargs=kwargs))
@@ -81,7 +81,7 @@ class TestFeatures(TransactionTestCase):
     def test_edit_project_as_subscribed(self):
         self.client.force_login(user=self.subscribed_researcher.user)
         kwargs = {
-            'pk': self.subscribed_researcher_project.id,
+            'pk': self.subscribed_researcher.id,
         }
         response = self.client.get(reverse('researcher-create-project', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)

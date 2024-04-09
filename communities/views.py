@@ -1090,6 +1090,8 @@ def project_actions(request, pk, project_uuid):
                     contribs.save()
                     return redirect('community-project-actions', community.id, project.unique_id)
 
+            download_restricted_message = 'The account that created this Project needs ' \
+                                          'to be confirmed before download is available.'
             context = {
                 'member_role': member_role,
                 'community': community,
@@ -1107,6 +1109,7 @@ def project_actions(request, pk, project_uuid):
                 'projects_to_link': projects_to_link,
                 'label_groups': label_groups,
                 'can_download': can_download,
+                'download_restricted_message': download_restricted_message,
             }
             return render(request, 'communities/project-actions.html', context)
     except:
