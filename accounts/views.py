@@ -1027,7 +1027,7 @@ def subscription_inquiry(request):
                     request,
                     messages.ERROR,
                     (
-                        "An unexpected error has occurred. Please"
+                        "An unexpected error has occurred. Please "
                         "try contacting the Local Contexts HUB."
                     ),
                 )

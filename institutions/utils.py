@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.contrib import messages
 from .models import Institution
 from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
+from accounts.models import Subscription
+from helpers.utils import change_member_role
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
@@ -39,3 +43,37 @@ def confirm_subscription(request, institution, join_flag, form):
     elif request.user._wrapped not in institution.get_admins():
         join_flag = True
         return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+
+def add_user(request, institution, member, current_role, new_role):
+    subscription = Subscription.objects.get(institution=institution)
+    if new_role not in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        subscription.users_count += 1
+        subscription.save()
+    elif new_role in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+    elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        subscription.users_count -=1
+        subscription.save()
+    else:
+        messages.add_message(request, messages.ERROR, 
+                            'Your institution has reached its editors and admins limit. '
+                            'Please upgrade your subscription plan to add more editors and admins.')
+
+def notification_condition(request, notification_count, communities_selected):
+    if notification_count < len(communities_selected):
+        remaining_notifications = len(communities_selected) - notification_count
+        if notification_count == 1 and remaining_notifications == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        elif notification_count == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        elif remaining_notifications == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+        else:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
+    else:
+        if notification_count == 1:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community.')
+        else:
+            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities.')
