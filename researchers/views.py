@@ -192,10 +192,12 @@ def update_researcher(request, pk):
 @is_researcher(pk_arg_name='pk')
 def researcher_notices(request, researcher):
     notify_restricted_message = False
+    create_restricted_message = False
 
     if not researcher.is_subscribed:
         notify_restricted_message = 'The account must be subscribed ' \
                                     'before download is available.'
+        create_restricted_message = 'The account must be subscribed before a project can be created'
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
@@ -228,6 +230,7 @@ def researcher_notices(request, researcher):
         'urls': urls,
         'otc_download_perm': otc_download_perm,
         'notify_restricted_message': notify_restricted_message,
+        'create_restricted_message': create_restricted_message,
         'is_sandbox': is_sandbox,
     }
     return render(request, 'researchers/notices.html', context)
@@ -242,102 +245,103 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-def researcher_projects(request, pk):
-    researcher = Researcher.objects.prefetch_related('user').get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if not user_can_view:
-        return redirect('restricted')
-    else:
-        bool_dict = {
-            'has_labels': False,
-            'has_notices': False,
-            'created': False,
-            'contributed': False,
-            'is_archived': False,
-            'title_az': False,
-            'visibility_public': False,
-            'visibility_contributor': False,
-            'visibility_private': False,
-            'date_modified': False
-        }
-    
+@is_researcher()
+def researcher_projects(request, researcher):
+    create_restricted_message = False
+    if not researcher.is_subscribed:
+        create_restricted_message = 'The account must be subscribed before a project can be created'
+
+    bool_dict = {
+        'has_labels': False,
+        'has_notices': False,
+        'created': False,
+        'contributed': False,
+        'is_archived': False,
+        'title_az': False,
+        'visibility_public': False,
+        'visibility_contributor': False,
+        'visibility_private': False,
+        'date_modified': False
+    }
+
+    projects_list = list(chain(
+        researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # researcher projects
+        researcher.researchers_notified.all().values_list('project__unique_id', flat=True), # projects researcher has been notified of
+        researcher.contributing_researchers.all().values_list('project__unique_id', flat=True), # projects where researcher is contributor
+    ))
+    project_ids = list(set(projects_list)) # remove duplicate ids
+    archived = ProjectArchived.objects.filter(project_uuid__in=project_ids, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
+    projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_added')
+
+    sort_by = request.GET.get('sort')
+
+    if sort_by == 'all':
+        return redirect('researcher-projects', researcher.id)
+
+    elif sort_by == 'has_labels':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
+            ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
+            ).exclude(unique_id__in=archived).exclude(tk_labels=None).order_by('-date_added')
+        bool_dict['has_labels'] = True
+
+    elif sort_by == 'has_notices':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, tk_labels=None, bc_labels=None).exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['has_notices'] = True
+
+    elif sort_by == 'created':
+        created_projects = researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=created_projects).exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['created'] = True
+
+    elif sort_by == 'contributed':
+        contrib = researcher.contributing_researchers.all().values_list('project__unique_id', flat=True)
         projects_list = list(chain(
-            researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # researcher projects
-            researcher.researchers_notified.all().values_list('project__unique_id', flat=True), # projects researcher has been notified of
-            researcher.contributing_researchers.all().values_list('project__unique_id', flat=True), # projects where researcher is contributor
+            researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # check researcher created projects
+            ProjectArchived.objects.filter(project_uuid__in=contrib, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
         ))
         project_ids = list(set(projects_list)) # remove duplicate ids
-        archived = ProjectArchived.objects.filter(project_uuid__in=project_ids, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
-        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_added')
-        
-        sort_by = request.GET.get('sort')
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=contrib).exclude(unique_id__in=project_ids).order_by('-date_added')
+        bool_dict['contributed'] = True
 
-        if sort_by == 'all':
-            return redirect('researcher-projects', researcher.id)
-        
-        elif sort_by == 'has_labels':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
-                ).exclude(unique_id__in=archived).exclude(bc_labels=None).order_by('-date_added') | Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids
-                ).exclude(unique_id__in=archived).exclude(tk_labels=None).order_by('-date_added')
-            bool_dict['has_labels'] = True
-        
-        elif sort_by == 'has_notices':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, tk_labels=None, bc_labels=None).exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['has_notices'] = True
+    elif sort_by == 'archived':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived).order_by('-date_added')
+        bool_dict['is_archived'] = True
 
-        elif sort_by == 'created':
-            created_projects = researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=created_projects).exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['created'] = True
+    elif sort_by == 'title_az':
+        projects = projects.order_by('title')
+        bool_dict['title_az'] = True
 
-        elif sort_by == 'contributed':
-            contrib = researcher.contributing_researchers.all().values_list('project__unique_id', flat=True)
-            projects_list = list(chain(
-                researcher.researcher_created_project.all().values_list('project__unique_id', flat=True), # check researcher created projects
-                ProjectArchived.objects.filter(project_uuid__in=contrib, researcher_id=researcher.id, archived=True).values_list('project_uuid', flat=True) # check ids to see if they are archived
-            ))
-            project_ids = list(set(projects_list)) # remove duplicate ids
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=contrib).exclude(unique_id__in=project_ids).order_by('-date_added')
-            bool_dict['contributed'] = True
+    elif sort_by == 'visibility_public':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_public'] = True
 
-        elif sort_by == 'archived':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived).order_by('-date_added')
-            bool_dict['is_archived'] = True
-        
-        elif sort_by == 'title_az':
-            projects = projects.order_by('title')
-            bool_dict['title_az'] = True
+    elif sort_by == 'visibility_contributor':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Contributor').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_contributor'] = True
 
-        elif sort_by == 'visibility_public':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_public'] = True
+    elif sort_by == 'visibility_private':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Private').exclude(unique_id__in=archived).order_by('-date_added')
+        bool_dict['visibility_private'] = True
 
-        elif sort_by == 'visibility_contributor':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Contributor').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_contributor'] = True
+    elif sort_by == 'date_modified':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_modified')
+        bool_dict['date_modified'] = True
 
-        elif sort_by == 'visibility_private':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Private').exclude(unique_id__in=archived).order_by('-date_added')
-            bool_dict['visibility_private'] = True
+    page = paginate(request, projects, 10)
 
-        elif sort_by == 'date_modified':
-            projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids).exclude(unique_id__in=archived).order_by('-date_modified')
-            bool_dict['date_modified'] = True
-    
-        page = paginate(request, projects, 10)
-        
-        if request.method == 'GET':
-            results = return_project_search_results(request, projects)
+    if request.method == 'GET':
+        results = return_project_search_results(request, projects)
 
-        context = {
-            'projects': projects,
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'items': page,
-            'results': results,
-            'bool_dict': bool_dict,
-        }
-        return render(request, 'researchers/projects.html', context)
+    context = {
+        'projects': projects,
+        'researcher': researcher,
+        'user_can_view': True,
+        'items': page,
+        'results': results,
+        'bool_dict': bool_dict,
+        'create_restricted_message': create_restricted_message,
+    }
+    return render(request, 'researchers/projects.html', context)
 
 
 # Create Project
@@ -506,6 +510,7 @@ def edit_project(request, researcher, project_uuid):
 def project_actions(request, pk, project_uuid):
     notify_restricted_message = False
     public_view_restricted_message = False
+    create_restricted_message = False
 
     try:
         project = Project.objects.prefetch_related(
@@ -524,6 +529,7 @@ def project_actions(request, pk, project_uuid):
                                             'communities. Please contact us if you have questions.'
                 public_view_restricted_message = 'The account must be subscribed ' \
                                                  'before public view is available.'
+                create_restricted_message = 'The account must be subscribed before a project can be created'
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -661,6 +667,7 @@ def project_actions(request, pk, project_uuid):
                     'can_download': can_download,
                     'notify_restricted_message': notify_restricted_message,
                     'public_view_restricted_message': public_view_restricted_message,
+                    'create_restricted_message': create_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:

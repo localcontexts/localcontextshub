@@ -430,7 +430,9 @@
                             <div class="flex-this">
                                 <div class="margin-right-8">
                                     <a 
-                                        class="primary-btn white-btn" 
+                                        class="
+                                        {% if create_restricted_message %}a-disabled{% endif %}
+                                        primary-btn white-btn"
                                         {% if community %}
                                             href="{% url 'create-project' community.id project.unique_id 'related' %}"
                                         {% endif %}
@@ -440,7 +442,19 @@
                                         {% if researcher %}
                                             href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
                                         {% endif %}
-                                    > Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i></a>                            
+                                    >
+                                        {% if create_restricted_message %}
+                                            Create Related Project <i class="margin-left-8 fa-solid fa-square-plus" style="visibility: hidden"></i>
+                                            <div class="tooltip" style="margin-bottom: 4px; margin-left: 164px; position: absolute">
+                                                <strong>i</strong>
+                                                <span class="tooltiptext">
+                                                    {{ create_restricted_message }}
+                                                </span>
+                                            </div>
+                                        {% else %}
+                                            Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i>
+                                        {% endif %}
+                                    </a>
                                 </div>
 
                                 <div>
@@ -596,7 +610,7 @@
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
                             <a 
-                                class="block" 
+                                class="block {% if create_restricted_message %}block a-disabled{% endif %}"
                                 {% if community %}
                                     href="{% url 'create-project' community.id project.unique_id %}"
                                 {% endif %}
@@ -607,7 +621,16 @@
                                     href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
                                 {% endif %}
 
-                            ><i class="fa-regular fa-diagram-subtask"></i> Create Sub Project</a>
+                            >
+                                <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
+                                {% if create_restricted_message %}
+                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            {{ create_restricted_message }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </a>
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project

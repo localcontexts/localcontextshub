@@ -109,8 +109,22 @@
         <div>
             {% if researcher %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn margin-top-2" href="{% url 'researcher-create-project' researcher.id %}">
-                        Create a Project     <i class="fa fa-arrow-right"></i>
+                    <a
+                        {% if create_restricted_message %}
+                            class="primary-btn white-btn margin-top-2 block a-disabled"
+                        {% else %}
+                            class="primary-btn green-btn margin-top-2"
+                        {% endif %}
+
+                        href="{% url 'researcher-create-project' researcher.id %}">
+                        Create a Project <i class="fa fa-arrow-right"></i>
+                        {% if create_restricted_message %}
+                            <div class="tooltip" style="margin-bottom: 3px; margin-left: 5px;"><strong>i</strong>
+                                <span class="tooltiptext">
+                                    {{ create_restricted_message }}
+                                </span>
+                            </div>
+                        {% endif %}
                     </a>
                 </div>
             {% endif %}
