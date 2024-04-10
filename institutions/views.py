@@ -1519,8 +1519,11 @@ def api_keys(request, pk, related=None):
             data = form.save(commit=False)
             api_key, key = AccountAPIKey.objects.create_key(
                 name = data.name,
-                institution_id = institution.id 
+                institution_id = institution.id
             )
+            prefix = key.split(".")[0]
+            encrypted_key = urlsafe_base64_encode(force_bytes(key))
+            AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
         return redirect("update-institution", institution.id)
     

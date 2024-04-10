@@ -3,6 +3,16 @@
 <div class="flex-this space-between">
     <div><h3 class="no-top-margin">API Key Manager</h3></div>
 </div>
+<p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
+
+<!-- {% if has_key %}
+{% elif not has_key %}
+    <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
+{% endif %} -->
+
+<div>
+    <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Add API Key <i class="fa fa-arrow-right"></i></button>
+</div>
 
 <!-- {% if has_key %}
     <div class="w-70 margin-bottom-2">
@@ -74,26 +84,7 @@
         </div>
     </div>
 {% else %} -->
-    <div>
-        <form 
-            id="apiKeyGeneratorForm" method="POST">
-            {% csrf_token %}
-
-            <div class="w-70 margin-bottom-2">
-                <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
-                <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
-                <div class="w-100 margin-bottom-8">
-                    <label> Application Name </label><br>
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                        <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
-                    {% endif %}
-                </div>
-                <button type="submit" class="primary-btn action-btn margin-top-2" name="generatebtn">Generate API Key <i class="fa fa-arrow-right"></i></button>
-            </div>
-        </form>
-    </div>
-    {% include 'partials/_alerts.html' %}
+    
 <!-- {% endif %} -->
 
 <!-- <style>
@@ -129,3 +120,46 @@
         float: right;
     }
 </style> -->
+
+<div id="generateAPIKeymodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text no-top-margin">Generate an API Key</h2>
+            </div>
+            <div>
+                <div id='closegenerateAPIKeymodal' class="close-modal-btn pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
+            </div>            
+        </div>
+
+        <div class="w-100">
+            <div>
+                <p class="no-top-margin">Please add a name that will be associated with this API Key. This cannot be edited later.</p>
+            </div>
+
+            <form id="apiKeyGeneratorForm" method="POST">
+            {% csrf_token %}
+
+            <div class="flex-this column w-100">
+                <div class="margin-top-8">
+                    <label> Application Name </label><br>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex-this space-between w-100">
+                <div class="margin-top-8">
+                    <button type="submit" class="primary-btn action-btn margin-top-2" name="generatebtn">Generate API Key <i class="fa fa-arrow-right"></i></button>
+                </div>                    
+            </div>
+
+        </form>
+
+        </div>
+    </div>
+</div>
