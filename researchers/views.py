@@ -500,6 +500,7 @@ def edit_project(request, researcher, project_uuid):
     return render(request, 'researchers/edit-project.html', context)
 
 def project_actions(request, pk, project_uuid):
+    notify_restricted_message = False
     try:
         project = Project.objects.prefetch_related(
                     'bc_labels', 
@@ -512,6 +513,9 @@ def project_actions(request, pk, project_uuid):
 
         if request.user.is_authenticated:
             researcher = Researcher.objects.get(id=pk)
+            if not researcher.is_subscribed:
+                notify_restricted_message = 'Your account needs to be subscribed before you can notify ' \
+                                            'communities. Please contact us if you have questions.'
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -564,7 +568,11 @@ def project_actions(request, pk, project_uuid):
                             send_action_notification_to_project_contribs(project)
                             return redirect('researcher-project-actions', researcher.id, project.unique_id)
 
-                    elif 'notify_btn' in request.POST: 
+                    elif 'notify_btn' in request.POST:
+                        researcher.validate_is_subscribed(
+                            bypass_validation=dev_prod_or_local(request.get_host()) == 'SANDBOX'
+                        )
+
                         # Set private project to contributor view
                         if project.project_privacy == 'Private':
                             project.project_privacy = 'Contributor'
@@ -643,6 +651,7 @@ def project_actions(request, pk, project_uuid):
                     'projects_to_link': projects_to_link,
                     'label_groups': label_groups,
                     'can_download': can_download,
+                    'notify_restricted_message': notify_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:

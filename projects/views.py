@@ -34,7 +34,6 @@ def view_project(request, unique_id):
     can_download = can_download_project(request, creator)
     download_restricted_message = 'The account that created this Project needs ' \
                                   'to be confirmed before download is available.'
-
     #  If user is logged in AND belongs to account of a contributor
     if request.user.is_authenticated:
         affiliations = UserAffiliation.objects.get(user=request.user)
@@ -53,7 +52,6 @@ def view_project(request, unique_id):
                 can_download = False
                 download_restricted_message = 'The account that created this Project needs ' \
                                               'to be subscribed before download is available.'
-                notify_restricted_message = ''
             researchers = Researcher.objects.filter(id__in=researcher_ids)
             if researcher in researchers:
                 user_researcher = Researcher.objects.get(id=researcher.id)

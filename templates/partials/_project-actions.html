@@ -673,10 +673,21 @@
                 {% endif %}
 
                 {% if researcher %}
-                    <a 
-                        class="block pointer" 
-                        onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                    ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                    {% if notify_restricted_message %}
+                        <a class="block a-disabled">
+                            <i class="fa-solid fa-user-group"></i> Notify Communities
+                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                <span class="tooltiptext">
+                                    {{ notify_restricted_message }}
+                                </span>
+                            </div>
+                        </a>
+                    {% else %}
+                        <a
+                            class="block pointer"
+                            onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                        ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                    {% endif %}
                 {% endif %}
 
             {% endif %}
