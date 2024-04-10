@@ -512,6 +512,7 @@ def project_actions(request, pk, project_uuid):
     public_view_restricted_message = False
     create_restricted_message = False
     edit_restricted_message = False
+    download_restricted_message = False
 
     try:
         project = Project.objects.prefetch_related(
@@ -524,6 +525,7 @@ def project_actions(request, pk, project_uuid):
                     ).get(unique_id=project_uuid)
 
         if request.user.is_authenticated:
+            can_download = False if dev_prod_or_local(request.get_host()) == 'SANDBOX' else True
             researcher = Researcher.objects.get(id=pk)
             if not researcher.is_subscribed:
                 notify_restricted_message = 'Your account needs to be subscribed before you can notify ' \
@@ -532,7 +534,9 @@ def project_actions(request, pk, project_uuid):
                                                  'before public view is available.'
                 create_restricted_message = 'The account must be subscribed before a project can be created'
                 edit_restricted_message = 'The account must be subscribed before a project can be edited'
-
+                download_restricted_message = 'The account must be subscribed before a project can be downloaded'
+                can_download = False
+                
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
                 return redirect('view-project', project.unique_id)
@@ -546,7 +550,6 @@ def project_actions(request, pk, project_uuid):
                 sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
                 name = get_users_name(request.user)
                 label_groups = return_project_labels_by_community(project)
-                can_download = False if dev_prod_or_local(request.get_host()) == 'SANDBOX' else True
 
                 # for related projects list 
                 project_ids = list(set(researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
@@ -671,6 +674,7 @@ def project_actions(request, pk, project_uuid):
                     'public_view_restricted_message': public_view_restricted_message,
                     'create_restricted_message': create_restricted_message,
                     'edit_restricted_message': edit_restricted_message,
+                    'download_restricted_message': download_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
