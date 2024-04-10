@@ -646,6 +646,7 @@ def registry(request, filtertype=None):
         r = (
             Researcher.objects.select_related("user")
             .all()
+            .exclude(is_subscribed=False)
             .order_by("user__username")
         )
 
