@@ -594,8 +594,13 @@
             {% if request.user.is_authenticated %}
                 {% if 'projects/actions/' in request.path %}
                     {% if request.user == project.project_creator %}
-                        <a 
-                            class="block" 
+                        <a
+                            {% if edit_restricted_message %}
+                                class="block a-disabled"
+                            {% else %}
+                                class="block"
+                            {% endif %}
+
                             {% if community %}
                                 href="{% url 'edit-project' community.id project.unique_id %}"
                             {% endif %}
@@ -605,7 +610,16 @@
                             {% if researcher %}
                                 href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
                             {% endif %}
-                        ><i class="fa-solid fa-pen-to-square"></i> Edit Project</a>
+                        >
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Project
+                            {% if edit_restricted_message %}
+                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                    <span class="tooltiptext">
+                                        {{ edit_restricted_message }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </a>
                     {% endif %}
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}

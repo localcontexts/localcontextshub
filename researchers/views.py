@@ -511,6 +511,7 @@ def project_actions(request, pk, project_uuid):
     notify_restricted_message = False
     public_view_restricted_message = False
     create_restricted_message = False
+    edit_restricted_message = False
 
     try:
         project = Project.objects.prefetch_related(
@@ -530,6 +531,7 @@ def project_actions(request, pk, project_uuid):
                 public_view_restricted_message = 'The account must be subscribed ' \
                                                  'before public view is available.'
                 create_restricted_message = 'The account must be subscribed before a project can be created'
+                edit_restricted_message = 'The account must be subscribed before a project can be edited'
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -668,6 +670,7 @@ def project_actions(request, pk, project_uuid):
                     'notify_restricted_message': notify_restricted_message,
                     'public_view_restricted_message': public_view_restricted_message,
                     'create_restricted_message': create_restricted_message,
+                    'edit_restricted_message': edit_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
