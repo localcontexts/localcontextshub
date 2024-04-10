@@ -505,6 +505,8 @@ def edit_project(request, researcher, project_uuid):
 
 def project_actions(request, pk, project_uuid):
     notify_restricted_message = False
+    public_view_restricted_message = False
+
     try:
         project = Project.objects.prefetch_related(
                     'bc_labels', 
@@ -520,6 +522,8 @@ def project_actions(request, pk, project_uuid):
             if not researcher.is_subscribed:
                 notify_restricted_message = 'Your account needs to be subscribed before you can notify ' \
                                             'communities. Please contact us if you have questions.'
+                public_view_restricted_message = 'The account must be subscribed ' \
+                                                 'before public view is available.'
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -656,6 +660,7 @@ def project_actions(request, pk, project_uuid):
                     'label_groups': label_groups,
                     'can_download': can_download,
                     'notify_restricted_message': notify_restricted_message,
+                    'public_view_restricted_message': public_view_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
