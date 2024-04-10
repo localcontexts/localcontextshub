@@ -728,7 +728,8 @@ def projects_board(request, filtertype=None):
             project_creator_project__community__in=approved_communities
         )
         researcher_projects_filter = Q(
-            project_creator_project__researcher__user__isnull=False
+            project_creator_project__researcher__user__isnull=False,
+            project_creator_project__researcher__is_subscribed=True
         )
 
         projects = (
