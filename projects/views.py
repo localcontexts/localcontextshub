@@ -19,6 +19,10 @@ def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
         creator = ProjectCreator.objects.get(project=project)
+        if creator.researcher:
+            creator.researcher.validate_is_subscribed(
+                bypass_validation=dev_prod_or_local(request.get_host()) == 'SANDBOX'
+            )
         status = creator.account_is_confirmed()
         creator.validate_user_access(request.user)
     except (Project.DoesNotExist, UnconfirmedAccountException):
@@ -32,8 +36,6 @@ def view_project(request, unique_id):
     user_researcher = Researcher.objects.none()
     label_groups = return_project_labels_by_community(project)
     can_download = can_download_project(request, creator)
-    download_restricted_message = 'The account that created this Project needs ' \
-                                  'to be confirmed before download is available.'
     #  If user is logged in AND belongs to account of a contributor
     if request.user.is_authenticated:
         affiliations = UserAffiliation.objects.get(user=request.user)
@@ -47,11 +49,6 @@ def view_project(request, unique_id):
 
         if Researcher.objects.filter(user=request.user).exists():
             researcher = Researcher.objects.get(user=request.user)
-
-            if not researcher.is_subscribed:
-                can_download = False
-                download_restricted_message = 'The account that created this Project needs ' \
-                                              'to be subscribed before download is available.'
             researchers = Researcher.objects.filter(id__in=researcher_ids)
             if researcher in researchers:
                 user_researcher = Researcher.objects.get(id=researcher.id)
@@ -68,7 +65,6 @@ def view_project(request, unique_id):
         'sub_projects': sub_projects,
         'template_name': template_name,
         'can_download': can_download,
-        'download_restricted_message': download_restricted_message,
         'label_groups': label_groups,
         'status': status,
     }
