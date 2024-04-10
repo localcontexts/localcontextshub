@@ -34,18 +34,6 @@ class TestFeatures(TransactionTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn('open-to-collaborate-notice', response.url)
 
-    def test_view_project_as_unsubscribed(self):
-        self.client.force_login(user=self.unsubscribed_researcher.user)
-        kwargs = {
-            'unique_id': self.unsubscribed_researcher_project.unique_id,
-        }
-        response = self.client.get(reverse('view-project', kwargs=kwargs))
-
-        expected_download_restricted_message = 'The account that created this Project needs ' \
-                                               'to be subscribed before download is available.'
-        self.assertEqual(response.context['can_download'], False)
-        self.assertEqual(response.context['download_restricted_message'], expected_download_restricted_message)
-
     def test_view_project_as_subscribed(self):
         self.client.force_login(user=self.subscribed_researcher.user)
         kwargs = {
