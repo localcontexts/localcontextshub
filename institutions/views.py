@@ -549,7 +549,7 @@ def institution_members(request, pk):
             new_role = request.POST.get("new_role")
             user_id = request.POST.get("user_id")
             member = User.objects.get(id=user_id)
-            change_member_role(institution, member, current_role, new_role)
+            add_user(request, institution, member, current_role, new_role)
             return redirect("institution-members", institution.id)
 
         elif "send_invite_btn" in request.POST:
@@ -924,6 +924,7 @@ def institution_projects(request, pk):
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 @subscription_required()
+@transaction.atomic
 def create_project(request, pk, source_proj_uuid=None, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -959,7 +960,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
             subscription.project_count -= 1
             subscription.save()
-            #API hit
+
             data.save()
 
             if source_proj_uuid and not related:

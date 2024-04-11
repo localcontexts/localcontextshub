@@ -31,6 +31,7 @@ from django.shortcuts import get_object_or_404
 import urllib.parse
 import urllib.request
 from django.contrib import messages
+from django.shortcuts import redirect
 
 
 def check_member_role(user, organization):
@@ -89,7 +90,7 @@ def request_possible(request, org, selected_role):
             subscription.save()
             return True
         else:
-            messages.info(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+            messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
             return False
     return True
 
@@ -99,6 +100,9 @@ def accept_member_invite(request, invite_id):
 
     # Which organization, add to user affiliation
     account = invite.community or invite.institution
+    if invite.institution and not request_possible(request, account, invite.role):
+        return redirect("member-invitations")
+    
     if invite.community:
         affiliation.communities.add(account)
     if invite.institution:

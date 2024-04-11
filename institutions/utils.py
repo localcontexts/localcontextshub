@@ -50,6 +50,8 @@ def add_user(request, institution, member, current_role, new_role):
         change_member_role(institution, member, current_role, new_role)
         subscription.users_count += 1
         subscription.save()
+    elif new_role in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
     elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
         subscription.users_count -=1

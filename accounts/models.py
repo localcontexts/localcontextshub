@@ -107,6 +107,7 @@ class Subscription(models.Model):
         default=None,
         null=True,
         related_name="subscribed_institution",
+        blank=True,
     )
     community = models.ForeignKey(
         Community,
@@ -114,6 +115,7 @@ class Subscription(models.Model):
         default=None,
         null=True,
         related_name="subscribed_community",
+        blank=True,
     )
     researcher = models.ForeignKey(
         Researcher,
@@ -121,6 +123,7 @@ class Subscription(models.Model):
         default=None,
         null=True,
         related_name="subscribed_researcher",
+        blank=True,
     )
     users_count = models.IntegerField(
         help_text="For unlimited counts the value shoud be -1"
