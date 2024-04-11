@@ -5,10 +5,13 @@
 </div>
 <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
 
-<!-- {% if has_key %}
-{% elif not has_key %}
+{% if institution_keys %}
+    {% for name, key in institution_keys %}    
+        <p>Name: {{name}}, Key: {{key}}</p>
+    {% endfor %}
+{% elif not institution_keys %}
     <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
-{% endif %} -->
+{% endif %}
 
 <div>
     <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Add API Key <i class="fa fa-arrow-right"></i></button>

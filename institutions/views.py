@@ -1511,6 +1511,7 @@ def api_keys(request, pk, related=None):
     
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
+        institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
         
     elif request.method == "POST":
         form = APIKeyGeneratorForm(request.POST)
@@ -1525,12 +1526,13 @@ def api_keys(request, pk, related=None):
             encrypted_key = urlsafe_base64_encode(force_bytes(key))
             AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
-        return redirect("update-institution", institution.id)
+        return redirect("institution-api-key", institution.id)
     
     context = {
         "institution": institution,
         "form": form,
         "main_area" : "api_key",
+        "institution_keys" : institution_keys,
         "member_role": member_role,
     }
     return render(request, 'institutions/update-institution.html', context)
