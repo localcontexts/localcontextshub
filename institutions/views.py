@@ -1508,6 +1508,11 @@ def embed_otc_notice(request, pk):
 def api_keys(request, pk, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    subscription = Subscription.objects.get(institution=institution)
+    if subscription.api_key_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
+                            'Please upgrade your subscription plan to create more API Keys.')
+        redirect("institution-api-key", institution.id)
     
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
@@ -1525,6 +1530,9 @@ def api_keys(request, pk, related=None):
             prefix = key.split(".")[0]
             encrypted_key = urlsafe_base64_encode(force_bytes(key))
             AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+
+            subscription.api_key_count -= 1
+            subscription.save()
 
         return redirect("institution-api-key", institution.id)
     
