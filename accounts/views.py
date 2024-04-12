@@ -666,7 +666,7 @@ def registry(request, filtertype=None):
                 Q(user__username__unaccent__icontains=q)
                 | Q(user__first_name__unaccent__icontains=q)
                 | Q(user__last_name__unaccent__icontains=q)
-            )
+            ).exclude(is_subscribed=False)
 
             cards = return_registry_accounts(c, r, i)
 
@@ -681,7 +681,8 @@ def registry(request, filtertype=None):
                 cards = r
             elif filtertype == "otc":
                 researchers_with_otc = r.filter(
-                    otc_researcher_url__isnull=False
+                    otc_researcher_url__isnull=False,
+                    is_subscribed=True
                 ).distinct()
                 institutions_with_otc = i.filter(
                     otc_institution_url__isnull=False
