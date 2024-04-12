@@ -1455,12 +1455,16 @@ i[data-tooltip]:hover:after {
     pointer-events: none;
 }
 
-.otc-dropdown {
+/* dropdown button */
+.circle-dropdown {
     position: relative;
     display: inline-block;
+    block-size: fit-content;
 }
 
-.otc-dropdown-content {
+.circle-dropdown .round-btn { background-color: #007385 }
+
+.circle-dropdown-content {
     display: none;
     position: absolute;
     min-width: 200px;
@@ -1468,24 +1472,26 @@ i[data-tooltip]:hover:after {
     z-index: 1;
     right:0;
     border-radius: 4px;
-    border: 1px #E6F1F3 solid;
+    border: 1px #DDDDDD solid;
+    background-color: #FFFFFF;
 }
 
-.otc-dropdown-content a {
+.circle-dropdown-content a {
     padding: 12px 16px;
     text-decoration: none;
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    font-weight: normal;
+    color:#000;
 }
 
-.otc-dropdown .otc-dropdown-content a.blue-btn:hover {
-    background-color: #338F9D;
-    color: #fff;
-    border-radius: 4px;
+.circle-dropdown .circle-dropdown-content a:hover:not(.disabled-btn) {
+    background-color: #E8F1F3;
 }
 
-.otc-dropdown:hover .otc-dropdown-content {display: block;}
+.circle-dropdown:hover .circle-dropdown-content {display: block;}
 
-.otc-dropdown-content .primary-btn {border-radius: 0;}
+.circle-dropdown-content .primary-btn {border-radius: 0;}
 
 /* Account settings: image upload */
 
