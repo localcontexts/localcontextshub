@@ -546,9 +546,9 @@ def link_account(request):
             user=request.user
         ).first()
         provider = social_account.provider
-    
+
     context = {
-        "socialaccount": has_social_account, 
+        "socialaccount": has_social_account,
         "provider": provider,
         "profile": profile
     }
