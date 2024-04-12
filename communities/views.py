@@ -158,7 +158,7 @@ def upload_boundary_file(request):
     context = {
         'community_id': community_id.id
     }
-    return render(request, 'communities/upload-boundary-file.html', context)
+    return render(request, 'boundary/upload-boundary-file.html', context)
 
 
 # Confirm Community
@@ -295,7 +295,7 @@ def update_community(request, pk):
         'update_form': update_form,
         'member_role': member_role,
     }
-    return render(request, 'communities/update-community.html', context)
+    return render(request, 'account_settings_pages/_update-account.html', context)
 
 # Members
 @login_required(login_url='login')
@@ -1315,10 +1315,10 @@ def update_community_boundary(request, pk):
     member_role = check_member_role(request.user, community)
     context = {
         'community': community,
-        'main_area': 'boundary',
+        # 'main_area': 'boundary',
         'member_role': member_role,
     }
-    return render(request, 'communities/update-community.html', context)
+    return render(request, 'account_settings_pages/_community-boundary.html', context)
 
 
 @login_required(login_url='login')

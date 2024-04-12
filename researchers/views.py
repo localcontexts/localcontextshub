@@ -185,7 +185,8 @@ def update_researcher(request, pk):
             'user_can_view': user_can_view,
             'env': env
         }
-        return render(request, 'researchers/update-researcher.html', context)
+        return render(request, 'account_settings_pages/_update-account.html', context)
+
 
 @login_required(login_url='login')
 def researcher_notices(request, pk):

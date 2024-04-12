@@ -446,8 +446,7 @@ def update_institution(request, pk):
         "update_form": update_form,
         "member_role": member_role,
     }
-
-    return render(request, "institutions/update-institution.html", context)
+    return render(request, 'account_settings_pages/_update-account.html', context)
 
 
 # Notices
