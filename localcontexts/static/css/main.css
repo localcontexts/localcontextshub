@@ -1462,7 +1462,8 @@ i[data-tooltip]:hover:after {
     block-size: fit-content;
 }
 
-.circle-dropdown .round-btn { background-color: #007385 }
+.circle-dropdown .fa-circle-ellipsis { color: #007385; }
+.circle-dropdown .fa-circle-ellipsis:hover { color: #338F9D; }
 
 .circle-dropdown-content {
     display: none;
@@ -1489,9 +1490,9 @@ i[data-tooltip]:hover:after {
     background-color: #E8F1F3;
 }
 
-.circle-dropdown:hover .circle-dropdown-content {display: block;}
+.circle-dropdown:hover .circle-dropdown-content { display: block; }
 
-.circle-dropdown-content .primary-btn {border-radius: 0;}
+.circle-dropdown-content .primary-btn { border-radius: 0; }
 
 /* Account settings: image upload */
 
