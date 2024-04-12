@@ -17,6 +17,7 @@ from projects.models import *
 from communities.models import Community, JoinRequest
 from notifications.models import ActionNotification
 from helpers.models import *
+from api.models import AccountAPIKey
 
 from django.contrib.auth.models import User
 from accounts.models import UserAffiliation, Subscription
@@ -33,6 +34,7 @@ from accounts.forms import (
     SignUpInvitationForm,
     SubscriptionForm,
 )
+from api.forms import APIKeyGeneratorForm
 from .forms import *
 
 from helpers.emails import *
@@ -1500,3 +1502,46 @@ def embed_otc_notice(request, pk):
     response["Content-Security-Policy"] = "frame-ancestors https://*"
 
     return response
+
+# Create API Key
+@login_required(login_url="login")
+@member_required(roles=["admin"])
+def api_keys(request, pk, related=None):
+    institution = get_institution(pk)
+    member_role = check_member_role(request.user, institution)
+    subscription = Subscription.objects.get(institution=institution)
+    if subscription.api_key_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
+                            'Please upgrade your subscription plan to create more API Keys.')
+        redirect("institution-api-key", institution.id)
+    
+    if request.method == 'GET':
+        form = APIKeyGeneratorForm(request.GET or None)
+        institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
+        
+    elif request.method == "POST":
+        form = APIKeyGeneratorForm(request.POST)
+
+        if form.is_valid():
+            data = form.save(commit=False)
+            api_key, key = AccountAPIKey.objects.create_key(
+                name = data.name,
+                institution_id = institution.id
+            )
+            prefix = key.split(".")[0]
+            encrypted_key = urlsafe_base64_encode(force_bytes(key))
+            AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+
+            subscription.api_key_count -= 1
+            subscription.save()
+
+        return redirect("institution-api-key", institution.id)
+    
+    context = {
+        "institution": institution,
+        "form": form,
+        "main_area" : "api_key",
+        "institution_keys" : institution_keys,
+        "member_role": member_role,
+    }
+    return render(request, 'institutions/update-institution.html', context)

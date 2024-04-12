@@ -26,25 +26,40 @@
                     </div>
                 </div>
             </a>
-        {% if community %}
-            <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
-                <div class="flex-this side-nav-item {% if '/communities/update-community-boundary/' in request.path %} selected {% else %} grey-text {% endif %}">
-                    <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-location-dot fa-3x"></i></div>
-                    <div class="w-80">
-                        <p class="margin-top-8">
-                            <strong>Boundary</strong><br>Community Location
-                        </p>
+
+            {% if community %}
+                <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
+                    <div class="flex-this side-nav-item {% if '/communities/update-community-boundary/' in request.path %} selected {% else %} grey-text {% endif %}">
+                        <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-location-dot fa-3x"></i></div>
+                        <div class="w-80">
+                            <p class="margin-top-8">
+                                <strong>Boundary</strong><br>Community Location
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        {% endif %}
+                </a>
+            {% endif %}
+
+            {% if institution and institution.is_subscribed %}
+                <a class="side-nav-a" href="{% url 'institution-api-key' institution.id %}">
+                    <div class="side-nav-item {% if 'api-key' in request.path %} selected {% else %} grey-text {% endif %}">
+                        <div class="w-20 margin-right-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
+                        <div class="w-80">
+                            <p class="no-top-margin"><strong>API Key</strong><br>Manage API Key</p>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
         </div>
 
         <div class="flex-this column w-80">
-
             {% if main_area == 'boundary' %}
                 <div class="w-98 margin-left-16">
                     {% include 'partials/_update-boundary-main-area.html' %}
+                </div>
+            {% elif main_area == 'api_key' %}
+                <div class="w-98 margin-left-16">
+                    {% include 'partials/_api-key.html' %}
                 </div>
             {% else %}
                 <div class="w-70 margin-left-16">
