@@ -1539,6 +1539,18 @@ if (window.location.href.includes('newsletter/preferences/') ) {
     }
 }
 
+// Add API Key Modal
+if (window.location.href.includes('api-key')) {
+    const generateAPIKeymodal = document.getElementById('generateAPIKeymodal')
+    const generateAPIKeybtn = document.getElementById('generateAPIKeybtn')
+
+    generateAPIKeybtn.addEventListener('click', () => {
+        if (generateAPIKeymodal.classList.contains('hide')) { generateAPIKeymodal.classList.replace('hide', 'show')}
+    })
+    const closegenerateAPIKeymodal = document.getElementById('closegenerateAPIKeymodal')
+    closegenerateAPIKeymodal.addEventListener('click', function() { generateAPIKeymodal.classList.replace('show', 'hide')})
+}
+
 // REGISTRY FILTERING AND JOIN REQUESTS / CONTACT MODAL
 if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') ) {
 

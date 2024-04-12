@@ -1,6 +1,8 @@
 import csv
 import itertools, calendar
 from datetime import datetime, timedelta, timezone
+from typing import Tuple
+from django.db.models.base import Model as Model
 from django.db.models.functions import Extract, Concat
 from django.db.models import Count, Q, Value, F, CharField, Case, When
 from django.contrib import admin
@@ -8,15 +10,19 @@ from django.urls import path
 from django.utils.translation import gettext as _
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.apps import apps
 from django.template.response import TemplateResponse
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from rest_framework_api_key.models import AbstractAPIKey
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from accounts.utils import get_users_name
 from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
+from api.models import AccountAPIKey
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
@@ -1056,7 +1062,22 @@ admin_site.register(Subscription, SubscriptionsAdmin)
 admin_site.register(User, UserAdminCustom)
 
 # API KEYS ADMIN
-admin_site.register(APIKey, APIKeyModelAdmin)
+class AccountAPIKeyAdmin(APIKeyModelAdmin):
+    def get_readonly_fields(self, request: HttpRequest, obj: Model = None) -> Tuple[str, ...]:
+        readonly_fields = super().get_readonly_fields(request, obj)
+        try:
+            if obj.encrypted_key:
+                readonly_fields = readonly_fields + ('encrypted_key',)
+        except:
+            pass
+        return readonly_fields
+    
+    def save_model(self, request, obj, form, change):
+        if obj.encrypted_key:
+            obj.encrypted_key = urlsafe_base64_encode(force_bytes(obj.encrypted_key))
+        return super().save_model(request, obj, form, change)
+
+admin_site.register(AccountAPIKey, AccountAPIKeyAdmin)
 
 # AUTH ADMIN
 class MyGroupAdmin(GroupAdmin):

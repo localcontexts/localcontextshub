@@ -93,6 +93,5 @@ urlpatterns = [
             template_name="accounts/password-reset-done.html"
         ),
         name="password_reset_complete",
-    ),
-    path("apikey/", views.api_keys, name="api-key"),
+    )
 ]

@@ -30,7 +30,6 @@ from allauth.socialaccount.views import SignupView, ConnectionsView
 from allauth.socialaccount.models import SocialAccount
 from django.core import serializers
 
-from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 
 from institutions.models import Institution
@@ -928,65 +927,6 @@ def newsletter_unsubscription(request, emailb64):
 
     else:
         return redirect("login")
-
-
-@login_required(login_url="login")
-def api_keys(request):
-    profile = Profile.objects.get(user=request.user)
-
-    if request.method == "POST":
-        if "generatebtn" in request.POST:
-            api_key, key = APIKey.objects.create_key(
-                name=request.user.username
-            )
-            profile.api_key = key
-            profile.save()
-            messages.add_message(
-                request, messages.SUCCESS, "API Key generated!"
-            )
-            page_key = profile.api_key
-            return redirect("api-key")
-
-        elif "hidebtn" in request.POST:
-            return redirect("api-key")
-
-        elif "continueKeyDeleteBtn" in request.POST:
-            api_key = APIKey.objects.get(name=request.user.username)
-            api_key.delete()
-            profile.api_key = None
-            profile.save()
-            messages.add_message(request, messages.SUCCESS, "API Key deleted!")
-            return redirect("api-key")
-
-        elif "copybtn" in request.POST:
-            messages.add_message(request, messages.SUCCESS, "Copied!")
-            return redirect("api-key")
-
-        elif "showbtn" in request.POST:
-            page_key = profile.api_key
-            context = {"api_key": page_key, "has_key": True}
-            request.session["keyvisible"] = True
-            return redirect("api-key")
-
-    keyvisible = request.session.pop("keyvisible", False)
-
-    if request.method == "GET":
-        if profile.api_key is None:
-            context = {"has_key": False}
-            return render(request, "accounts/apikey.html", context)
-        elif profile.api_key is not None and keyvisible is not False:
-            context = {
-                "has_key": True,
-                "keyvisible": keyvisible,
-                "api_key": profile.api_key,
-            }
-            return render(request, "accounts/apikey.html", context)
-        else:
-            context = {
-                "api_key": "**********************************",
-                "has_key": True,
-            }
-            return render(request, "accounts/apikey.html", context)
 
 
 @unauthenticated_user
