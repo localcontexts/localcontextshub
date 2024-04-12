@@ -30,7 +30,6 @@ from allauth.socialaccount.views import SignupView, ConnectionsView
 from allauth.socialaccount.models import SocialAccount
 from django.core import serializers
 
-from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 
 from institutions.models import Institution
@@ -920,6 +919,7 @@ def newsletter_unsubscription(request, emailb64):
 
     else:
         return redirect("login")
+
 
 @unauthenticated_user
 def subscription_inquiry(request):
