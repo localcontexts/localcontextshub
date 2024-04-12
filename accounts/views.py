@@ -535,6 +535,8 @@ def manage_organizations(request):
 
 @login_required(login_url="login")
 def link_account(request):
+    profile = Profile.objects.select_related("user").get(user=request.user)
+
     has_social_account = SocialAccount.objects.filter(
         user=request.user
     ).exists()
@@ -545,10 +547,16 @@ def link_account(request):
         ).first()
         provider = social_account.provider
 
+    context = {
+        "socialaccount": has_social_account,
+        "provider": provider,
+        "profile": profile
+    }
+
     return render(
         request,
         "accounts/link-account.html",
-        {"socialaccount": has_social_account, "provider": provider},
+        context,
     )
 
 
