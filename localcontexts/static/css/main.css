@@ -436,7 +436,8 @@ button[disabled],
 }
 .btn-help-text {
     position: absolute;
-    left: 1080px;
+    right: 295px;
+    z-index: 1;
     width: 250px;
     background-color: #EF6C00;
     padding: 8px 16px;
