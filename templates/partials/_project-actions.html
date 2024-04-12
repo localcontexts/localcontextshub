@@ -429,31 +429,26 @@
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
                             <div class="flex-this">
                                 <div class="margin-right-8">
-                                    <a 
-                                        class="
-                                        {% if create_restricted_message %}a-disabled{% endif %}
-                                        primary-btn white-btn"
-                                        {% if community %}
-                                            href="{% url 'create-project' community.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                        {% if institution %}
-                                            href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                        {% if researcher %}
-                                            href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
+                                    <a
+                                        {% if create_restricted_message %}
+                                            class="a-disabled primary-btn white-btn"
+                                            title="{{ create_restricted_message }}"
+                                        {% else %}
+                                            class="primary-btn white-btn"
+
+                                            {% if community %}
+                                                href="{% url 'create-project' community.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if institution %}
+                                                href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if researcher %}
+                                                href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
+                                            {% endif %}
+
                                         {% endif %}
                                     >
-                                        {% if create_restricted_message %}
-                                            Create Related Project <i class="margin-left-8 fa-solid fa-square-plus" style="visibility: hidden"></i>
-                                            <div class="tooltip" style="margin-bottom: 4px; margin-left: 164px; position: absolute">
-                                                <strong>i</strong>
-                                                <span class="tooltiptext">
-                                                    {{ create_restricted_message }}
-                                                </span>
-                                            </div>
-                                        {% else %}
-                                            Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i>
-                                        {% endif %}
+                                        Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i>
                                     </a>
                                 </div>
 

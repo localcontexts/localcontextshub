@@ -18,21 +18,20 @@
                     {% if otc_download_perm == 1 %}
                         <a
                             {% if researcher %}
-                                class="{% if notify_restricted_message %}block a-disabled{% endif %} primary-btn blue-btn"
-                                href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
+                                {% if notify_restricted_message %}
+                                    class="block a-disabled primary-btn blue-btn"
+                                    title="{{ notify_restricted_message }}"
+                                {% else %}
+                                    class="primary-btn blue-btn"
+                                    href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
+                                {% endif %}
+
                             {% endif %}
                             {% if institution %}
                                 class="primary-btn blue-btn"
                                 href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
                             {% endif %}
                             >
-                            {% if notify_restricted_message %}
-                                <div class="tooltip" style="margin-top: 6px"><strong>i</strong>
-                                    <span class="tooltiptext">
-                                        {{ notify_restricted_message }}
-                                    </span>
-                                </div>
-                            {% endif %}
                             Download Notice <i class="fa-solid fa-download"></i>
                         </a>
                         {% if urls %}
@@ -111,20 +110,14 @@
                 <div class="flex-this align-center">
                     <a
                         {% if create_restricted_message %}
-                            class="primary-btn white-btn margin-top-2 block a-disabled"
+                            class="primary-btn green-btn margin-top-2 block a-disabled"
+                            title="{{ create_restricted_message }}"
                         {% else %}
                             class="primary-btn green-btn margin-top-2"
+                            href="{% url 'researcher-create-project' researcher.id %}"
                         {% endif %}
-
-                        href="{% url 'researcher-create-project' researcher.id %}">
+                        >
                         Create a Project <i class="fa fa-arrow-right"></i>
-                        {% if create_restricted_message %}
-                            <div class="tooltip" style="margin-bottom: 3px; margin-left: 5px;"><strong>i</strong>
-                                <span class="tooltiptext">
-                                    {{ create_restricted_message }}
-                                </span>
-                            </div>
-                        {% endif %}
                     </a>
                 </div>
             {% endif %}
