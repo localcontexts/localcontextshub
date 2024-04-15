@@ -430,9 +430,9 @@
                             <div class="flex-this">
                                 <div class="margin-right-8">
                                     <a
-                                        {% if create_restricted_message %}
+                                        {% if researcher and not researcher.is_subscribed %}
                                             class="disabled-btn primary-btn white-btn"
-                                            title="{{ create_restricted_message }}"
+                                            title="The account must be subscribed before a Project can be created"
                                         {% else %}
                                             class="primary-btn white-btn"
 
@@ -590,7 +590,7 @@
                 {% if 'projects/actions/' in request.path %}
                     {% if request.user == project.project_creator %}
                         <a
-                            {% if edit_restricted_message %}
+                            {% if researcher and not researcher.is_subscribed %}
                                 class="block a-disabled"
                             {% else %}
                                 class="block"
@@ -607,10 +607,10 @@
                             {% endif %}
                         >
                             <i class="fa-solid fa-pen-to-square"></i> Edit Project
-                            {% if edit_restricted_message %}
+                            {% if researcher and not researcher.is_subscribed %}
                                 <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                     <span class="tooltiptext">
-                                        {{ edit_restricted_message }}
+                                        The account must be subscribed before a Project can be edited
                                     </span>
                                 </div>
                             {% endif %}
@@ -619,7 +619,7 @@
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
                             <a 
-                                class="block {% if create_restricted_message %}block a-disabled{% endif %}"
+                                class="block {% if researcher and not researcher.is_subscribed %}block a-disabled{% endif %}"
                                 {% if community %}
                                     href="{% url 'create-project' community.id project.unique_id %}"
                                 {% endif %}
@@ -632,10 +632,10 @@
 
                             >
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
-                                {% if create_restricted_message %}
+                                {% if researcher and not researcher.is_subscribed %}
                                     <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                         <span class="tooltiptext">
-                                            {{ create_restricted_message }}
+                                            The account must be subscribed before a Project can be created
                                         </span>
                                     </div>
                                 {% endif %}
@@ -705,12 +705,13 @@
                 {% endif %}
 
                 {% if researcher %}
-                    {% if notify_restricted_message %}
+                    {% if researcher and not researcher.is_subscribed %}
                         <a class="block a-disabled">
                             <i class="fa-solid fa-user-group"></i> Notify Communities
                             <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                 <span class="tooltiptext">
-                                    {{ notify_restricted_message }}
+                                    Your account needs to be subscribed before you can notify
+                                    communities. Please contact us if you have questions.
                                 </span>
                             </div>
                         </a>
@@ -834,8 +835,6 @@
                             <span class="tooltiptext">
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
-                                {% elif download_restricted_message %}
-                                    {{ download_restricted_message }}
                                 {% else %}
                                     The account that created this Project needs
                                     to be subscribed before download is available.
@@ -981,14 +980,14 @@
                             </span>
                         </div> 
                     </h3>
-                    {% if public_view_restricted_message %}
+                    {% if researcher and not researcher.is_subscribed %}
                         <a
                             class="block a-disabled"
                             href="{% url 'view-project' project.unique_id %}"
                         ><i class="fa-solid fa-eye"></i> Public View
                         <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                             <span class="tooltiptext">
-                                {{ public_view_restricted_message }}
+                                The account must be subscribed before public view is available
                             </span>
                         </div>
                         </a>
