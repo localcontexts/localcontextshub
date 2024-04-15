@@ -38,4 +38,6 @@ urlpatterns = [
     path('projects/unlink/<str:pk>/<uuid:target_proj_uuid>/<uuid:proj_to_remove_uuid>', views.unlink_project, name="institution-unlink-project"),
 
     path('connections/<str:pk>/', views.connections, name="institution-connections"),
+
+    path('api-key/<str:pk>/', views.api_keys, name="institution-api-key"),
 ]
