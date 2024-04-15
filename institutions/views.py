@@ -527,7 +527,6 @@ def delete_otc_notice(request, pk, notice_id):
 def institution_members(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
     # Get list of users, NOT in this institution, alphabetized by name
     members = list(
         chain(
@@ -543,6 +542,7 @@ def institution_members(request, pk):
     form = InviteMemberForm(request.POST or None)
 
     if request.method == "POST":
+        subscription = Subscription.objects.get(institution=institution)
         if "change_member_role_btn" in request.POST:
             current_role = request.POST.get("current_role")
             new_role = request.POST.get("new_role")
@@ -716,8 +716,10 @@ def remove_member(request, pk, member_id):
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
-
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
     bool_dict = {
         "has_labels": False,
         "has_notices": False,
@@ -930,12 +932,10 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-    subscription = Subscription.objects.get(institution=institution)
-    if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
-                            'Please upgrade your subscription plan to create more Projects.')
+    redirection = check_project_subscription(request, institution)
+    if redirection:
         return redirect('institution-projects', institution.id)
-    
+
 
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
@@ -943,6 +943,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     elif request.method == "POST":
         form = CreateProjectForm(request.POST)
         formset = ProjectPersonFormset(request.POST)
+        subscription = Subscription.objects.get(institution=institution)
 
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
@@ -1508,17 +1509,17 @@ def embed_otc_notice(request, pk):
 def api_keys(request, pk, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
-    if subscription.api_key_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
-                            'Please upgrade your subscription plan to create more API Keys.')
-        redirect("institution-api-key", institution.id)
     
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
         institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
         
     elif request.method == "POST":
+        subscription = Subscription.objects.get(institution=institution)
+        if subscription.api_key_count == 0:
+            messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
+                                'Please upgrade your subscription plan to create more API Keys.')
+            redirect("institution-api-key", institution.id)
         form = APIKeyGeneratorForm(request.POST)
 
         if form.is_valid():

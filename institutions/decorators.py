@@ -20,7 +20,7 @@ def subscription_required():
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             institution = get_institution(kwargs.get('pk'))
-            if not institution.is_subscribed:
+            if not institution.is_submitted:
                 return redirect('dashboard')
             return view_func(request, *args, **kwargs)
         return _wrapped_view

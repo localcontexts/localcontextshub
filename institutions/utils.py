@@ -34,7 +34,7 @@ def set_ror_id(institution):
 def confirm_subscription(request, institution, join_flag, form):
     if institution.institution_creator == request.user._wrapped:
         if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
-            institution.is_subscribed = True
+            institution.is_submitted = True
             institution.save()
             messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
         else:
@@ -77,3 +77,20 @@ def notification_condition(request, notification_count, communities_selected):
             messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community.')
         else:
             messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities.')
+            
+def check_project_subscription(request, institution):
+    redirection = False
+    if not institution.is_subscribed:
+        redirection = True
+        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not yet completed. Please complete your subscription process to create Projects.')
+
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+        if subscription.project_count == 0:
+            redirection = True
+            messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.')
+    except Subscription.DoesNotExist:
+        redirection = True
+        messages.add_message(request, messages.ERROR, 'An unexpected error  has occurred. Please contact support@localcontexts.org.',)
+
+    return redirection

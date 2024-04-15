@@ -337,7 +337,7 @@ def dashboard(request):
     user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
     unsubscribed_institute = Institution.objects.filter(
-        institution_creator=user, is_subscribed=False
+        institution_creator=user, is_submitted=False
     ).first()
 
     if request.method == "POST":
