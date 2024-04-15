@@ -507,36 +507,21 @@ def edit_project(request, researcher, project_uuid):
     }
     return render(request, 'researchers/edit-project.html', context)
 
-def project_actions(request, pk, project_uuid):
-    notify_restricted_message = False
-    public_view_restricted_message = False
-    create_restricted_message = False
-    edit_restricted_message = False
-    download_restricted_message = False
 
+def project_actions(request, pk, project_uuid):
     try:
         project = Project.objects.prefetch_related(
-                    'bc_labels', 
-                    'tk_labels', 
-                    'bc_labels__community', 
-                    'tk_labels__community',
-                    'bc_labels__bclabel_translation', 
-                    'tk_labels__tklabel_translation',
-                    ).get(unique_id=project_uuid)
+            'bc_labels',
+            'tk_labels',
+            'bc_labels__community',
+            'tk_labels__community',
+            'bc_labels__bclabel_translation',
+            'tk_labels__tklabel_translation',
+        ).get(unique_id=project_uuid)
 
         if request.user.is_authenticated:
-            can_download = False if dev_prod_or_local(request.get_host()) == 'SANDBOX' else True
             researcher = Researcher.objects.get(id=pk)
-            if not researcher.is_subscribed:
-                notify_restricted_message = 'Your account needs to be subscribed before you can notify ' \
-                                            'communities. Please contact us if you have questions.'
-                public_view_restricted_message = 'The account must be subscribed ' \
-                                                 'before public view is available.'
-                create_restricted_message = 'The account must be subscribed before a Project can be created'
-                edit_restricted_message = 'The account must be subscribed before a Project can be edited'
-                download_restricted_message = 'The account must be subscribed before a Project can be downloaded'
-                can_download = False
-                
+
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
                 return redirect('view-project', project.unique_id)
@@ -547,18 +532,23 @@ def project_actions(request, pk, project_uuid):
                 comments = ProjectComment.objects.select_related('sender').filter(project=project)
                 entities_notified = EntitiesNotified.objects.get(project=project)
                 activities = ProjectActivity.objects.filter(project=project).order_by('-date')
-                sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
+                sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id',
+                                                                                                         'title')
                 name = get_users_name(request.user)
                 label_groups = return_project_labels_by_community(project)
+                can_download = False if dev_prod_or_local(request.get_host()) == 'SANDBOX' else True
 
-                # for related projects list 
-                project_ids = list(set(researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
-                    .union(researcher.researchers_notified.all().values_list('project__unique_id', flat=True))
-                    .union(researcher.contributing_researchers.all().values_list('project__unique_id', flat=True))))
-                project_ids_to_exclude_list = list(project.related_projects.all().values_list('unique_id', flat=True)) #projects that are currently related
+                # for related projects list
+                project_ids = list(
+                    set(researcher.researcher_created_project.all().values_list('project__unique_id', flat=True)
+                        .union(researcher.researchers_notified.all().values_list('project__unique_id', flat=True))
+                        .union(researcher.contributing_researchers.all().values_list('project__unique_id', flat=True))))
+                project_ids_to_exclude_list = list(project.related_projects.all().values_list('unique_id',
+                                                                                              flat=True))  # projects that are currently related
                 # exclude projects that are already related
                 project_ids = list(set(project_ids).difference(project_ids_to_exclude_list))
-                projects_to_link = Project.objects.filter(unique_id__in=project_ids).exclude(unique_id=project.unique_id).order_by('-date_added').values_list('unique_id', 'title')
+                projects_to_link = Project.objects.filter(unique_id__in=project_ids).exclude(
+                    unique_id=project.unique_id).order_by('-date_added').values_list('unique_id', 'title')
 
                 project_archived = False
                 if ProjectArchived.objects.filter(project_uuid=project.unique_id, researcher_id=researcher.id).exists():
@@ -573,7 +563,7 @@ def project_actions(request, pk, project_uuid):
                 if creator.community:
                     communities_list.append(creator.community.id)
 
-                communities_ids = list(set(communities_list)) # remove duplicate ids
+                communities_ids = list(set(communities_list))  # remove duplicate ids
                 communities = Community.approved.exclude(id__in=communities_ids).order_by('community_name')
 
                 if request.method == 'POST':
@@ -588,10 +578,6 @@ def project_actions(request, pk, project_uuid):
                             return redirect('researcher-project-actions', researcher.id, project.unique_id)
 
                     elif 'notify_btn' in request.POST:
-                        researcher.validate_is_subscribed(
-                            bypass_validation=dev_prod_or_local(request.get_host()) == 'SANDBOX'
-                        )
-
                         # Set private project to contributor view
                         if project.project_privacy == 'Private':
                             project.project_privacy = 'Contributor'
@@ -600,15 +586,16 @@ def project_actions(request, pk, project_uuid):
                         communities_selected = request.POST.getlist('selected_communities')
 
                         researcher_name = get_users_name(researcher.user)
-                        title =  f'{researcher_name} has notified you of a Project.'
+                        title = f'{researcher_name} has notified you of a Project.'
 
                         for community_id in communities_selected:
                             # Add communities that were notified to entities_notified instance
                             community = Community.objects.get(id=community_id)
                             entities_notified.communities.add(community)
-                            
+
                             # Add activity
-                            ProjectActivity.objects.create(project=project, activity=f'{community.community_name} was notified by {name}')
+                            ProjectActivity.objects.create(project=project,
+                                                           activity=f'{community.community_name} was notified by {name}')
 
                             # Adds activity to Hub Activity
                             HubActivity.objects.create(
@@ -620,11 +607,14 @@ def project_actions(request, pk, project_uuid):
                             )
 
                             # Create project status and  notification
-                            ProjectStatus.objects.create(project=project, community=community, seen=False) # Creates a project status for each community
-                            ActionNotification.objects.create(community=community, notification_type='Projects', reference_id=str(project.unique_id), sender=request.user, title=title)
+                            ProjectStatus.objects.create(project=project, community=community,
+                                                         seen=False)  # Creates a project status for each community
+                            ActionNotification.objects.create(community=community, notification_type='Projects',
+                                                              reference_id=str(project.unique_id), sender=request.user,
+                                                              title=title)
                             entities_notified.save()
 
-                            # Create email 
+                            # Create email
                             send_email_notice_placed(request, project, community, researcher)
 
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
@@ -638,16 +628,18 @@ def project_actions(request, pk, project_uuid):
                             project_to_add.related_projects.add(project)
                             project_to_add.save()
 
-                            activities.append(ProjectActivity(project=project, activity=f'Project "{project_to_add.title}" was connected to Project by {name}'))
-                            activities.append(ProjectActivity(project=project_to_add, activity=f'Project "{project.title}" was connected to Project by {name}'))
-                        
+                            activities.append(ProjectActivity(project=project,
+                                                              activity=f'Project "{project_to_add.title}" was connected to Project by {name}'))
+                            activities.append(ProjectActivity(project=project_to_add,
+                                                              activity=f'Project "{project.title}" was connected to Project by {name}'))
+
                         ProjectActivity.objects.bulk_create(activities)
                         project.save()
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
 
                     elif 'delete_project' in request.POST:
                         return redirect('researcher-delete-project', researcher.id, project.unique_id)
-                    
+
                     elif 'remove_contributor' in request.POST:
                         contribs = ProjectContributors.objects.get(project=project)
                         contribs.researchers.remove(researcher)
@@ -670,11 +662,6 @@ def project_actions(request, pk, project_uuid):
                     'projects_to_link': projects_to_link,
                     'label_groups': label_groups,
                     'can_download': can_download,
-                    'notify_restricted_message': notify_restricted_message,
-                    'public_view_restricted_message': public_view_restricted_message,
-                    'create_restricted_message': create_restricted_message,
-                    'edit_restricted_message': edit_restricted_message,
-                    'download_restricted_message': download_restricted_message,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
