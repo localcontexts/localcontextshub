@@ -197,7 +197,7 @@ def researcher_notices(request, researcher):
     if not researcher.is_subscribed:
         notify_restricted_message = 'The account must be subscribed ' \
                                     'before download is available.'
-        create_restricted_message = 'The account must be subscribed before a project can be created'
+        create_restricted_message = 'The account must be subscribed before a Project can be created'
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
@@ -249,7 +249,7 @@ def delete_otc_notice(request, researcher_id, notice_id):
 def researcher_projects(request, researcher):
     create_restricted_message = False
     if not researcher.is_subscribed:
-        create_restricted_message = 'The account must be subscribed before a project can be created'
+        create_restricted_message = 'The account must be subscribed before a Project can be created'
 
     bool_dict = {
         'has_labels': False,
@@ -424,7 +424,7 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
                 send_project_person_email(request, instance.email, data.unique_id, researcher)
 
             # Send notification
-            title = 'Your project has been created, remember to notify a community of your project.'
+            title = 'Your Project has been created, remember to notify a community of your project.'
             ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
 
             return redirect('researcher-projects', researcher.id)
@@ -532,9 +532,9 @@ def project_actions(request, pk, project_uuid):
                                             'communities. Please contact us if you have questions.'
                 public_view_restricted_message = 'The account must be subscribed ' \
                                                  'before public view is available.'
-                create_restricted_message = 'The account must be subscribed before a project can be created'
-                edit_restricted_message = 'The account must be subscribed before a project can be edited'
-                download_restricted_message = 'The account must be subscribed before a project can be downloaded'
+                create_restricted_message = 'The account must be subscribed before a Project can be created'
+                edit_restricted_message = 'The account must be subscribed before a Project can be edited'
+                download_restricted_message = 'The account must be subscribed before a Project can be downloaded'
                 can_download = False
                 
             user_can_view = checkif_user_researcher(researcher, request.user)
