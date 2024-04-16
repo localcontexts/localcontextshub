@@ -78,19 +78,12 @@ def notification_condition(request, notification_count, communities_selected):
         else:
             messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities.')
             
-def check_project_subscription(request, institution):
+def check_subscription(request, institution):
     redirection = False
-    if not institution.is_subscribed:
-        redirection = True
-        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not yet completed. Please complete your subscription process to create Projects.')
-
     try:
         subscription = Subscription.objects.get(institution=institution)
-        if subscription.project_count == 0:
-            redirection = True
-            messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.')
     except Subscription.DoesNotExist:
         redirection = True
-        messages.add_message(request, messages.ERROR, 'An unexpected error  has occurred. Please contact support@localcontexts.org.',)
+        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
 
     return redirection

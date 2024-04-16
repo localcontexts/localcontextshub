@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 from itertools import chain
-from .decorators import member_required, subscription_required
+from .decorators import member_required, subscription_submission_required
 from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
@@ -421,7 +421,7 @@ def public_institution_view(request, pk):
 # Update institution
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def update_institution(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -454,7 +454,7 @@ def update_institution(request, pk):
 # Notices
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def institution_notices(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -512,7 +512,7 @@ def institution_notices(request, pk):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
@@ -523,7 +523,7 @@ def delete_otc_notice(request, pk, notice_id):
 # Members
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def institution_members(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -542,6 +542,9 @@ def institution_members(request, pk):
     form = InviteMemberForm(request.POST or None)
 
     if request.method == "POST":
+        redirection = check_subscription(request, institution)
+        if redirection:
+            return redirect('institution-members', institution.id)
         subscription = Subscription.objects.get(institution=institution)
         if "change_member_role_btn" in request.POST:
             current_role = request.POST.get("current_role")
@@ -630,16 +633,19 @@ def institution_members(request, pk):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def member_requests(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
     join_requests = JoinRequest.objects.filter(institution=institution)
     member_invites = InviteMember.objects.filter(institution=institution)
-    editors_count = Subscription.objects.get(institution=institution).users_count
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
+        redirection = check_subscription(request, institution)
+        if redirection:
+            return redirect('institution-members', institution.id)
+        editors_count = Subscription.objects.get(institution=institution).users_count
 
         accepted_join_request(request, institution, join_request_id, selected_role)
         return redirect('institution-member-requests', institution.id)
@@ -655,7 +661,7 @@ def member_requests(request, pk):
 
 @login_required(login_url="login")
 @member_required(roles=["admin"])
-@subscription_required()
+@subscription_submission_required()
 def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
     join_request = JoinRequest.objects.get(id=join_id)
@@ -664,7 +670,7 @@ def delete_join_request(request, pk, join_id):
 
 @login_required(login_url='login')
 @member_required(roles=['admin'])
-@subscription_required()
+@subscription_submission_required()
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
@@ -713,6 +719,7 @@ def remove_member(request, pk, member_id):
 # Projects page
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_submission_required()
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -924,7 +931,7 @@ def institution_projects(request, pk):
 # Create Project
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 @transaction.atomic
 def create_project(request, pk, source_proj_uuid=None, related=None):
     institution = get_institution(pk)
@@ -932,10 +939,16 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-    redirection = check_project_subscription(request, institution)
+    redirection = check_subscription(request, institution)
     if redirection:
         return redirect('institution-projects', institution.id)
-
+    
+    subscription = Subscription.objects.get(institution=institution)
+    if subscription.project_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
+                            'Please upgrade your subscription plan to create more Projects.')
+        return redirect('institution-projects', institution.id)
+    
 
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
@@ -1063,7 +1076,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def edit_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
@@ -1370,7 +1383,7 @@ def project_actions(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def archive_project(request, pk, project_uuid):
     if not ProjectArchived.objects.filter(
         institution_id=pk, project_uuid=project_uuid
@@ -1392,7 +1405,7 @@ def archive_project(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 @transaction.atomic
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
@@ -1411,7 +1424,7 @@ def delete_project(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     institution = get_institution(pk)
     target_project = Project.objects.get(unique_id=target_proj_uuid)
@@ -1436,7 +1449,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def connections(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -1513,7 +1526,6 @@ def api_keys(request, pk, related=None):
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
         institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
-        
     elif request.method == "POST":
         subscription = Subscription.objects.get(institution=institution)
         if subscription.api_key_count == 0:

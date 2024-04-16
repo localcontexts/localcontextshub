@@ -18,6 +18,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+from django.db import transaction
 
 class ApiKeyAuthentication(BaseAuthentication):
     VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
@@ -209,7 +210,7 @@ class MultiProjectListDetail(ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class GetUserAPIView(APIView):
-    # authentication_classes = [ApiKeyAuthentication]
+    authentication_classes = [ApiKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -278,23 +279,23 @@ class SubscriptionAPI(APIView):
                     'date_last_updated': date_last_updated
                 }
             }
-
-            subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
-            if created:
-                institution = get_object_or_404(Institution, id=hub_id)
-                institution.is_subscribed = True
-                institution.save()
-                return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
-            else:
-                subscription.users_count = user_count
-                subscription.api_key_count = api_key_count
-                subscription.project_count = project_count
-                subscription.notification_count = notification_count
-                subscription.start_date = start_date
-                subscription.end_date = end_date
-                subscription.date_last_updated = date_last_updated
-                subscription.save() 
-                return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
+            with transaction.atomic():
+                subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
+                if created:
+                    institution = get_object_or_404(Institution, id=hub_id)
+                    institution.is_subscribed = True
+                    institution.save()
+                    return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
+                else:
+                    subscription.users_count = user_count
+                    subscription.api_key_count = api_key_count
+                    subscription.project_count = project_count
+                    subscription.notification_count = notification_count
+                    subscription.start_date = start_date
+                    subscription.end_date = end_date
+                    subscription.date_last_updated = date_last_updated
+                    subscription.save() 
+                    return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
 
         except IntegrityError as e:
             if 'violates foreign key constraint' in str(e):

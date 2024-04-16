@@ -15,7 +15,7 @@ def member_required(roles=[]):
         return _wrapped_view
     return decorator
 
-def subscription_required():
+def subscription_submission_required():
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
