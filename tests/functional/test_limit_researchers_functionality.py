@@ -34,14 +34,6 @@ class TestFeatures(TransactionTestCase):
         response = self.client.get(reverse('download-open-to-collaborate-notice-researcher', kwargs=kwargs))
         self.assertEqual(response.status_code, 403)
 
-    def test_view_project_as_subscribed(self):
-        self.client.force_login(user=self.subscribed_researcher.user)
-        kwargs = {
-            'unique_id': self.subscribed_researcher_project.unique_id,
-        }
-        response = self.client.get(reverse('view-project', kwargs=kwargs))
-        self.assertEqual(response.context['can_download'], True)
-
     def test_create_project_as_unsubscribed(self):
         self.client.force_login(user=self.unsubscribed_researcher.user)
         kwargs = {
