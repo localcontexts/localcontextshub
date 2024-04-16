@@ -19,10 +19,6 @@ def view_project(request, unique_id):
     try:
         project = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').get(unique_id=unique_id)
         creator = ProjectCreator.objects.get(project=project)
-        if creator.researcher:
-            creator.researcher.validate_is_subscribed(
-                bypass_validation=dev_prod_or_local(request.get_host()) == 'SANDBOX'
-            )
         status = creator.account_is_confirmed()
         creator.validate_user_access(request.user)
     except (Project.DoesNotExist, UnconfirmedAccountException):

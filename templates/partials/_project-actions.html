@@ -980,22 +980,10 @@
                             </span>
                         </div> 
                     </h3>
-                    {% if researcher and not researcher.is_subscribed %}
-                        <a
-                            class="block a-disabled"
-                        ><i class="fa-solid fa-eye"></i> Public View
-                        <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
-                            <span class="tooltiptext">
-                                The account must be subscribed before public view is available
-                            </span>
-                        </div>
-                        </a>
-                    {% else %}
-                        <a
-                            class="block"
-                            href="{% url 'view-project' project.unique_id %}"
-                        ><i class="fa-solid fa-eye"></i> Public View</a>
-                    {% endif %}
+                    <a
+                        class="block"
+                        href="{% url 'view-project' project.unique_id %}"
+                    ><i class="fa-solid fa-eye"></i> Public View</a>
                 </div> 
             {% endif %}
         {% endif %}
