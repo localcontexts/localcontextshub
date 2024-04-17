@@ -125,7 +125,7 @@
             {% if institution %}
                 <div class="flex-this align-center">
                     {% if member_role == 'admin' or member_role == 'editor' %}
-                        <a class="primary-btn green-btn margin-top-2" href="{% url 'inst-create-project' institution.id %}">
+                        <a class="{% if institution.is_subscribed  and subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn green-btn margin-top-2 a-disabled {% endif %}" href="{% url 'inst-create-project' institution.id %}">
                             Create a Project     <i class="fa fa-arrow-right"></i>
                         </a>
                     {% endif %}

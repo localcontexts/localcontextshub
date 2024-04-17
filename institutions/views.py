@@ -465,6 +465,10 @@ def institution_notices(request, pk):
     cc_policy_form = CollectionsCareNoticePolicyForm(
         request.POST or None, request.FILES
     )
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -506,6 +510,7 @@ def institution_notices(request, pk):
         "otc_download_perm": otc_download_perm,
         "ccn_download_perm": ccn_download_perm,
         "is_sandbox": is_sandbox,
+        "subscription": subscription,
     }
     return render(request, "institutions/notices.html", context)
 
