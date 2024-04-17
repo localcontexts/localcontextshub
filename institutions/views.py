@@ -1531,7 +1531,7 @@ def api_keys(request, pk, related=None):
         if subscription.api_key_count == 0:
             messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
                                 'Please upgrade your subscription plan to create more API Keys.')
-            redirect("institution-api-key", institution.id)
+            return redirect("institution-api-key", institution.id)
         form = APIKeyGeneratorForm(request.POST)
 
         if form.is_valid():
