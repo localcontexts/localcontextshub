@@ -32,7 +32,6 @@ def view_project(request, unique_id):
     user_researcher = Researcher.objects.none()
     label_groups = return_project_labels_by_community(project)
     can_download = can_download_project(request, creator)
-
     #  If user is logged in AND belongs to account of a contributor
     if request.user.is_authenticated:
         affiliations = UserAffiliation.objects.get(user=request.user)

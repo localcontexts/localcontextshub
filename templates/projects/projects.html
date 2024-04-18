@@ -19,7 +19,16 @@
                 {% endif %}
             {% else %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn margin-top-2 " href="{% url 'researcher-create-project' researcher.id %}">
+                    <a
+                       {% if create_restricted_message %}
+                           class="primary-btn margin-top-2 disabled-btn"
+                           title="{{ create_restricted_message }}"
+                       {% else %}
+                           class="primary-btn green-btn margin-top-2"
+                           href="{% url 'researcher-create-project' researcher.id %}"
+                       {% endif %}
+
+                    >
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>

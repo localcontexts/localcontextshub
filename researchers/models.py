@@ -4,10 +4,14 @@ from django.core.validators import MaxLengthValidator
 import uuid
 import os
 
+from helpers.exceptions import UnsubscribedAccountException
+
+
 def researcher_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('users/researcher-images', filename)  
+
 
 class Researcher(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -20,6 +24,7 @@ class Researcher(models.Model):
     primary_institution = models.CharField(max_length=250, null=True, blank=True)
     orcid_auth_token = models.TextField(null=True, blank=True)
     date_connected = models.DateTimeField(auto_now_add=True, null=True)
+    is_subscribed = models.BooleanField(default=False, null=True, blank=True)
 
     def get_projects(self):
         return  self.researcher_created_project.filter(researcher=self).exists()
@@ -29,3 +34,12 @@ class Researcher(models.Model):
     
     class Meta:
         indexes = [models.Index(fields=['id', 'user', 'image'])]
+
+    def validate_is_subscribed(self, bypass_validation: bool = False):
+        if bypass_validation:
+            return
+
+        if self.is_subscribed:
+            return
+        message = 'Account Is Not Subscribed'
+        raise UnsubscribedAccountException(message)

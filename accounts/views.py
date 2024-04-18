@@ -30,6 +30,7 @@ from allauth.socialaccount.views import SignupView, ConnectionsView
 from allauth.socialaccount.models import SocialAccount
 from django.core import serializers
 
+from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 
 from institutions.models import Institution
@@ -535,8 +536,6 @@ def manage_organizations(request):
 
 @login_required(login_url="login")
 def link_account(request):
-    profile = Profile.objects.select_related("user").get(user=request.user)
-
     has_social_account = SocialAccount.objects.filter(
         user=request.user
     ).exists()
@@ -547,16 +546,10 @@ def link_account(request):
         ).first()
         provider = social_account.provider
 
-    context = {
-        "socialaccount": has_social_account,
-        "provider": provider,
-        "profile": profile
-    }
-
     return render(
         request,
         "accounts/link-account.html",
-        context,
+        {"socialaccount": has_social_account, "provider": provider},
     )
 
 
@@ -653,6 +646,7 @@ def registry(request, filtertype=None):
         r = (
             Researcher.objects.select_related("user")
             .all()
+            .exclude(is_subscribed=False)
             .order_by("user__username")
         )
 
@@ -672,7 +666,7 @@ def registry(request, filtertype=None):
                 Q(user__username__unaccent__icontains=q)
                 | Q(user__first_name__unaccent__icontains=q)
                 | Q(user__last_name__unaccent__icontains=q)
-            )
+            ).exclude(is_subscribed=False)
 
             cards = return_registry_accounts(c, r, i)
 
@@ -687,7 +681,8 @@ def registry(request, filtertype=None):
                 cards = r
             elif filtertype == "otc":
                 researchers_with_otc = r.filter(
-                    otc_researcher_url__isnull=False
+                    otc_researcher_url__isnull=False,
+                    is_subscribed=True
                 ).distinct()
                 institutions_with_otc = i.filter(
                     otc_institution_url__isnull=False
@@ -734,7 +729,8 @@ def projects_board(request, filtertype=None):
             project_creator_project__community__in=approved_communities
         )
         researcher_projects_filter = Q(
-            project_creator_project__researcher__user__isnull=False
+            project_creator_project__researcher__user__isnull=False,
+            project_creator_project__researcher__is_subscribed=True
         )
 
         projects = (
@@ -927,6 +923,65 @@ def newsletter_unsubscription(request, emailb64):
 
     else:
         return redirect("login")
+
+
+@login_required(login_url="login")
+def api_keys(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == "POST":
+        if "generatebtn" in request.POST:
+            api_key, key = APIKey.objects.create_key(
+                name=request.user.username
+            )
+            profile.api_key = key
+            profile.save()
+            messages.add_message(
+                request, messages.SUCCESS, "API Key generated!"
+            )
+            page_key = profile.api_key
+            return redirect("api-key")
+
+        elif "hidebtn" in request.POST:
+            return redirect("api-key")
+
+        elif "continueKeyDeleteBtn" in request.POST:
+            api_key = APIKey.objects.get(name=request.user.username)
+            api_key.delete()
+            profile.api_key = None
+            profile.save()
+            messages.add_message(request, messages.SUCCESS, "API Key deleted!")
+            return redirect("api-key")
+
+        elif "copybtn" in request.POST:
+            messages.add_message(request, messages.SUCCESS, "Copied!")
+            return redirect("api-key")
+
+        elif "showbtn" in request.POST:
+            page_key = profile.api_key
+            context = {"api_key": page_key, "has_key": True}
+            request.session["keyvisible"] = True
+            return redirect("api-key")
+
+    keyvisible = request.session.pop("keyvisible", False)
+
+    if request.method == "GET":
+        if profile.api_key is None:
+            context = {"has_key": False}
+            return render(request, "accounts/apikey.html", context)
+        elif profile.api_key is not None and keyvisible is not False:
+            context = {
+                "has_key": True,
+                "keyvisible": keyvisible,
+                "api_key": profile.api_key,
+            }
+            return render(request, "accounts/apikey.html", context)
+        else:
+            context = {
+                "api_key": "**********************************",
+                "has_key": True,
+            }
+            return render(request, "accounts/apikey.html", context)
 
 
 @unauthenticated_user

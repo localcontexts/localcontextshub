@@ -20,9 +20,7 @@
         </div>
     {% endif %}
 {% endif %}
-<div class="project-actions-alert">
-    {% include 'partials/_alerts.html' %}
-</div>
+
 <div class="flex-this auto-margin" style="max-width: 1271px;">
 
     <!-- PROJECT -->
@@ -431,18 +429,27 @@
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
                             <div class="flex-this">
                                 <div class="margin-right-8">
-                                    <a 
-                                        class="primary-btn white-btn" 
-                                        {% if community %}
-                                            href="{% url 'create-project' community.id project.unique_id 'related' %}"
+                                    <a
+                                        {% if researcher and not researcher.is_subscribed %}
+                                            class="disabled-btn primary-btn white-btn"
+                                            title="The account must be subscribed before a Project can be created"
+                                        {% else %}
+                                            class="primary-btn white-btn"
+
+                                            {% if community %}
+                                                href="{% url 'create-project' community.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if institution %}
+                                                href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if researcher %}
+                                                href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
+                                            {% endif %}
+
                                         {% endif %}
-                                        {% if institution %}
-                                            href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                        {% if researcher %}
-                                            href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                    > Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i></a>                            
+                                    >
+                                        Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i>
+                                    </a>
                                 </div>
 
                                 <div>
@@ -582,8 +589,13 @@
             {% if request.user.is_authenticated %}
                 {% if 'projects/actions/' in request.path %}
                     {% if request.user == project.project_creator %}
-                        <a 
-                            class="block" 
+                        <a
+                            {% if researcher and not researcher.is_subscribed %}
+                                class="block a-disabled"
+                            {% else %}
+                                class="block"
+                            {% endif %}
+
                             {% if community %}
                                 href="{% url 'edit-project' community.id project.unique_id %}"
                             {% endif %}
@@ -593,12 +605,21 @@
                             {% if researcher %}
                                 href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
                             {% endif %}
-                        ><i class="fa-solid fa-pen-to-square"></i> Edit Project</a>
+                        >
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Project
+                            {% if researcher and not researcher.is_subscribed %}
+                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                    <span class="tooltiptext">
+                                        The account must be subscribed before a Project can be edited
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </a>
                     {% endif %}
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
                             <a 
-                                class="block" 
+                                class="block {% if researcher and not researcher.is_subscribed %}block a-disabled{% endif %}"
                                 {% if community %}
                                     href="{% url 'create-project' community.id project.unique_id %}"
                                 {% endif %}
@@ -609,7 +630,16 @@
                                     href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
                                 {% endif %}
 
-                            ><i class="fa-regular fa-diagram-subtask"></i> Create Sub Project</a>
+                            >
+                                <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
+                                {% if researcher and not researcher.is_subscribed %}
+                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            The account must be subscribed before a Project can be created
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </a>
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
@@ -675,10 +705,22 @@
                 {% endif %}
 
                 {% if researcher %}
-                    <a 
-                        class="block pointer" 
-                        onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                    ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                    {% if researcher and not researcher.is_subscribed %}
+                        <a class="block a-disabled">
+                            <i class="fa-solid fa-user-group"></i> Notify Communities
+                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                <span class="tooltiptext">
+                                    Your account needs to be subscribed before you can notify
+                                    communities. Please contact us if you have questions.
+                                </span>
+                            </div>
+                        </a>
+                    {% else %}
+                        <a
+                            class="block pointer"
+                            onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                        ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                    {% endif %}
                 {% endif %}
 
             {% endif %}
@@ -794,7 +836,8 @@
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
                                 {% else %}
-                                    The account that created this Project needs to be confirmed before download is available.
+                                    The account that created this Project needs
+                                    to be subscribed before download is available.
                                 {% endif %}
                             </span>
                         </div> 
@@ -937,8 +980,8 @@
                             </span>
                         </div> 
                     </h3>
-                    <a 
-                        class="block" 
+                    <a
+                        class="block"
                         href="{% url 'view-project' project.unique_id %}"
                     ><i class="fa-solid fa-eye"></i> Public View</a>
                 </div> 

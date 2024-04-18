@@ -16,14 +16,22 @@
                 <div class="otc-dropdown-content">
                     <a id="addURLBtn" class="primary-btn blue-btn">Add Link <i class="fa-solid fa-circle-plus"></i></a>
                     {% if otc_download_perm == 1 %}
-                        <a 
+                        <a
                             {% if researcher %}
-                                href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}" 
+                                {% if notify_restricted_message %}
+                                    class="block a-disabled primary-btn blue-btn"
+                                    title="{{ notify_restricted_message }}"
+                                {% else %}
+                                    class="primary-btn blue-btn"
+                                    href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
+                                {% endif %}
+
                             {% endif %}
                             {% if institution %}
-                                href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}" 
+                                class="primary-btn blue-btn"
+                                href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
                             {% endif %}
-                            class="primary-btn blue-btn">
+                            >
                             Download Notice <i class="fa-solid fa-download"></i>
                         </a>
                         {% if urls %}
@@ -100,8 +108,16 @@
         <div>
             {% if researcher %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn margin-top-2" href="{% url 'researcher-create-project' researcher.id %}">
-                        Create a Project     <i class="fa fa-arrow-right"></i>
+                    <a
+                        {% if create_restricted_message %}
+                            class="primary-btn margin-top-2 block disabled-btn"
+                            title="{{ create_restricted_message }}"
+                        {% else %}
+                            class="primary-btn green-btn margin-top-2"
+                            href="{% url 'researcher-create-project' researcher.id %}"
+                        {% endif %}
+                        >
+                        Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
             {% endif %}
