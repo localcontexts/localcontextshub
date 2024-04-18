@@ -544,13 +544,17 @@ def institution_members(request, pk):
     users = User.objects.exclude(id__in=members).order_by("username")
 
     join_requests_count = JoinRequest.objects.filter(institution=institution).count()
-    form = InviteMemberForm(request.POST or None)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
+    form = InviteMemberForm(request.POST or None, subscription=subscription)
 
     if request.method == "POST":
         redirection = check_subscription(request, institution)
         if redirection:
             return redirect('institution-members', institution.id)
-        subscription = Subscription.objects.get(institution=institution)
+
         if "change_member_role_btn" in request.POST:
             current_role = request.POST.get("current_role")
             new_role = request.POST.get("new_role")
@@ -644,6 +648,11 @@ def member_requests(request, pk):
     member_role = check_member_role(request.user, institution)
     join_requests = JoinRequest.objects.filter(institution=institution)
     member_invites = InviteMember.objects.filter(institution=institution)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
+    
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
@@ -660,6 +669,7 @@ def member_requests(request, pk):
         "institution": institution,
         "join_requests": join_requests,
         "member_invites": member_invites,
+        "subscription": subscription,
     }
     return render(request, "institutions/member-requests.html", context)
 

@@ -64,8 +64,10 @@
                                         <label>Responsibility</label><br>
                                         <select name="selected_role" class="w-100">
                                             <option selected="true" disabled>-------------</option>
+                                            {% if subscription.users_count != 0 %}
                                             <option>Administrator</option>
                                             <option>Editor</option>
+                                            {% endif %}
                                             <option>Viewer</option>
                                         </select> 
                                     </div>
