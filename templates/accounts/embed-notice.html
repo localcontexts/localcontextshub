@@ -55,7 +55,7 @@
                 </a>
             </div>
             <div class="font-size-14 align-center flex-this margin-right-8">
-                <a id="profile-link" class="darkteal-text underline-hover bold" target="_parent" href="/{% if institution %}institutions{% elif researcher %}researchers{% endif %}/view/{% if institution %}{{ institution.id }}{% elif researcher %}{{ researcher.id }}{% endif %}">Local Contexts Profile: 
+                <a id="profile-link" class="darkteal-text underline-hover bold pointer" href="/{% if institution %}institutions{% elif researcher %}researchers{% endif %}/view/{% if institution %}{{ institution.id }}{% elif researcher %}{{ researcher.id }}{% endif %}" onclick="openLinkInWindow('/{% if institution %}institutions{% elif researcher %}researchers{% endif %}/view/{% if institution %}{{ institution.id }}{% elif researcher %}{{ researcher.id }}{% endif %}')">Local Contexts Profile: 
                     {% if institution %}
                         {{ institution.institution_name }}
                     {% elif researcher %}
