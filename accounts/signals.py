@@ -1,3 +1,4 @@
+import pprint
 from datetime import datetime, timezone
 
 from django.db.models.signals import post_save, post_delete, pre_delete
@@ -35,7 +36,7 @@ def log_delete_user(sender, instance, **kwargs):
     Logs deleted user data for debugging purposes
     """
 
-    data = {
+    log_data = {
         'UTC-TIME': datetime.now(timezone.utc),
         'RELATED-RESEARCHER': None,
         'RELATED-COMMUNITIES': [],
@@ -45,7 +46,7 @@ def log_delete_user(sender, instance, **kwargs):
     # get related researcher data of interest for this user
     if Researcher.objects.filter(user=instance).exists():
         researcher = Researcher.objects.get(user=instance)
-        data['RELATED-RESEARCHER'] = {
+        log_data['RELATED-RESEARCHER'] = {
             'id': researcher.id,
             'orcid': researcher.orcid,
             'contact_email': researcher.contact_email,
@@ -53,7 +54,7 @@ def log_delete_user(sender, instance, **kwargs):
 
     # get related community data of interest for this user
     for community in Community.objects.filter(user=instance):
-        data['RELATED-COMMUNITIES'].append(
+        log_data['RELATED-COMMUNITIES'].append(
             {
                 'id': community.id,
                 'community_name': community.community_name,
@@ -65,7 +66,7 @@ def log_delete_user(sender, instance, **kwargs):
 
     # get related institution data of interest for this user
     for institution in Institution.objects.filter(user=instance):
-        data['RELATED-INSTITUTIONS'].append(
+        log_data['RELATED-INSTITUTIONS'].append(
             {
                 'id': institution.id,
                 'institution_name': institution.community_name,
@@ -75,4 +76,4 @@ def log_delete_user(sender, instance, **kwargs):
             }
         )
 
-    print(data)
+    pprint.pprint(log_data, compact=True)
