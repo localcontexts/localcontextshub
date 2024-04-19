@@ -30,14 +30,13 @@ def delete_related_user(sender, instance, **kwargs):
     instance.user.delete()
 
 
-@receiver(pre_delete, sender=User)
-def log_delete_user(sender, instance, **kwargs):
-    """
-    Logs deleted user data for debugging purposes
-    """
+def get_log_data_timestamp():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
+
+def get_log_data(instance):
     log_data = {
-        'UTC-TIME': datetime.now(timezone.utc),
+        'UTC-TIME': get_log_data_timestamp(),
         'RELATED-RESEARCHER': None,
         'RELATED-COMMUNITIES': [],
         'RELATED-INSTITUTIONS': [],
@@ -53,7 +52,7 @@ def log_delete_user(sender, instance, **kwargs):
         }
 
     # get related community data of interest for this user
-    for community in Community.objects.filter(user=instance):
+    for community in Community.objects.filter(community_creator=instance):
         log_data['RELATED-COMMUNITIES'].append(
             {
                 'id': community.id,
@@ -65,15 +64,24 @@ def log_delete_user(sender, instance, **kwargs):
         )
 
     # get related institution data of interest for this user
-    for institution in Institution.objects.filter(user=instance):
+    for institution in Institution.objects.filter(institution_creator=instance):
         log_data['RELATED-INSTITUTIONS'].append(
             {
                 'id': institution.id,
-                'institution_name': institution.community_name,
+                'institution_name': institution.institution_name,
                 'institution_email': institution.contact_email,
                 'is_approved': institution.is_approved,
 
             }
         )
 
-    pprint.pprint(log_data, compact=True)
+    return log_data
+
+
+@receiver(pre_delete, sender=User)
+def log_delete_user(sender, instance, **kwargs):
+    """
+    Logs deleted user data for debugging purposes
+    """
+    log_data = get_log_data(instance)
+    pprint.pprint(log_data)
