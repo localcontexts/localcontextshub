@@ -272,10 +272,11 @@ def confirm_subscription_institution(request, institution_id):
                 return redirect("dashboard")
     return render(
         request,
-        "institutions/confirm-subscription-institution.html",
+        "accounts/confirm-subscription.html",
         {
             "form": form,
-            "institution": institution,
+            "account": institution,
+            "subscription_url": 'confirm-subscription-institution',
             "join_flag": join_flag,
         },
     )

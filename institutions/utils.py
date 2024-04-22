@@ -42,7 +42,7 @@ def confirm_subscription(request, institution, join_flag, form):
         return redirect('dashboard')
     elif request.user._wrapped not in institution.get_admins():
         join_flag = True
-        return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+        return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':institution, "subscription_url": 'confirm-subscription-institution', 'join_flag':join_flag,})
 
 def add_user(request, institution, member, current_role, new_role):
     subscription = Subscription.objects.get(institution=institution)

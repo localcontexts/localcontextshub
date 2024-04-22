@@ -1,0 +1,173 @@
+{% extends 'register-base.html' %} {% block title %} Subscription {% endblock%} {% load static %} {% block card %}
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+  grecaptcha.ready(function () {
+    grecaptcha
+      .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+        action: "subscription",
+      })
+      .then(function (token) {
+        document.getElementById("g-recaptcha-response").value = token;
+      });
+  });
+</script>
+{% if user.is_authenticated %}
+
+  <div class="flex-this column w-90">
+    <div>
+      <h2 class="no-top-margin">Subscription Information</h2>
+    </div>
+    <div class="w-80">
+      <p class="no-top-margin">
+        The information you provide here will be shared with other accounts you decide to join to help them identify who you are.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-container flex-this column w-90">
+    <form action="{% url subscription_url account.id %}" method="POST" enctype="multipart/form-data" class="flex-this column w-100">
+      {% csrf_token %}
+      <div>
+        <div class="flex-this column w-100">
+          <div class="flex-this w-100 space-between">
+            <div class="w-50 margin-right-1">
+              <label for="id_first_name">First name</label>
+              {{ form.first_name }}{% if form.first_name.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.first_name.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+            <div class="w-50 margin-left-1">
+              <label for="id_last_name">Last name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.first_name.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div class="w-100 ">
+              <label for="id_email">Email</label>
+              {{ form.email }}{% if form.email.errors %}
+              <div class="msg-red w-100">
+                <small>{{ form.email.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          
+          </div>
+
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div class="w-50 margin-right-1">
+              <label for="id_account_type">Account Type</label>
+              {{ form.account_type }}
+              {% if form.account_type.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.account_type.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+            <div class="w-50 margin-left-1">
+              <label for="id_inquiry_type">Inquiry Type</label>
+              {{ form.inquiry_type }}
+              {% if form.inquiry_type.errors %}
+              <div class="msg-red w-50">
+                <small>{{ form.inquiry_type.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          
+          </div>
+          <div class="flex-this w-100 space-between margin-top-2">
+            <div class="w-100">
+              <label for="id_organization_name">Organization Name</label>
+              {{ form.organization_name }}
+              {% if form.organization_name.errors %}
+              <div class="msg-red w-100">
+                <small>{{ form.organization_name.errors.as_text }}</small>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <input
+        type="hidden"
+        name="g-recaptcha-response"
+        id="g-recaptcha-response"
+        />
+        <div class="flex-this flex-end">
+          <button id="continueButton" class="primary-btn action-btn margin-top-2" onclick="disableButton()">
+            Continue <i class="fa fa-arrow-right"></i>
+          </button>
+          <div id="loading-spinner" class="primary-btn action-btn margin-top-2 hide disabled-btn">
+            Continue <i class="fa fa-arrow-right"></i>
+            <i class="fa spinner-container fa-spinner fa-spin fa-2x spinner "></i>
+          </div>
+        </div>        
+        </div>
+        {% include 'partials/_alerts.html' %}
+      <div>
+    </form>
+    </div>
+  </div>
+{% endif %}
+{% if join_flag %}
+  <div id="disclaimerAlert" class="modal">
+    <div class="modal-defaults deactivate-modal flex-this column w-100">
+      <div class="w-100">
+        <div>
+          <h5 class="primary-black-text no-top-margin">The institution you selected is already registered on the HUB. You can join this institution.</h5>  
+        </div>
+        <div class="flex-this w-100 text-align-center">
+          <a 
+          class="primary-btn action-btn"
+          href="{% url 'public-institution' account.id %}"
+          >Join institution</a>    
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<script>
+  function disableButton() {
+    if (validateForm()) {
+      document.getElementById("continueButton").style.display = "none";
+      document.getElementById("loading-spinner").classList.remove('hide');
+    }
+  }
+
+  function validateForm() {
+    var isValid = true;
+    var inputs = document.getElementsByTagName("input");
+    var selects = document.getElementsByTagName("select");
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].hasAttribute("required") && (inputs[i].value.trim() === "" )) {
+            isValid = false;
+            break;
+        }
+
+        if (inputs[i].type === "email" && !isValidEmail(inputs[i].value.trim())) {
+            isValid = false;
+            break;
+        }
+
+    }
+    for (var i = 0; i < selects.length; i++) {
+      if (selects[i].hasAttribute("required") && (selects[i].value.trim() === "" )) {
+              isValid = false;
+              break;
+        }
+    }
+    return isValid;
+  }
+
+  function isValidEmail(email) {
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+  }
+</script>
+{% endblock %}
