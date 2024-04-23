@@ -31,7 +31,15 @@
                                             <form method="POST" action="">
                                                 {% csrf_token %}
                                                 <input value="{{ invite.id }}" type="hidden" name="invite_id">
-                                                <button class="action-btn primary-btn">Accept invite</button>
+                                                <button class="{% if invite.has_zero_user_count %}  primary-btn disabled-btn helptext {% else %} action-btn primary-btn {% endif %}">Accept invite
+                                                {% if invite.has_zero_user_count %}
+                                                <div class="tooltip" style="background-color:transparent; position: absolute; cursor: default;">
+                                                    <span class="tooltiptext">
+                                                        The editor and admin limit for this institution has been reached.
+                                                    </span>
+                                                </div>
+                                                {% endif %}
+                                            </button>
                                             </form>
                                         </div>
                                     </div>                                 

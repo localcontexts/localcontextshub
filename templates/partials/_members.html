@@ -622,6 +622,11 @@
             <div class="flex-this space-between">
                 <div>
                     <h2 class="no-top-margin">Add a new member</h2>
+                    {% if institution.is_subscribed %}
+                    <p class="margin-bottom-2">
+                        The remaining count of your user's is <strong>{{subscription.users_count}}</strong>.
+                    </p> 
+                    {% endif %}
                     <p class="no-top-margin">To invite a new member, please select a user and their proposed responsibility below</p>
                 </div>
 

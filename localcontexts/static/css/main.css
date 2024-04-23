@@ -436,7 +436,8 @@ button[disabled],
 }
 .btn-help-text {
     position: absolute;
-    left: 1080px;
+    right: 295px;
+    z-index: 1;
     width: 250px;
     background-color: #EF6C00;
     padding: 8px 16px;
@@ -1170,7 +1171,7 @@ i[data-tooltip]:hover:after {
 }
 
 /* Tooltip arrow */
-.tooltip .tooltiptext::after {
+.helptext .tooltiptext::after, .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
     bottom: 100%;
@@ -1182,7 +1183,7 @@ i[data-tooltip]:hover:after {
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
+.helptext:hover .tooltiptext, .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }

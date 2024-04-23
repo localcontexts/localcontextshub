@@ -125,8 +125,19 @@
             {% if institution %}
                 <div class="flex-this align-center">
                     {% if member_role == 'admin' or member_role == 'editor' %}
-                        <a class="{% if institution.is_subscribed  and subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn green-btn margin-top-2 a-disabled {% endif %}" href="{% url 'inst-create-project' institution.id %}">
+                        <a class="{% if institution.is_subscribed and subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn disabled-btn margin-top-2  helptext{% endif %}" href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
                             Create a Project     <i class="fa fa-arrow-right"></i>
+                            {% if  institution.is_subscribed == False or subscription.project_count == 0 %}
+                            <div class="tooltip" style="background-color:transparent; position: absolute; cursor: default;">
+                                <span class="tooltiptext">
+                                    {% if institution.is_subscribed == False %}
+                                    The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.
+                                    {% else %}
+                                    Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                    {% endif %}
+                                </span>
+                            </div> 
+                            {% endif %}
                         </a>
                     {% endif %}
                 </div>
@@ -243,7 +254,7 @@
                 <div class="margin-right-16"><a id="openCCNoticeModal" class="primary-btn action-btn">Add Policy <i class="fa-solid fa-circle-plus"></i></a></div>
 
                 <div>
-                    {% if ccn_download_perm == 1 %}
+                    {% if ccn_download_perm == 1 and institution.is_subscribed %}
                         <a id="ccNoticeDownloadBtn" href="{% url 'download-collections-care-notices' institution.id ccn_download_perm %}" class="primary-btn blue-btn">
                             Download Notices <i class="fa-solid fa-download"></i>
                         </a>
@@ -254,6 +265,9 @@
                                 {% if institution %}
                                     {% if not institution.is_approved %}
                                         Your institution account needs to be confirmed in order to download this Notice.
+                                    {% endif %}
+                                    {% if not institution.is_subscribed %}
+                                        Your institution account needs to be subscribed in order to download this Notice.
                                     {% endif %}
                                 {% endif %}
                                 {% if is_sandbox %}

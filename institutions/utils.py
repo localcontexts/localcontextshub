@@ -84,6 +84,5 @@ def check_subscription(request, institution):
         subscription = Subscription.objects.get(institution=institution)
     except Subscription.DoesNotExist:
         redirection = True
-        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
 
     return redirection

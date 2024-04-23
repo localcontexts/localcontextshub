@@ -551,10 +551,6 @@ def institution_members(request, pk):
     form = InviteMemberForm(request.POST or None, subscription=subscription)
 
     if request.method == "POST":
-        redirection = check_subscription(request, institution)
-        if redirection:
-            return redirect('institution-members', institution.id)
-
         if "change_member_role_btn" in request.POST:
             current_role = request.POST.get("current_role")
             new_role = request.POST.get("new_role")
@@ -596,10 +592,13 @@ def institution_members(request, pk):
                     join_request_exists = JoinRequest.objects.filter(
                         user_from=selected_user, institution=institution
                     ).exists()  # Check to see if join request already exists
-                    if subscription.users_count == 0 and request.POST.get('role') in ('editor', 'administrator', 'admin'):
-                        messages.add_message(request, messages.ERROR, 'Your institution has reached its editors and admins limit. '
-                            'Please upgrade your subscription plan to add more editors and admins.')
+                    if request.POST.get('role') in ('editor', 'administrator', 'admin') and subscription == None:
+                        messages.error(request, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
                         return redirect('institution-members', institution.id)
+                    elif request.POST.get('role') in ('editor', 'administrator', 'admin') and subscription.users_count == 0:
+                        messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+                        return redirect('institution-members', institution.id)
+                    
                     if (
                         not invitation_exists and not join_request_exists
                     ):  # If invitation and join request does not exist, save form
@@ -636,6 +635,7 @@ def institution_members(request, pk):
         "users": users,
         "invite_form": SignUpInvitationForm(),
         "env": dev_prod_or_local(request.get_host()),
+        "subscription": subscription,
     }
     return render(request, "institutions/members.html", context)
 
@@ -656,11 +656,11 @@ def member_requests(request, pk):
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
-        redirection = check_subscription(request, institution)
-        if redirection:
+        # redirection = check_subscription(request, institution)
+        if check_subscription(request, institution) and selected_role.lower() in ('editor', 'administrator', 'admin'):
+            messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
             return redirect('institution-members', institution.id)
-        editors_count = Subscription.objects.get(institution=institution).users_count
-
+        
         accepted_join_request(request, institution, join_request_id, selected_role)
         return redirect('institution-member-requests', institution.id)
 
@@ -689,7 +689,10 @@ def delete_join_request(request, pk, join_id):
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
-    subscription = Subscription.objects.get(institution=institution)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
     # what role does member have
     # remove from role
     if member in institution.admins.all():
@@ -956,6 +959,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     notice_defaults = get_notice_defaults()
     redirection = check_subscription(request, institution)
     if redirection:
+        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
         return redirect('institution-projects', institution.id)
     
     subscription = Subscription.objects.get(institution=institution)
@@ -1178,6 +1182,7 @@ def project_actions(request, pk, project_uuid):
             "tk_labels__tklabel_translation",
         ).get(unique_id=project_uuid)
 
+        subscription = Subscription.objects.get(institution=institution.id)
         member_role = check_member_role(request.user, institution)
         if (
             not member_role
@@ -1273,7 +1278,6 @@ def project_actions(request, pk, project_uuid):
                         return redirect('institution-project-actions', institution.id, project.unique_id)
                 
                 elif 'notify_btn' in request.POST:
-                    subscription = Subscription.objects.get(institution=institution) 
                     if subscription.notification_count == 0:
                         messages.add_message(request, messages.ERROR, 'Your institution has reached its notification limit. '
                             'Please upgrade your subscription plan to notify more communities.')
@@ -1390,6 +1394,7 @@ def project_actions(request, pk, project_uuid):
                 "projects_to_link": projects_to_link,
                 "label_groups": label_groups,
                 "can_download": can_download,
+                "subscription": subscription,
             }
             return render(request, "institutions/project-actions.html", context)
     except:
