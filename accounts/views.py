@@ -558,9 +558,15 @@ def member_invitations(request):
     profile = Profile.objects.select_related("user").get(user=request.user)
     member_invites = InviteMember.objects.filter(receiver=request.user)
     for invite in member_invites:
-        if invite.institution and invite.role.lower() in ('editor', 'administrator', 'admin'):
+        if invite.institution and invite.role.lower() in (
+            "editor",
+            "administrator",
+            "admin",
+        ):
             try:
-                subscription = Subscription.objects.get(institution=invite.institution_id)
+                subscription = Subscription.objects.get(
+                    institution=invite.institution_id
+                )
                 invite.has_zero_user_count = subscription.users_count == 0
             except Subscription.DoesNotExist:
                 subscription = None
