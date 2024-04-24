@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from institutions.models import Institution
+from communities.models import Community
+from researchers.models import Researcher
 from accounts.models import Subscription
 from datetime import datetime
 
@@ -260,7 +262,14 @@ class SubscriptionAPI(APIView):
                 'c': 'community_id',
                 'r': 'researcher_id'
             }
+            field_to_model = {
+                'institution_id': Institution,
+                'community_id': Community,
+                'researcher_id': Researcher
+            }
+
             field_name = account_type_to_field.get(account_type)
+            model_class = field_to_model.get(field_name)
             if not field_name:
                 return Response(
                     {'error': 'Failed to create Subscription. Invalid account_type provided.'},

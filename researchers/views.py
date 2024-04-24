@@ -256,11 +256,10 @@ def update_researcher(request, pk):
 def researcher_notices(request, researcher):
     notify_restricted_message = False
     create_restricted_message = False
-
-    if not researcher.is_subscribed:
-        notify_restricted_message = 'The account must be subscribed ' \
-                                    'before download is available.'
-        create_restricted_message = 'The account must be subscribed before a Project can be created'
+    try:
+        subscription = Subscription.objects.get(researcher=researcher.id)
+    except Subscription.DoesNotExist:
+        subscription = None
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
@@ -295,6 +294,7 @@ def researcher_notices(request, researcher):
         'notify_restricted_message': notify_restricted_message,
         'create_restricted_message': create_restricted_message,
         'is_sandbox': is_sandbox,
+        'subscription': subscription,
     }
     return render(request, 'researchers/notices.html', context)
 
@@ -311,6 +311,10 @@ def delete_otc_notice(request, researcher_id, notice_id):
 @is_researcher()
 def researcher_projects(request, researcher):
     create_restricted_message = False
+    try:
+        subscription = Subscription.objects.get(researcher=researcher.id)
+    except Subscription.DoesNotExist:
+        subscription = None
     if not researcher.is_subscribed:
         create_restricted_message = 'The account must be subscribed before a Project can be created'
 
@@ -403,6 +407,7 @@ def researcher_projects(request, researcher):
         'results': results,
         'bool_dict': bool_dict,
         'create_restricted_message': create_restricted_message,
+        'subscription': subscription,
     }
     return render(request, 'researchers/projects.html', context)
 

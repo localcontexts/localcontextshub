@@ -18,9 +18,13 @@
                     {% if otc_download_perm == 1 %}
                         <a
                             {% if researcher %}
-                                {% if notify_restricted_message %}
+                                {% if not researcher.is_subscribed %}
                                     class="block a-disabled primary-btn blue-btn"
-                                    title="{{ notify_restricted_message }}"
+                                    title="{% if not researcher.is_submitted %}
+                                    The account must be subscribed before download is available.
+                                    {% else %}
+                                    The subscription process of your account is not completed yet.
+                                    {% endif %}"
                                 {% else %}
                                     class="primary-btn blue-btn"
                                     href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
@@ -109,9 +113,13 @@
             {% if researcher %}
                 <div class="flex-this align-center">
                     <a
-                        {% if create_restricted_message %}
+                        {% if not researcher.is_subscribed or subscription.project_count == 0 %}
                             class="primary-btn margin-top-2 block disabled-btn"
-                            title="{{ create_restricted_message }}"
+                            title="{% if not researcher.is_subscribed %}
+                            The subscription process of your account is not completed yet.
+                            {% else %}
+                            Your account has reached its Project limit.
+                            {% endif %}"
                         {% else %}
                             class="primary-btn green-btn margin-top-2"
                             href="{% url 'researcher-create-project' researcher.id %}"

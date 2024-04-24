@@ -36,7 +36,7 @@ def confirm_subscription(request, institution, join_flag, form):
         if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
             institution.is_submitted = True
             institution.save()
-            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
+            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
         else:
             messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
         return redirect('dashboard')
