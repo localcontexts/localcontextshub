@@ -1,4 +1,17 @@
 {% load static %}
+<style>
+    .subscribed-icon{
+        background: #ef6c00;
+        color: white;
+        margin-left: 15px;
+        font-size: 12px;
+        padding: 8px;
+        border-radius: 50%;
+    }
+    .dashcard-header-wrapper{
+        display: flex
+    }
+</style>
 <div class="dashcard">
   <div class="flex-this">
     <div class="researcher-img-container">
@@ -10,10 +23,13 @@
       />
     </div>
     <div class="flex-this column dashcard-text-container">
-      <div>
+      <div class="dashcard-header-wrapper">
         <h3 class="dashcard-h3 darkteal-text">
           {% firstof researcher.user.get_full_name researcher.user.username %}
         </h3>
+          {% if researcher and researcher.is_subscribed %}
+            <i class="fa fa-check subscribed-icon"></i>
+          {% endif %}
       </div>
       <div>
         <p class="dashcard-subheader">
