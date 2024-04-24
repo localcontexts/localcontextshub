@@ -1171,7 +1171,7 @@ i[data-tooltip]:hover:after {
 }
 
 /* Tooltip arrow */
-.helptext .tooltiptext::after, .tooltip .tooltiptext::after {
+.tooltip .tooltiptext::after {
     content: "";
     position: absolute;
     bottom: 100%;
@@ -1183,7 +1183,7 @@ i[data-tooltip]:hover:after {
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
-.helptext:hover .tooltiptext, .tooltip:hover .tooltiptext {
+.tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }

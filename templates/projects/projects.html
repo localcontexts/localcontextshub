@@ -9,23 +9,20 @@
             {% if community or institution %}
                 {% if member_role == 'admin' or member_role == 'editor' %}
                     <div class="btn-with-helptext flex-this align-center">
-                        <a class="{% if institution.is_subscribed  and subscription.project_count != 0 %} primary-btn green-btn margin-top-2 {% else %} primary-btn disabled-btn margin-top-2  helptext{% endif %}"
-                            {% if community %} href="{% url 'create-project' community.id %}" {% endif %}
-                            {% if institution %} href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %} {% endif %}"
-                        >
-                            Create a Project <i class="fa fa-arrow-right"></i>
-                            {% if  institution.is_subscribed == False or subscription.project_count == 0 %}
-                            <div class="tooltip" style="background-color:transparent; position: absolute; cursor: default;">
-                                <span class="tooltiptext">
-                                    {% if institution.is_subscribed == False %}
-                                    The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.
-                                    {% else %}
-                                    Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
-                                    {% endif %}
-                                </span>
-                            </div> 
-                            {% endif %}
-                        </a>
+                        <a 
+                        {% if not institution.is_subscribed or subscription.project_count == 0 %}
+                            class="primary-btn disabled-btn margin-top-2"
+                            title= "{% if not institution.is_subscribed %}
+                            The account must be subscribed before a Project can be created.
+                            {% else %}
+                            Your institution has reached its Project limit.
+                            {% endif %}"
+                        {% else %} 
+                            class=" primary-btn green-btn margin-top-2" 
+                            href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}"  
+                        {% endif %} >
+                        Create a Project     <i class="fa fa-arrow-right"></i>
+                    </a>
                     </div>
                 {% endif %}
             {% else %}
