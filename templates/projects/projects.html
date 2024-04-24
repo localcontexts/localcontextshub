@@ -13,7 +13,7 @@
                         {% if not institution.is_subscribed or subscription.project_count == 0 %}
                             class="primary-btn disabled-btn margin-top-2"
                             title= "{% if not institution.is_subscribed %}
-                            The account must be subscribed before a Project can be created.
+                            The subscription process of your institution is not completed yet.
                             {% else %}
                             Your institution has reached its Project limit.
                             {% endif %}"
