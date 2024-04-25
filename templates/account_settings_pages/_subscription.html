@@ -1,0 +1,46 @@
+{% extends 'account-settings-base.html' %}{% load static %}
+
+{% block account_settings %}
+  <div class="flex-this space-between">
+    <div><h3 class="no-top-margin">Subscription</h3></div>
+  </div>
+  <p class="no-top-margin">Subscriptions enable any museum, repository, university, or other organizations to work collaboratively with Indigenous communities on the Local Contexts Hub. <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank"> Read more about subscriptions </a>.</p>
+  <div class="flex-this space-between">
+    <div><h4 class="no-bottom-margin no-top-margin">Subscription Details</h4></div>
+  </div>
+  {% if True %}
+    <p class="italic red-text"><small>This subscription for this account has expired. Please renew your subscription.</small></p>
+    <div>
+      <button type="submit" class="primary-btn action-btn" name="generatebtn">Renew Subscription</button>
+    </div>     
+  {% else %}
+    <div class="flex-this subscription-details">
+      <div><h6>Start Date</h6> <p><small>{{ start_date }}</small></p></div>
+      <div class="vl pad-left-2"><h6 class="margin-left-8">End Date</h6> <p class="margin-left-8"><small>{{ end_date }}</small></p></div>
+    </div>
+    <div class="flex-this space-between">
+      <div><h4 class="no-bottom-margin">Subscription Activity</h4></div>
+    </div>
+    <p class="no-top-margin"><small>See an overview of the activities happening within your subscription</small></p>
+    <div class="flex-this subscription-activity margin-5">
+      <div><h6>Users Added</h6> <p><small>{{ subscription.users_count }}</small></p></div>
+      <div class="vl"><h6>Projects Created</h6> <p><small>{{ subscription.project_count }}</small></p></div>
+      <div class="vl"><h6>Notifications Sent</h6> <p><small>{{ subscription.notification_count }}</small></p></div>
+      <div class="vl"><h6>Notices Sent</h6> <p><small>{{ end_date }}</small></p></div>
+      <div class="vl"><h6>API Keys</h6> <p><small>{{ subscription.api_key_count }}</small></p></div>
+    </div>
+    <div class="flex-this space-between">
+      <div><h4 class="no-bottom-margin">Edit Subscription</h4></div>
+    </div>
+    <p class="no-top-margin"><small>Manage and edit your subscription plan</small></p>
+    <div class="flex-this">
+      <div>
+          <button type="submit" class="primary-btn action-btn" name="generatebtn">Update Subscription</button>
+      </div>        
+      <div class="margin-left-1">
+        <button type="submit" class="primary-btn white-btn" name="generatebtn">Cancel Subscription</button>
+      </div>                
+    </div>
+    <p><small>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></small></p>
+  {% endif %}
+{% endblock %}

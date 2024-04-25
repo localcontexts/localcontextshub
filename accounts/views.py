@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (PasswordChangeForm, PasswordResetView, SetPasswordForm)
@@ -41,9 +42,10 @@ from .utils import (
     get_next_path, get_users_name, return_registry_accounts, manage_mailing_list,
     institute_account_subscription, escape_single_quotes
 )
+from institutions.utils import get_institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
-from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
+from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha, check_member_role)
 
 from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from helpers.models import HubActivity
@@ -843,3 +845,33 @@ def subscription_inquiry(request):
             "communities": communities,
         },
     )
+
+
+@login_required(login_url="login")
+# @member_required(roles=["admin"])
+def subscription(request, pk, account_type, related=None):
+    if account_type == 'institution':
+        institution = get_institution(pk)
+        member_role = check_member_role(request.user, institution)
+        subscription = Subscription.objects.get(institution=institution)
+        renew = subscription.end_date < timezone.now() if subscription.end_date else False
+        context = {
+            "institution": institution, 
+            "subscription": subscription,
+            "start_date": subscription.start_date.strftime('%d %B %Y') if subscription.start_date else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y') if subscription.end_date else None,
+            "renew": renew
+        }
+    if account_type == 'researcher':
+        researcher = Researcher.objects.get(id=pk)
+        subscription = Subscription.objects.get(researcher=researcher)
+        renew = subscription.end_date < timezone.now() if subscription.end_date else False
+        context = {
+            "researcher": researcher, 
+            "subscription": subscription,
+            "start_date": subscription.start_date.strftime('%d %B %Y') if subscription.start_date else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y') if subscription.end_date else None,
+            "renew": renew
+        }
+
+    return render(request, 'account_settings_pages/_subscription.html', context)

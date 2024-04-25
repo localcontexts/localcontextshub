@@ -213,3 +213,41 @@
     width: 360px;
     height: 91px;
 }
+
+.subscription-details {
+    border: 1px solid #E0E1E1;
+    border-radius: 4px;
+    width: 250px;
+    padding: 10px;
+    background-color: #F8FAFF;
+}
+
+.subscription-details > div {
+    margin-right: 10px;
+}
+
+.subscription-details h6,
+.subscription-details p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.subscription-activity > div {
+    margin-right: 10px;
+    padding-left: 20px;
+}
+
+.subscription-activity h6,
+.subscription-activity p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.vl {
+    border-left: 1px solid #E0E1E1;
+    height: 100%;
+}
+
+.margin-5 { margin: 5px; }
+
+.set-height-empty-dash { height: 200px; }
