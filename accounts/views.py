@@ -60,7 +60,7 @@ from helpers.emails import (
     get_newsletter_member_info,
     unsubscribe_from_mailing_list,
 )
-from .models import SignUpInvitation, Profile, UserAffiliation
+from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from .forms import (
     RegistrationForm,
     ResendEmailActivationForm,
@@ -337,7 +337,7 @@ def dashboard(request):
     user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
     unsubscribed_institute = Institution.objects.filter(
-        institution_creator=user, is_subscribed=False
+        institution_creator=user, is_submitted=False
     ).first()
 
     if request.method == "POST":
@@ -557,6 +557,19 @@ def link_account(request):
 def member_invitations(request):
     profile = Profile.objects.select_related("user").get(user=request.user)
     member_invites = InviteMember.objects.filter(receiver=request.user)
+    for invite in member_invites:
+        if invite.institution and invite.role.lower() in (
+            "editor",
+            "administrator",
+            "admin",
+        ):
+            try:
+                subscription = Subscription.objects.get(
+                    institution=invite.institution_id
+                )
+                invite.has_zero_user_count = subscription.users_count == 0
+            except Subscription.DoesNotExist:
+                subscription = None
 
     if request.method == "POST":
         invite_id = request.POST.get("invite_id")

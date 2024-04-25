@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from communities.models import Community
 from institutions.models import Institution
@@ -140,3 +141,16 @@ class Subscription(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
     date_last_updated = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        count = sum([bool(self.institution_id),
+                    bool(self.community_id), bool(self.researcher_id)])
+        if count != 1:
+            raise ValidationError("Exactly one of institution, "
+                                  "community, researcher should be present.")
+
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
