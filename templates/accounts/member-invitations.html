@@ -31,15 +31,17 @@
                                             <form method="POST" action="">
                                                 {% csrf_token %}
                                                 <input value="{{ invite.id }}" type="hidden" name="invite_id">
-                                                <button class="{% if invite.has_zero_user_count %}  primary-btn disabled-btn helptext {% else %} action-btn primary-btn {% endif %}">Accept invite
                                                 {% if invite.has_zero_user_count %}
-                                                <div class="tooltip" style="background-color:transparent; position: absolute; cursor: default;">
-                                                    <span class="tooltiptext">
-                                                        The editor and admin limit for this institution has been reached.
-                                                    </span>
-                                                </div>
+                                                <div class="btn-with-helptext">
+                                                    <button class="primary-btn disabled-btn">Accept invite</button>
+                                                    <span class="btn-help-text">
+                                                            The editor and admin limit for this institution has been reached.
+                                                        </span>
+                                                    </div>
+                                                {% else %}
+                                                <button class="{% if invite.has_zero_user_count %}  primary-btn disabled-btn helptext {% else %} action-btn primary-btn {% endif %}">Accept invite
+                                                </button>
                                                 {% endif %}
-                                            </button>
                                             </form>
                                         </div>
                                     </div>                                 

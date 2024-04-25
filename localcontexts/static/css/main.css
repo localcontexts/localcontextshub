@@ -435,6 +435,7 @@ button[disabled],
     position: relative;
 }
 .btn-help-text {
+    font-weight: lighter;
     position: absolute;
     right: 295px;
     z-index: 1;
