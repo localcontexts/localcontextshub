@@ -26,6 +26,7 @@ from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
 from .decorators import is_researcher
+from accounts.decorators import subscription_submission_required
 from .models import Researcher
 from .forms import *
 from .utils import *
@@ -73,9 +74,9 @@ def connect_researcher(request):
 
 
 @login_required(login_url="login")
-def confirm_subscription_researcher(request, researcher_id):
+def confirm_subscription_researcher(request, pk):
     join_flag = False
-    researcher = get_object_or_404(Researcher, id=researcher_id)
+    researcher = get_object_or_404(Researcher, id=pk)
     initial_data = {
         "first_name": request.user._wrapped.first_name,
         "last_name": request    .user._wrapped.last_name,
@@ -212,6 +213,7 @@ def disconnect_orcid(request):
     return redirect('update-researcher', researcher.id)
 
 @login_required(login_url='login')
+@subscription_submission_required(Subscriber=Researcher)
 def update_researcher(request, pk):
     researcher = Researcher.objects.get(id=pk)
     user_can_view = checkif_user_researcher(researcher, request.user)
@@ -253,11 +255,13 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-def researcher_notices(request, researcher):
+@subscription_submission_required(Subscriber=Researcher)
+def researcher_notices(request, pk):
+    researcher = Researcher.objects.get(id=pk)
     notify_restricted_message = False
     create_restricted_message = False
     try:
-        subscription = Subscription.objects.get(researcher=researcher.id)
+        subscription = Subscription.objects.get(researcher=pk)
     except Subscription.DoesNotExist:
         subscription = None
 
@@ -308,8 +312,10 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-@is_researcher()
-def researcher_projects(request, researcher):
+@is_researcher(pk_arg_name='pk')
+@subscription_submission_required(Subscriber=Researcher)
+def researcher_projects(request, pk):
+    researcher = Researcher.objects.get(id=pk)
     create_restricted_message = False
     try:
         subscription = Subscription.objects.get(researcher=researcher.id)
@@ -415,7 +421,9 @@ def researcher_projects(request, researcher):
 # Create Project
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-def create_project(request, researcher, source_proj_uuid=None, related=None):
+@subscription_submission_required(Subscriber=Researcher)
+def create_project(request, pk, source_proj_uuid=None, related=None):
+    researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     researcher.validate_is_subscribed(bypass_validation)
 
@@ -509,8 +517,10 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
 
 
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='researcher_id')
-def edit_project(request, researcher, project_uuid):
+@is_researcher(pk_arg_name='pk')
+@subscription_submission_required(Subscriber=Researcher)
+def edit_project(request, pk, project_uuid):
+    researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     researcher.validate_is_subscribed(bypass_validation)
 
@@ -575,7 +585,7 @@ def edit_project(request, researcher, project_uuid):
     }
     return render(request, 'researchers/edit-project.html', context)
 
-
+@subscription_submission_required(Subscriber=Researcher)
 def project_actions(request, pk, project_uuid):
     try:
         project = Project.objects.prefetch_related(
@@ -782,6 +792,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
+@subscription_submission_required(Subscriber=Researcher)
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
     user_can_view = checkif_user_researcher(researcher, request.user)
