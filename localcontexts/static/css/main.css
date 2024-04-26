@@ -1678,12 +1678,8 @@ i[data-tooltip]:hover:after {
 
 /* For Subscribed Icon */
 .subscribed-icon{
-    background: #ef6c00;
-    color: white;
-    margin-left: 15px;
-    font-size: 12px;
-    padding: 8px;
-    border-radius: 50%;
+    color: #ef6c00;
+    margin: 14px 0 0 15px;
 }
 .subscribed-icon-wrapper{
     display: flex
