@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from functools import wraps
 from django.shortcuts import get_object_or_404
 
+
 def unauthenticated_user(view_func):
 
     def wrapper_func(request, *args, **kwargs):
@@ -13,6 +14,7 @@ def unauthenticated_user(view_func):
             return view_func(request, *args, **kwargs)
 
     return wrapper_func
+
 
 def subscription_submission_required(Subscriber):
     def decorator(view_func):
