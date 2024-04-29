@@ -431,6 +431,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
 
+    try:
+        subscription = Subscription.objects.get(researcher=researcher.id)
+    except Subscription.DoesNotExist:
+        subscription = None
+
     if request.method == "GET":
         form = CreateProjectForm(request.POST or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
@@ -448,6 +453,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             # Handle multiple urls, save as array
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+
+            subscription.project_count -= 1
+            subscription.save()
 
             data.save()
 
@@ -599,6 +607,7 @@ def project_actions(request, pk, project_uuid):
 
         if request.user.is_authenticated:
             researcher = Researcher.objects.get(id=pk)
+            subscription = Subscription.objects.get(researcher=pk)
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -665,11 +674,12 @@ def project_actions(request, pk, project_uuid):
                             project.save()
 
                         communities_selected = request.POST.getlist('selected_communities')
+                        notification_count = min(subscription.notification_count, len(communities_selected))
 
                         researcher_name = get_users_name(researcher.user)
                         title = f'{researcher_name} has notified you of a Project.'
 
-                        for community_id in communities_selected:
+                        for community_id in communities_selected[:notification_count]:
                             # Add communities that were notified to entities_notified instance
                             community = Community.objects.get(id=community_id)
                             entities_notified.communities.add(community)
@@ -697,7 +707,8 @@ def project_actions(request, pk, project_uuid):
 
                             # Create email
                             send_email_notice_placed(request, project, community, researcher)
-
+                        subscription.notification_count -= notification_count
+                        subscription.save()
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
                     elif 'link_projects_btn' in request.POST:
                         selected_projects = request.POST.getlist('projects_to_link')
@@ -743,6 +754,7 @@ def project_actions(request, pk, project_uuid):
                     'projects_to_link': projects_to_link,
                     'label_groups': label_groups,
                     'can_download': can_download,
+                    'subscription': subscription,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
@@ -769,11 +781,14 @@ def delete_project(request, researcher_id, project_uuid):
     researcher = Researcher.objects.get(id=researcher_id)
     project = Project.objects.get(unique_id=project_uuid)
 
+    subscription = Subscription.objects.get(researcher=researcher.id)
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
             notification.delete()
     
     project.delete()
+    subscription.project_count +=1
+    subscription.save()
     return redirect('researcher-projects', researcher.id)
 
 @login_required(login_url='login')
