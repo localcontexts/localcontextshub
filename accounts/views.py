@@ -854,24 +854,41 @@ def subscription(request, pk, account_type, related=None):
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)
         subscription = Subscription.objects.get(institution=institution)
-        renew = subscription.end_date < timezone.now() if subscription.end_date else False
+        renew = (
+            subscription.end_date < timezone.now() if subscription.end_date
+            else False
+        )
         context = {
-            "institution": institution, 
+            "institution": institution,
             "subscription": subscription,
-            "start_date": subscription.start_date.strftime('%d %B %Y') if subscription.start_date else None,
-            "end_date": subscription.end_date.strftime('%d %B %Y') if subscription.end_date else None,
-            "renew": renew
+            "start_date": subscription.start_date.strftime('%d %B %Y')
+            if subscription.start_date
+            else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y')
+            if subscription.end_date
+            else None,
+            "renew": renew,
+            "member_role": member_role,
         }
     if account_type == 'researcher':
         researcher = Researcher.objects.get(id=pk)
         subscription = Subscription.objects.get(researcher=researcher)
-        renew = subscription.end_date < timezone.now() if subscription.end_date else False
+        renew = (
+            subscription.end_date < timezone.now() if subscription.end_date
+            else False
+        )
         context = {
-            "researcher": researcher, 
+            "researcher": researcher,
             "subscription": subscription,
-            "start_date": subscription.start_date.strftime('%d %B %Y') if subscription.start_date else None,
-            "end_date": subscription.end_date.strftime('%d %B %Y') if subscription.end_date else None,
+            "start_date": subscription.start_date.strftime('%d %B %Y')
+            if subscription.start_date
+            else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y')
+            if subscription.end_date
+            else None,
             "renew": renew
         }
-
-    return render(request, 'account_settings_pages/_subscription.html', context)
+    return render(
+        request, 'account_settings_pages/_subscription.html',
+        context
+    )
