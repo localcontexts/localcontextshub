@@ -1800,6 +1800,11 @@ if (
     }
 }
 
+// Open Window on Click
+function openLinkInWindow(url) {
+    window.open(url, "_blank")
+}
+
 // Share on Social Media
 var shareToSocialsBtn = document.getElementsByClassName('shareToSocialsBtn')
 if (shareToSocialsBtn) {
