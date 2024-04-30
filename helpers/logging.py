@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from tklabels.models import TKLabel
+from bclabels.models import BCLabel
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
@@ -15,6 +17,8 @@ def get_log_data(instance):
         'RELATED-RESEARCHER': None,
         'RELATED-COMMUNITIES': [],
         'RELATED-INSTITUTIONS': [],
+        'RELATED-TK-LABELS': [],
+        'RELATED-BC-LABELS': [],
     }
 
     # get related researcher data of interest for this user
@@ -31,8 +35,8 @@ def get_log_data(instance):
         log_data['RELATED-COMMUNITIES'].append(
             {
                 'id': community.id,
-                'community_name': community.community_name,
-                'contact_email': community.contact_email,
+                'name': community.community_name,
+                'email': community.contact_email,
                 'is_approved': community.is_approved,
 
             }
@@ -43,9 +47,31 @@ def get_log_data(instance):
         log_data['RELATED-INSTITUTIONS'].append(
             {
                 'id': institution.id,
-                'institution_name': institution.institution_name,
-                'institution_email': institution.contact_email,
+                'name': institution.institution_name,
+                'email': institution.contact_email,
                 'is_approved': institution.is_approved,
+
+            }
+        )
+
+    for bk in BCLabel.objects.filter(created_by=instance):
+        log_data['RELATED-BC-LABELS'].append(
+            {
+                'id': bk.id,
+                'name': bk.name,
+                'unique_id': bk.unique_id,
+                'is_approved': bk.is_approved,
+
+            }
+        )
+
+    for tk in TKLabel.objects.filter(created_by=instance):
+        log_data['RELATED-TK-LABELS'].append(
+            {
+                'id': tk.id,
+                'name': tk.name,
+                'unique_id': tk.unique_id,
+                'is_approved': tk.is_approved,
 
             }
         )
