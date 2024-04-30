@@ -6,6 +6,8 @@ from factories.accounts_factories import UserFactory
 from factories.researchers_factories import ResearcherFactory
 from factories.communities_factories import CommunityFactory
 from factories.institutions_factories import InstitutionFactory
+from factories.bclabels_factories import BCLabelFactory
+from factories.tklabels_factories import TKLabelFactory
 
 from helpers.logging import get_log_data
 
@@ -25,6 +27,16 @@ class TestLogDeletedUser(TransactionTestCase):
             InstitutionFactory(institution_creator=self.user),
             InstitutionFactory(institution_creator=self.user),
             InstitutionFactory(institution_creator=self.user),
+        ]
+        self.bclabels = [
+            BCLabelFactory(created_by=self.user),
+            BCLabelFactory(created_by=self.user),
+            BCLabelFactory(created_by=self.user),
+        ]
+        self.tklabels = [
+            TKLabelFactory(created_by=self.user),
+            TKLabelFactory(created_by=self.user),
+            TKLabelFactory(created_by=self.user),
         ]
 
     def test_log_deleted_user(self):
