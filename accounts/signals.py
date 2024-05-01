@@ -1,6 +1,9 @@
-from django.db.models.signals import post_save, post_delete
+import pprint
+
+from django.db.models.signals import post_save, post_delete, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
+from helpers.logging import get_log_data
 from .models import Profile, UserAffiliation, InactiveUser
 
 
@@ -21,3 +24,12 @@ def save_profile(sender, instance, **kwargs):
 @receiver(post_delete, sender=InactiveUser)
 def delete_related_user(sender, instance, **kwargs):
     instance.user.delete()
+
+
+@receiver(pre_delete, sender=User)
+def log_delete_user(sender, instance, **kwargs):
+    """
+    Logs deleted user data for debugging purposes
+    """
+    log_data = get_log_data(instance)
+    pprint.pprint(log_data)
