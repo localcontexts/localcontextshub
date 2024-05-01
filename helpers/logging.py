@@ -49,8 +49,6 @@ def get_log_data(instance):
                 'id': institution.id,
                 'name': institution.institution_name,
                 'email': institution.contact_email,
-                'is_approved': institution.is_approved,
-
             }
         )
 
