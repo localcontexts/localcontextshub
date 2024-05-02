@@ -217,13 +217,14 @@
 .subscription-details {
     border: 1px solid #E0E1E1;
     border-radius: 4px;
-    width: 250px;
+    width: 35%;
     padding: 10px;
     background-color: #F8FAFF;
 }
 
 .subscription-details > div {
     margin-right: 10px;
+    flex-grow: 1;
 }
 
 .subscription-details h6,

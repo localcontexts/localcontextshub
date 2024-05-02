@@ -853,19 +853,22 @@ def subscription(request, pk, account_type, related=None):
     if account_type == 'institution':
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)
-        subscription = Subscription.objects.get(institution=institution)
+        try:
+            subscription = Subscription.objects.get(institution=institution)
+        except Subscription.DoesNotExist:
+            subscription = None
         renew = (
-            subscription.end_date < timezone.now() if subscription.end_date
+            subscription.end_date < timezone.now() if subscription is not None
             else False
         )
         context = {
             "institution": institution,
             "subscription": subscription,
             "start_date": subscription.start_date.strftime('%d %B %Y')
-            if subscription.start_date
+            if subscription is not None
             else None,
             "end_date": subscription.end_date.strftime('%d %B %Y')
-            if subscription.end_date
+            if subscription is not None
             else None,
             "renew": renew,
             "member_role": member_role,
@@ -874,17 +877,17 @@ def subscription(request, pk, account_type, related=None):
         researcher = Researcher.objects.get(id=pk)
         subscription = Subscription.objects.get(researcher=researcher)
         renew = (
-            subscription.end_date < timezone.now() if subscription.end_date
+            subscription.end_date < timezone.now() if subscription is not None
             else False
         )
         context = {
             "researcher": researcher,
             "subscription": subscription,
             "start_date": subscription.start_date.strftime('%d %B %Y')
-            if subscription.start_date
+            if subscription is not None
             else None,
             "end_date": subscription.end_date.strftime('%d %B %Y')
-            if subscription.end_date
+            if subscription is not None
             else None,
             "renew": renew
         }

@@ -4,15 +4,22 @@
   <div class="flex-this space-between">
     <div><h3 class="no-top-margin">Subscription</h3></div>
   </div>
-  <p class="no-top-margin">Subscriptions enable any museum, repository, university, or other organizations to work collaboratively with Indigenous communities on the Local Contexts Hub. <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank"> Read more about subscriptions </a>.</p>
+  <p class="no-top-margin {% if subscription is None %} red-text {% endif %}">Subscriptions enable any museum, repository, university, or other organizations to work collaboratively with Indigenous communities on the Local Contexts Hub. <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank"> Read more about subscriptions </a>.</p>
+  {% if subscription is not None %}
   <div class="flex-this space-between">
     <div><h4 class="no-bottom-margin no-top-margin">Subscription Details</h4></div>
   </div>
+  {% endif %}
   {% if renew %}
     <p class="italic red-text"><small>This subscription for this account has expired. Please renew your subscription.</small></p>
     <div>
       <button type="submit" class="primary-btn action-btn" name="generatebtn">Renew Subscription</button>
-    </div>     
+    </div> 
+  {% elif subscription is None  %}    
+  <p class='red-text'>To unlock more activities in your account please subscribe</p>
+  <div>
+    <button type="submit" class="primary-btn action-btn" name="generatebtn">Fill out Subscription Form</button>
+  </div> 
   {% else %}
     <div class="flex-this subscription-details">
       <div><h6>Start Date</h6> <p><small>{{ start_date }}</small></p></div>
