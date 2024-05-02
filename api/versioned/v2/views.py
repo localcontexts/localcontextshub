@@ -291,9 +291,9 @@ class SubscriptionAPI(APIView):
             with transaction.atomic():
                 subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
                 if created:
-                    institution = get_object_or_404(Institution, id=hub_id)
-                    institution.is_subscribed = True
-                    institution.save()
+                    subscriber = get_object_or_404(model_class, id=hub_id)
+                    subscriber.is_subscribed = True
+                    subscriber.save()
                     return Response({'success': 'The record is created.'}, status=HTTP_201_CREATED)
                 else:
                     subscription.users_count = user_count

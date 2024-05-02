@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from functools import wraps
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 
 
 def unauthenticated_user(view_func):
@@ -22,6 +23,14 @@ def subscription_submission_required(Subscriber):
         def _wrapped_view(request, *args, **kwargs):
             subscriber = get_object_or_404(Subscriber, id=kwargs.get('pk'))
             if not subscriber.is_submitted:
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    (
+                        "Please fill out the subscription form to unlock"
+                        " more activities in your account."
+                    ),
+                )
                 return redirect('dashboard')
             return view_func(request, *args, **kwargs)
         return _wrapped_view
