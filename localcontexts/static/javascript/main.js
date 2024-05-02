@@ -991,6 +991,7 @@ if (projectTypeSelect) {
     })
 }
 
+let selectedDivCount = 0; 
 // PROJECTS: NOTIFY communities - select desired communities
 function selectCommunities() {
     let select = document.getElementById('communities-select')
@@ -1002,10 +1003,18 @@ function selectCommunities() {
         let selectedCommunityDiv = document.getElementById(`selected-community-${option.id}`)
         let div = document.getElementById(`comm-id-input-${option.id}`)
 
-        if (option.selected) {
+        if (option.selected  && !selectedCommunityDiv.classList.contains('show')) {
+            selectedDivCount++;
             selectedCommunityDiv.classList.replace('hide', 'show')
             div.innerHTML = `<input type="hidden" value="${option.id}" name="selected_communities">`
         }
+        
+        if (selectedDivCount >= notification_count) {
+            select.disabled = true;
+        } else {
+            select.disabled = false;
+        }
+        
     })
 }
 
@@ -1014,12 +1023,19 @@ function cancelCommunitySelection(elem) {
     let id = elem.id
     let matches = id.match(/(\d+)/)
     let targetNum = matches[0]
-
     let divToClose = document.getElementById(`selected-community-${targetNum}`)
     let inputDivToRemove = document.getElementById(`comm-id-input-${targetNum}`)
+    var select = document.getElementById('communities-select')
 
     divToClose.classList.replace('show', 'hide')
     inputDivToRemove.innerHTML = ``
+    if (selectedDivCount > 0) {
+        selectedDivCount--;
+    }
+    if (selectedDivCount < notification_count) {
+        select.disabled = false;
+    }
+    
 }
 
 
@@ -1606,6 +1622,19 @@ if (window.location.href.includes('communities/view/') || window.location.href.i
     }
 }
 
+if (
+    window.location.href.includes('/invitations/')
+) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var disabledDiv = document.querySelector('.disabled-btn');
+        if (disabledDiv) {
+            disabledDiv.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+        }
+    });
+}    
 //  ONBOARDING MODAL: Shows up in dashboard if there isn't a localstorage item saved and onboarding_on is set to true
 if (window.location.href.includes('dashboard')) {
     const hiddenInput = document.getElementById('openOnboarding')
@@ -1678,10 +1707,12 @@ if (window.location.href.includes('notices')) {
     const closeAddURLModal = document.getElementById('closeAddURLModal')
     closeAddURLModal.addEventListener('click', function() { OTCModal.classList.replace('show', 'hide')})
 
-    // Share OTC Notice Modal
-    shareBtn.addEventListener('click', () => {
-        if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
-    })
+    if (shareBtn){
+        // Share OTC Notice Modal
+        shareBtn.addEventListener('click', () => {
+            if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
+        })
+    }
     const closeshareOTCNoticeModal = document.getElementById('closeshareOTCNoticeModal')
     closeshareOTCNoticeModal.addEventListener('click', function() { shareOTCNoticeModal.classList.replace('show', 'hide')})
 
@@ -2151,18 +2182,20 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
 
     // Collections Care Button Download
     const ccNoticeDownloadBtn = document.getElementById('ccNoticeDownloadBtn')
-    ccNoticeDownloadBtn.addEventListener('click', function() {    
-        let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
-        ccNoticeDownloadBtn.setAttribute('disabled', true)
-        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader margin-left-8"></div>'
+    if (ccNoticeDownloadBtn){
+        ccNoticeDownloadBtn.addEventListener('click', function() {    
+            let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
+            ccNoticeDownloadBtn.setAttribute('disabled', true)
+            ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader margin-left-8"></div>'
 
-        // Re-enable the button after a certain timeout
-        // re-enable it after a while, assuming an average download duration
-        setTimeout(function() {
-            ccNoticeDownloadBtn.innerHTML = oldValue
-            ccNoticeDownloadBtn.removeAttribute('disabled')
-        }, 15000)
-    })
+            // Re-enable the button after a certain timeout
+            // re-enable it after a while, assuming an average download duration
+            setTimeout(function() {
+                ccNoticeDownloadBtn.innerHTML = oldValue
+                ccNoticeDownloadBtn.removeAttribute('disabled')
+            }, 15000)
+        })
+    }
  }
 
  if (window.location.href.includes('/communities/labels/customize/') || window.location.href.includes('/communities/labels/edit/')) {

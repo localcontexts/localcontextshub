@@ -131,6 +131,7 @@ class InviteMember(models.Model):
     )
 
     ROLES = (
+        ("", "---------"),
         ('admin', 'admin'),
         ('editor', 'editor'),
         ('viewer', 'viewer'),

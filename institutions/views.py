@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 from itertools import chain
-from .decorators import member_required, subscription_required
+from .decorators import member_required, subscription_submission_required
 from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
@@ -421,7 +421,7 @@ def public_institution_view(request, pk):
 # Update institution
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def update_institution(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -454,7 +454,7 @@ def update_institution(request, pk):
 # Notices
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def institution_notices(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -465,6 +465,10 @@ def institution_notices(request, pk):
     cc_policy_form = CollectionsCareNoticePolicyForm(
         request.POST or None, request.FILES
     )
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -506,13 +510,14 @@ def institution_notices(request, pk):
         "otc_download_perm": otc_download_perm,
         "ccn_download_perm": ccn_download_perm,
         "is_sandbox": is_sandbox,
+        "subscription": subscription,
     }
     return render(request, "institutions/notices.html", context)
 
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
@@ -523,11 +528,10 @@ def delete_otc_notice(request, pk, notice_id):
 # Members
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def institution_members(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
     # Get list of users, NOT in this institution, alphabetized by name
     members = list(
         chain(
@@ -540,7 +544,11 @@ def institution_members(request, pk):
     users = User.objects.exclude(id__in=members).order_by("username")
 
     join_requests_count = JoinRequest.objects.filter(institution=institution).count()
-    form = InviteMemberForm(request.POST or None)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
+    form = InviteMemberForm(request.POST or None, subscription=subscription)
 
     if request.method == "POST":
         if "change_member_role_btn" in request.POST:
@@ -584,10 +592,13 @@ def institution_members(request, pk):
                     join_request_exists = JoinRequest.objects.filter(
                         user_from=selected_user, institution=institution
                     ).exists()  # Check to see if join request already exists
-                    if subscription.users_count == 0 and request.POST.get('role') in ('editor', 'administrator', 'admin'):
-                        messages.add_message(request, messages.ERROR, 'Your institution has reached its editors and admins limit. '
-                            'Please upgrade your subscription plan to add more editors and admins.')
+                    if request.POST.get('role') in ('editor', 'administrator', 'admin') and subscription == None:
+                        messages.error(request, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
                         return redirect('institution-members', institution.id)
+                    elif request.POST.get('role') in ('editor', 'administrator', 'admin') and subscription.users_count == 0:
+                        messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+                        return redirect('institution-members', institution.id)
+                    
                     if (
                         not invitation_exists and not join_request_exists
                     ):  # If invitation and join request does not exist, save form
@@ -624,23 +635,32 @@ def institution_members(request, pk):
         "users": users,
         "invite_form": SignUpInvitationForm(),
         "env": dev_prod_or_local(request.get_host()),
+        "subscription": subscription,
     }
     return render(request, "institutions/members.html", context)
 
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def member_requests(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
     join_requests = JoinRequest.objects.filter(institution=institution)
     member_invites = InviteMember.objects.filter(institution=institution)
-    editors_count = Subscription.objects.get(institution=institution).users_count
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
+    
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
-
+        # redirection = check_subscription(request, institution)
+        if check_subscription(request, institution) and selected_role.lower() in ('editor', 'administrator', 'admin'):
+            messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
+            return redirect('institution-members', institution.id)
+        
         accepted_join_request(request, institution, join_request_id, selected_role)
         return redirect('institution-member-requests', institution.id)
 
@@ -649,13 +669,14 @@ def member_requests(request, pk):
         "institution": institution,
         "join_requests": join_requests,
         "member_invites": member_invites,
+        "subscription": subscription,
     }
     return render(request, "institutions/member-requests.html", context)
 
 
 @login_required(login_url="login")
 @member_required(roles=["admin"])
-@subscription_required()
+@subscription_submission_required()
 def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
     join_request = JoinRequest.objects.get(id=join_id)
@@ -664,11 +685,14 @@ def delete_join_request(request, pk, join_id):
 
 @login_required(login_url='login')
 @member_required(roles=['admin'])
-@subscription_required()
+@subscription_submission_required()
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
-    subscription = Subscription.objects.get(institution=institution)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
     # what role does member have
     # remove from role
     if member in institution.admins.all():
@@ -713,11 +737,14 @@ def remove_member(request, pk, member_id):
 # Projects page
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
+@subscription_submission_required()
 def institution_projects(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
-
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except Subscription.DoesNotExist:
+        subscription = None
     bool_dict = {
         "has_labels": False,
         "has_notices": False,
@@ -922,7 +949,7 @@ def institution_projects(request, pk):
 # Create Project
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 @transaction.atomic
 def create_project(request, pk, source_proj_uuid=None, related=None):
     institution = get_institution(pk)
@@ -930,6 +957,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
+    redirection = check_subscription(request, institution)
+    if redirection:
+        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
+        return redirect('institution-projects', institution.id)
+    
     subscription = Subscription.objects.get(institution=institution)
     if subscription.project_count == 0:
         messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
@@ -943,6 +975,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     elif request.method == "POST":
         form = CreateProjectForm(request.POST)
         formset = ProjectPersonFormset(request.POST)
+        subscription = Subscription.objects.get(institution=institution)
 
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
@@ -1062,7 +1095,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def edit_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
@@ -1149,6 +1182,7 @@ def project_actions(request, pk, project_uuid):
             "tk_labels__tklabel_translation",
         ).get(unique_id=project_uuid)
 
+        subscription = Subscription.objects.get(institution=institution.id)
         member_role = check_member_role(request.user, institution)
         if (
             not member_role
@@ -1244,7 +1278,6 @@ def project_actions(request, pk, project_uuid):
                         return redirect('institution-project-actions', institution.id, project.unique_id)
                 
                 elif 'notify_btn' in request.POST:
-                    subscription = Subscription.objects.get(institution=institution) 
                     if subscription.notification_count == 0:
                         messages.add_message(request, messages.ERROR, 'Your institution has reached its notification limit. '
                             'Please upgrade your subscription plan to notify more communities.')
@@ -1361,6 +1394,7 @@ def project_actions(request, pk, project_uuid):
                 "projects_to_link": projects_to_link,
                 "label_groups": label_groups,
                 "can_download": can_download,
+                "subscription": subscription,
             }
             return render(request, "institutions/project-actions.html", context)
     except:
@@ -1369,7 +1403,7 @@ def project_actions(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def archive_project(request, pk, project_uuid):
     if not ProjectArchived.objects.filter(
         institution_id=pk, project_uuid=project_uuid
@@ -1391,7 +1425,7 @@ def archive_project(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 @transaction.atomic
 def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
@@ -1410,7 +1444,7 @@ def delete_project(request, pk, project_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
-@subscription_required()
+@subscription_submission_required()
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     institution = get_institution(pk)
     target_project = Project.objects.get(unique_id=target_proj_uuid)
@@ -1435,7 +1469,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor", "viewer"])
-@subscription_required()
+@subscription_submission_required()
 def connections(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -1508,17 +1542,16 @@ def embed_otc_notice(request, pk):
 def api_keys(request, pk, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription = Subscription.objects.get(institution=institution)
-    if subscription.api_key_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
-                            'Please upgrade your subscription plan to create more API Keys.')
-        redirect("institution-api-key", institution.id)
     
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
         institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
-        
     elif request.method == "POST":
+        subscription = Subscription.objects.get(institution=institution)
+        if subscription.api_key_count == 0:
+            messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
+                                'Please upgrade your subscription plan to create more API Keys.')
+            return redirect("institution-api-key", institution.id)
         form = APIKeyGeneratorForm(request.POST)
 
         if form.is_valid():

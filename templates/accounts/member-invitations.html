@@ -31,7 +31,17 @@
                                             <form method="POST" action="">
                                                 {% csrf_token %}
                                                 <input value="{{ invite.id }}" type="hidden" name="invite_id">
-                                                <button class="action-btn primary-btn">Accept invite</button>
+                                                {% if invite.has_zero_user_count %}
+                                                <div class="btn-with-helptext">
+                                                    <button class="primary-btn disabled-btn">Accept invite</button>
+                                                    <span class="btn-help-text">
+                                                            The editor and admin limit for this institution has been reached.
+                                                        </span>
+                                                    </div>
+                                                {% else %}
+                                                <button class="{% if invite.has_zero_user_count %}  primary-btn disabled-btn helptext {% else %} action-btn primary-btn {% endif %}">Accept invite
+                                                </button>
+                                                {% endif %}
                                             </form>
                                         </div>
                                     </div>                                 
@@ -52,7 +62,7 @@
                                         <i>
                                             {% if invite.role == 'viewer' %} Viewer {% endif %}
                                             {% if invite.role == 'editor' %} Editor {% endif %}
-                                            {% if invite.role == 'Admin' %} Administrator {% endif %}
+                                            {% if invite.role == 'admin' %} Administrator {% endif %}
                                         </i>
                                         <br>
 
@@ -111,7 +121,7 @@
                                         <i>
                                             {% if invite.role == 'viewer' %} Viewer {% endif %}
                                             {% if invite.role == 'editor' %} Editor {% endif %}
-                                            {% if invite.role == 'Admin' %} Administrator {% endif %}
+                                            {% if invite.role == 'admin' %} Administrator {% endif %}
                                         </i>
                                         <br>
 

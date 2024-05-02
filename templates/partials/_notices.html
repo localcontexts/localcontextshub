@@ -125,7 +125,18 @@
             {% if institution %}
                 <div class="flex-this align-center">
                     {% if member_role == 'admin' or member_role == 'editor' %}
-                        <a class="primary-btn green-btn margin-top-2" href="{% url 'inst-create-project' institution.id %}">
+                        <a 
+                            {% if not institution.is_subscribed or subscription.project_count == 0 %}
+                                class="primary-btn disabled-btn margin-top-2"
+                                title= "{% if not institution.is_subscribed %}
+                                The subscription process of your institution is not completed yet.
+                                {% else %}
+                                Your institution has reached its Project limit.
+                                {% endif %}"
+                            {% else %} 
+                                class=" primary-btn green-btn margin-top-2" 
+                                href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}"  
+                            {% endif %} >
                             Create a Project     <i class="fa fa-arrow-right"></i>
                         </a>
                     {% endif %}
@@ -243,7 +254,7 @@
                 <div class="margin-right-16"><a id="openCCNoticeModal" class="primary-btn action-btn">Add Policy <i class="fa-solid fa-circle-plus"></i></a></div>
 
                 <div>
-                    {% if ccn_download_perm == 1 %}
+                    {% if ccn_download_perm == 1 and institution.is_subscribed %}
                         <a id="ccNoticeDownloadBtn" href="{% url 'download-collections-care-notices' institution.id ccn_download_perm %}" class="primary-btn blue-btn">
                             Download Notices <i class="fa-solid fa-download"></i>
                         </a>
@@ -254,6 +265,8 @@
                                 {% if institution %}
                                     {% if not institution.is_approved %}
                                         Your institution account needs to be confirmed in order to download this Notice.
+                                    {% elif not institution.is_subscribed %}
+                                        Your institution account needs to be subscribed in order to download this Notice.
                                     {% endif %}
                                 {% endif %}
                                 {% if is_sandbox %}

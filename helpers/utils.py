@@ -84,13 +84,17 @@ def add_user_to_role(account, role, user):
     
 def request_possible(request, org, selected_role):
     if selected_role.lower() in ('editor', 'administrator', 'admin') and isinstance(org, Institution): 
-        subscription = Subscription.objects.get(institution=org)
-        if subscription.users_count > 0:
-            subscription.users_count -= 1
-            subscription.save()
-            return True
-        else:
-            messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+        try:
+            subscription = Subscription.objects.get(institution=org)
+            if subscription.users_count > 0:
+                subscription.users_count -= 1
+                subscription.save()
+                return True
+            else:
+                messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
+                return False
+        except Subscription.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
             return False
     return True
 

@@ -168,6 +168,16 @@ class InviteMemberForm(forms.ModelForm):
             'role': forms.Select(attrs={'class': 'w-100'}),
             'message': forms.Textarea(attrs={'rows': 2, 'class':'w-100'}),
         }
+  
+    def __init__(self, *args, **kwargs):
+        subscription = kwargs.pop('subscription', None)
+        super().__init__(*args, **kwargs)
+        if subscription is not None and subscription.users_count == 0:
+            modified_choices = [
+                ('', '---------'),
+                ('viewer', 'Viewer'),
+            ]
+            self.fields['role'].choices = modified_choices
 
 class JoinRequestForm(forms.ModelForm):
     class Meta:
