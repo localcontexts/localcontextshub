@@ -9,27 +9,27 @@
         alt="{{ researcher.researcher_name }} image"
       />
     </div>
-    <div class="{% if  researcher.is_submitted %} flex-this column dashcard-text-container {% else %} flex-this column dashcard-text-container  disable {%endif%}">
-      <div>
-    <div class="flex-this column dashcard-text-container">
-      <div class="subscribed-icon-wrapper">
-        <h3 class="dashcard-h3 darkteal-text">
-          {% firstof researcher.user.get_full_name researcher.user.username %}
-        </h3>
-        {% if researcher and researcher.is_subscribed %}
-          <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
-        {% endif %}
-      </div>
-      <div>
-        <p class="dashcard-subheader">
-          Researcher | Location: {{ researcher.user.user_profile.get_location }}
-        </p>
-      </div>
-      <div>
-        <p class="dashcard-description description-sm">
-          {% if researcher.description %}{{ researcher.description }} {% else %}
-          No description provided. {% endif %}
-        </p>
+    <div class="{% if  researcher.is_submitted %} flex-this column dashcard-text-container {% else %} flex-this column dashcard-text-container  disable {% endif %}">
+      <div class="flex-this column dashcard-text-container">
+        <div class="subscribed-icon-wrapper">
+          <h3 class="dashcard-h3 darkteal-text">
+            {% firstof researcher.user.get_full_name researcher.user.username %}
+          </h3>
+          {% if researcher and researcher.is_subscribed %}
+            <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+          {% endif %}
+        </div>
+        <div>
+          <p class="dashcard-subheader">
+            Researcher | Location: {{ researcher.user.user_profile.get_location }}
+          </p>
+        </div>
+        <div>
+          <p class="dashcard-description description-sm">
+            {% if researcher.description %}{{ researcher.description }} {% else %}
+            No description provided. {% endif %}
+          </p>
+        </div>
       </div>
     </div>
 
