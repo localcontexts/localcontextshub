@@ -14,6 +14,15 @@
                             class="primary-btn disabled-btn margin-top-2"
                             title= "{% if not institution.is_subscribed %}
                             The subscription process of your institution is not completed yet.
+            {% if community or institution %}
+                <div class="flex-this align-center">
+                    {% if member_role == 'admin' or member_role == 'editor' %}
+                        <div class="btn-with-helptext">
+                            {% if institution%}
+                                <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}"
+                                    href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
+                                    Create a Project <i class="fa fa-arrow-right"></i>
+                                </a>
                             {% else %}
                             Your institution has reached its Project limit.
                             {% endif %}"
