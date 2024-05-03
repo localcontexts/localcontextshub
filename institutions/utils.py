@@ -36,13 +36,13 @@ def confirm_subscription(request, institution, join_flag, form):
         if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
             institution.is_submitted = True
             institution.save()
-            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contact. You will be notified once your subscription has been processed.')
+            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
         else:
             messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
         return redirect('dashboard')
     elif request.user._wrapped not in institution.get_admins():
         join_flag = True
-        return render(request, 'institutions/confirm-subscription-institution.html', {'form': form, 'institution':institution, 'join_flag':join_flag,})
+        return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':institution, "subscription_url": 'confirm-subscription-institution', 'join_flag':join_flag,})
 
 def add_user(request, institution, member, current_role, new_role):
     subscription = Subscription.objects.get(institution=institution)

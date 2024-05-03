@@ -712,20 +712,24 @@
                 {% if researcher %}
                     {% if researcher and not researcher.is_subscribed %}
                         <a class="block a-disabled">
-                            <i class="fa-solid fa-user-group"></i> Notify Communities
+                            <i class="fa-solid fa-user-group"></i> Notify Communities 
+                        </a>
+                        {% else %}
+                        <a
+                        class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}"
+                        {% if subscription.notification_count != 0 %} 
+                        onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                        {% endif %}
+                        ><i class="fa-solid fa-user-group"></i> Notify Communities 
+                        {% if subscription.notification_count == 0 %}
                             <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                 <span class="tooltiptext">
-                                    Your account needs to be subscribed before you can notify
-                                    communities. Please contact us if you have questions.
+                                    Your account has reached its notification limit. Please upgrade your subscription plan to notify more communities.
                                 </span>
-                            </div>
+                            </div> 
+                        {% endif %}
                         </a>
-                    {% else %}
-                        <a
-                            class="block pointer"
-                            onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                        ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
-                    {% endif %}
+                        {% endif %}
                 {% endif %}
 
             {% endif %}

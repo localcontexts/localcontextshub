@@ -17,12 +17,16 @@ from projects.models import *
 
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
-from accounts.forms import ContactOrganizationForm
+from accounts.forms import (
+    ContactOrganizationForm,
+    SubscriptionForm,
+)
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
 from .decorators import is_researcher
+from accounts.decorators import subscription_submission_required
 from .models import Researcher
 from .forms import *
 from .utils import *
@@ -62,11 +66,71 @@ def connect_researcher(request):
                     action_type="New Researcher"
                 )
                     
-                return redirect('dashboard')
+                return redirect("confirm-subscription-researcher", data.id)
         context = {'form': form, 'env': env}
         return render(request, 'researchers/connect-researcher.html', context)
     else:
         return redirect('researcher-notices', researcher.id)
+
+
+@login_required(login_url="login")
+def confirm_subscription_researcher(request, pk):
+    join_flag = False
+    researcher = get_object_or_404(Researcher, id=pk)
+    initial_data = {
+        "first_name": request.user._wrapped.first_name,
+        "last_name": request    .user._wrapped.last_name,
+        "email": request.user._wrapped.email,
+        "account_type": "researcher_account",
+        "organization_name": request.user._wrapped.first_name,
+    }
+    modified_account_type_choices = [
+        choice
+        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+        if choice[0] != "member"
+    ]
+    form = SubscriptionForm(request.POST or None, initial=initial_data)
+    form.fields["inquiry_type"].choices = modified_account_type_choices
+    form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
+    form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
+    form.fields["email"].widget.attrs.update({"class": "readonly-input"})
+    if request.method == "POST":
+        if validate_recaptcha(request) and form.is_valid():
+            account_type_key = form.cleaned_data["account_type"]
+            inquiry_type_key = form.cleaned_data["inquiry_type"]
+
+            account_type_display = dict(form.fields["account_type"].choices).get(
+                account_type_key, ""
+            )
+            inquiry_type_display = dict(form.fields["inquiry_type"].choices).get(
+                inquiry_type_key, ""
+            )
+            form.cleaned_data["account_type"] = account_type_display
+            form.cleaned_data["inquiry_type"] = inquiry_type_display
+
+            first_name = form.cleaned_data["first_name"]
+            if not form.cleaned_data["last_name"]:
+                form.cleaned_data["last_name"] = first_name
+            try:
+                response = confirm_subscription(request, researcher, join_flag, form)
+                return response
+            except:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "An unexpected error has occurred here. Please contact support@localcontexts.org.",
+                )
+                return redirect("dashboard")
+    return render(
+        request,
+        "accounts/confirm-subscription.html",
+        {
+            "form": form,
+            "account": researcher,
+            "subscription_url": 'confirm-subscription-researcher',
+            "join_flag": join_flag,
+        },
+    )
 
 def public_researcher_view(request, pk):
     try:
@@ -149,6 +213,7 @@ def disconnect_orcid(request):
     return redirect('update-researcher', researcher.id)
 
 @login_required(login_url='login')
+@subscription_submission_required(Subscriber=Researcher)
 def update_researcher(request, pk):
     researcher = Researcher.objects.get(id=pk)
     user_can_view = checkif_user_researcher(researcher, request.user)
@@ -190,14 +255,15 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-def researcher_notices(request, researcher):
+@subscription_submission_required(Subscriber=Researcher)
+def researcher_notices(request, pk):
+    researcher = Researcher.objects.get(id=pk)
     notify_restricted_message = False
     create_restricted_message = False
-
-    if not researcher.is_subscribed:
-        notify_restricted_message = 'The account must be subscribed ' \
-                                    'before download is available.'
-        create_restricted_message = 'The account must be subscribed before a Project can be created'
+    try:
+        subscription = Subscription.objects.get(researcher=pk)
+    except Subscription.DoesNotExist:
+        subscription = None
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
@@ -232,6 +298,7 @@ def researcher_notices(request, researcher):
         'notify_restricted_message': notify_restricted_message,
         'create_restricted_message': create_restricted_message,
         'is_sandbox': is_sandbox,
+        'subscription': subscription,
     }
     return render(request, 'researchers/notices.html', context)
 
@@ -245,9 +312,15 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-@is_researcher()
-def researcher_projects(request, researcher):
+@is_researcher(pk_arg_name='pk')
+@subscription_submission_required(Subscriber=Researcher)
+def researcher_projects(request, pk):
+    researcher = Researcher.objects.get(id=pk)
     create_restricted_message = False
+    try:
+        subscription = Subscription.objects.get(researcher=researcher.id)
+    except Subscription.DoesNotExist:
+        subscription = None
     if not researcher.is_subscribed:
         create_restricted_message = 'The account must be subscribed before a Project can be created'
 
@@ -340,6 +413,7 @@ def researcher_projects(request, researcher):
         'results': results,
         'bool_dict': bool_dict,
         'create_restricted_message': create_restricted_message,
+        'subscription': subscription,
     }
     return render(request, 'researchers/projects.html', context)
 
@@ -347,13 +421,20 @@ def researcher_projects(request, researcher):
 # Create Project
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-def create_project(request, researcher, source_proj_uuid=None, related=None):
+@subscription_submission_required(Subscriber=Researcher)
+def create_project(request, pk, source_proj_uuid=None, related=None):
+    researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     researcher.validate_is_subscribed(bypass_validation)
 
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
+
+    try:
+        subscription = Subscription.objects.get(researcher=researcher.id)
+    except Subscription.DoesNotExist:
+        subscription = None
 
     if request.method == "GET":
         form = CreateProjectForm(request.POST or None)
@@ -372,6 +453,9 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
             # Handle multiple urls, save as array
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+
+            subscription.project_count -= 1
+            subscription.save()
 
             data.save()
 
@@ -441,8 +525,10 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
 
 
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='researcher_id')
-def edit_project(request, researcher, project_uuid):
+@is_researcher(pk_arg_name='pk')
+@subscription_submission_required(Subscriber=Researcher)
+def edit_project(request, pk, project_uuid):
+    researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     researcher.validate_is_subscribed(bypass_validation)
 
@@ -507,7 +593,7 @@ def edit_project(request, researcher, project_uuid):
     }
     return render(request, 'researchers/edit-project.html', context)
 
-
+@subscription_submission_required(Subscriber=Researcher)
 def project_actions(request, pk, project_uuid):
     try:
         project = Project.objects.prefetch_related(
@@ -521,6 +607,7 @@ def project_actions(request, pk, project_uuid):
 
         if request.user.is_authenticated:
             researcher = Researcher.objects.get(id=pk)
+            subscription = Subscription.objects.get(researcher=pk)
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):
@@ -587,11 +674,12 @@ def project_actions(request, pk, project_uuid):
                             project.save()
 
                         communities_selected = request.POST.getlist('selected_communities')
+                        notification_count = min(subscription.notification_count, len(communities_selected))
 
                         researcher_name = get_users_name(researcher.user)
                         title = f'{researcher_name} has notified you of a Project.'
 
-                        for community_id in communities_selected:
+                        for community_id in communities_selected[:notification_count]:
                             # Add communities that were notified to entities_notified instance
                             community = Community.objects.get(id=community_id)
                             entities_notified.communities.add(community)
@@ -619,7 +707,8 @@ def project_actions(request, pk, project_uuid):
 
                             # Create email
                             send_email_notice_placed(request, project, community, researcher)
-
+                        subscription.notification_count -= notification_count
+                        subscription.save()
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
                     elif 'link_projects_btn' in request.POST:
                         selected_projects = request.POST.getlist('projects_to_link')
@@ -665,6 +754,7 @@ def project_actions(request, pk, project_uuid):
                     'projects_to_link': projects_to_link,
                     'label_groups': label_groups,
                     'can_download': can_download,
+                    'subscription': subscription,
                 }
                 return render(request, 'researchers/project-actions.html', context)
         else:
@@ -691,11 +781,14 @@ def delete_project(request, researcher_id, project_uuid):
     researcher = Researcher.objects.get(id=researcher_id)
     project = Project.objects.get(unique_id=project_uuid)
 
+    subscription = Subscription.objects.get(researcher=researcher.id)
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
             notification.delete()
     
     project.delete()
+    subscription.project_count +=1
+    subscription.save()
     return redirect('researcher-projects', researcher.id)
 
 @login_required(login_url='login')
@@ -714,6 +807,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
+@subscription_submission_required(Subscriber=Researcher)
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
     user_can_view = checkif_user_researcher(researcher, request.user)

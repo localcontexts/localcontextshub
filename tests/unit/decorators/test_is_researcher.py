@@ -10,7 +10,7 @@ from factories.researchers_factories import ResearcherFactory
 
 
 @is_researcher()
-def view(request, researcher):
+def view(request, pk):
     return HttpResponse(status=200)
 
 

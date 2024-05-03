@@ -8,16 +8,13 @@ def is_researcher(pk_arg_name='pk'):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            researcher_pk = kwargs.get(pk_arg_name)
-            researcher = Researcher.objects.get(id=researcher_pk)
+            researcher = Researcher.objects.get(id=kwargs.get('pk'))
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view:
                 return redirect('restricted')
 
             # update view function args
-            kwargs['researcher'] = researcher
-            del kwargs[pk_arg_name]
-
+            kwargs['pk'] = researcher.id
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator

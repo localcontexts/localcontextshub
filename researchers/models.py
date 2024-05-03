@@ -24,7 +24,8 @@ class Researcher(models.Model):
     primary_institution = models.CharField(max_length=250, null=True, blank=True)
     orcid_auth_token = models.TextField(null=True, blank=True)
     date_connected = models.DateTimeField(auto_now_add=True, null=True)
-    is_subscribed = models.BooleanField(default=False, null=True, blank=True)
+    is_subscribed = models.BooleanField(default=False)
+    is_submitted = models.BooleanField(default=False)
 
     def get_projects(self):
         return  self.researcher_created_project.filter(researcher=self).exists()

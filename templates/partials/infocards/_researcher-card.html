@@ -1,7 +1,7 @@
 {% load static %}
 <div class="dashcard">
   <div class="flex-this">
-    <div class="researcher-img-container">
+    <div class="researcher-img-container {% if researcher.is_submitted == False %} disable {% endif %}">
       <img
         loading="lazy"
         class="profile-img"
@@ -9,6 +9,8 @@
         alt="{{ researcher.researcher_name }} image"
       />
     </div>
+    <div class="{% if  researcher.is_submitted %} flex-this column dashcard-text-container {% else %} flex-this column dashcard-text-container  disable {%endif%}">
+      <div>
     <div class="flex-this column dashcard-text-container">
       <div class="subscribed-icon-wrapper">
         <h3 class="dashcard-h3 darkteal-text">
@@ -49,7 +51,7 @@
                 {% endif %}
             </div>
         {% endif %}
-
+        {% if researcher.is_submitted %}      
         <div>
           {% if '/dashboard/' in request.path %} {% if researcher.get_projects %}
               <a
@@ -78,6 +80,16 @@
                 ></a>
               </div>
           </div>
+        {% endif %}
+        {% else %}
+                {% if '/dashboard/' in request.path %}
+                    <div>
+                        <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'confirm-subscription-researcher' researcher.id  %}"
+                        >Complete Subscription Inquiry</a>
+                    </div>
+                {% endif %}
         {% endif %}
       </div>
 
