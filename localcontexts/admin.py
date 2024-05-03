@@ -577,7 +577,7 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
             account_type = Value('Researcher', output_field=CharField())
         ).values('id', 'account_name', 'days_count', 'account_type')
 
-        inactive_institutions = Institution.objects.filter(is_approved = False, created__lte = datetime.now(tz = timezone.utc) - timedelta(days = 90)).annotate(
+        inactive_institutions = Institution.objects.filter(is_subscribed = False, created__lte = datetime.now(tz = timezone.utc) - timedelta(days = 90)).annotate(
             days_count = datetime.now(tz = timezone.utc) - F('created'),
             account_name = F('institution_name'),
             account_type = Value('Institution', output_field=CharField())
@@ -1168,7 +1168,7 @@ admin_site.register(NoticeTranslation, NoticeTranslationAdmin)
 
 # INSTITUTIONS ADMIN
 class InstitutionAdmin(admin.ModelAdmin):
-    list_display = ('institution_name', 'institution_creator', 'contact_name', 'contact_email', 'is_approved', 'is_ror', 'created', 'country')
+    list_display = ('institution_name', 'institution_creator', 'contact_name', 'contact_email', 'is_subscribed', 'is_ror', 'created', 'country')
     search_fields = ('institution_name', 'institution_creator__username', 'contact_name', 'contact_email',)
 
 admin_site.register(Institution, InstitutionAdmin)

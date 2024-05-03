@@ -5,9 +5,9 @@ from django.core.validators import MaxLengthValidator
 import uuid
 import os
 
-class ApprovedManager(models.Manager):
+class SubscribedManager(models.Manager):
     def get_queryset(self):
-        return super(ApprovedManager, self).get_queryset().filter(is_approved=True)
+        return super(SubscribedManager, self).get_queryset().filter(is_subscribed=True)
 
 def get_file_path(self, filename):
     ext = filename.split('.')[-1]
@@ -35,8 +35,6 @@ class Institution(models.Model):
     admins = models.ManyToManyField(User, blank=True, related_name="institution_admins")
     editors = models.ManyToManyField(User, blank=True, related_name="institution_editors")
     viewers = models.ManyToManyField(User, blank=True, related_name="institution_viewers")
-    is_approved = models.BooleanField(default=False, null=True)
-    approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="institution_approver")
     is_ror = models.BooleanField(default=True, null=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_submitted = models.BooleanField(default=False)
@@ -44,7 +42,7 @@ class Institution(models.Model):
 
     # Managers
     objects = models.Manager()
-    approved = ApprovedManager()
+    subscribed = SubscribedManager()
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country]

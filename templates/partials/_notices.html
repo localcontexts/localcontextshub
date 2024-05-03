@@ -271,9 +271,7 @@
                             <button class="primary-btn disabled-btn">Download Notices</button>
                             <span class="btn-help-text">
                                 {% if institution %}
-                                    {% if not institution.is_approved %}
-                                        Your institution account needs to be confirmed in order to download this Notice.
-                                    {% elif not institution.is_subscribed %}
+                                    {% if not institution.is_subscribed %}
                                         Your institution account needs to be subscribed in order to download this Notice.
                                     {% endif %}
                                 {% endif %}

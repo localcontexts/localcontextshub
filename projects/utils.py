@@ -199,6 +199,6 @@ def can_download_project(request, project_creator_instance):
         if not project_creator_instance.community.is_approved:
             can_download = False
     elif project_creator_instance.institution:
-        if not project_creator_instance.institution.is_approved:
+        if not project_creator_instance.institution.is_subscribed:
             can_download = False
     return can_download
