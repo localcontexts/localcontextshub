@@ -45,7 +45,7 @@ from django.db import transaction
 @login_required(login_url="login")
 def connect_institution(request):
     institution = True
-    institutions = Institution.approved.all()
+    institutions = Institution.subscribed.all()
     form = JoinRequestForm(request.POST or None)
 
     if request.method == "POST":
@@ -131,7 +131,7 @@ def create_institution(request):
                 data.institution_creator = request.user
                 # If in test site, approve immediately, skip confirmation step
                 if dev_prod_or_local(request.get_host()) == "SANDBOX":
-                    data.is_approved = True
+                    data.is_subscribed = True
                     data.save()
 
                     # Add to user affiliations
@@ -205,7 +205,7 @@ def confirm_institution(request, institution_id):
             data = form.save(commit=False)
             # If in test site, approve immediately, skip confirmation step
             if dev_prod_or_local(request.get_host()) == "SANDBOX":
-                data.is_approved = True
+                data.is_subscribed = True
                 data.save()
                 return redirect("confirm-subscription-institution", data.id)
             else:
@@ -477,8 +477,8 @@ def institution_notices(request, pk):
         ccn_download_perm = 0
     else:
         is_sandbox = False
-        otc_download_perm = 1 if institution.is_approved else 0
-        ccn_download_perm = 1 if institution.is_approved else 0
+        otc_download_perm = 1 if institution.is_subscribed else 0
+        ccn_download_perm = 1 if institution.is_subscribed else 0
 
     if request.method == "POST":
         if "add_policy" in request.POST:

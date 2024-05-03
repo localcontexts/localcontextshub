@@ -685,7 +685,7 @@
                 {% endif %}
 
                 {% if institution %}
-                    {% if institution.is_approved %}
+                    {% if institution.is_subscribed %}
                         {% if member_role == 'admin' or member_role == 'editor' %}
                             <a 
                                 class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}" 
@@ -1043,7 +1043,7 @@
 
 </div>
 
-{% if institution.is_approved or researcher %}
+{% if institution.is_subscribed or researcher %}
     <div id="notifyCommunitiesModal" class="modal hide">
 
         <div class="modal-defaults notice-modal flex-this column w-100">

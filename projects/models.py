@@ -178,11 +178,12 @@ class ProjectCreator(models.Model):
                 when an account is a parent project or a researcher,
                 it is considered already approved
         """
-        account = self.community or self.institution
-        if account:
-            return account.is_approved
-
-        return True
+        if self.community:
+            return self.community.is_approved
+        elif self.institution:
+            return self.institution.is_subscribed
+        else:
+            return True
 
     def validate_user_access(self, user):
         is_created_by = {

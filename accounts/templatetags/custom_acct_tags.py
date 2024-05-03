@@ -33,7 +33,7 @@ def community_count():
 
 @register.simple_tag
 def institution_count():
-    return Institution.approved.count()
+    return Institution.subscribed.count()
 
 
 @register.simple_tag
@@ -44,7 +44,7 @@ def researcher_count():
 @register.simple_tag
 def all_account_count():
     c = Community.approved.count()
-    i = Institution.approved.count()
+    i = Institution.subscribed.count()
     r = Researcher.objects.filter(is_subscribed=True).count()
     total = c + i + r
     return total

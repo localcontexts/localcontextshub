@@ -6,7 +6,7 @@
         <div class="flex-this space-between">
             <div class="w-60"><h2 class="no-top-margin">Local Contexts Projects</h2></div>
 
-            {% if community or institution %}
+            {% if  institution %}
                 {% if member_role == 'admin' or member_role == 'editor' %}
                     <div class="btn-with-helptext flex-this align-center">
                         <a 
@@ -22,6 +22,16 @@
                             href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}"  
                         {% endif %} >
                         Create a Project     <i class="fa fa-arrow-right"></i>
+                    </a>
+                    </div>
+                {% endif %}
+            {% elif community %}
+                {% if member_role == 'admin' or member_role == 'editor' %}
+                    <div class="btn-with-helptext flex-this align-center">
+                        <a 
+                            class=" primary-btn green-btn margin-top-2" 
+                            href="{% url 'create-project' community.id %}">  
+                        Create a Project  <i class="fa fa-arrow-right"></i>
                     </a>
                     </div>
                 {% endif %}

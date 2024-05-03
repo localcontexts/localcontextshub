@@ -21,6 +21,4 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
     state_province_region = factory.Faker('state')
     country = factory.Faker('country_code')
     website = factory.Faker('url')
-    is_approved = factory.Faker('boolean')
-    approved_by = factory.SubFactory(UserFactory)
     is_ror = factory.Faker('boolean')

@@ -15,7 +15,6 @@ class TestInstitute(TestCase):
         new_institution.city_town = "Test City"
         new_institution.state_province_region = "Test State"
         new_institution.country = "Test Country"
-        new_institution.is_approved = True
         new_institution.save()
 
         expected_location = "Test City, Test State, Test Country"
