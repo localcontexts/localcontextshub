@@ -435,10 +435,8 @@ button[disabled],
     position: relative;
 }
 .btn-help-text {
-    font-weight: lighter;
     position: absolute;
-    right: 295px;
-    z-index: 1;
+    left: 1080px;
     width: 250px;
     background-color: #EF6C00;
     padding: 8px 16px;
@@ -1676,4 +1674,13 @@ i[data-tooltip]:hover:after {
 .project-actions-alert {
     margin: 8px auto;
     width: 1250px;
+}
+
+/* For Subscribed Icon */
+.subscribed-icon{
+    color: #ef6c00;
+    margin: 14px 0 0 15px;
+}
+.subscribed-icon-wrapper{
+    display: flex
 }

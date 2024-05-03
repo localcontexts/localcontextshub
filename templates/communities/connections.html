@@ -21,7 +21,12 @@
                     >
                 </div>
                 <div class="flex-this column dashcard-text-container">
-                    <div><h3 class="dashcard-h3 darkteal-text">{{ institution }}</h3></div>
+                    <div class="subscribed-icon-wrapper">
+                        <h3 class="dashcard-h3 darkteal-text">{{ institution }}</h3>
+                        {% if institution.is_subscribed %}
+                            <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+                        {% endif %}
+                    </div>
                     <div>
                         <p class="dashcard-subheader">Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | 
                             Location: {{ institution.get_location }}
@@ -82,7 +87,14 @@
                     >
                 </div>
                 <div class="flex-this column dashcard-text-container">
-                    <div><h3 class="dashcard-h3 darkteal-text">{% firstof researcher.user.get_full_name researcher.user.username %}</h3></div>
+                    <div class="subscribed-icon-wrapper">
+                        <h3 class="dashcard-h3 darkteal-text">
+                          {% firstof researcher.user.get_full_name researcher.user.username %}
+                        </h3>
+                        {% if researcher.is_subscribed %}
+                          <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+                        {% endif %}
+                    </div>
                     <div>
                         <p class="dashcard-subheader">Researcher | Location: {{ profile.get_location }} </p>
                     </div>
@@ -139,7 +151,12 @@
                     >
                 </div>
                 <div class="flex-this column dashcard-text-container">
-                    <div><h3 class="dashcard-h3 darkteal-text">{{ comm }}</h3></div>
+                    <div class="subscribed-icon-wrapper">
+                        <h3 class="dashcard-h3 darkteal-text">{{ comm }}</h3>
+                        {% if comm.is_approved %}
+                            <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
+                        {% endif %}
+                    </div>
                     <div>
                         <p class="dashcard-subheader">Community | Members: {% if comm.get_member_count < 10 %}0{{ comm.get_member_count }}{% else %}{{ comm.get_member_count }}{% endif %} | 
                             Location: {{ comm.get_location }}
