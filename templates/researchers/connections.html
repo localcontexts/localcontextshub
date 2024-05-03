@@ -30,7 +30,7 @@
                 <div class="flex-this column dashcard-text-container">
                     <div class="subscribed-icon-wrapper">
                         <h3 class="dashcard-h3 darkteal-text">{{ institution.institution_name }}</h3>
-                        {% if institution and institution.is_subscribed %}
+                        {% if institution.is_subscribed %}
                             <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
                         {% endif %}
                     </div>
@@ -97,7 +97,7 @@
                         <h3 class="dashcard-h3 darkteal-text">
                           {% firstof res.user.get_full_name researcher.user.username %}
                         </h3>
-                        {% if res and res.is_subscribed %}
+                        {% if res.is_subscribed %}
                           <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
                         {% endif %}
                     </div>
@@ -159,7 +159,7 @@
                 <div class="flex-this column dashcard-text-container">
                     <div class="subscribed-icon-wrapper">
                         <h3 class="dashcard-h3 darkteal-text">{{ community }}</h3>
-                        {% if community and community.is_approved %}
+                        {% if community.is_approved %}
                             <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
                         {% endif %}
                     </div>
