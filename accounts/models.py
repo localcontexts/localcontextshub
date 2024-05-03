@@ -154,3 +154,14 @@ class Subscription(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+        ordering = ('-date_sent', )
+
+
+class InactiveUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=150)
+    email = models.EmailField()
+    date_joined = models.DateTimeField()
+
+    def __str__(self):
+        return self.username

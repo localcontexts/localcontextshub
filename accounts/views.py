@@ -777,8 +777,9 @@ def projects_board(request, filtertype=None):
         else:
             if filtertype == "labels":
                 results = projects.filter(
-                    Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)
-                )
+                    Q(bc_labels__isnull=False) |
+                    Q(tk_labels__isnull=False)
+                ).distinct()
             elif filtertype == "notices":
                 results = projects.filter(
                     project_notice__archived=False

@@ -239,14 +239,7 @@ def get_notice_defaults():
 
 
 # Create/Update/Delete Notices and Notice Translations
-def crud_notices(
-    request,
-    selected_notices,
-    selected_translations,
-    organization,
-    project,
-    existing_notices,
-):
+def crud_notices(request, selected_notices, selected_translations, organization, project, existing_notices, has_changes):
     # organization: instance of institution or researcher
     # selected_notices: list: ['attribution_incomplete', 'bcnotice', 'tknotice']
     # existing_notices: a queryset of notices that exist for this project already
@@ -293,28 +286,27 @@ def crud_notices(
             update_notice_translation(new_notice, selected_translations)
 
     def create_notices(existing_notice_types):
+        nonlocal has_changes
         for notice_type in selected_notices:
             if notice_type:
                 if existing_notice_types:
                     if not notice_type in existing_notice_types:
+                        has_changes = True
                         create(notice_type)
                 else:
                     create(notice_type)
 
     def update_notice_translation(notice, selected_translations):
-        selected_notice_types_langs = [
-            value.split("-") for value in selected_translations
-        ]
+        selected_notice_types_langs = [value.split('-') for value in selected_translations]
+        nonlocal has_changes
 
         for translation in notice.notice_translations.all():
             ntype = translation.notice_type
             lang_tag = translation.language_tag
 
             # If this notice translation is not in the selected translations and its type matches the notice, delete it
-            if (
-                ntype,
-                lang_tag,
-            ) not in selected_notice_types_langs and notice.notice_type == ntype:
+            if [ntype, lang_tag] not in selected_notice_types_langs and notice.notice_type == ntype:
+                has_changes = True
                 translation.delete()
 
         for ntype, lang_tag in selected_notice_types_langs:
@@ -324,15 +316,15 @@ def crud_notices(
                 if not notice.notice_translations.filter(
                     notice_type=ntype, language_tag=lang_tag
                 ).exists():
+                    has_changes = True
                     notice.save(language_tag=lang_tag)
 
     if existing_notices:
         existing_notice_types = []
         for notice in existing_notices:
             existing_notice_types.append(notice.notice_type)
-            if (
-                not notice.notice_type in selected_notices
-            ):  # if existing notice not in selected notices, delete notice
+            if not notice.notice_type in selected_notices: # if existing notice not in selected notices, delete notice
+                has_changes = True
                 notice.delete()
                 ProjectActivity.objects.create(
                     project=project,
@@ -340,9 +332,10 @@ def crud_notices(
                 )
             update_notice_translation(notice, selected_translations)
         create_notices(existing_notice_types)
-
+        return has_changes
     else:
         create_notices(None)
+        return has_changes
 
 
 def add_remove_labels(request, project, community):

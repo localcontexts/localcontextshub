@@ -13,6 +13,13 @@ class CustomizeBCLabelForm(forms.ModelForm):
             'audiofile': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'originalLabelAudioUploadBtn', 'onchange': 'showAudioFileName()'}),
         }
     
+    def clean(self):
+        super(CustomizeBCLabelForm, self).clean()
+        label_text =  self.cleaned_data.get('label_text')
+
+        if label_text == '':
+            self._errors['label_text'] = self.error_class(['Label text must not be empty.'])
+
     def clean_audiofile(self):
         audiofile = self.cleaned_data.get('audiofile')
         if audiofile:

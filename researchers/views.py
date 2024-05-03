@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
+from django.db.models import Q
 from itertools import chain
 
 from localcontexts.utils import dev_prod_or_local
@@ -21,6 +22,8 @@ from accounts.forms import (
     ContactOrganizationForm,
     SubscriptionForm,
 )
+from accounts.forms import ContactOrganizationForm
+from .decorators import is_researcher
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
@@ -30,6 +33,7 @@ from accounts.decorators import subscription_submission_required
 from .models import Researcher
 from .forms import *
 from .utils import *
+
 
 @login_required(login_url='login')
 def connect_researcher(request):
@@ -212,46 +216,45 @@ def disconnect_orcid(request):
     researcher.save()
     return redirect('update-researcher', researcher.id)
 
+
 @login_required(login_url='login')
+@is_researcher()
 @subscription_submission_required(Subscriber=Researcher)
 def update_researcher(request, pk):
+    env = dev_prod_or_local(request.get_host())
     researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
-        env = dev_prod_or_local(request.get_host())
-        if request.method == 'POST':
-            update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
 
-            if 'clear_image' in request.POST:
-                researcher.image = None
-                researcher.save()
-                return redirect('update-researcher', researcher.id)
-            else:
-                if update_form.is_valid():
-                    data = update_form.save(commit=False)
-                    data.save()
+    if request.method == 'POST':
+        update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
 
-                    if not researcher.orcid:
-                        orcid_id = request.POST.get('orcidId')
-                        orcid_token = request.POST.get('orcidIdToken')
-                        researcher.orcid_auth_token = orcid_token
-                        researcher.orcid = orcid_id
-                        researcher.save()
-
-                    messages.add_message(request, messages.SUCCESS, 'Settings updated!')
-                    return redirect('update-researcher', researcher.id)
+        if 'clear_image' in request.POST:
+            researcher.image = None
+            researcher.save()
+            return redirect('update-researcher', researcher.id)
         else:
-            update_form = UpdateResearcherForm(instance=researcher)
-        
-        context = {
-            'update_form': update_form,
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'env': env
-        }
-        return render(request, 'account_settings_pages/_update-account.html', context)
+            if update_form.is_valid():
+                data = update_form.save(commit=False)
+                data.save()
+
+                if not researcher.orcid:
+                    orcid_id = request.POST.get('orcidId')
+                    orcid_token = request.POST.get('orcidIdToken')
+                    researcher.orcid_auth_token = orcid_token
+                    researcher.orcid = orcid_id
+                    researcher.save()
+
+                messages.add_message(request, messages.SUCCESS, 'Settings updated!')
+                return redirect('update-researcher', researcher.id)
+    else:
+        update_form = UpdateResearcherForm(instance=researcher)
+
+    context = {
+        'update_form': update_form,
+        'researcher': researcher,
+        'user_can_view': True,
+        'env': env
+    }
+    return render(request, 'account_settings_pages/_update-account.html', context)
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
@@ -268,6 +271,12 @@ def researcher_notices(request, pk):
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+        is_sandbox = True
+        otc_download_perm = 0
+    else:
+        is_sandbox = False
+        otc_download_perm = 1
     if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
         otc_download_perm = 0
@@ -384,6 +393,10 @@ def researcher_projects(request, pk):
         projects = projects.order_by('title')
         bool_dict['title_az'] = True
 
+    elif sort_by == 'archived':
+        projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=archived).order_by('-date_added')
+        bool_dict['is_archived'] = True
+
     elif sort_by == 'visibility_public':
         projects = Project.objects.select_related('project_creator').prefetch_related('bc_labels', 'tk_labels').filter(unique_id__in=project_ids, project_privacy='Public').exclude(unique_id__in=archived).order_by('-date_added')
         bool_dict['visibility_public'] = True
@@ -402,6 +415,7 @@ def researcher_projects(request, pk):
 
     page = paginate(request, projects, 10)
 
+    results = []
     if request.method == 'GET':
         results = return_project_search_results(request, projects)
 
@@ -426,7 +440,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     researcher.validate_is_subscribed(bypass_validation)
-
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
@@ -447,15 +460,15 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             data = form.save(commit=False)
             data.project_creator = request.user
 
+
+            subscription.project_count -= 1
+            subscription.save()
             # Define project_page field
             data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
 
             # Handle multiple urls, save as array
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
-
-            subscription.project_count -= 1
-            subscription.save()
 
             data.save()
 
@@ -490,14 +503,14 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             creator.researcher = researcher
             creator.save()
 
-            # Create notices for project
-            notices_selected = request.POST.getlist('checkbox-notice')
-            translations_selected = request.POST.getlist('checkbox-translation')
-            crud_notices(request, notices_selected, translations_selected, researcher, data, None)
-
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, researcher, data)
 
+            # Create notices for project
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            crud_notices(request, notices_selected, translations_selected, researcher, data, None, False)
+            
             # Project person formset
             instances = formset.save(commit=False)
             for instance in instances:
@@ -508,10 +521,13 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                 send_project_person_email(request, instance.email, data.unique_id, researcher)
 
             # Send notification
-            title = 'Your Project has been created, remember to notify a community of your project.'
+            title = 'Your project has been created, remember to notify a community of your project.'
             ActionNotification.objects.create(title=title, sender=request.user, notification_type='Projects', researcher=researcher, reference_id=data.unique_id)
 
             return redirect('researcher-projects', researcher.id)
+    else:
+        form = CreateProjectForm(None)
+        formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
 
     context = {
         'researcher': researcher,
@@ -522,6 +538,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
         'user_can_view': True,
     }
     return render(request, 'researchers/create-project.html', context)
+
 
 
 @login_required(login_url='login')
@@ -546,6 +563,7 @@ def edit_project(request, pk, project_uuid):
 
     if request.method == 'POST':
         if form.is_valid() and formset.is_valid():
+            has_changes = form.has_changed()
             data = form.save(commit=False)
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
@@ -553,6 +571,8 @@ def edit_project(request, pk, project_uuid):
 
             editor_name = get_users_name(request.user)
             ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
+
+            communities = ProjectStatus.objects.filter( Q(status='pending') | Q(status__isnull=True),project=data, seen=True).select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
 
             # Adds activity to Hub Activity
             HubActivity.objects.create(
@@ -573,10 +593,11 @@ def edit_project(request, pk, project_uuid):
             # Which notices were selected to change
             notices_selected = request.POST.getlist('checkbox-notice')
             translations_selected = request.POST.getlist('checkbox-translation')
-            crud_notices(request, notices_selected, translations_selected, researcher, data, notices)
+            has_changes = crud_notices(request, notices_selected, translations_selected, researcher, data, notices, has_changes)
 
+            if has_changes:
+                send_action_notification_project_status(request, project, communities)
         return redirect('researcher-project-actions', researcher.id, project.unique_id)
-
 
     context = {
         'researcher': researcher,
@@ -592,6 +613,7 @@ def edit_project(request, pk, project_uuid):
 
     }
     return render(request, 'researchers/edit-project.html', context)
+
 
 @subscription_submission_required(Subscriber=Researcher)
 def project_actions(request, pk, project_uuid):
@@ -807,35 +829,33 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
+@is_researcher(pk_arg_name='pk')
 @subscription_submission_required(Subscriber=Researcher)
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
-    user_can_view = checkif_user_researcher(researcher, request.user)
-    if user_can_view == False:
-        return redirect('restricted')
-    else:
 
-        researchers = Researcher.objects.none()
+    institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
+    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
 
-        institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-        institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
-    
-        community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
-        communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
-        
-        project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
-        contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
-        for c in contributors:
-            researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+    community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
+    communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
 
-        context = {
-            'researcher': researcher,
-            'user_can_view': user_can_view,
-            'communities': communities,
-            'researchers': researchers,
-            'institutions': institutions,
-        }
-        return render(request, 'researchers/connections.html', context)
+    project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
+    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
+
+    researchers = []
+    for c in contributors:
+        researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+
+    context = {
+        'researcher': researcher,
+        'user_can_view': True,
+        'communities': communities,
+        'researchers': researchers,
+        'institutions': institutions,
+    }
+    return render(request, 'researchers/connections.html', context)
+
     
 @force_maintenance_mode_off
 def embed_otc_notice(request, pk):
