@@ -11,9 +11,14 @@
     </div>
     <div class="{% if  researcher.is_submitted %} flex-this column dashcard-text-container {% else %} flex-this column dashcard-text-container  disable {%endif%}">
       <div>
+    <div class="flex-this column dashcard-text-container">
+      <div class="subscribed-icon-wrapper">
         <h3 class="dashcard-h3 darkteal-text">
           {% firstof researcher.user.get_full_name researcher.user.username %}
         </h3>
+        {% if researcher and researcher.is_subscribed %}
+          <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+        {% endif %}
       </div>
       <div>
         <p class="dashcard-subheader">
@@ -34,10 +39,10 @@
         {% if '/registry/' in request.path %}
             <div>
                 <div class="margin-bottom-16">
-                    <a 
+                    <a
                         class="primary-btn action-btn"
-                        href="{% url 'public-researcher' researcher.id %}"                    
-                    >View public page</a>                        
+                        href="{% url 'public-researcher' researcher.id %}"
+                    >View public page</a>
                 </div>
                 {% if researcher.otc_researcher_url.all %}
                     <div class="flex-this flex-end">
@@ -73,7 +78,7 @@
                   class="round-btn-small darkteal-text primary-btn white-btn"
                   ><i class="no-margin fa fa-cog" aria-hidden="true"></i
                 ></a>
-              </div>          
+              </div>
           </div>
         {% endif %}
         {% else %}
