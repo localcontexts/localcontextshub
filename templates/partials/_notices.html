@@ -31,15 +31,18 @@
                                     class="primary-btn blue-btn"
                                     href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
                                 {% endif %}
-
                             {% endif %}
                             {% if institution %}
                                 {% if not institution.is_subscribed %}
                                     class="block a-disabled primary-btn blue-btn"
-                                    title="Your institution account needs to be subscribed in order to download this Notice."
-                                {% else %}
-                                class="primary-btn blue-btn"
-                                href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
+                                    title="{% if not institution.is_submitted %}
+                                    The institution must be subscribed before download is available.
+                                    {% else %}
+                                    The subscription process of your institution is not completed yet.
+                                    {% endif %}"
+                                    {% else %}
+                                    class="primary-btn blue-btn"
+                                    href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
                                 {% endif %}
                             {% endif %}
                             >                            
