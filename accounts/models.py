@@ -154,7 +154,7 @@ class Subscription(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        ordering = ('-date_sent', )
+        # ordering = ('-date_sent', )
 
 
 class InactiveUser(models.Model):
