@@ -2000,6 +2000,8 @@ if (window.location.href.includes('create-institution')) {
     const createInstitutionBtn = document.getElementById('createInstitutionBtn')
     const clearFormBtn = document.getElementById('clearFormBtn')
     const descriptionField = document.getElementById('id_description')
+    const contactNameField = document.getElementById('institutionContactNameField')
+    const contactEmailField = document.getElementById('institutionContactEmailField')
 
     let characterCounter = document.getElementById('charCount')
     let delayTimer
@@ -2039,6 +2041,8 @@ if (window.location.href.includes('create-institution')) {
         stateProvRegionInputField.value = ''
         countryInputField.value = ''
         descriptionField.value = ''
+        contactNameField.value = ''
+        contactEmailField.value = ''
 
         characterCounter.textContent = '200/200'
     })

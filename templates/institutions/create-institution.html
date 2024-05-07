@@ -1,5 +1,16 @@
 {% extends 'register-base.html' %} {% block title %} Create Institution {% endblock %}{% load static %} {% block card %}
-
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+  </script>
 <div class="flex-this column account-registration-container">
     <div class="flex-this space-between">
         <div><h2 class="no-top-margin margin-bottom-8">Institution Account</h2></div>
@@ -12,7 +23,7 @@
         Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
     </p>
 
-    <form id="createInstitutionForm" action="" method="POST" class="flex-this column w-100">
+    <form action="{% url 'create-institution' %}" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
         <div id="ror-input-container" class="margin-top-16">
@@ -37,9 +48,16 @@
             </div>
         </div>
 
-        <div class="margin-top-8">
-            <label class="pad-top-1-5" for="country">Country</label><br>
-            {{ form.country }}                
+        <div class="margin-top-8 w-100 flex-this">
+            <div class="w-50 margin-right-1">
+                <label class="pad-top-1-5" for="country">Country</label><br>
+                {{ form.country }}
+            </div>
+
+            <div class="w-50">
+                <label for="inquiry_type">Inquiry type</label><br>
+                {{ subscription_form.inquiry_type }}
+            </div>
         </div>
 
         <div class="w-100">
@@ -53,6 +71,18 @@
                 {{ form.description }}
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
+        </div>
+
+        <div class="w-100 flex-this">
+            <div class="w-50 margin-right-1">
+                <label class="pad-top-1-5" for="city_town">Contact name</label><br>
+                {{ form.contact_name }}
+            </div>
+
+            <div class="w-50">
+                <label for="state_province_region">Contact Email</label><br>
+                {{ form.contact_email }}
+            </div>
         </div>
 
         <div class="flex-this space-between margin-top-8">
@@ -72,6 +102,11 @@
             </div>
             
             {{ form.ror_id }}
+            <input
+            type="hidden"
+            name="g-recaptcha-response"
+            id="g-recaptcha-response"
+            />
             <div class="flex-this creat-account__container-width__buttons">
                 <div class="margin-right-8">
                     <button id="clearFormBtn" class="primary-btn white-btn btn-width__clear-form margin-top-2">Clear form <i class="fa-regular fa-eraser"></i></button>
@@ -85,5 +120,42 @@
     </form>
 
 </div>
-
+<script>
+    function disableButton() {
+      if (validateForm()) {
+        document.getElementById("createInstitutionBtn").style.display = "none";
+        document.getElementById("loading-spinner").classList.remove('hide');
+      }
+    }
+  
+    function validateForm() {
+      var isValid = true;
+      var inputs = document.getElementsByTagName("input");
+      var selects = document.getElementsByTagName("select");
+      for (var i = 0; i < inputs.length; i++) {
+          if (inputs[i].hasAttribute("required") && (inputs[i].value.trim() === "" )) {
+              isValid = false;
+              break;
+          }
+  
+          if (inputs[i].type === "email" && !isValidEmail(inputs[i].value.trim())) {
+              isValid = false;
+              break;
+          }
+  
+      }
+      for (var i = 0; i < selects.length; i++) {
+        if (selects[i].hasAttribute("required") && (selects[i].value.trim() === "" )) {
+                isValid = false;
+                break;
+          }
+      }
+      return isValid;
+    }
+  
+    function isValidEmail(email) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+  </script>
 {% endblock %}

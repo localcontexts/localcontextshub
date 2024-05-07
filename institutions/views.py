@@ -113,52 +113,42 @@ def preparation_step(request):
 
 @login_required(login_url="login")
 def create_institution(request):
+    form = CreateInstitutionForm()
+    subscription_form = SubscriptionForm()
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
-        affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
-            user=request.user
-        )
 
-        if form.is_valid():
-            name = form.cleaned_data["institution_name"]
+        if form.is_valid() and validate_recaptcha(request):
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+            "first_name": request.user._wrapped.first_name,
+            "last_name": request.user._wrapped.last_name,
+            "email": request.user._wrapped.email,
+            "account_type": "institution_account",
+            "organization_name": form.cleaned_data['institution_name'],
+            }
+            
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
+            affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
 
-            if Institution.objects.filter(institution_name=name).exists():
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "An institution by this name already exists.",
-                )
-            else:
-                data = form.save(commit=False)
-                data.institution_creator = request.user
-                # If in test site, approve immediately, skip confirmation step
-                if dev_prod_or_local(request.get_host()) == "SANDBOX":
-                    data.is_subscribed = True
-                    data.save()
+            data = form.save(commit=False)
+            data.institution_creator = request.user
+            data.save()
+            
+            affiliation.institutions.add(data)
+            affiliation.save()
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Institution",
+                institution_id=data.id,
+                action_account_type="institution",
+            )
 
-                    # Add to user affiliations
-                    affiliation.institutions.add(data)
-                    affiliation.save()
-                    return redirect("dashboard")
-                else:
-                    data.save()
-
-                    # Add to user affiliations
-                    affiliation.institutions.add(data)
-                    affiliation.save()
-
-                    # Adds activity to Hub Activity
-                    HubActivity.objects.create(
-                        action_user_id=request.user.id,
-                        action_type="New Institution",
-                        institution_id=data.id,
-                        action_account_type="institution",
-                    )
-                    return redirect("confirm-institution", data.id)
-    else:
-        form = CreateInstitutionForm()
-
-    return render(request, "institutions/create-institution.html", {"form": form})
+            if subscription_form.is_valid():
+                handle_confirmation_and_subscription(request, subscription_form, data)
+                return redirect('dashboard')
+    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form,})
 
 
 @login_required(login_url="login")
@@ -195,33 +185,33 @@ def create_custom_institution(request):
     )
 
 
-@login_required(login_url="login")
-def confirm_institution(request, institution_id):
-    institution = Institution.objects.get(id=institution_id)
+# @login_required(login_url="login")
+# def confirm_institution(request, institution_id):
+#     institution = Institution.objects.get(id=institution_id)
 
-    form = ConfirmInstitutionForm(
-        request.POST or None, request.FILES, instance=institution
-    )
-    if request.method == "POST":
-        if form.is_valid():
-            data = form.save(commit=False)
-            # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == "SANDBOX":
-                data.is_subscribed = True
-                data.save()
-                return redirect("confirm-subscription-institution", data.id)
-            else:
-                data.save()
-                send_hub_admins_application_email(request, institution, data)
-                return redirect("confirm-subscription-institution", data.id)
-    return render(
-        request,
-        "accounts/confirm-account.html",
-        {
-            "form": form,
-            "institution": institution,
-        },
-    )
+#     form = ConfirmInstitutionForm(
+#         request.POST or None, request.FILES, instance=institution
+#     )
+#     if request.method == "POST":
+#         if form.is_valid():
+#             data = form.save(commit=False)
+#             # If in test site, approve immediately, skip confirmation step
+#             if dev_prod_or_local(request.get_host()) == "SANDBOX":
+#                 data.is_subscribed = True
+#                 data.save()
+#                 return redirect("confirm-subscription-institution", data.id)
+#             else:
+#                 data.save()
+#                 send_hub_admins_application_email(request, institution, data)
+#                 return redirect("confirm-subscription-institution", data.id)
+#     return render(
+#         request,
+#         "accounts/confirm-account.html",
+#         {
+#             "form": form,
+#             "institution": institution,
+#         },
+#     )
 
 
 @login_required(login_url="login")
