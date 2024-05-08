@@ -1538,12 +1538,15 @@ def embed_otc_notice(request, pk):
 def api_keys(request, pk, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    subscription_api_key_count = 0
+    subscription = Subscription.objects.get(institution=institution)
+    subscription_api_key_count = subscription.api_key_count
+    
     
     if request.method == 'GET':
         form = APIKeyGeneratorForm(request.GET or None)
         institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("name", "encrypted_key")
     elif request.method == "POST":
-        subscription = Subscription.objects.get(institution=institution)
         if subscription.api_key_count == 0:
             messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
                                 'Please upgrade your subscription plan to create more API Keys.')
@@ -1566,9 +1569,10 @@ def api_keys(request, pk, related=None):
         return redirect("institution-api-key", institution.id)
     
     context = {
-        "institution": institution,
-        "form": form,
+        "institution" : institution,
+        "form" : form,
         "institution_keys" : institution_keys,
-        "member_role": member_role,
+        "member_role" : member_role,
+        "subscription_api_key_count" : subscription_api_key_count
     }
     return render(request, 'account_settings_pages/_api-keys.html', context)

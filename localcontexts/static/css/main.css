@@ -1689,3 +1689,10 @@ i[data-tooltip]:hover:after {
 .subscribed-icon-wrapper{
     display: flex
 }
+
+/* Subscription Counters */
+.subscription-counter {
+    background-color: #E8F1F3;
+    border-radius: 4px;
+    padding: 16px;
+}
