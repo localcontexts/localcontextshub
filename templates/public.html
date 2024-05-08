@@ -106,6 +106,16 @@
             </div>
 
         </div>
+
+        {% if community.boundary.coordinates %}
+        <div>
+            <h3>Community Boundary</h3>
+            <iframe src="{% url 'community-boundary-view' community.id %}"
+                    style="width:800px; height: 500px;">
+            </iframe>
+        </div>
+        {% endif %}
+
         <div>
             <div>
                 <h3>Community Labels used</h3>
