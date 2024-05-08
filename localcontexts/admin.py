@@ -36,6 +36,7 @@ from notifications.models import UserNotification, ActionNotification
 from projects.models import *
 from researchers.models import Researcher
 from tklabels.models import TKLabel
+from accounts.models import InactiveUser
 
 # ADMIN HOMEPAGE
 class MyAdminSite(admin.AdminSite):
@@ -1248,3 +1249,8 @@ class DjangoJobExecutionAdmin(admin.ModelAdmin):
     list_display = ('job', 'status', 'run_time')
 
 admin_site.register(DjangoJobExecution, DjangoJobExecutionAdmin)
+
+class InactiveUserAdmin(admin.ModelAdmin):
+    list_display = ('user', 'username', 'email', 'date_joined')
+
+admin_site.register(InactiveUser, InactiveUserAdmin)

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
+from django.db.models import Q
 from itertools import chain
 from .decorators import member_required
 from accounts.decorators import subscription_submission_required
@@ -1052,7 +1053,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                 translations_selected,
                 institution,
                 data,
-                None,
+                None, False,
             )
 
             # Add selected contributors to the ProjectContributors object
@@ -1115,16 +1116,15 @@ def edit_project(request, pk, project_uuid):
 
     if request.method == 'POST':
         if form.is_valid() and formset.is_valid():
+            has_changes = form.has_changed()
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
             data.save()
 
             editor_name = get_users_name(request.user)
-            ProjectActivity.objects.create(
-                project=data, activity=f"Edits to Project were made by {editor_name}"
-            )
-
+            ProjectActivity.objects.create(project=data, activity=f'Edits to Project were made by {editor_name}')
+            communities = ProjectStatus.objects.filter( Q(status='pending') | Q(status__isnull=True),project=data, seen=True).select_related('community').order_by('community').distinct('community').values_list('community', flat=True)
             # Adds activity to Hub Activity
             HubActivity.objects.create(
                 action_user_id=request.user.id,
@@ -1142,20 +1142,14 @@ def edit_project(request, pk, project_uuid):
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, institution, data)
 
-            notices_selected = request.POST.getlist("checkbox-notice")
-            translations_selected = request.POST.getlist("checkbox-translation")
-            crud_notices(
-                request,
-                notices_selected,
-                translations_selected,
-                institution,
-                data,
-                notices,
-            )
+            notices_selected = request.POST.getlist('checkbox-notice')
+            translations_selected = request.POST.getlist('checkbox-translation')
+            has_changes = crud_notices(request, notices_selected, translations_selected, institution, data, notices, has_changes)
+            
+            if has_changes:
+                send_action_notification_project_status(request, project, communities)
+        return redirect('institution-project-actions', institution.id, project.unique_id)
 
-        return redirect(
-            "institution-project-actions", institution.id, project.unique_id
-        )
 
     context = {
         "member_role": member_role,
