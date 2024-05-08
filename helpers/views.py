@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.conf import settings
+from django.views.decorators.clickjacking import xframe_options_sameorigin
+
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
@@ -89,25 +91,21 @@ def download_institution_support_letter(request):
         raise Http404()
 
 
-@login_required(login_url='login')
+@xframe_options_sameorigin
 def community_boundary_view(request, community_id):
-    try:
-        community = Community.objects.get(id=community_id)
-        if not community.is_user_in_community(request.user):
-            message = 'User Does Not Have Access To Community Boundary'
-            print(f'{message}: {request.user}')
-            raise Exception(message)
+    community = Community.objects.filter(id=community_id).first()
+    if not community:
+        message = 'Community Boundary Does Not Exist'
+        raise Http404(message)
 
-        boundary = []
-        if community.boundary:
-            boundary = community.boundary.get_coordinates(as_tuple=False)
+    boundary = []
+    if community.boundary:
+        boundary = community.boundary.get_coordinates(as_tuple=False)
 
-        context = {
-            'boundary': boundary
-        }
-        return render(request, 'boundary/boundary-view.html', context)
-    except:
-        raise Http404()
+    context = {
+        'boundary': boundary
+    }
+    return render(request, 'boundary/boundary-view.html', context)
 
 
 @login_required(login_url='login')
