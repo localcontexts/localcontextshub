@@ -95,7 +95,7 @@ def download_institution_support_letter(request):
 def community_boundary_view(request, community_id):
     community = Community.objects.filter(id=community_id).first()
     if not community:
-        message = 'Community Boundary Does Not Exist'
+        message = 'Community Does Not Exist'
         raise Http404(message)
 
     boundary = []

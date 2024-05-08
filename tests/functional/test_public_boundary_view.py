@@ -23,7 +23,7 @@ class TestFeatures(TransactionTestCase):
         }
         response = self.client.get(reverse('community-boundary-view', kwargs=kwargs))
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.context.get('exception'), 'Community Boundary Does Not Exist')
+        self.assertEqual(response.context.get('exception'), 'Community Does Not Exist')
 
     def test_community_with_boundaries(self):
         kwargs = {
