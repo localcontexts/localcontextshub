@@ -590,7 +590,7 @@
                 {% if 'projects/actions/' in request.path %}
                     {% if request.user == project.project_creator %}
                         <a
-                            {% if researcher and not researcher.is_subscribed %}
+                            {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
                                 class="block a-disabled"
                             {% else %}
                                 class="block"
@@ -607,10 +607,10 @@
                             {% endif %}
                         >
                             <i class="fa-solid fa-pen-to-square"></i> Edit Project
-                            {% if researcher and not researcher.is_subscribed %}
+                            {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
                                 <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                     <span class="tooltiptext">
-                                        The account must be subscribed before a Project can be edited
+                                        The account that created this Project must have an active subscription to edit
                                     </span>
                                 </div>
                             {% endif %}
@@ -619,7 +619,10 @@
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
                             <a 
-                                class="block {% if researcher and not researcher.is_subscribed %}block a-disabled{% endif %}"
+                                class="block 
+                                    {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %} 
+                                        a-disabled
+                                    {% endif %}"
                                 {% if community %}
                                     href="{% url 'create-project' community.id project.unique_id %}"
                                 {% endif %}
@@ -632,20 +635,35 @@
 
                             >
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
-                                {% if researcher and not researcher.is_subscribed %}
+                                {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
                                     <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                         <span class="tooltiptext">
-                                            The account must be subscribed before a Project can be created
+                                            The account that created this Project must have an active subscription to create a Project
                                         </span>
                                     </div>
                                 {% endif %}
+                                {% if researcher and researcher.is_subscribed and subscription.notification_count == 0 %}
+                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your account has reached the Project creation limit. Please update your subscription to create more Projects
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                {% if institution and institution.is_subscribed and subscription.notification_count == 0 %}
+                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your account has reached the Project creation limit. Please update your subscription to create more Projects
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                
                             </a>
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
                                 <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                     <span class="tooltiptext">
-                                        The Project you are viewing is already a sub-project.
+                                        The Project you are viewing is already a sub-project
                                     </span>
                                 </div> 
                             </a>
@@ -694,42 +712,52 @@
                                 {% endif %}
                                 ><i class="fa-solid fa-user-group"></i> Notify Communities
                                 {% if subscription.notification_count == 0 %}
-                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
-                                    <span class="tooltiptext">
-                                        Your institution has reached its notification limit. Please upgrade your subscription plan to notify more communities.
-                                    </span>
-                                </div> 
+                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your institution has reached its notification limit. Please upgrade your subscription plan to notify more communities.
+                                        </span>
+                                    </div> 
                                 {% endif %}
                             </a>
                         {% endif %}
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-user-group"></i> Notify Communities
+                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                <span class="tooltiptext">
+                                    Your institution account needs an active subscription to notify communities.
+                                </span>
+                            </div> 
                         </a>
                     {% endif %}
                 {% endif %}
 
                 {% if researcher %}
-                    {% if researcher and not researcher.is_subscribed %}
+                    {% if not researcher.is_subscribed %}
                         <a class="block a-disabled">
                             <i class="fa-solid fa-user-group"></i> Notify Communities 
-                        </a>
-                        {% else %}
-                        <a
-                        class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}"
-                        {% if subscription.notification_count != 0 %} 
-                        onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                        {% endif %}
-                        ><i class="fa-solid fa-user-group"></i> Notify Communities 
-                        {% if subscription.notification_count == 0 %}
                             <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                                 <span class="tooltiptext">
-                                    Your account has reached its notification limit. Please upgrade your subscription plan to notify more communities.
+                                    Your researcher account needs an active subscription to notify communities.
                                 </span>
                             </div> 
-                        {% endif %}
                         </a>
-                        {% endif %}
+                    {% else %}
+                        <a
+                            class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}"
+                            {% if subscription.notification_count != 0 %} 
+                                onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                            {% endif %}
+                        ><i class="fa-solid fa-user-group"></i> Notify Communities 
+                            {% if subscription.notification_count == 0 %}
+                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                    <span class="tooltiptext">
+                                        Your account has reached its notification limit. Please upgrade your subscription plan to notify more communities.
+                                    </span>
+                                </div> 
+                            {% endif %}
+                        </a>
+                    {% endif %}
                 {% endif %}
 
             {% endif %}
@@ -1048,7 +1076,7 @@
 
 </div>
 
-{% if institution.is_subscribed or researcher %}
+{% if institution.is_subscribed or researcher.is_subscribed %}
     <div id="notifyCommunitiesModal" class="modal hide">
 
         <div class="modal-defaults notice-modal flex-this column w-100">
@@ -1154,18 +1182,18 @@
 
 {% endif %}
 {% if status is False %}
-<div id="disclaimerAlert" class="modal">
-    <div class="modal-defaults deactivate-modal flex-this column w-100">
-        <div class="w-100">
-            <div>
-                <h5 class="primary-black-text no-top-margin">This account needs to be confirmed before public view is available to others.</h5>  
-            </div>
-            <div class="flex-this w-100 text-align-center">   
-                <div class="margin-left-1 primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+    <div id="disclaimerAlert" class="modal">
+        <div class="modal-defaults deactivate-modal flex-this column w-100">
+            <div class="w-100">
+                <div>
+                    <h5 class="primary-black-text no-top-margin">This account needs to be confirmed before public view is available to others.</h5>  
+                </div>
+                <div class="flex-this w-100 text-align-center">   
+                    <div class="margin-left-1 primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endif %}
 
 <script>
