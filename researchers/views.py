@@ -629,7 +629,7 @@ def project_actions(request, pk, project_uuid):
 
         if request.user.is_authenticated:
             researcher = Researcher.objects.get(id=pk)
-            subscription = Subscription.objects.get(researcher=pk)
+            subscription = Subscription.objects.filter(researcher=pk).first()
 
             user_can_view = checkif_user_researcher(researcher, request.user)
             if not user_can_view or not project.can_user_access(request.user):

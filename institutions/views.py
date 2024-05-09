@@ -1178,7 +1178,7 @@ def project_actions(request, pk, project_uuid):
             "tk_labels__tklabel_translation",
         ).get(unique_id=project_uuid)
 
-        subscription = Subscription.objects.get(institution=institution.id)
+        subscription = Subscription.objects.filter(institution=institution.id).first()
         member_role = check_member_role(request.user, institution)
         if (
             not member_role
