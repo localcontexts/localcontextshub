@@ -7,7 +7,6 @@ from factories.communities_factories import CommunityBoundaryFactory
 class TestFeatures(TransactionTestCase):
     def setUp(self):
         self.client = Client()
-        self.community_without_boundary = CommunityFactory()
         self.community_with_boundary = CommunityFactory(
             boundary=CommunityBoundaryFactory(
                 coordinates=[
