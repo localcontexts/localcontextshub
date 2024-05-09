@@ -154,12 +154,25 @@ def create_institution(request):
 @login_required(login_url="login")
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm(request.POST or None)
+    subscription_form = SubscriptionForm()
     if request.method == "POST":
         affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
             user=request.user
         )
 
         if noror_form.is_valid():
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+            "first_name": request.user._wrapped.first_name,
+            "last_name": request.user._wrapped.last_name,
+            "email": request.user._wrapped.email,
+            "account_type": "institution_account",
+            "organization_name": noror_form.cleaned_data['institution_name'],
+            }
+            
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
+
             data = noror_form.save(commit=False)
             data.institution_creator = request.user
             data.save()
@@ -175,44 +188,17 @@ def create_custom_institution(request):
                 institution_id=data.id,
                 action_account_type="institution",
             )
-            return redirect("confirm-institution", data.id)
+            if subscription_form.is_valid():
+                handle_confirmation_and_subscription(request, subscription_form, data)
+                return redirect('dashboard')
     return render(
         request,
         "institutions/create-custom-institution.html",
         {
             "noror_form": noror_form,
+            "subscription_form": subscription_form,
         },
     )
-
-
-# @login_required(login_url="login")
-# def confirm_institution(request, institution_id):
-#     institution = Institution.objects.get(id=institution_id)
-
-#     form = ConfirmInstitutionForm(
-#         request.POST or None, request.FILES, instance=institution
-#     )
-#     if request.method == "POST":
-#         if form.is_valid():
-#             data = form.save(commit=False)
-#             # If in test site, approve immediately, skip confirmation step
-#             if dev_prod_or_local(request.get_host()) == "SANDBOX":
-#                 data.is_subscribed = True
-#                 data.save()
-#                 return redirect("confirm-subscription-institution", data.id)
-#             else:
-#                 data.save()
-#                 send_hub_admins_application_email(request, institution, data)
-#                 return redirect("confirm-subscription-institution", data.id)
-#     return render(
-#         request,
-#         "accounts/confirm-account.html",
-#         {
-#             "form": form,
-#             "institution": institution,
-#         },
-#     )
-
 
 @login_required(login_url="login")
 def confirm_subscription_institution(request, institution_id):

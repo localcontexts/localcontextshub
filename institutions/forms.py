@@ -38,7 +38,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror']
+        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email',]
         error_messages = {
             'institution_name': {
                 'unique': _("An institution by that name already exists."),
@@ -49,7 +49,9 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'city_town': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
-            'country': forms.TextInput(attrs={'class': 'w-100', }),
+            'country': forms.TextInput(attrs={'class': 'w-100', }),            
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField'}),
         }
 
     def __init__(self, *args, **kwargs):
