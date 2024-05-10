@@ -144,10 +144,23 @@ def create_institution(request):
                 institution_id=data.id,
                 action_account_type="institution",
             )
-
+            import pdb;pdb.set_trace()
             if subscription_form.is_valid():
                 handle_confirmation_and_subscription(request, subscription_form, data)
                 return redirect('dashboard')
+            else:
+                error_messages = []
+                for field, errors in subscription_form.errors.items():
+                    for error in errors:
+                        error_messages.append(f"{field.capitalize()}: {error}")
+
+                concatenated_errors = "\n".join(error_messages)
+                messages.add_message(
+                                request,
+                                messages.ERROR,
+                                concatenated_errors,
+                            )
+                return redirect('confirm-subscription-institution',  data.id)
     return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form,})
 
 
@@ -188,9 +201,23 @@ def create_custom_institution(request):
                 institution_id=data.id,
                 action_account_type="institution",
             )
+
             if subscription_form.is_valid():
                 handle_confirmation_and_subscription(request, subscription_form, data)
                 return redirect('dashboard')
+            else:
+                error_messages = []
+                for field, errors in subscription_form.errors.items():
+                    for error in errors:
+                        error_messages.append(f"{field.capitalize()}: {error}")
+
+                concatenated_errors = "\n".join(error_messages)
+                messages.add_message(
+                                request,
+                                messages.ERROR,
+                                concatenated_errors,
+                            )
+                return redirect('confirm-subscription-institution',  data.id)
     return render(
         request,
         "institutions/create-custom-institution.html",

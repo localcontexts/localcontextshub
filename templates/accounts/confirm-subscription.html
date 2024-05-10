@@ -99,6 +99,7 @@
         name="g-recaptcha-response"
         id="g-recaptcha-response"
         />
+        {% include 'partials/_alerts.html' %}
         <div class="flex-this flex-end">
           <button id="continueButton" class="primary-btn action-btn margin-top-2" onclick="disableButton()">
             Continue <i class="fa fa-arrow-right"></i>
@@ -109,7 +110,6 @@
           </div>
         </div>        
         </div>
-        {% include 'partials/_alerts.html' %}
       <div>
     </form>
     </div>
