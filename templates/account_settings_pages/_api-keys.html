@@ -25,7 +25,7 @@
                 <td class="bold">{{ name }}</td>
                 <td id="{{ id }}">{{ key }}</td>
                 <td><a id="copy-key" data-target="{{ id }}"><i class="fa-regular fa-clone pointer"></i></a></td>
-                <td><i class="fa-regular fa-trash"></i></td>
+                <td><a id="delete-key" data-target="{{ id }}"><i class="fa-regular fa-trash pointer"></i></a></td>
             </tr>
         {% endfor %}
     </table>
@@ -87,12 +87,39 @@
 
             <div class="flex-this space-between w-100">
                 <div class="w-100">
-                    <button type="submit" class="primary-btn action-btn margin-top-2 w-100" name="generatebtn">Generate API Key</button>
+                    <button type="submit" class="primary-btn action-btn margin-top-2 w-100" name="generate_api_key">Generate API Key</button>
                 </div>                    
             </div>
 
         </form>
 
+        </div>
+    </div>
+</div>
+
+<!-- Delete API Key Modal -->
+<div id="deleteAPIKeymodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text no-top-margin">Are you sure?</h2>
+            </div>           
+        </div>
+
+        <div class="w-100">
+            <div>
+                <p class="no-top-margin">Are you sure you want to delete this API key? This key will no longer be able to connect to the API and can effect your applications using this API key.</p>
+            </div>
+
+            <div class="flex-this">
+                <form id="deleteAPIKeyForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueAPIKeyDeletionBtn" class="primary-btn white-btn" name="delete_api_key" value="{{ id }}">Yes, delete this API Key.</button>
+                </form>
+                <div id="closedeleteAPIKeymodal" class="primary-btn action-btn margin-left-8">Cancel</div>
+            </div>
         </div>
     </div>
 </div>
@@ -106,6 +133,17 @@
             setTimeout(() => {
                 btn.innerHTML = `<i class="fa-regular fa-clone pointer"></i>`
             }, 1000);
+        });
+    });
+
+    const deleteBtns = document.querySelectorAll('#delete-key');
+    const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (deleteAPIKeymodal.classList.contains('hide')) { 
+                deleteAPIKeymodal.classList.replace('hide', 'show')
+                continueAPIKeyDeletionBtn.value = btn.dataset.target
+            }
         });
     });
 </script>

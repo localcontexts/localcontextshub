@@ -1534,7 +1534,9 @@ def embed_otc_notice(request, pk):
 
 # Create API Key
 @login_required(login_url="login")
+@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin"])
+@transaction.atomic
 def api_keys(request, pk, related=None):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
@@ -1547,27 +1549,40 @@ def api_keys(request, pk, related=None):
         form = APIKeyGeneratorForm(request.GET or None)
         institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("prefix", "name", "encrypted_key")
     elif request.method == "POST":
-        if subscription.api_key_count == 0:
-            messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
-                                'Please upgrade your subscription plan to create more API Keys.')
+        if "generate_api_key" in request.POST:
+            if subscription.api_key_count == 0:
+                messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
+                                    'Please upgrade your subscription plan to create more API Keys.')
+                return redirect("institution-api-key", institution.id)
+            form = APIKeyGeneratorForm(request.POST)
+
+            if form.is_valid():
+                data = form.save(commit=False)
+                api_key, key = AccountAPIKey.objects.create_key(
+                    name = data.name,
+                    institution_id = institution.id
+                )
+                prefix = key.split(".")[0]
+                encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+
+                if subscription.api_key_count > 0:
+                    subscription.api_key_count -= 1
+                    subscription.save()
+
             return redirect("institution-api-key", institution.id)
-        form = APIKeyGeneratorForm(request.POST)
+        
+        elif "delete_api_key" in request.POST:
+            prefix = request.POST['delete_api_key']
+            api_key = AccountAPIKey.objects.filter(prefix=prefix)
+            api_key.delete()
 
-        if form.is_valid():
-            data = form.save(commit=False)
-            api_key, key = AccountAPIKey.objects.create_key(
-                name = data.name,
-                institution_id = institution.id
-            )
-            prefix = key.split(".")[0]
-            encrypted_key = urlsafe_base64_encode(force_bytes(key))
-            AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+            if subscription.api_key_count >= 0:
+                subscription.api_key_count +=1
+                subscription.save()
 
-            subscription.api_key_count -= 1
-            subscription.save()
+            return redirect("institution-api-key", institution.id)
 
-        return redirect("institution-api-key", institution.id)
-    
     context = {
         "institution" : institution,
         "form" : form,

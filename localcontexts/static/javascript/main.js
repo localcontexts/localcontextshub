@@ -1555,16 +1555,20 @@ if (window.location.href.includes('newsletter/preferences/') ) {
     }
 }
 
-// Add API Key Modal
+// Add API Key Modals
 if (window.location.href.includes('api-key')) {
     const generateAPIKeymodal = document.getElementById('generateAPIKeymodal')
     const generateAPIKeybtn = document.getElementById('generateAPIKeybtn')
+    const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
 
     generateAPIKeybtn.addEventListener('click', () => {
         if (generateAPIKeymodal.classList.contains('hide')) { generateAPIKeymodal.classList.replace('hide', 'show')}
     })
     const closegenerateAPIKeymodal = document.getElementById('closegenerateAPIKeymodal')
     closegenerateAPIKeymodal.addEventListener('click', function() { generateAPIKeymodal.classList.replace('show', 'hide')})
+
+    const closedeleteAPIKeymodal = document.getElementById('closedeleteAPIKeymodal')
+    closedeleteAPIKeymodal.addEventListener('click', function() { deleteAPIKeymodal.classList.replace('show', 'hide')})
 }
 
 // REGISTRY FILTERING AND JOIN REQUESTS / CONTACT MODAL
