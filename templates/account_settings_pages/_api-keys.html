@@ -8,7 +8,7 @@
 <p class="no-top-margin">Generating API Keys enables access to the Local Contexts Hub database. Keep these keys confidential. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
 
 <div class="flex-this">
-    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}</p>
+    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> {% if subscription_api_key_count == -1 and institution.is_subscribed %}Unlimited{% elif institution.is_subscribed %}{{ subscription_api_key_count }}{% else %}0{% endif %}</p>
 </div>
 
 {% if institution_keys %}
@@ -20,11 +20,11 @@
             <th>Delete</th>
         </tr>
 
-        {% for name, key in institution_keys %}
+        {% for id, name, key in institution_keys %}
             <tr>
                 <td class="bold">{{ name }}</td>
-                <td>{{ key }}</td>
-                <td><i class="fa-regular fa-clone"></i></td>
+                <td id="{{ id }}">{{ key }}</td>
+                <td><a id="copy-key" data-target="{{ id }}"><i class="fa-regular fa-clone pointer"></i></a></td>
                 <td><i class="fa-regular fa-trash"></i></td>
             </tr>
         {% endfor %}
@@ -34,9 +34,10 @@
 {% endif %}
 
 <div>
-    <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Generate API Key</button>
+    <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2"{% if not institution.is_subscribed or subscription_api_key_count == 0 %} title="{% if not institution.is_subscribed %}The subscription process of your institution is not completed yet.{% elif subscription_api_key_count == 0 %}Your institution has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.{% endif %}" disabled{% endif %}>Generate API Key</button>
 </div>
 
+<!-- Generate API Key Modal -->
 <div id="generateAPIKeymodal" class="modal hide">
 
     <div class="modal-defaults share-modal flex-this column w-100">
@@ -95,4 +96,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    const copyBtns = document.querySelectorAll('#copy-key');
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            copyToClipboard(btn.dataset.target);
+            btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-regular fa-clone pointer"></i>`
+            }, 1000);
+        });
+    });
+</script>
 {% endblock %}
