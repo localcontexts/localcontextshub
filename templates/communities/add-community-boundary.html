@@ -50,6 +50,13 @@
             border-radius: 5px;
             user-select: none;
         }
+        #share-boundary-publicly-wrapper{
+            padding-top: 12px;
+
+        }
+        #share-boundary-publicly-wrapper input{
+            transform: scale(2);
+        }
         .selected-title-ellipsis{
             width: 430px;
             overflow: hidden;
@@ -136,6 +143,11 @@
                         View Location&nbsp;
                         <i class="fa fa-arrow-up-right-from-square"></i>
                     </a>
+                </div>
+
+                <div id="share-boundary-publicly-wrapper">
+                    <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
+                    <label for="share-boundary-publicly">Share Boundary Public</label>
                 </div>
 
             </div>
@@ -250,7 +262,8 @@
                 const payload = {
                     source: url,
                     name: boundary.properties.Name,
-                    boundary: boundaryCoordinates
+                    boundary: boundaryCoordinates,
+                    share_boundary_publicly: document.getElementById("share-boundary-publicly").checked
                 }
 
                 // do post call to set boundary in request

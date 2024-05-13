@@ -45,6 +45,7 @@ def registration_boundary(request):
     community = get_community(request.session.get('new_community_id'))
     community.source_of_boundary = post_data['source']
     community.name_of_boundary = post_data['name']
+    community.share_boundary_publicly = post_data['share_boundary_publicly']
 
     # add new boundary in this community
     community.create_or_update_boundary(post_data['boundary'])
