@@ -144,7 +144,7 @@ def create_institution(request):
                 institution_id=data.id,
                 action_account_type="institution",
             )
-            import pdb;pdb.set_trace()
+
             if subscription_form.is_valid():
                 handle_confirmation_and_subscription(request, subscription_form, data)
                 return redirect('dashboard')
