@@ -8,7 +8,7 @@ from itertools import chain
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
-from accounts.utils import get_users_name, handle_confirmation_and_subscription
+from accounts.utils import get_users_name, handle_confirmation_and_subscription, confirm_subscription
 from notifications.utils import send_action_notification_to_project_contribs
 
 from communities.models import Community
@@ -192,7 +192,8 @@ def confirm_subscription_researcher(request, pk):
     form = SubscriptionForm(request.POST or None, initial=initial_data)
     form.fields["inquiry_type"].choices = modified_account_type_choices
     form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
-    form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
+    if request.user._wrapped.first_name:
+        form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
     form.fields["email"].widget.attrs.update({"class": "readonly-input"})
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():
@@ -207,12 +208,14 @@ def confirm_subscription_researcher(request, pk):
             )
             form.cleaned_data["account_type"] = account_type_display
             form.cleaned_data["inquiry_type"] = inquiry_type_display
+            if form.cleaned_data["organization_name"] == '':
+                form.cleaned_data["organization_name"] = form.cleaned_data["first_name"]
 
             first_name = form.cleaned_data["first_name"]
             if not form.cleaned_data["last_name"]:
                 form.cleaned_data["last_name"] = first_name
             try:
-                response = confirm_subscription(request, researcher, join_flag, form)
+                response = confirm_subscription(request, researcher, join_flag, form, 'researcher_account')
                 return response
             except:
                 messages.add_message(
