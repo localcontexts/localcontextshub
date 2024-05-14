@@ -205,7 +205,8 @@
         <div class="message">File upload successful</div>
     </div>
     <div id="share-boundary-publicly-wrapper" class="invisible">
-        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
+        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly"
+               {% if community.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Public</label>
     </div>
     <div class="save-cancel-container w-90 flex-this flex-start">
