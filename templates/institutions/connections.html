@@ -136,7 +136,6 @@
                 >
             </div>
             <div class="flex-this column dashcard-text-container">
-                <div><h3 class="dashcard-h3 darkteal-text">{{ community }}</h3></div>
                 <div>
                     <p class="dashcard-subheader">Community | Members: {% if community.get_member_count < 10 %}0{{ community.get_member_count }}{% else %}{{ community.get_member_count }}{% endif %} | 
                         Location: {{ community.get_location }}
