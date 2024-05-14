@@ -205,7 +205,8 @@
         <div class="message">File upload successful</div>
     </div>
     <div id="share-boundary-publicly-wrapper">
-        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly"
+        <input type="checkbox" id="share-boundary-publicly"
+               onchange="enableContinueButton()"
                {% if community.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Public</label>
     </div>
@@ -226,7 +227,7 @@
     </div>
 </span>
 <script>
-    let BoundaryPayLoad = null
+    let BoundaryPayLoad = {}
 
     fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
