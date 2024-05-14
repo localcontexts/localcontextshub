@@ -324,6 +324,7 @@
                 boundary: boundaryCoordinates
             }
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
+            selectionUnit.querySelector('#share-boundary-publicly-wrapper').classList.remove('invisible')
 
         } catch (error) {
             console.error('Error Fetching boundary:', error)
@@ -460,7 +461,6 @@
     }
 
     async function setBoundary(self) {
-
         // do post call to set boundary in request
         showSpinner()
         const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
