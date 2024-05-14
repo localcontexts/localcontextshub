@@ -46,6 +46,12 @@
     .selected-title-wrapper{
         position: relative;
     }
+    #share-boundary-publicly-wrapper{
+        padding-top: 12px;
+    }
+    #share-boundary-publicly-wrapper input{
+        transform: scale(2);
+    }
     .view-boundary-link{
         right: 8px;
         position: absolute;
@@ -198,7 +204,10 @@
         <i class="fa fa-circle-check"></i>
         <div class="message">File upload successful</div>
     </div>
-
+    <div id="share-boundary-publicly-wrapper" class="invisible">
+        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
+        <label for="share-boundary-publicly">Share Boundary Public</label>
+    </div>
     <div class="save-cancel-container w-90 flex-this flex-start">
         <div>
             <a
@@ -277,7 +286,6 @@
         document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
         disableCancelButton()
     }
-
     function showSpinner(){
         document.querySelector('.save-cancel-container .spinner').classList.add('shown')
     }
@@ -376,10 +384,12 @@
         const selectionUnit = self.closest('.boundary-selection-unit')
         const successMessage = selectionUnit.querySelector('.feedback.success')
         const failureMessage = selectionUnit.querySelector('.feedback.failure')
+        const sharePublicly = selectionUnit.querySelector('#share-boundary-publicly-wrapper')
 
         // hide feedback messages
         successMessage.classList.add('invisible')
         failureMessage.classList.add('invisible')
+        sharePublicly.classList.add('invisible')
         selectionUnit.querySelector('.selected-location').classList.add('invisible')
 
         try {
@@ -430,6 +440,7 @@
         setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
 
         successMessage.classList.toggle('invisible')
+        sharePublicly.classList.toggle('invisible')
         // show and label ui elements
         self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
@@ -455,6 +466,7 @@
         const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
             method: 'POST',
             body: JSON.stringify(BoundaryPayLoad),
+            share_boundary_publicly: document.getElementById("share-boundary-publicly").checked,
             headers: {
               'X-CSRFToken': '{{csrf_token}}'
             }
@@ -476,6 +488,7 @@
       // hide feedback messages
       selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
       selectionUnit.querySelector('.feedback.success').classList.add('invisible')
+      selectionUnit.querySelector('#share-boundary-publicly-wrapper').add('invisible')
 
       // hide selected location
       selectionUnit.querySelector('.selected-location').classList.add('invisible')
