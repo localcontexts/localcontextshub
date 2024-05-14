@@ -204,7 +204,7 @@
         <i class="fa fa-circle-check"></i>
         <div class="message">File upload successful</div>
     </div>
-    <div id="share-boundary-publicly-wrapper" class="invisible">
+    <div id="share-boundary-publicly-wrapper">
         <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly"
                {% if community.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Public</label>
@@ -325,7 +325,6 @@
                 boundary: boundaryCoordinates
             }
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
-            selectionUnit.querySelector('#share-boundary-publicly-wrapper').classList.remove('invisible')
 
         } catch (error) {
             console.error('Error Fetching boundary:', error)
@@ -386,12 +385,10 @@
         const selectionUnit = self.closest('.boundary-selection-unit')
         const successMessage = selectionUnit.querySelector('.feedback.success')
         const failureMessage = selectionUnit.querySelector('.feedback.failure')
-        const sharePublicly = selectionUnit.querySelector('#share-boundary-publicly-wrapper')
 
         // hide feedback messages
         successMessage.classList.add('invisible')
         failureMessage.classList.add('invisible')
-        sharePublicly.classList.add('invisible')
         selectionUnit.querySelector('.selected-location').classList.add('invisible')
 
         try {
@@ -442,7 +439,6 @@
         setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
 
         successMessage.classList.toggle('invisible')
-        sharePublicly.classList.toggle('invisible')
         // show and label ui elements
         self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
@@ -490,7 +486,6 @@
       // hide feedback messages
       selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
       selectionUnit.querySelector('.feedback.success').classList.add('invisible')
-      selectionUnit.querySelector('#share-boundary-publicly-wrapper').add('invisible')
 
       // hide selected location
       selectionUnit.querySelector('.selected-location').classList.add('invisible')
