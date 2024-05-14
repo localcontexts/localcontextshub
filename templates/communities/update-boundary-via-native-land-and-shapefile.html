@@ -431,7 +431,7 @@
 
         successMessage.classList.toggle('invisible')
         // show and label ui elements
-        self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName
+        self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
         enableContinueButton()
 
