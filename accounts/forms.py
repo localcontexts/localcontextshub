@@ -202,6 +202,7 @@ class SubscriptionForm(forms.Form):
         ("subscriber", "Subscription"),
         ("member", "Membership"),
         ("service_provider", "Service Provider"),
+        ("cc_only", "CC Notice Only"),
         ("something_else", " Something Else"),
         ("not_sure", "Not Sure"),
     )

@@ -115,6 +115,12 @@ def preparation_step(request):
 def create_institution(request):
     form = CreateInstitutionForm()
     subscription_form = SubscriptionForm()
+    modified_account_type_choices = [
+        choice
+        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+        if choice[0] != "member"
+    ]
+    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
 
@@ -168,6 +174,12 @@ def create_institution(request):
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm(request.POST or None)
     subscription_form = SubscriptionForm()
+    modified_account_type_choices = [
+        choice
+        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+        if choice[0] != "member"
+    ]
+    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
     if request.method == "POST":
         affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
             user=request.user

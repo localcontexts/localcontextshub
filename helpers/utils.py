@@ -563,8 +563,6 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
     lead_data = {
         "hubId": hubId,
         "companyName": data["organization_name"],
-        "industry": "Technology",
-        "phone": "123-456-7890",
         "email": data["email"],
         "firstname": data["first_name"],
         "lastName": data["last_name"],
