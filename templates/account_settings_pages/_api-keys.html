@@ -33,8 +33,19 @@
     <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
 {% endif %}
 
-<div>
-    <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2"{% if not institution.is_subscribed or subscription_api_key_count == 0 %} title="{% if not institution.is_subscribed %}The subscription process of your institution is not completed yet.{% elif subscription_api_key_count == 0 %}Your institution has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.{% endif %}" disabled{% endif %}>Generate API Key</button>
+<div class="flex-this margin-top-2">
+    {% if institution.is_subscribed and subscription_api_key_count != 0 %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Generate API Key</button>
+        </div>
+    {% else %}
+        <div class="btn-with-helptext">
+            <button id="generateAPIKeybtn" class="primary-btn margin-top-2 disabled-btn" disabled>Generate API Key</button>
+            <span class="btn-help-text" style="left: 5px;right: 0px;">
+                {% if not institution.is_subscribed %}The subscription process for your institution is not completed yet.{% elif subscription_api_key_count == 0 %}Your institution has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.{% endif %}
+            </span>
+        </div>
+    {% endif %}
 </div>
 
 <!-- Generate API Key Modal -->
@@ -52,10 +63,6 @@
         </div>
 
         <div class="w-100">
-            <div>
-                <p class="no-top-margin">It's essential to keep your API keys secure and not share them publicly.</p>
-            </div>
-
             <form id="apiKeyGeneratorForm" method="POST">
             {% csrf_token %}
 
@@ -63,12 +70,10 @@
                 <div class="margin-top-8">
                     <label>API Key Name</label><br>
                     {{ form.name }}
-                    <div class="no-margin w-100">
-                        <p class="red-text"><small>Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</small></p>
-                    </div>
                     {% if form.name.errors %}
                         <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
                     {% endif %}
+                    <p class="margin-top-8">It's essential to keep your API keys secure and not share them publicly. Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</p>
                 </div>
             </div>
 
