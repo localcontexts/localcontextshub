@@ -63,17 +63,18 @@
         </div>
 
         <div class="w-100">
+            <p class="no-top-margin">It's essential to keep your API keys secure and not share them publicly. Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</p>
+
             <form id="apiKeyGeneratorForm" method="POST">
             {% csrf_token %}
 
             <div class="flex-this column w-100">
-                <div class="margin-top-8">
+                <div class="margin-bottom-16">
                     <label>API Key Name</label><br>
                     {{ form.name }}
                     {% if form.name.errors %}
                         <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
                     {% endif %}
-                    <p class="margin-top-8">It's essential to keep your API keys secure and not share them publicly. Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</p>
                 </div>
             </div>
 
