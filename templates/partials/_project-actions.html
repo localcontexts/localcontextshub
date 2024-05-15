@@ -427,12 +427,12 @@
                     </div>
                     {% if community or institution or researcher %}
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
-                            <div class="flex-this">
-                                <div class="margin-right-8">
+                            <div class="flex-this align-center">
+                                <div class="btn-with-helptext margin-right-8">
                                     <a
-                                        {% if researcher and not researcher.is_subscribed %}
+                                    {% if subscription.project_count == 0 %}
+
                                             class="disabled-btn primary-btn white-btn"
-                                            title="The account must be subscribed before a Project can be created"
                                         {% else %}
                                             class="primary-btn white-btn"
 
@@ -450,6 +450,11 @@
                                     >
                                         Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i>
                                     </a>
+                                    {% if subscription.project_count == 0 %}
+                                    <span class="margin-right-31 btn-help-text">
+                                        Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                    </span>
+                                {% endif %}
                                 </div>
 
                                 <div>

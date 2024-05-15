@@ -15,6 +15,7 @@ from communities.models import Community
 from researchers.models import Researcher
 from accounts.models import Subscription
 from datetime import datetime
+from api.models import AccountAPIKey
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -32,7 +33,7 @@ class ApiKeyAuthentication(BaseAuthentication):
             return None
 
         try:
-            user = User.objects.get(user_profile__api_key=api_key)
+            user = AccountAPIKey.objects.get(encrypted_key=api_key).developer
         except User.DoesNotExist:
             raise AuthenticationFailed('Invalid API key')
 
