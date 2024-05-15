@@ -31,7 +31,7 @@
         <div class="flex-this column w-100">
           <div class="flex-this w-100 space-between">
             <div class="w-50 margin-right-1">
-              <label for="id_first_name">First name</label>
+              <label for="id_first_name">First name<span class="orange-text">*</span></label>
               {{ form.first_name }}{% if form.first_name.errors %}
               <div class="msg-red w-50">
                 <small>{{ form.first_name.errors.as_text }}</small>
@@ -72,7 +72,7 @@
               {% endif %}
             </div>
             <div class="w-50 margin-left-1">
-              <label for="id_inquiry_type">Inquiry Type</label>
+              <label for="id_inquiry_type">Inquiry Type<span class="orange-text">*</span></label>
               {{ form.inquiry_type }}
               {% if form.inquiry_type.errors %}
               <div class="msg-red w-50">
@@ -84,7 +84,7 @@
           </div>
           <div class="flex-this w-100 space-between margin-top-2">
             <div class="w-100">
-              <label for="id_organization_name">Organization Name</label>
+              <label for="id_organization_name">Organization Name<span class="orange-text">*</span></label>
               {{ form.organization_name }}
               {% if form.organization_name.errors %}
               <div class="msg-red w-100">
