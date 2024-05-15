@@ -47,9 +47,16 @@
     }
 </script>
 <div class="flex-this space-between">
-    <div><h2 class="no-top-margin">Account Boundary</h2></div>
+    <div><h2 class="no-top-margin">Community Boundary</h2></div>
 </div>
-<div>Edit and manage your community boundary.</div>
+<div>
+    Add your community boundary by searching the Native Land Digital database or uploading a shapefile.
+    <a href="https://localcontexts.org/support/getting-started-on-the-hub/#community-boundary"
+       class="default-a" target="_blank" rel="noopener">
+        Learn more about this feature on our website.
+        <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+    </a><br><br>
+</div>
 <hr class="border-hr">
 
 {% if community.name_of_boundary %}
@@ -75,17 +82,16 @@
             </div>
 
         </div>
-    <hr class="border-hr">
     </div>
 {% endif %}
 
 <div id="community-boundary-update" class="w-80">
-    <div class="flex-this space-between">
-        <div><h2 class="no-top-margin">Community Boundary</h2></div>
-    </div>
-    <div>
-        Add your community boundary by either searching the Native Land Digital database or uploading a shape file
-    </div>
-
     {% include 'communities/update-boundary-via-native-land-and-shapefile.html' %}
 </div>
+
+<br>
+<a href="https://forms.gle/vWFuUDumo7uXYMfj8"
+   class="default-a" target="_blank" rel="noopener">
+    We are interested in your feedback about this new feature.
+    <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+</a>

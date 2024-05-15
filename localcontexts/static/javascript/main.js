@@ -1653,17 +1653,25 @@ if (window.location.href.includes('dashboard')) {
     })
 }
 
-// addURLModal
+// Notice Modals
 if (window.location.href.includes('notices')) { 
-    // OTC Add URL modal
     const OTCModal = document.getElementById('addURLModal')
     const addURLBtn = document.getElementById('addURLBtn')
+    const shareBtn = document.getElementById('shareBtn')
 
+    // OTC Add URL modal
     addURLBtn.addEventListener('click', () => {
         if (OTCModal.classList.contains('hide')) { OTCModal.classList.replace('hide', 'show')}
     })
     const closeAddURLModal = document.getElementById('closeAddURLModal')
     closeAddURLModal.addEventListener('click', function() { OTCModal.classList.replace('show', 'hide')})
+
+    // Share OTC Notice Modal
+    shareBtn.addEventListener('click', () => {
+        if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
+    })
+    const closeshareOTCNoticeModal = document.getElementById('closeshareOTCNoticeModal')
+    closeshareOTCNoticeModal.addEventListener('click', function() { shareOTCNoticeModal.classList.replace('show', 'hide')})
 
     // CC Notices modal
     const ccNoticeModal = document.getElementById('addCCPolicyModal')
@@ -1731,27 +1739,16 @@ function greenCopyBtn(btnElem, spanIDToCopy) {
 }
 
 // Share Modal - Embed Code customization options
-if (window.location.href.includes('/projects/') && !window.location.href.includes('/projects/embed/')) {
-    var embedCode = document.getElementById('projectPageEmbedToCopy')
+if (
+        window.location.href.includes('/projects/') || 
+        window.location.href.includes('/notices/')
+    ) {
+    let embedCode = document.getElementById('embedToCopy')
     var layoutDropdown = document.getElementById('embedLayoutOptions')
     var languageDropdown = document.getElementById('embedLanguageOptions')
     var alignmentDropdown = document.getElementById('embedAlignOptions')
     var langArray= new Array();
     var layoutType, languageType, alignType = null
-    projectID = embedCode.dataset.projectId
-
-    
-    embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '/" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
-
-    for (i=0;i < languageDropdown.options.length; i++) {
-        if (langArray.includes(languageDropdown.options[i].value) == false) {
-            langArray.push(languageDropdown.options[i].value)
-            languageDropdown.options[i].classList.remove("hide");
-        }
-        else {
-            languageDropdown.options[i].classList.add("hide");
-        }
-    }
 
     if (layoutDropdown) {
         layoutDropdown.addEventListener("change", function(e) {
@@ -1760,6 +1757,16 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
         })
     }
     if (languageDropdown) {
+        for (i=0;i < languageDropdown.options.length; i++) {
+            if (langArray.includes(languageDropdown.options[i].value) == false) {
+                langArray.push(languageDropdown.options[i].value)
+                languageDropdown.options[i].classList.remove("hide");
+            }
+            else {
+                languageDropdown.options[i].classList.add("hide");
+            }
+        }
+
         languageDropdown.addEventListener("change", function(e) {
             languageType = 'lang='+this.value+'&'
             updateEmbedCode()
@@ -1786,9 +1793,16 @@ if (window.location.href.includes('/projects/') && !window.location.href.include
         }
 
         customizationOptions = customizationOptions.slice(0,-1)
+        dataURL = embedCode.dataset.url
+        dataTitle = embedCode.title
 
-        embedCode.value = '<iframe width="100%" height="150" src="https://' + window.location.host + '/projects/embed/' + projectID + '?' + customizationOptions + '" title="Local Contexts Project Identifiers" frameborder="0"></iframe>'
+        embedCode.value = '<iframe width="100%" height="150" src="' + dataURL + '?' + customizationOptions + '" title="' + dataTitle + '" frameborder="0"></iframe>'
     }
+}
+
+// Open Window on Click
+function openLinkInWindow(url) {
+    window.open(url, "_blank")
 }
 
 // Share on Social Media
@@ -1802,21 +1816,44 @@ if (shareToSocialsBtn) {
 function shareToSocialsBtnAction(btnElem) {
     btnElem.addEventListener('click', function() {
         socialType = btnElem.getAttribute("data-social")
-        projectURL = btnElem.getAttribute("data-project-url")
-        projectTitle = btnElem.getAttribute("data-project-title")
+        dataURL = btnElem.getAttribute("data-url")
+        dataTitle = btnElem.getAttribute("data-title")
+        dataType = btnElem.getAttribute("data-type")
+
         if (socialType == 'email') {
-            var emailSubject = encodeURIComponent("Local Contexts Project")
-            var emailBody = encodeURIComponent("Check out this Local Contexts Project! "+projectTitle+" at "+projectURL)
+            if( dataType == "project") {
+                var emailSubject = encodeURIComponent("Local Contexts Project")
+                var emailBody = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            } else if( dataType == "otc-notice") {
+                var emailSubject = encodeURIComponent("Local Contexts Open to Collaborate")
+                var emailBody = encodeURIComponent("Check out my Local Contexts profile and Open to Collaborate Notice! at "+dataURL)
+            }
+
             var mailtoLink = "mailto:?subject="+emailSubject+"&body="+emailBody
             window.location.href = mailtoLink
-        } else if(socialType == 'facebook') {
-            window.open('http://www.facebook.com/sharer/sharer.php?u='+projectURL, 'Share on Facebook')
+
+        } else if (socialType == 'facebook') {
+            window.open('http://www.facebook.com/sharer/sharer.php?u='+dataURL, 'Share on Facebook')
+
         } else if (socialType == 'twitter') {
-            window.open('https://twitter.com/intent/tweet?url='+projectURL+'&text=Check out this @LocalContexts project! #LocalContexts #traditionalknowledge #indigenousdata', 'Share on Twitter')
+            if (dataType == "project") {
+                messageText = "Check out this @LocalContexts project! #LocalContexts #traditionalknowledge #indigenousdata"
+            } else if (dataType == "otc-notice") {
+                messageText = "Check out my @LocalContexts profile and Open to Collaborate Notice! #LocalContexts #traditionalknowledge #indigenousdata #opentocollaborate"
+            }
+
+            window.open('https://twitter.com/intent/tweet?url='+dataURL+'&text='+messageText, 'Share on Twitter')
+
         } else if (socialType == 'linkedin') {
-            window.open('https://www.linkedin.com/shareArticle?url='+projectURL)
+            window.open('https://www.linkedin.com/shareArticle?url='+dataURL)
+
         } else if (socialType == 'whatsapp') {
-            messageText = encodeURIComponent("Check out this Local Contexts Project! "+projectTitle+" at "+projectURL)
+            if (dataType == "project") {
+                messageText = encodeURIComponent("Check out this Local Contexts Project! "+dataTitle+" at "+dataURL)
+            } else if (dataType == "otc-notice") {
+                messageText = encodeURIComponent("Check out my Local Contexts profile and Open to Collaborate Notice at "+dataURL)
+            }
+
             window.location.href = 'https://api.whatsapp.com/send?text='+messageText
         }
     })

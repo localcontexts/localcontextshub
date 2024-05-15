@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+        <script src="/static/javascript/main.js" defer></script>
+    </head>
+
+    <body>
+        {% if otc_notices %}
+            <div class="flex-this {% if align == 'right' %}flex-end{% else %}flex-start{% endif%} wrap w-100" style="padding: 12px;padding-bottom: 0px;">
+                    
+                {% if not layout or layout == "1" %}
+                    <div>
+                        <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" height="60px" title="Open to Collaborate Notice" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
+                    </div>
+                {% endif %}
+
+                {% if layout == "2" %}
+                    <div class="flex-this column center-text" style="max-width: 175px;">
+                        <div style="margin: 12px;">
+                            <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" width="119px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
+                            <p class="margin-top-8 font-size-14">Open to Collaborate Notice
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if layout == "3" %}
+                    <div class="flex-this w-100">
+                        <div style="margin: 12px;">
+                            <img loading="lazy" class="pointer" style="margin:12px;" src="/static/images/notices/ci-open-to-collaborate.png" width="119px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
+                        </div>
+                        <div style="margin: 12px;">
+                            <h3 style="margin-top: 0;margin-bottom: 0;">Open to Collaborate
+                            </h3>
+                            <p style="margin-top: 10px;margin-bottom: 10px;">
+                                {% if institution %}
+                                    {{ institution.institution_name }}
+                                {% elif researcher %}
+                                    {% firstof researcher.user.get_full_name researcher.user.username %}
+                                {% endif %}
+                                is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.</p>
+                        </div>
+                    </div>
+                {% endif %}
+                    
+            </div>
+        {% endif %}
+
+        <div class="flex-this wrap w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
+            <div class="margin-left-8 margin-right-8" style="display: inherit;">
+                <a href="https://localcontexts.org" style="display: inline-flex;">
+                    <img style="width:30px;" src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" alt="Local Contexts Icon">
+                </a>
+            </div>
+            <div class="font-size-14 align-center flex-this margin-right-8">
+                <a id="profile-link" class="darkteal-text underline-hover bold pointer" href="/{% if institution %}institutions{% elif researcher %}researchers{% endif %}/view/{% if institution %}{{ institution.id }}{% elif researcher %}{{ researcher.id }}{% endif %}" onclick="openLinkInWindow('/{% if institution %}institutions{% elif researcher %}researchers{% endif %}/view/{% if institution %}{{ institution.id }}{% elif researcher %}{{ researcher.id }}{% endif %}')">Local Contexts Profile: 
+                    {% if institution %}
+                        {{ institution.institution_name }}
+                    {% elif researcher %}
+                        {% firstof researcher.user.get_full_name researcher.user.username %}
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </body>
+
+
+    <style>
+        body {
+            background: none transparent;
+        }
+    </style>
+</html>
