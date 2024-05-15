@@ -22,8 +22,8 @@ class CreateInstitutionForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'id':'institutionStateProvRegion', 'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
-            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField'}),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -48,10 +48,10 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'institution_name': forms.TextInput(attrs={'name':'institution_name', 'class': 'w-100', 'autocomplete': 'off', 'required': True}),
             'city_town': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
-            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
+            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
             'country': forms.TextInput(attrs={'class': 'w-100', }),            
-            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField'}),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
         }
 
     def __init__(self, *args, **kwargs):
