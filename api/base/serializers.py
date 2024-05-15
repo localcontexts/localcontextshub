@@ -135,6 +135,24 @@ class GetUserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 class GetSubscriptionSerializer(serializers.ModelSerializer):
+    account_id = serializers.SerializerMethodField()
+
+    def get_account_id(self, obj):
+        institution = obj.institution
+        researcher = obj.researcher
+        community = obj.community
+        
+        if institution:
+            account_id = str(institution.id) + '_i'
+        elif researcher:
+            account_id = str(researcher.id) + '_r'
+        elif community:
+            account_id = str(community.id) + '_c'
+        else:
+            account_id = None
+        
+        return account_id
+
     class Meta:
         model = Subscription
-        fields = ['institution', 'community', 'researcher', 'users_count', 'api_key_count', 'project_count', 'notification_count', 'start_date', 'end_date', 'date_last_updated']
+        fields = ['account_id', 'users_count', 'api_key_count', 'project_count', 'notification_count', 'start_date', 'end_date', 'date_last_updated']
