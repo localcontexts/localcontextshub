@@ -52,7 +52,7 @@ class Project(models.Model):
     date_added = models.DateTimeField(auto_now_add=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, null=True)
     source_project_uuid = models.UUIDField(null=True, verbose_name="Source Project UUID", blank=True, db_index=True)
-    related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", related_name="related_projects", db_index=True)
+    related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", db_index=True)
     bc_labels = models.ManyToManyField("bclabels.BCLabel", verbose_name="BC Labels", blank=True, related_name="project_bclabels", db_index=True)
     tk_labels = models.ManyToManyField("tklabels.TKLabel", verbose_name="TK Labels", blank=True, related_name="project_tklabels", db_index=True)
 
