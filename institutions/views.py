@@ -713,15 +713,16 @@ def remove_member(request, pk, member_id):
         subscription = None
     # what role does member have
     # remove from role
+
+    if subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
+            subscription.users_count += 1
+            subscription.save()
+    
     if member in institution.admins.all():
         institution.admins.remove(member)
-        subscription.users_count += 1
-        subscription.save()
-    if member in institution.editors.all():
-        institution.editors.remove(member)
-        subscription.users_count += 1
-        subscription.save()
-    if member in institution.viewers.all():
+    elif member in institution.editors.all():
+        institution.editors.remove(member)    
+    elif member in institution.viewers.all():
         institution.viewers.remove(member)
 
     # remove institution from userAffiliation instance
@@ -1008,8 +1009,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
-            subscription.project_count -= 1
-            subscription.save()
+            if subscription.project_count > 0:
+                subscription.project_count -= 1
+                subscription.save()
 
             data.save()
 
@@ -1299,14 +1301,18 @@ def project_actions(request, pk, project_uuid):
                         project.save()
 
                     communities_selected = request.POST.getlist('selected_communities')
-                    notification_count = min(subscription.notification_count, len(communities_selected))
+                    notification_count = subscription.notification_count
+                    if notification_count == -1:
+                        count = len(communities_selected)
+                    else:
+                        count = min(notification_count, len(communities_selected))
                     # Reference ID and title for notification
                     title = (
                         str(institution.institution_name)
                         + " has notified you of a Project."
                     )
 
-                    for community_id in communities_selected[:notification_count]:
+                    for community_id in communities_selected[:count]:
                         # Add communities that were notified to entities_notified instance
                         community = Community.objects.get(id=community_id)
                         entities_notified.communities.add(community)
@@ -1343,9 +1349,11 @@ def project_actions(request, pk, project_uuid):
                         # Create email 
                         send_email_notice_placed(request, project, community, institution)
                     
-                    notification_condition(request, notification_count, communities_selected)
-                    subscription.notification_count -= notification_count
-                    subscription.save()
+                    # notification_condition(request, notification_count, communities_selected) 
+                    # commenting this because we are not showing notification on project_action page
+                    if subscription.notification_count > 0:
+                        subscription.notification_count -= notification_count
+                        subscription.save()
                     return redirect('institution-project-actions', institution.id, project.unique_id)
                 elif 'link_projects_btn' in request.POST:
                     selected_projects = request.POST.getlist('projects_to_link')
@@ -1449,8 +1457,9 @@ def delete_project(request, pk, project_uuid):
             notification.delete()
 
     project.delete()
-    subscription.project_count +=1
-    subscription.save()
+    if subscription.project_count >= 0:
+        subscription.project_count +=1
+        subscription.save()
     return redirect('institution-projects', institution.id)
 
 @login_required(login_url="login")

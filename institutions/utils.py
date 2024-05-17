@@ -69,21 +69,23 @@ def add_user(request, institution, member, current_role, new_role):
     subscription = Subscription.objects.get(institution=institution)
     if new_role not in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
-        subscription.users_count += 1
-        subscription.save()
+        if subscription.users_count >= 0:
+            subscription.users_count += 1
+            subscription.save()
     elif new_role in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
-    elif subscription.users_count > 0 and new_role in ('editor', 'administrator', 'admin'):
+    elif (subscription.users_count > 0 or subscription.users_count == -1) and new_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
-        subscription.users_count -=1
-        subscription.save()
+        if subscription.users_count >= 0:
+            subscription.users_count -=1
+            subscription.save()
     else:
         messages.add_message(request, messages.ERROR, 
                             'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
 
 def notification_condition(request, notification_count, communities_selected):
-    if notification_count < len(communities_selected):
+    if notification_count < len(communities_selected) and notification_count > 0:
         remaining_notifications = len(communities_selected) - notification_count
         if notification_count == 1 and remaining_notifications == 1:
             messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')

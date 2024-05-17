@@ -39,7 +39,7 @@
             <div class="btn-with-helptext">
                 {% if researcher%}
                     <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}"
-                        href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
+                        href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 {% else %}
