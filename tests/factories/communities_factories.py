@@ -1,8 +1,18 @@
 import factory
 from django.core.files.base import ContentFile
-from communities.models import Community, InviteMember, JoinRequest
+from communities.models import Community, InviteMember, JoinRequest, Boundary
 from factories.accounts_factories import UserFactory
 from factories.institutions_factories import InstitutionFactory
+
+
+class CommunityBoundaryFactory(factory.django.DjangoModelFactory):
+    '''This is the Factory for the Community Model'''
+    class Meta:
+        model = Boundary
+        skip_postgeneration_save = True
+
+    coordinates = []
+
 
 class CommunityFactory(factory.django.DjangoModelFactory):
     '''This is the Factory for the Community Model'''
@@ -10,6 +20,7 @@ class CommunityFactory(factory.django.DjangoModelFactory):
         model = Community
         skip_postgeneration_save = True
 
+    boundary = factory.SubFactory(CommunityBoundaryFactory)
     community_creator = factory.SubFactory(UserFactory)
     community_name = factory.Faker('company')
     community_entity = factory.Faker('company_suffix')
