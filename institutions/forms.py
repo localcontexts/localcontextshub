@@ -9,7 +9,7 @@ class CreateInstitutionForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description']
+        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email',]
         error_messages = {
             'institution_name': {
                 'unique': _("An institution by that name already exists."),
@@ -22,6 +22,8 @@ class CreateInstitutionForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'id':'institutionStateProvRegion', 'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -36,7 +38,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror']
+        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email',]
         error_messages = {
             'institution_name': {
                 'unique': _("An institution by that name already exists."),
@@ -46,37 +48,15 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'institution_name': forms.TextInput(attrs={'name':'institution_name', 'class': 'w-100', 'autocomplete': 'off', 'required': True}),
             'city_town': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
-            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
-            'country': forms.TextInput(attrs={'class': 'w-100', }),
+            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
+            'country': forms.TextInput(attrs={'class': 'w-100', }),            
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['is_ror'].required = False
-
-class ConfirmInstitutionForm(forms.ModelForm):
-    class Meta:
-        model = Institution
-        fields = ['contact_name', 'contact_email', 'support_document']
-        widgets = {
-            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField'}),
-            'support_document': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'institutionSupportLetterUploadBtn', 'onchange': 'showFileName()'}),
-        }
-
-    def clean_support_document(self):
-        support_document_file = self.cleaned_data.get('support_document')
-        if support_document_file:
-            allowed_extensions = ['.pdf', '.doc', '.docx']  # Add more extensions if needed
-            file_ext = os.path.splitext(support_document_file.name)[1].lower()
-
-            if file_ext not in allowed_extensions:
-                raise ValidationError('Invalid document file extension. Only PDF and DOC/DOCX files are allowed.')
-
-            allowed_mime_types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-            if support_document_file.content_type not in allowed_mime_types:
-                raise ValidationError('Invalid document file type. Only PDF and DOC/DOCX files are allowed.')
-        return support_document_file
 
 class UpdateInstitutionForm(forms.ModelForm):
     class Meta:
