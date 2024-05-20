@@ -252,6 +252,7 @@ class SubscriptionForm(forms.Form):
         ),
     )
     organization_name = forms.CharField(
+        required=False,
         widget=forms.TextInput(
             attrs={
                 "id": "organizationInput",
