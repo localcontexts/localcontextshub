@@ -20,7 +20,7 @@
     >
     <h2 class="no-top-margin">Account Settings</h2>
 
-    <div class="flex-this w-100">
+    <div class="flex-this w-100 margin-bottom-2">
 
         <div class="side-nav-container">
             <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}">
@@ -55,12 +55,12 @@
                 </a>
             {% endif %}
 
-            {% if institution and institution.is_subscribed %}
+            {% if institution %}
                 <a class="side-nav-a" href="{% url 'institution-api-key' institution.id %}">
                     <div class="side-nav-item {% if 'api-key' in request.path %} selected {% else %} grey-text {% endif %}">
                         <div class="w-20 margin-right-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
                         <div class="w-80">
-                            <p class="no-top-margin"><strong>API Key</strong><br>Manage API Key</p>
+                            <p class="no-top-margin"><strong>API Keys</strong><br>Manage API Keys</p>
                         </div>
                     </div>
                 </a>

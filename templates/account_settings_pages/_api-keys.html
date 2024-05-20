@@ -5,134 +5,57 @@
     <div><h3 class="no-top-margin">API Key Manager</h3></div>
 </div>
 {% include 'partials/_alerts.html' %}
-<p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
+<p class="no-top-margin">Generating API Keys enables access to the Local Contexts Hub database. Keep these keys confidential. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
+
+<div class="flex-this">
+    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> {% if subscription_api_key_count == -1 and institution.is_subscribed %}Unlimited{% elif institution.is_subscribed %}{{ subscription_api_key_count }}{% else %}0{% endif %}</p>
+</div>
 
 {% if institution_keys %}
-    {% for name, key in institution_keys %}    
-        <p>Name: {{name}}, Key: {{key}}</p>
-    {% endfor %}
+    <table class="projects-table">
+        <tr>
+            <th>Name</th>
+            <th>API Key</th>
+            <th>Copy</th>
+            <th>Delete</th>
+        </tr>
+
+        {% for id, name, key in institution_keys %}
+            <tr>
+                <td class="bold">{{ name }}</td>
+                <td id="{{ id }}">{{ key }}</td>
+                <td><a id="copy-key" data-target="{{ id }}"><i class="fa-regular fa-clone pointer"></i></a></td>
+                <td><a id="delete-key" data-target="{{ id }}" data-name="{{ name }}"><i class="fa-regular fa-trash pointer"></i></a></td>
+            </tr>
+        {% endfor %}
+    </table>
 {% elif not institution_keys %}
     <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
 {% endif %}
 
-<div>
-    <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Add API Key <i class="fa fa-arrow-right"></i></button>
+<div class="flex-this margin-top-2">
+    {% if institution.is_subscribed and subscription_api_key_count != 0 %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Generate API Key</button>
+        </div>
+    {% else %}
+        <div class="btn-with-helptext">
+            <button id="generateAPIKeybtn" class="primary-btn margin-top-2 disabled-btn" disabled>Generate API Key</button>
+            <span class="btn-help-text" style="left: 5px;right: 0px;">
+                {% if not institution.is_subscribed %}The subscription process for your institution is not completed yet.{% elif subscription_api_key_count == 0 %}Your institution has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.{% endif %}
+            </span>
+        </div>
+    {% endif %}
 </div>
 
-<!-- {% if has_key %}
-    <div class="w-70 margin-bottom-2">
-        <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.
-        <p class="no-top-margin">Your API key is listed below.</p>
-    </div>
-
-    <div class="w-100 margin-top-8">
-        <div class="flex-this">
-            <div style="width:55%;">
-                <label for="api_key">API Key</label><br>                                           
-                <div id="keyText" class="key">{{ api_key }}</div>
-                {% if keyvisible %}
-                    <form id="apiKeyGeneratorForm" method="POST">
-                        {% csrf_token %}
-                        <button class="primary-btn green-btn copied-display" id="copybtn" name="copybtn" onclick="copyKey()">
-                            <i class="fa fa-copy"></i>
-                        </button>
-                    </form>
-                {% else %}
-                    <button class="primary-btn green-btn copied-display" id="copybtn" name="copybtn" disabled>
-                        <i class="fa fa-copy"></i>
-                    </button>
-                {% endif %}
-                
-            </div>
-        </div>
-        <div style="width:55%;">
-            <form id="apiKeyGeneratorForm" method="POST">
-                {% csrf_token %}
-                {% if keyvisible %}
-                    <button type="submit" class="primary-btn action-btn margin-top-2" id="showHideBtn" name="hidebtn">Hide Key</button>
-                {% else %}
-                    <button type="submit" class="primary-btn action-btn margin-top-2" id="showHideBtn" name="showbtn">Show Key</button>
-                    <div class="messageFloat">{% include 'partials/_alerts.html' %}</div>
-                {% endif %}
-            </form>
-        </div>
-    </div>
-
-    <div class="flex-this column w-100 margin-right-1">
-        <div><h4 class="margin-top-16">Delete API Key</h4></div>
-
-        <div class="w-70 margin-bottom-2">
-            <p class="no-top-margin">You can only have one API key at a time. If you need to generate a new one, you must delete this one first. To delete your current key, click the button below.</p>
-                <button id="submitKeyDeletion" class="primary-btn white-btn" onclick="deleteKey()">Delete API Key</button>
-        </div>
-    </div>
-
-    <div id="deleteKeyModal" class="modal hide">
-
-        <div class="modal-defaults deactivate-modal flex-this column w-100">
-            <div class="w-100">
-    
-                <div>
-                    <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
-                    <p>Are you sure you want to delete your API key? <br><br>
-                        This cannot be undone and any projects connected to this key will be disconnected. <br></p>  
-                </div>
-                <div class="flex-this w-100 text-align-center">
-                    <form id="apiDeleteKeyForm" method="POST">
-                        {% csrf_token %}
-                        <button name="continueKeyDeleteBtn" class="primary-btn white-btn">Yes, delete this key</button>    
-                    </form>
-                    <div id="closeModal" class="margin-left-1 primary-btn action-btn">Cancel</div>
-                </div>
-    
-            </div>
-        </div>
-    </div>
-{% else %} -->
-    
-<!-- {% endif %} -->
-
-<!-- <style>
-    .key{
-        max-height: 40px;
-        min-height: 40px;
-        max-width: 463px;
-        min-width: 463px;
-        float:left;
-        background-color: #fff;
-        border: 1px solid #1F2937;
-        border-radius: 4px 0px 0px 4px;
-        padding:8px;
-        opacity: 0.6;
-    }
-
-    #copybtn{
-        float: left;
-        border-radius: 0px 4px 4px 0px;
-        border-left: 0px;
-        max-height: 40px;
-        min-height: 40px;
-    }
-
-    #copybtn:disabled,
-    #copybtn[disabled] {
-        border: 1px solid #787E86;
-        border-left: 0px;
-        pointer-events: none;
-    }
-
-    #showHideBtn{
-        float: right;
-    }
-</style> -->
-
+<!-- Generate API Key Modal -->
 <div id="generateAPIKeymodal" class="modal hide">
 
     <div class="modal-defaults share-modal flex-this column w-100">
 
         <div class="flex-this space-between">
             <div class="flex-this">
-                <h2 class="primary-black-text no-top-margin">Generate an API Key</h2>
+                <h2 class="primary-black-text no-top-margin">Generate API Key</h2>
             </div>
             <div>
                 <div id='closegenerateAPIKeymodal' class="close-modal-btn pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
@@ -140,16 +63,14 @@
         </div>
 
         <div class="w-100">
-            <div>
-                <p class="no-top-margin">Please add a name that will be associated with this API Key. This cannot be edited later.</p>
-            </div>
+            <p class="no-top-margin">It's essential to keep your API keys secure and not share them publicly. Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</p>
 
             <form id="apiKeyGeneratorForm" method="POST">
             {% csrf_token %}
 
             <div class="flex-this column w-100">
-                <div class="margin-top-8">
-                    <label> Application Name </label><br>
+                <div class="margin-bottom-16">
+                    <label>API Key Name</label><br>
                     {{ form.name }}
                     {% if form.name.errors %}
                         <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
@@ -158,8 +79,8 @@
             </div>
 
             <div class="flex-this space-between w-100">
-                <div class="margin-top-8">
-                    <button type="submit" class="primary-btn action-btn margin-top-2" name="generatebtn">Generate API Key <i class="fa fa-arrow-right"></i></button>
+                <div class="w-100">
+                    <button type="submit" class="primary-btn action-btn margin-top-2 w-100" name="generate_api_key">Generate API Key</button>
                 </div>                    
             </div>
 
@@ -168,4 +89,56 @@
         </div>
     </div>
 </div>
+
+<!-- Delete API Key Modal -->
+<div id="deleteAPIKeymodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text no-top-margin">Are you sure?</h2>
+            </div>           
+        </div>
+
+        <div class="w-100">
+            <div>
+                <p class="no-top-margin">Are you sure you want to delete the API key: <span id="deleteKeyname" class="bold"></span>? This key will no longer be able to connect to the API and can effect your applications using this API key.</p>
+            </div>
+
+            <div class="flex-this">
+                <form id="deleteAPIKeyForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueAPIKeyDeletionBtn" class="primary-btn white-btn" name="delete_api_key" value="">Yes, delete this API Key.</button>
+                </form>
+                <div id="closedeleteAPIKeymodal" class="primary-btn action-btn margin-left-8">Cancel</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const copyBtns = document.querySelectorAll('#copy-key');
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            copyToClipboard(btn.dataset.target);
+            btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-regular fa-clone pointer"></i>`
+            }, 1000);
+        });
+    });
+
+    const deleteBtns = document.querySelectorAll('#delete-key');
+    const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (deleteAPIKeymodal.classList.contains('hide')) { 
+                deleteAPIKeymodal.classList.replace('hide', 'show');
+                continueAPIKeyDeletionBtn.value = btn.dataset.target;
+                deleteKeyname.innerHTML = btn.dataset.name;
+            }
+        });
+    });
+</script>
 {% endblock %}

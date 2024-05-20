@@ -7,6 +7,6 @@ class APIKeyGeneratorForm(forms.ModelForm):
         model = AccountAPIKey
         fields = ['name']
         widgets ={
-            'name': forms.TextInput(attrs={'required': True, "placeholder": "API Key Application Name", 'class': 'w-100'})
+            'name': forms.TextInput(attrs={'required': True, "placeholder": "Enter a name for your API key", 'class': 'w-100'})
         }
         
