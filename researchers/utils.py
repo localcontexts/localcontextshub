@@ -9,15 +9,6 @@ def is_user_researcher(user):
     else:
         return None
 
-def confirm_subscription(request, researcher, join_flag, form):
-    if create_salesforce_account_or_lead(hubId=str(researcher.id)+"_r", data=form.cleaned_data):
-        researcher.is_submitted = True
-        researcher.save()
-        messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
-    else:
-        messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
-    return redirect('dashboard')
-
 def checkif_user_researcher(current_researcher, user):
     if Researcher.objects.filter(user=user).exists():
         researcher = Researcher.objects.select_related('user').get(user=user)

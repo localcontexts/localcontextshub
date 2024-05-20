@@ -1162,6 +1162,10 @@ i[data-tooltip]:hover:after {
     transition: opacity 0.3s;
 }
 
+.left-tooltip {
+    margin-left: -286px !important;
+}
+
 .tooltiptext {
     padding: 10px;
     display: inline-block;
@@ -1178,6 +1182,11 @@ i[data-tooltip]:hover:after {
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent #EF6C00 transparent;
+}
+
+.left-tooltip::after {
+    left: 0% !important;
+    margin-left: 281px !important;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */

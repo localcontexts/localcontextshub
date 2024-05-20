@@ -6,12 +6,33 @@ from helpers.utils import create_salesforce_account_or_lead
 from django.contrib import messages
 from accounts.models import Subscription
 from helpers.utils import change_member_role
+from helpers.emails import send_hub_admins_application_email
+from institutions.models import Institution
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
+
+def handle_confirmation_and_subscription(request, subscription_form, institution):
+    first_name = subscription_form.cleaned_data["first_name"]
+    join_flag = False
+    if not subscription_form.cleaned_data["last_name"]:
+        subscription_form.cleaned_data["last_name"] = first_name
+    try:
+        response = confirm_subscription(request, institution, join_flag, subscription_form)
+        data = Institution.objects.get(institution_name=institution.institution_name)
+        send_hub_admins_application_email(request, institution, data)
+        return response
+    except:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "An unexpected error has occurred. Please contact support@localcontexts.org.",
+        )
+        return redirect("dashboard")    
+
 def set_ror_id(institution):
     import requests
 
