@@ -1699,3 +1699,33 @@ i[data-tooltip]:hover:after {
 .subscribed-icon-wrapper{
     display: flex
 }
+
+.required-label {
+    position: relative;
+    cursor: pointer;
+}
+
+.required-label[title]::after {
+    content: "Required";
+    position: absolute;
+    bottom: 100%;
+    left: 89%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.required-label[title]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    background-color: #EF6C00;
+    color: #fff;
+}
