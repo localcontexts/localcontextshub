@@ -32,6 +32,8 @@ import urllib.parse
 import urllib.request
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 
 
 def check_member_role(user, organization):
@@ -587,3 +589,11 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
     except urllib.error.HTTPError as e:
         print(f"HTTP Error: {e.code} - {e.reason} - {e.read()}")
         return False
+
+def encrypt_api_key(key):
+    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+    return encrypted_key
+
+def decrypt_api_key(key):
+    api_key = force_str(urlsafe_base64_decode(key))
+    return api_key

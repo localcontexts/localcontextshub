@@ -1572,7 +1572,7 @@ def api_keys(request, pk, related=None):
                 institution_id = institution.id
             )
             prefix = key.split(".")[0]
-            encrypted_key = urlsafe_base64_encode(force_bytes(key))
+            encrypted_key = encrypt_api_key(key)
             AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
             subscription.api_key_count -= 1
