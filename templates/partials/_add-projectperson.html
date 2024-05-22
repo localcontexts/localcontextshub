@@ -9,30 +9,32 @@
         {% for hidden in f.hidden_fields %}
             {{ hidden }}
         {% endfor %}
-        <div class="flex-this">
-            <div id="person-form-0" class="flex-this row margin-right-16 margin-bottom-8">
-                <div class="margin-right-1">
-                    <label>{{ f.name.label }}</label>
-                    <div class="tooltip"><strong>?</strong>
-                        <span class="tooltiptext">
-                            Add contributors who are not yet registered in the Hub.
-                        </span>
+        {% if not f.instance.pk %}
+            <div class="flex-this">
+                <div id="person-form-0" class="flex-this row margin-right-16 margin-bottom-8">
+                    <div class="margin-right-1">
+                        <label>{{ f.name.label }}</label>
+                        <div class="tooltip"><strong>?</strong>
+                            <span class="tooltiptext">
+                                Add contributors who are not yet registered in the Hub.
+                            </span>
+                        </div>
+                        <br>
+                        {{ f.name }}
                     </div>
-                    <br>
-                    {{ f.name }}
-                </div>
-                
-                <div>
-                    <label>{{ f.email.label }}</label><br>
-                    {{ f.email }}
+                    
+                    <div class="margin-right-16">
+                        <label>{{ f.email.label }}</label><br>
+                        {{ f.email }}
+                    </div>
+                    <div class="clone-form-btn add-square-btn pointer" style="margin-top:24px;">
+                        <span>+</span>
+                    </div>
                 </div>
             </div>
-            <div onclick="cloneForm(this)" class="clone-form-btn add-square-btn pointer" style="margin-top:24px;">
-                <span>+</span>
-            </div>
-        </div>
-
-        <div id="clonedItems"></div>
+            
+            <div id="clonedItems"></div>
+        {% endif %}
 
     {% endfor %}
 
