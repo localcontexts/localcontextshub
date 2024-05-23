@@ -1,47 +1,66 @@
-from api.base.views import *
-from api.base import views as base_views
-from rest_framework.views import APIView
-from rest_framework.decorators import action
-from . import serializers as v2_serializers
-from rest_framework.viewsets import ViewSet
-from rest_framework_api_key.permissions import HasAPIKey
-from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
-from institutions.models import Institution
-from communities.models import Community
-from researchers.models import Researcher
-from accounts.models import Subscription
-from datetime import datetime
-from api.models import AccountAPIKey
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
 
-class ApiKeyAuthentication(BaseAuthentication):
-    VALID_USER_IDS = [int(id_str) for id_str in settings.SF_VALID_USER_IDS.split()]
+from . import serializers as v2_serializers
+from rest_framework.views import APIView
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
+from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_api_key.permissions import HasAPIKey, BaseHasAPIKey
 
+from api.base.views import *
+from api.base import views as base_views
+from institutions.models import Institution
+from communities.models import Community
+from researchers.models import Researcher
+from accounts.models import Subscription
+from datetime import datetime
+from api.models import AccountAPIKey
+from helpers.utils import decrypt_api_key
+    
+class ApiKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
 
         if not api_key:
-            return None
+            raise AuthenticationFailed('Authentication not provided')
 
         try:
-            user = AccountAPIKey.objects.get(encrypted_key=api_key).developer
-        except User.DoesNotExist:
+            account = AccountAPIKey.objects.get(encrypted_key=api_key) 
+        except AccountAPIKey.DoesNotExist:
             raise AuthenticationFailed('Invalid API key')
 
-        # Check if the authenticated user is in the list of valid user IDs
-        if user.id not in self.VALID_USER_IDS:
-            raise AuthenticationFailed('Unauthorized user')
+        return (account, None)
+    
+class IsActive(BasePermission):
+    message = "Your account must be Subscribed, Certified, or Confirmed to perform this action."
 
-        return (user, None)
+    def has_permission(self, request, view):
+        account = request.user
+
+        if account.researcher and account.researcher.is_subscribed:
+            return True
+        elif account.institution and account.institution.is_subscribed:
+            return True
+        elif account.community and account.community.is_approved:
+            return True
+
+        return False
+
+class IsSuperuser(BasePermission):
+    def has_permission(self, request, view):
+        try:
+            if request.user.developer.is_superuser:
+                return True
+        except:
+            return False
 
 class APIOverview(APIView):
     def get(self, request, format=None):
@@ -212,9 +231,10 @@ class MultiProjectListDetail(ViewSet):
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+# SALESFORCE CALLS
 class GetUserAPIView(APIView):
     authentication_classes = [ApiKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsSuperuser]
 
     def get(self, request):
         email = request.query_params.get('email', None)
@@ -229,7 +249,7 @@ class GetUserAPIView(APIView):
         
 class SubscriptionAPI(APIView):
     authentication_classes = [ApiKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsSuperuser]
 
     def get(self, request):
         date_last_updated = request.query_params.get('date_last_updated')
