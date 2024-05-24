@@ -492,9 +492,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             data = form.save(commit=False)
             data.project_creator = request.user
 
-
-            subscription.project_count -= 1
-            subscription.save()
+            if subscription.project_count > 0:
+                subscription.project_count -= 1
+                subscription.save()
             # Define project_page field
             data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'
 
@@ -728,12 +728,16 @@ def project_actions(request, pk, project_uuid):
                             project.save()
 
                         communities_selected = request.POST.getlist('selected_communities')
-                        notification_count = min(subscription.notification_count, len(communities_selected))
+                        notification_count = subscription.notification_count
+                        if notification_count == -1:
+                            count = len(communities_selected)
+                        else:
+                            count = min(notification_count, len(communities_selected))
 
                         researcher_name = get_users_name(researcher.user)
                         title = f'{researcher_name} has notified you of a Project.'
 
-                        for community_id in communities_selected[:notification_count]:
+                        for community_id in communities_selected[:count]:
                             # Add communities that were notified to entities_notified instance
                             community = Community.objects.get(id=community_id)
                             entities_notified.communities.add(community)
@@ -761,8 +765,9 @@ def project_actions(request, pk, project_uuid):
 
                             # Create email
                             send_email_notice_placed(request, project, community, researcher)
-                        subscription.notification_count -= notification_count
-                        subscription.save()
+                        if subscription.notification_count > 0:
+                            subscription.notification_count -= notification_count
+                            subscription.save()
                         return redirect('researcher-project-actions', researcher.id, project.unique_id)
                     elif 'link_projects_btn' in request.POST:
                         selected_projects = request.POST.getlist('projects_to_link')
@@ -841,8 +846,9 @@ def delete_project(request, researcher_id, project_uuid):
             notification.delete()
     
     project.delete()
-    subscription.project_count +=1
-    subscription.save()
+    if subscription.project_count >= 0:
+        subscription.project_count +=1
+        subscription.save()
     return redirect('researcher-projects', researcher.id)
 
 @login_required(login_url='login')

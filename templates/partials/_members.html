@@ -624,7 +624,7 @@
                     <h2 class="no-top-margin">Add a new member</h2>
                     {% if institution.is_subscribed %}
                     <p class="margin-bottom-2">
-                        The remaining count of your user's is <strong>{{subscription.users_count}}</strong>.
+                        The remaining count of your user's is <strong>{% if subscription.users_count == -1 %}Unlimited{% else %}{{subscription.users_count}}{% endif %}</strong>.
                     </p> 
                     {% endif %}
                     <p class="no-top-margin">To invite a new member, please select a user and their proposed responsibility below</p>

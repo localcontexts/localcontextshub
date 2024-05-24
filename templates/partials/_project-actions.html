@@ -1103,7 +1103,7 @@
                             Notified communities will also be able to see and edit Project details, see and add Project comments, and see Project activity.
                         </p> 
                         <p class="margin-bottom-2">
-                            The remaining count of your notification is <strong>{{subscription.notification_count}}</strong>.
+                            The remaining count of your notification is <strong>{% if subscription.notification_count == -1 %}Unlimited{% else %}{{subscription.notification_count}}{% endif %}</strong>.
                         </p> 
                     </div>
 
