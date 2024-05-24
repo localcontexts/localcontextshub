@@ -2,22 +2,33 @@
     
 <div class="flex-this column w-90">
     <div class="margin-bottom-1">
-        <h2>Confirmation step</h2>
-        <p>
-            This account will represent your 
-            {% if institution %} institution, so the creation of this account must be approved by the appropriate representative from your institution.{% endif %}
-            {% if community %}community, so the creation of this account must be confirmed by the appropriate representative of your community. {% endif %}
-            <br><br>      
-            This step can be completed by providing either:
-            <ul>
-                <li>
-                    The name and email of a representative, who will be contacted by our team to confirm, or
-                </li>
-                <li>
-                    A letter from a representative detailing their approval to create this account.   
-                </li>
-            </ul>
-        </p>    
+        {% if community %}
+            <h2>Confirmation step</h2>
+            <p>
+                This account will represent your 
+                community, so the creation of this account must be confirmed by the appropriate representative of your community.
+                <br><br>      
+                This step can be completed by providing either:
+                <ul>
+                    <li>
+                        The name and email of a representative, who will be contacted by our team to confirm, or
+                    </li>
+                    <li>
+                        A letter from a representative detailing their approval to create this account.   
+                    </li>
+                </ul>
+            </p> 
+        {% endif %}   
+
+        {% if institution %}
+            <h2>Institutional contact</h2>
+            <p>
+                A <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscription program</a>
+                for institution accounts will be launched in October 2024. 
+                After you submit this form, we will reach out to you, and any institutional contact 
+                you indicate below, to discuss which subscription tier is best for your organization.
+            </p>
+        {% endif %}
     </div>
     
     <form id="confirmationForm" action="" method="POST" enctype="multipart/form-data" class="w-100">
@@ -45,42 +56,45 @@
             </div>
         </div>
 
-        <div class="margin-top-16 margin-bottom-16 flex-this w-100">
-            <div class="w-50 margin-right-8">
-                <div class="hide">{{ form.support_document }}</div>
-                <button id="customFileUploadBtn" class="primary-btn green-btn margin-right-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
-                {% if form.support_document.errors %}
-                    <div class="msg-red w-100"><small>{{ form.support_document.errors.as_text }}</small></div> 
-                {% endif %}
+        {% if community %}
+            <div class="margin-top-16 margin-bottom-16 flex-this w-100">
+                <div class="w-50 margin-right-8">
+                    <div class="hide">{{ form.support_document }}</div>
+                    <button id="customFileUploadBtn" class="primary-btn green-btn margin-right-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
+                    {% if form.support_document.errors %}
+                        <div class="msg-red w-100"><small>{{ form.support_document.errors.as_text }}</small></div> 
+                    {% endif %}
+                </div>
+                
+                    <div class="w-50">
+                        <div>
+                            <a 
+                                href="{% url 'download-community-support-letter' %}" 
+                                class="primary-btn blue-btn"
+                            > Download letter template <i class="fa-solid fa-download"></i></a>
+                        </div>  
+                    </div>
             </div>
-            
-            <div class="w-50">
+        {% endif %}
+
+        {% if community %}
+            <div class="flex-this space-between">
                 <div>
-                    <a 
-                        {% if community %}
-                            href="{% url 'download-community-support-letter' %}" 
-                        {% endif %}
-                        {% if institution %}
-                            href="{% url 'download-institution-support-letter' %}"
-                        {% endif %}
-
-                        class="primary-btn blue-btn"
-                    > Download letter template <i class="fa-solid fa-download"></i></a>
-                </div>  
+                    <p>
+                        For more information about this step, <a href="https://localcontexts.org/support/getting-started-on-the-hub/#confirmation-step" class="default-a">see our website</a>.
+                    </p>
+                </div>
+                <div class="flex-this flex-end">
+                    <button class="primary-btn action-btn margin-top-2">Continue <i class="fa fa-arrow-right"></i></button>
+                </div>            
             </div>
-        </div>
+        {% endif %}
 
-        <div class="flex-this space-between">
-            <div>
-                <p>
-                    For more information about this step, <a href="https://localcontexts.org/support/getting-started-on-the-hub/#confirmation-step" class="default-a">see our website</a>.
-                </p>
-            </div>
-
+        {% if institution %}
             <div class="flex-this flex-end">
                 <button class="primary-btn action-btn margin-top-2">Continue <i class="fa fa-arrow-right"></i></button>
-            </div>            
-        </div>
+            </div> 
+        {% endif %}
 
     </form>
 

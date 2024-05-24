@@ -57,26 +57,11 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 class ConfirmInstitutionForm(forms.ModelForm):
     class Meta:
         model = Institution
-        fields = ['contact_name', 'contact_email', 'support_document']
+        fields = ['contact_name', 'contact_email']
         widgets = {
             'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField'}),
-            'support_document': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'institutionSupportLetterUploadBtn', 'onchange': 'showFileName()'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
         }
-
-    def clean_support_document(self):
-        support_document_file = self.cleaned_data.get('support_document')
-        if support_document_file:
-            allowed_extensions = ['.pdf', '.doc', '.docx']  # Add more extensions if needed
-            file_ext = os.path.splitext(support_document_file.name)[1].lower()
-
-            if file_ext not in allowed_extensions:
-                raise ValidationError('Invalid document file extension. Only PDF and DOC/DOCX files are allowed.')
-
-            allowed_mime_types = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-            if support_document_file.content_type not in allowed_mime_types:
-                raise ValidationError('Invalid document file type. Only PDF and DOC/DOCX files are allowed.')
-        return support_document_file
 
 class UpdateInstitutionForm(forms.ModelForm):
     class Meta:
