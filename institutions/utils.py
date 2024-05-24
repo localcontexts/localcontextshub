@@ -84,23 +84,7 @@ def add_user(request, institution, member, current_role, new_role):
                             'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
 
-def notification_condition(request, notification_count, communities_selected):
-    if notification_count < len(communities_selected) and notification_count > 0:
-        remaining_notifications = len(communities_selected) - notification_count
-        if notification_count == 1 and remaining_notifications == 1:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
-        elif notification_count == 1:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
-        elif remaining_notifications == 1:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} community could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
-        else:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities. {remaining_notifications} communities could not be notified due to subscription limit. Please upgrade your subscription plan to notify more communities.')
-    else:
-        if notification_count == 1:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} community.')
-        else:
-            messages.add_message(request, messages.INFO, f'You have successfully notified {notification_count} communities.')
-            
+         
 def check_subscription(request, institution):
     redirection = False
     try:

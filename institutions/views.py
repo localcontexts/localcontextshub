@@ -1349,7 +1349,6 @@ def project_actions(request, pk, project_uuid):
                         # Create email 
                         send_email_notice_placed(request, project, community, institution)
                     
-                    # notification_condition(request, notification_count, communities_selected) 
                     # commenting this because we are not showing notification on project_action page
                     if subscription.notification_count > 0:
                         subscription.notification_count -= notification_count
