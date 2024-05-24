@@ -21,7 +21,7 @@
                                     Create a Project <i class="fa fa-arrow-right"></i>
                                 </a>
                             {% endif %}
-                            {% if institution%}
+                            {% if institution %}
                                 {% if not institution.is_subscribed or subscription.project_count == 0 %}
                                     <span class="btn-help-text">
                                         {% if institution.is_subscribed == False %}
@@ -38,13 +38,13 @@
             {% else %}
             <div class="btn-with-helptext">
                 {% if researcher%}
-                    <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}"
-                        href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
+                    <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext {% else %} primary-btn green-btn margin-top-2 {% endif %}"
+                        href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0) {% endif %}">
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 {% else %}
                     <a class="primary-btn green-btn margin-top-2 "
-                        href="{% url 'create-project' community.id %}">
+                        href="{% url 'researcher-create-project' researcher.id %}">
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 {% endif %}
