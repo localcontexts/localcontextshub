@@ -437,7 +437,7 @@
                                             class="primary-btn white-btn"
 
                                             {% if community %}
-                                                href="{% url 'create-project' community.id project.unique_id 'related' %}"
+                                                href="{% url 'community-create-project' community.id project.unique_id 'related' %}"
                                             {% endif %}
                                             {% if institution %}
                                                 href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
@@ -629,7 +629,7 @@
                                         a-disabled
                                     {% endif %}"
                                 {% if community %}
-                                    href="{% url 'create-project' community.id project.unique_id %}"
+                                    href="{% url 'community-create-project' community.id project.unique_id %}"
                                 {% endif %}
                                 {% if institution %}
                                     href="{% url 'inst-create-project' institution.id project.unique_id %}"
