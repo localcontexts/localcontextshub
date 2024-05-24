@@ -1008,13 +1008,7 @@ function selectCommunities() {
             selectedCommunityDiv.classList.replace('hide', 'show')
             div.innerHTML = `<input type="hidden" value="${option.id}" name="selected_communities">`
         }
-        
-        if (selectedDivCount >= notification_count) {
-            select.disabled = true;
-        } else {
-            select.disabled = false;
-        }
-        
+        select.disabled = notification_count > 1 && selectedDivCount >= notification_count;
     })
 }
 

@@ -92,6 +92,8 @@ def request_possible(request, org, selected_role):
                 subscription.users_count -= 1
                 subscription.save()
                 return True
+            elif subscription.users_count == -1:
+                return True
             else:
                 messages.error(request, 'The editor and admin limit for this institution has been reached. Please contact the institution and let them know to upgrade their subscription plan to add more editors and admins.')
                 return False
