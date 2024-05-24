@@ -702,6 +702,8 @@ def edit_project(request, pk, project_uuid):
         notices = Notice.objects.filter(project=project, archived=False)
 
     if request.method == 'POST':
+        form = EditProjectForm(request.POST or None, instance=project)
+        formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
         if form.is_valid() and formset.is_valid():
             has_changes = form.has_changed()
             data = form.save(commit=False)
@@ -723,8 +725,13 @@ def edit_project(request, pk, project_uuid):
 
             instances = formset.save(commit=False)
             for instance in instances:
-                instance.project = data
-                instance.save()
+                if instance.name or instance.email:
+                    instance.project = project
+                    instance.save()
+
+            # Delete instances marked for deletion
+            for instance in formset.deleted_objects:
+                instance.delete()
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, institution, data)
