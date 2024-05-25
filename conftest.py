@@ -225,6 +225,7 @@ def py(test_case: TestCase, py_config: PyleniumConfig, request):
             assert 'Google' in py.title()
     """
     py = Pylenium(py_config)
+    request.cls.py = py
     yield py
     try:
         if request.node.report.failed:
