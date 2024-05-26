@@ -118,7 +118,7 @@
                     <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
                 </a>.<br><br>
             {% endif %}
-            <iframe src="{% url 'community-boundary-view' community.id %}"
+            <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
                     style="width: 100%; height: 450px; border: 1px solid cadetblue;">
             </iframe>
         </div>

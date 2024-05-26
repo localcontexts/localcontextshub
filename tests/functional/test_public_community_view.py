@@ -29,12 +29,14 @@ class TestFeatures(StaticLiveServerTestCase):
         response = self.client.get(reverse('public-community', kwargs=kwargs))
         self.assertEqual(response.status_code, 404)
 
-    def test_public_community_status_code_with_boundaries(self):
+    def test_public_community_ui_with_boundaries(self):
         kwargs = {
             'pk': self.community_with_boundary.id,
         }
-        response = self.client.get(reverse('public-community', kwargs=kwargs))
-        self.assertEqual(response.status_code, 200)
+        page_url = urllib.parse.urljoin(self.live_server_url, reverse('public-community', kwargs=kwargs))
+        self.py.visit(page_url)
+        # confirm boundary is present
+        self.py.find("[data-testid='community-boundary-iframe']").should().not_be_empty()
 
     def test_public_community_ui_without_boundaries(self):
         kwargs = {
