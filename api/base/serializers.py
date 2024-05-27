@@ -155,4 +155,4 @@ class GetSubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
-        fields = ['account_id', 'users_count', 'api_key_count', 'project_count', 'notification_count', 'start_date', 'end_date', 'date_last_updated']
+        fields = ['account_id', 'users_count', 'api_key_count', 'project_count', 'notification_count', 'date_last_updated']
