@@ -471,7 +471,7 @@ def researcher_projects(request, pk):
 def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
-    researcher.validate_is_subscribed(bypass_validation)
+    validate_is_subscribed(researcher, bypass_validation)
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
@@ -579,7 +579,7 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 def edit_project(request, pk, project_uuid):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
-    researcher.validate_is_subscribed(bypass_validation)
+    validate_is_subscribed(researcher, bypass_validation)
 
     project = Project.objects.get(unique_id=project_uuid)
     form = EditProjectForm(request.POST or None, instance=project)
