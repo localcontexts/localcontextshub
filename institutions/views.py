@@ -35,6 +35,7 @@ from accounts.forms import (
     ContactOrganizationForm,
     SignUpInvitationForm,
     SubscriptionForm,
+    UserCreateProfileForm,
 )
 from api.forms import APIKeyGeneratorForm
 from .forms import *
@@ -114,21 +115,15 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_institution(request):
     form = CreateInstitutionForm()
-    subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
+    user_form,subscription_form  = form_initiation(request)
+   
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
-
-        if form.is_valid() and validate_recaptcha(request):
+        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": request.user._wrapped.first_name,
-            "last_name": request.user._wrapped.last_name,
+            "first_name": user_form.cleaned_data['first_name'],
+            "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
             "account_type": "institution_account",
             "organization_name": form.cleaned_data['institution_name'],
@@ -136,56 +131,28 @@ def create_institution(request):
             
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
-            affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
-
-            data = form.save(commit=False)
-            data.institution_creator = request.user
-            data.save()
-            
-            affiliation.institutions.add(data)
-            affiliation.save()
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Institution",
-                institution_id=data.id,
-                action_account_type="institution",
-            )
 
             if subscription_form.is_valid():
-                handle_confirmation_and_subscription(request, subscription_form, data)
+                handle_institution_creation(request, form, subscription_form )
                 return redirect('dashboard')
             else:
-                error_messages = []
-                for field, errors in subscription_form.errors.items():
-                    for error in errors:
-                        error_messages.append(f"{field.capitalize()}: {error}")
-
-                concatenated_errors = "\n".join(error_messages)
                 messages.add_message(
-                                request,
-                                messages.ERROR,
-                                concatenated_errors,
-                            )
-                return redirect('confirm-subscription-institution',  data.id)
-    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form,})
+                    request,
+                    messages.ERROR,
+                    "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
+    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form, "user_form": user_form,})
 
 
 @login_required(login_url="login")
 def create_custom_institution(request):
-    noror_form = CreateInstitutionNoRorForm(request.POST or None)
-    subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
-    if request.method == "POST":
-        affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
-            user=request.user
-        )
+    noror_form = CreateInstitutionNoRorForm()
+    user_form,subscription_form  = form_initiation(request)
 
-        if noror_form.is_valid():
+    if request.method == "POST":
+        noror_form = CreateInstitutionNoRorForm(request.POST)
+        if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
             "first_name": request.user._wrapped.first_name,
@@ -197,25 +164,8 @@ def create_custom_institution(request):
             
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
-
-            data = noror_form.save(commit=False)
-            data.institution_creator = request.user
-            data.save()
-
-            # Add to user affiliations
-            affiliation.institutions.add(data)
-            affiliation.save()
-
-            # Adds activity to Hub Activity
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Institution",
-                institution_id=data.id,
-                action_account_type="institution",
-            )
-
             if subscription_form.is_valid():
-                handle_confirmation_and_subscription(request, subscription_form, data)
+                handle_institution_creation(request, noror_form, subscription_form )
                 return redirect('dashboard')
             else:
                 error_messages = []
@@ -236,6 +186,7 @@ def create_custom_institution(request):
         {
             "noror_form": noror_form,
             "subscription_form": subscription_form,
+            "user_form": user_form,
         },
     )
 
@@ -250,13 +201,13 @@ def confirm_subscription_institution(request, institution_id):
         "account_type": "institution_account",
         "organization_name": institution.institution_name,
     }
-    modified_account_type_choices = [
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
         if choice[0] != "member"
     ]
     form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_account_type_choices
+    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
     form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
     form.fields["email"].widget.attrs.update({"class": "readonly-input"})

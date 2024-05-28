@@ -2,15 +2,62 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib import messages
 from .models import Institution
-from helpers.utils import create_salesforce_account_or_lead
-from django.contrib import messages
-from accounts.models import Subscription
-from helpers.utils import change_member_role
+from accounts.models import Subscription, UserAffiliation
+from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead
 from helpers.emails import send_hub_admins_application_email
 from institutions.models import Institution
+from helpers.models import HubActivity
+from accounts.forms import UserCreateProfileForm, SubscriptionForm
+from django.db import transaction
+
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
+
+
+def form_initiation(request):
+    subscription_form = SubscriptionForm()
+
+    initial_user_data = {
+        "first_name": request.user._wrapped.first_name,
+        "last_name": request.user._wrapped.last_name,
+    }
+    user_form = UserCreateProfileForm(request.POST or None, initial=initial_user_data)
+    exclude_choices = {"member", "service_provider"}
+    
+    modified_inquiry_type_choices = [
+        choice
+        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+        if choice[0] not in exclude_choices
+    ]
+    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+    return  user_form,subscription_form
+
+def handle_institution_creation(request, form, subscription_form ):
+    try:
+        with transaction.atomic():
+            data = form.save(commit=False)
+            data.institution_creator = request.user
+            data.save()
+            response = handle_confirmation_and_subscription(request, subscription_form, data)
+            if not response:
+                raise SalesforceAPIError("Salesforce account or lead creation failed.")
+            affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
+            affiliation.institutions.add(data)
+            affiliation.save()
+
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Institution",
+                institution_id=data.id,
+                action_account_type="institution",
+            )
+    except SalesforceAPIError as e:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "Something went wrong. Please Try again later."
+        )
 
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
@@ -20,18 +67,13 @@ def handle_confirmation_and_subscription(request, subscription_form, institution
     join_flag = False
     if not subscription_form.cleaned_data["last_name"]:
         subscription_form.cleaned_data["last_name"] = first_name
-    try:
-        response = confirm_subscription(request, institution, join_flag, subscription_form)
-        data = Institution.objects.get(institution_name=institution.institution_name)
-        send_hub_admins_application_email(request, institution, data)
-        return response
-    except:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "An unexpected error has occurred. Please contact support@localcontexts.org.",
-        )
-        return redirect("dashboard")    
+    response = confirm_subscription(request, institution, join_flag, subscription_form)
+    data = Institution.objects.get(institution_name=institution.institution_name)
+    send_hub_admins_application_email(request, institution, data)
+    return response
+
+# This is for retroactively adding ROR IDs to Institutions.
+# Currently not being used anywhere.
 
 def set_ror_id(institution):
     import requests

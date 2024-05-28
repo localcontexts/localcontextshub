@@ -1,0 +1,18 @@
+{% autoescape off %}
+<h3>
+    {{ data.first_name}} {{data.last_name}}
+    has try to apply for institution subscription.
+</h3>
+
+<h4>
+    {{ reason }}
+</h4>
+<p>
+    Contact Name: {{ data.first_name }}<br>
+    Contact Email: {{ data.email }}<br>
+    Institution Name: {{ data.organization_name }}<br>
+    <br><br>
+    File in which error occur : {{ error_file }} on line <strong>{{ error_line }} {{error_syntax}}.</strong> 
+</p>
+
+{% endautoescape %}
