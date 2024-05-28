@@ -28,7 +28,6 @@ from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
 from .decorators import is_researcher
-from accounts.decorators import subscription_submission_required
 from .models import Researcher
 from .forms import *
 from .utils import *
@@ -257,7 +256,6 @@ def disconnect_orcid(request):
 
 @login_required(login_url='login')
 @is_researcher()
-@subscription_submission_required(Subscriber=Researcher)
 def update_researcher(request, pk):
     env = dev_prod_or_local(request.get_host())
     researcher = Researcher.objects.get(id=pk)
@@ -296,7 +294,6 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def researcher_notices(request, pk):
     researcher = Researcher.objects.get(id=pk)
     notify_restricted_message = False
@@ -360,7 +357,6 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def researcher_projects(request, pk):
     researcher = Researcher.objects.get(id=pk)
     create_restricted_message = False
@@ -473,7 +469,6 @@ def researcher_projects(request, pk):
 # Create Project
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
@@ -581,7 +576,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def edit_project(request, pk, project_uuid):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
@@ -653,7 +647,6 @@ def edit_project(request, pk, project_uuid):
     return render(request, 'researchers/edit-project.html', context)
 
 
-@subscription_submission_required(Subscriber=Researcher)
 def project_actions(request, pk, project_uuid):
     try:
         project = Project.objects.prefetch_related(
@@ -874,7 +867,6 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
         
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
 

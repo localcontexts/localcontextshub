@@ -37,7 +37,6 @@ class Institution(models.Model):
     viewers = models.ManyToManyField(User, blank=True, related_name="institution_viewers")
     is_ror = models.BooleanField(default=True, null=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
-    is_submitted = models.BooleanField(default=False)
     is_subscribed = models.BooleanField(default=False)
 
     # Managers

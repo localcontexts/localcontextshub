@@ -389,7 +389,6 @@ def public_institution_view(request, pk):
 
 # Update institution
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def update_institution(request, pk):
     institution = get_institution(pk)
@@ -422,7 +421,6 @@ def update_institution(request, pk):
 
 # Notices
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def institution_notices(request, pk):
     institution = get_institution(pk)
@@ -485,7 +483,6 @@ def institution_notices(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
@@ -496,7 +493,6 @@ def delete_otc_notice(request, pk, notice_id):
 
 # Members
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def institution_members(request, pk):
     institution = get_institution(pk)
@@ -610,7 +606,6 @@ def institution_members(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def member_requests(request, pk):
     institution = get_institution(pk)
@@ -644,7 +639,6 @@ def member_requests(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin"])
 def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
@@ -653,7 +647,6 @@ def delete_join_request(request, pk, join_id):
     return redirect('institution-member-requests', institution.id)
 
 @login_required(login_url='login')
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=['admin'])
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
@@ -706,7 +699,6 @@ def remove_member(request, pk, member_id):
 
 # Projects page
 @login_required(login_url='login')
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=['admin', 'editor', 'viewer'])
 def institution_projects(request, pk):
     institution = get_institution(pk)
@@ -918,7 +910,6 @@ def institution_projects(request, pk):
 
 # Create Project
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 @transaction.atomic
 def create_project(request, pk, source_proj_uuid=None, related=None):
@@ -1065,7 +1056,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def edit_project(request, pk, project_uuid):
     institution = get_institution(pk)
@@ -1371,7 +1361,6 @@ def project_actions(request, pk, project_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def archive_project(request, pk, project_uuid):
     if not ProjectArchived.objects.filter(
@@ -1393,7 +1382,6 @@ def archive_project(request, pk, project_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 @transaction.atomic
 def delete_project(request, pk, project_uuid):
@@ -1413,7 +1401,6 @@ def delete_project(request, pk, project_uuid):
     return redirect('institution-projects', institution.id)
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     institution = get_institution(pk)
@@ -1438,7 +1425,6 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def connections(request, pk):
     institution = get_institution(pk)
@@ -1508,7 +1494,6 @@ def embed_otc_notice(request, pk):
 
 # Create API Key
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin"])
 @transaction.atomic
 def api_keys(request, pk, related=None):
