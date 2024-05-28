@@ -604,7 +604,6 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
         except urllib.error.HTTPError as e:
             reason= "Failed to create lead in Salesforce."
             subject= "Subscription failed"
-            email="sabeen.ammar@localcontexts.org"
             traceback_info = traceback.format_exc()
             error = extract_error_line(traceback_info)
             error_file, error_line, error_syntax = error[0], error[1], error[3]
@@ -616,12 +615,11 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
                     "error_syntax": error_syntax,
                 }
             template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
-            send_subscription_fail_email(email, subject, template)
+            send_subscription_fail_email(subject, template)
             raise SalesforceAPIError("Failed to create lead in Salesforce.")
     except urllib.error.HTTPError as e:
         reason= "Unable to get token of access from Salesforce"
         subject= "Subscription failed"
-        email="sabeen.ammar@localcontexts.org"
         traceback_info = traceback.format_exc()
         error = extract_error_line(traceback_info)
         error_file, error_line, error_syntax = error[0], error[1], error[3]
@@ -633,5 +631,5 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
                 "error_syntax": error_syntax,
             }
         template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
-        send_subscription_fail_email(email, subject, template)
+        send_subscription_fail_email(subject, template)
         raise SalesforceAPIError("Failed to retrieve Salesforce access token.")

@@ -66,12 +66,12 @@ def send_simple_email(email, subject, template):
     )
 
 # Send error info
-def send_subscription_fail_email(email, subject, template):
+def send_subscription_fail_email(subject, template):
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
         data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-            "to": [email],
+            "to": "support@localcontexts.org",
             "subject": subject,
             "html": template}
     )
