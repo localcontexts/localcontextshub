@@ -24,8 +24,18 @@ from accounts.models import Subscription
 from datetime import datetime
 from api.models import AccountAPIKey
 from helpers.utils import decrypt_api_key
-    
-class ApiKeyAuthentication(BaseAuthentication):
+
+'''
+VARIABLE NOTES
+- self.request.user or request.user = The API key being used is considered the user in this instance.
+The model being referenced is AccountAPIKey.
+'''
+
+'''
+APIKeyAuthentication checks a valid API Key was passed. API Key from user will be the encrypted key. 
+If no API key provided, or an invalid key (expired/revoked) is provided, raise AuthenticationFailed.
+'''
+class APIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
         api_key = request.headers.get('X-Api-Key')
 
@@ -39,6 +49,11 @@ class ApiKeyAuthentication(BaseAuthentication):
 
         return (account, None)
     
+'''
+Checks for active status on subscriptions, service providers and members accounts.
+If inactive, message appears.
+TODO: Add is_certified and is_developer check for service providers and developers.
+'''
 class IsActive(BasePermission):
     message = "Your account must be Subscribed, Certified, or Confirmed to perform this action."
 
@@ -54,6 +69,10 @@ class IsActive(BasePermission):
 
         return False
 
+'''
+Checks that key is for a developer (user) account that has superuser access.
+If not, permission blocked.
+'''
 class IsSuperuser(BasePermission):
     def has_permission(self, request, view):
         try:
@@ -71,30 +90,36 @@ class APIOverview(APIView):
             'multi_project_detail':'/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
             'projects_by_user_id': '/projects/users/<USER_ID>/',
             'projects_by_institution_id': '/projects/institutions/<INSTITUTION_ID>/',
+            'institution_projects_by_providers_id': '/projects/institutions/<INSTITUTION_ID>/<PROVIDERS_ID>',
             'projects_by_researcher_id': '/projects/researchers/<RESEARCHER_ID>/',
             'open_to_collaborate_notice': '/notices/open_to_collaborate/',
-            'api_documentation': 'https://github.com/biocodellc/localcontexts_db/wiki/API-Documentation',
-            'usage_guides': 'https://localcontexts.org/support/downloadable-resources',
+            'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
+            'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
         }
         return Response(api_urls)
 
 class OpenToCollaborateNotice(APIView):
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsActive]
+
     def get(self, request):
-        api_urls = {
-            'notice_type': 'open_to_collaborate',
-            'name': 'Open to Collaborate Notice',
-            'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-            'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
-            'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
-            'usage_guide_ci_notices': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/guides/LC-Institution-Notices-Usage-Guide_2021-11-16.pdf',
-        }
-        return Response(api_urls)
+        if not request.user.community:
+            api_urls = {
+                'notice_type': 'open_to_collaborate',
+                'name': 'Open to Collaborate Notice',
+                'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
+                'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
+                'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
+                'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
+            }
+            return Response(api_urls)
+        else:
+            raise AuthenticationFailed('Unauthorized user')
 
 class ProjectList(generics.ListAPIView):
-    permission_classes = [HasAPIKey]
-    queryset = Project.objects.exclude(project_privacy='Private')
-    serializer_class = ProjectOverviewSerializer
+    authentication_classes = [APIKeyAuthentication]
 
+    serializer_class = ProjectOverviewSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['^providers_id', '=unique_id', '$title']
 
@@ -102,10 +127,58 @@ class ProjectList(generics.ListAPIView):
     # '=' exact matches
     # '$' regex search
 
+    def get_queryset(self):
+        queryset = []
+        
+        if self.request.user.institution:
+            account = self.request.user.institution
+            if account.is_subscribed:
+                creators = ProjectCreator.objects.filter(institution=account)
+            else: 
+                creators = ProjectCreator.objects.filter(institution=account).exclude(project__project_privacy='Private')
+            for x in creators:
+                queryset.append(x.project)
+
+        elif self.request.user.researcher:
+            account = self.request.user.researcher
+            if account.is_subscribed:
+                creators = ProjectCreator.objects.filter(researcher=account)
+            else: 
+                creators = ProjectCreator.objects.filter(researcher=account).exclude(project__project_privacy='Private')
+            for x in creators:
+                queryset.append(x.project)
+        
+        elif self.request.user.community:
+            account = self.request.user.community
+            if account.is_approved:
+                creators = ProjectCreator.objects.filter(community=account)
+            else: 
+                creators = ProjectCreator.objects.filter(community=account).exclude(project__project_privacy='Private')
+            for x in creators:
+                queryset.append(x.project)
+
+        return queryset
+
 class ProjectDetail(generics.RetrieveAPIView):
-    permission_classes = [HasAPIKey | IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
     lookup_field = 'unique_id'
-    queryset = Project.objects.exclude(project_privacy='Private')
+
+    def get_queryset(self):
+        if self.request.user.institution:
+            account = self.request.user.institution
+            queryset = Project.objects.filter(project_creator__institution_created_project=account)
+        elif self.request.user.researcher:
+            account = self.request.user.researcher
+            queryset = Project.objects.filter(project_creator=account)
+        elif self.request.user.community:
+            account = self.request.user.community
+            queryset = Project.objects.filter(project_creator=account)
+        elif self.request.user.developer:
+            account = self.request.user.developer
+            queryset = Project.objects.filter(project_creator=account)
+
+        print(account, queryset)
+        return queryset
 
     def get_serializer_class(self):
         project = self.get_object()
@@ -114,23 +187,23 @@ class ProjectDetail(generics.RetrieveAPIView):
         else:
             return ProjectNoNoticeSerializer
     
-    def get_object(self):
-        try:
-            unique_id = self.kwargs.get('unique_id')
-            obj = self.queryset.get(unique_id=unique_id)
-            return obj
-        except Project.DoesNotExist:
-            raise Http404("Project does not exist")
+    # def get_object(self):
+    #     try:
+    #         unique_id = self.kwargs.get('unique_id')
+    #         obj = self.queryset.get(unique_id=unique_id)
+    #         return obj
+    #     except Project.DoesNotExist:
+    #         raise Http404("Project does not exist")
 
 class ProjectsByIdViewSet(ViewSet):
-    permission_classes = [HasAPIKey | IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
+
     def projects_by_user(self, request, pk):
         try:
-            useracct = User.objects.get(id=pk)
-            projects = Project.objects.filter(project_creator=useracct).exclude(project_privacy='Private')
+            user = User.objects.get(id=pk)
+            projects = Project.objects.filter(project_creator=user).exclude(project_privacy='Private')
             serializer = ProjectOverviewSerializer(projects, many=True)
             return Response(serializer.data)
-            
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -185,7 +258,7 @@ class ProjectsByIdViewSet(ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
 class MultiProjectListDetail(ViewSet):
-    permission_classes = [HasAPIKey | IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
 
     def multisearch(self, request, unique_id):
         try:
@@ -233,7 +306,7 @@ class MultiProjectListDetail(ViewSet):
 
 # SALESFORCE CALLS
 class GetUserAPIView(APIView):
-    authentication_classes = [ApiKeyAuthentication]
+    authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsSuperuser]
 
     def get(self, request):
@@ -248,7 +321,7 @@ class GetUserAPIView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
 class SubscriptionAPI(APIView):
-    authentication_classes = [ApiKeyAuthentication]
+    authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsSuperuser]
 
     def get(self, request):

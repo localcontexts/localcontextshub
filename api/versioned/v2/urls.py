@@ -19,15 +19,12 @@ date_modified = MultiProjectListDetail.as_view({
 
 urlpatterns = [
     re_path(r'^$', APIOverview.as_view(), name="api-overview"),
-    path('notices/open_to_collaborate', OpenToCollaborateNotice.as_view(), name="api-open-to-collaborate"),
+    path('notices/open_to_collaborate/', OpenToCollaborateNotice.as_view(), name="api-open-to-collaborate"),
 
     path('get-user/', GetUserAPIView.as_view(), name='get-user'),
     path('projects/', ProjectList.as_view(), name="api-projects"),
     path('subscription', SubscriptionAPI.as_view(), name="subscription"),
     path('projects/<uuid:unique_id>/', ProjectDetail.as_view(), name="api-project-detail"),
-    # ADD path('projects/<str:providers_id>/', ProjectDetail.as_view(), name="api-project-detail"),
-    # DELETE path('projects/external/<str:providers_id>/', project_detail_providers, name="api-project-detail-providers"),
-    #ASHLEYTODO: change it so that the project detail (list view) can be used using either projectID or providersID. Two URLs that use one call. projects/external url would be removed
 
     path('projects/users/<str:pk>/', projects_by_user, name="api-projects-user"),
     path('projects/institutions/<str:institution_id>/', projects_by_institution, name="api-projects-institution"),
