@@ -173,7 +173,11 @@ def confirm_subscription(request, user, join_flag, form, account_type):
     else:
         raise ValueError("Invalid account type")
 
-    if create_salesforce_account_or_lead(request, hubId=hub_id, data=form.cleaned_data):
+    if create_salesforce_account_or_lead(
+        request,
+        hubId=hub_id,
+        data=form.cleaned_data
+    ):
         user.is_submitted = True
         user.save()
         messages.add_message(
