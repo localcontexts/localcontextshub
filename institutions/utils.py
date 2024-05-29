@@ -18,11 +18,11 @@ def get_institution(pk):
 def form_initiation(request):
     subscription_form = SubscriptionForm()
 
-    initial_user_data = {
+    fields_to_update = {
         "first_name": request.user._wrapped.first_name,
         "last_name": request.user._wrapped.last_name,
     }
-    user_form = UserCreateProfileForm(request.POST or None, initial=initial_user_data)
+    user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
     exclude_choices = {"member", "service_provider"}
     
     modified_inquiry_type_choices = [
@@ -31,6 +31,10 @@ def form_initiation(request):
         if choice[0] not in exclude_choices
     ]
     subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+    for field, value in fields_to_update.items():
+        if value:
+            user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
+        
     return  user_form,subscription_form
 
 def handle_institution_creation(request, form, subscription_form ):
@@ -96,7 +100,7 @@ def set_ror_id(institution):
         
 def confirm_subscription(request, institution, join_flag, form):
     if institution.institution_creator == request.user._wrapped:
-        if create_salesforce_account_or_lead(hubId=str(institution.id)+"_i", data=form.cleaned_data):
+        if create_salesforce_account_or_lead(request, hubId=str(institution.id)+"_i", data=form.cleaned_data):
             institution.is_submitted = True
             institution.save()
             messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')

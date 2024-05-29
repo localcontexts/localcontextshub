@@ -561,7 +561,7 @@ def validate_recaptcha(request_object):
     )
 
 
-def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
+def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=True):
     salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {
         "grant_type": "client_credentials",
@@ -608,7 +608,8 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
             error = extract_error_line(traceback_info)
             error_file, error_line, error_syntax = error[0], error[1], error[3]
             context= { 
-                    'data' : data,
+                    "data" : data,
+                    "request": request,
                     "reason": reason,
                     "error_file": error_file,
                     "error_line": error_line,
@@ -624,7 +625,8 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
         error = extract_error_line(traceback_info)
         error_file, error_line, error_syntax = error[0], error[1], error[3]
         context= { 
-                'data' : data,
+                "data" : data,
+                "request": request,
                 "reason": reason,
                 "error_file": error_file,
                 "error_line": error_line,
