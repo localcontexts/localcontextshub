@@ -658,9 +658,9 @@ def remove_member(request, pk, member_id):
     # what role does member have
     # remove from role
 
-    if subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
-            subscription.users_count += 1
-            subscription.save()
+    if subscription is not None and subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
+        subscription.users_count += 1
+        subscription.save()
     
     if member in institution.admins.all():
         institution.admins.remove(member)

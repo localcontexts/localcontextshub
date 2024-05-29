@@ -112,7 +112,11 @@ def confirm_subscription(request, institution, join_flag, form):
         return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':institution, "subscription_url": 'confirm-subscription-institution', 'join_flag':join_flag,})
 
 def add_user(request, institution, member, current_role, new_role):
-    subscription = Subscription.objects.get(institution=institution)
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except:
+        subscription = None
+
     if new_role not in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
         if subscription.users_count >= 0:
@@ -120,11 +124,15 @@ def add_user(request, institution, member, current_role, new_role):
             subscription.save()
     elif new_role in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
-    elif (subscription.users_count > 0 or subscription.users_count == -1) and new_role in ('editor', 'administrator', 'admin'):
+    elif subscription is not None and (subscription.users_count > 0 or subscription.users_count == -1) and new_role in ('editor', 'administrator', 'admin'):
         change_member_role(institution, member, current_role, new_role)
         if subscription.users_count >= 0:
             subscription.users_count -=1
             subscription.save()
+    elif subscription is None:
+        messages.add_message(request, messages.ERROR, 
+                           'The subscription process of your institution is not completed yet. '
+                           'Please wait for the completion of subscription process.')
     else:
         messages.add_message(request, messages.ERROR, 
                             'Your institution has reached its editors and admins limit. '
