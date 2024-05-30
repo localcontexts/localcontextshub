@@ -1,3 +1,4 @@
+from itertools import chain
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -129,33 +130,46 @@ class ProjectList(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = []
+        projects = Project.objects.exclude(project_privacy='Private')
         
         if self.request.user.institution:
             account = self.request.user.institution
             if account.is_subscribed:
-                creators = ProjectCreator.objects.filter(institution=account)
+                creator_projects = account.institution_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+                creators = (Project.objects
+                            .filter(unique_id__in=creator_projects))
+                queryset = list(chain(projects, creators))
             else: 
-                creators = ProjectCreator.objects.filter(institution=account).exclude(project__project_privacy='Private')
-            for x in creators:
-                queryset.append(x.project)
+                queryset = projects
 
         elif self.request.user.researcher:
             account = self.request.user.researcher
             if account.is_subscribed:
-                creators = ProjectCreator.objects.filter(researcher=account)
+                creator_projects = account.researcher_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+                creators = (Project.objects
+                            .filter(unique_id__in=creator_projects))
+                queryset = list(chain(projects, creators))
             else: 
-                creators = ProjectCreator.objects.filter(researcher=account).exclude(project__project_privacy='Private')
-            for x in creators:
-                queryset.append(x.project)
+                queryset = projects
         
         elif self.request.user.community:
             account = self.request.user.community
             if account.is_approved:
-                creators = ProjectCreator.objects.filter(community=account)
+                creator_projects = account.community_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+                creators = (Project.objects
+                            .filter(unique_id__in=creator_projects))
+                queryset = list(chain(projects, creators))
             else: 
-                creators = ProjectCreator.objects.filter(community=account).exclude(project__project_privacy='Private')
-            for x in creators:
-                queryset.append(x.project)
+                queryset = projects
+
+        else:
+            queryset = projects
 
         return queryset
 
@@ -167,6 +181,15 @@ class ProjectDetail(generics.RetrieveAPIView):
         if self.request.user.institution:
             account = self.request.user.institution
             queryset = Project.objects.filter(project_creator__institution_created_project=account)
+                # projects_list = list(
+                #     chain(
+                #         account.institution_created_project.all().values_list("project__unique_id", flat=True),
+                #         account.institutions_notified.all().values_list("project__unique_id", flat=True),
+                #         account.contributing_institutions.all().values_list("project__unique_id", flat=True)
+                #     )
+                # )
+                # project_ids = list(set(projects_list))  # remove duplicate ids
+                # projects = Project.objects.filter(unique_id__in=project_ids)
         elif self.request.user.researcher:
             account = self.request.user.researcher
             queryset = Project.objects.filter(project_creator=account)
