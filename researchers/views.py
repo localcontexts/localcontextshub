@@ -59,10 +59,8 @@ def connect_researcher(request):
 
                 # Add researcher to mailing list
                 manage_researcher_mailing_list(request.user.email, True)                
-
-                if dev_prod_or_local(request.get_host()) == 'PROD':
-                    send_email_to_support(data) # Send support an email in prod only about a Researcher signing up
-                    send_researcher_survey(data) # Send survey email
+                send_researcher_email(request, data) 
+                send_hub_admins_account_creation_email(request, data)
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(

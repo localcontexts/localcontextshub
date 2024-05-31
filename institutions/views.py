@@ -159,7 +159,7 @@ def confirm_institution(request, institution_id):
                 return redirect('dashboard')
             else:
                 data.save()
-                send_hub_admins_application_email(request, institution, data)
+                send_hub_admins_account_creation_email(request, data)
                 return redirect('dashboard')
     return render(request, 'accounts/confirm-account.html', {'form': form, 'institution': institution,})
 

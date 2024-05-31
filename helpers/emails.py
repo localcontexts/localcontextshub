@@ -25,17 +25,34 @@ class TokenGenerator(PasswordResetTokenGenerator):
 
 generate_token=TokenGenerator()
 
-def send_mailgun_template_email(email, subject, template_name, data):
+def get_site_admin_email(request):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        email = settings.SUPPORT_EMAIL
+    else:
+        email = settings.SITE_ADMIN_EMAIL
+    return email
+
+def send_mailgun_template_email(email, subject, template_name, data, cc=None):
+    payload = {
+        "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+        "to": email,
+        "subject": subject,
+        "template": template_name,
+        "t:variables": json.dumps(data)
+    }
+
+    if cc:
+        # if cc is a list, join into comma separated string
+        if isinstance(cc, list):
+            payload["cc"] = ','.join(cc)
+        else:
+            payload["cc"] = cc
+
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
-        data={
-            "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-            "to": email,
-            "subject": subject,
-            "template": template_name,
-            "t:variables": json.dumps(data)
-            })
+        data=payload
+    )
 
 def send_tagged_mailgun_template_email(email, subject, template_name, data, tag):
     return requests.post(
@@ -134,47 +151,67 @@ def manage_researcher_mailing_list(email, subscribed):
 		data = {"subscribed": subscribed, "upsert": True, "address": email,}
     )
         
-# Send all Institution and community applications to support or the site admin
-def send_hub_admins_application_email(request, organization, data):
-    template = ''
-    subject = ''
-
-    if isinstance(organization, Community):
-        subject = f'New Community Application: {data.community_name}'
-        template = render_to_string('snippets/emails/internal/community-application.html', { 'data' : data })
-    else: 
-        if data.is_ror:
-            subject = f'New Institution Application: {data.institution_name}'
-        else:
-            subject = f'New Institution Application (non-ROR): {data.institution_name}'
-
-        template = render_to_string('snippets/emails/internal/institution-application.html', { 'data' : data })
-
-    # Send to support if in production
-    if dev_prod_or_local(request.get_host()) == 'PROD':
-        email = 'support@localcontexts.org'
-        
-        # If file, send as attachment
-        if data.support_document:
-            send_email_with_attachment(data.support_document, email, subject, template)
+# Send account details to support or the site admin
+def send_hub_admins_account_creation_email(request, data):
+    def send_email(email, subject, template, attachment=None):
+        if attachment:
+            send_email_with_attachment(attachment, email, subject, template)
         else:
             send_simple_email(email, subject, template)
-    else:
-        # Send to site admin only (will be typically for testing)
-        if data.support_document:
-            send_email_with_attachment(data.support_document, settings.SITE_ADMIN_EMAIL, subject, template)
+
+    def get_email_and_template():
+        if isinstance(data, Community):
+            subject = f'New Community Account: {data.community_name}'
+            template = render_to_string('snippets/emails/internal/community-application.html', {'data': data})
+            return subject, template, data.support_document
+        elif isinstance(data, Institution):
+            subject_prefix = "New Institution Account"
+            subject_suffix = "(non-ROR)" if not data.is_ror else ""
+            subject = f'{subject_prefix}: {data.institution_name} {subject_suffix}'
+            template = render_to_string('snippets/emails/internal/institution-application.html', {'data': data})
+            return subject, template, None
+        elif isinstance(data, Researcher):
+            name = get_users_name(data.user)
+            subject = f'New Researcher Account: {name}'
+            template = render_to_string('snippets/emails/internal/researcher-account-connection.html', { 'researcher': data })
+            return subject, template, None
         else:
-            send_simple_email(settings.SITE_ADMIN_EMAIL, subject, template)
+            return None, None, None
+
+    subject, template, attachment = get_email_and_template()
+
+    if subject and template and dev_prod_or_local(request.get_host()) == 'PROD':
+        email = get_site_admin_email(request)
+        send_email(email, subject, template, attachment)
+
 
 # Send email to support when a Researcher connects to the Hub in PRODUCTION
-def send_email_to_support(researcher):
-    template = render_to_string('snippets/emails/internal/researcher-account-connection.html', { 'researcher': researcher })
-    name = get_users_name(researcher.user)
-    title = f'{name} has created a Researcher Account'
-    send_simple_email('support@localcontexts.org', title, template)  
+def send_researcher_email(request, researcher):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        name = get_users_name(researcher.user)
+        subject = f'Researcher Account: {name}'
+        data = { 'name': name }
+        # Send email to researcher
+        send_mailgun_template_email(
+            researcher.user.email, 
+            subject, 
+            'new_researcher_account', 
+            data, 
+            settings.CC_EMAIL_LH)
 
-def send_researcher_survey(researcher):
-    send_mailgun_template_email(researcher.user.email, 'Local Contexts Hub: Researcher survey', 'researcher_survey', None)
+# TODO: send to account creator AND additional contact
+def send_institution_email(request, institution):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        name = get_users_name(institution.institution_creator)
+        subject = f'Institution Account: {institution.institution_name}'
+        data = { 'name': name }
+        # Send email to institution
+        send_mailgun_template_email(
+            institution.institution_creator.email, 
+            subject, 
+            'new_institution_account', 
+            data, 
+            settings.CC_EMAIL_LH)
 
 """
     EMAILS FOR ACCOUNTS APP
