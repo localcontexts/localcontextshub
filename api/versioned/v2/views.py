@@ -67,7 +67,7 @@ class IsActive(BasePermission):
             return True
         elif account.community and account.community.is_approved:
             return True
-
+        
         return False
 
 '''
@@ -81,6 +81,39 @@ class IsSuperuser(BasePermission):
                 return True
         except:
             return False
+        
+class IsActiveCreatorFilter(filters.BaseFilterBackend):
+    """
+    Filter that only allows users to see public projects and their own created projects if they are Active.
+    Otherwise, they can only see projects that are not private.
+    """
+    def filter_queryset(self, request, queryset, view):
+        try:
+            user = request.user
+            if user.institution and user.institution.is_subscribed:
+                creator_projects = user.institution.institution_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+
+            elif user.researcher and user.researcher.is_subscribed:
+                creator_projects = user.researcher.researcher_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+            
+            elif user.community and user.community.is_approved:
+                creator_projects = user.community.community_created_project.all().values_list(
+                    "project__unique_id", flat=True
+                )
+            
+            projects_list = list(chain(
+                queryset.values_list("unique_id", flat=True), 
+                creator_projects
+            ))
+            project_ids = list(set(projects_list))
+            return Project.objects.filter(unique_id__in=project_ids)
+
+        except:
+            return queryset
 
 class APIOverview(APIView):
     def get(self, request, format=None):
@@ -121,7 +154,7 @@ class ProjectList(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
 
     serializer_class = ProjectOverviewSerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, IsActiveCreatorFilter]
     search_fields = ['^providers_id', '=unique_id', '$title']
 
     # '^' starts-with search
@@ -129,78 +162,16 @@ class ProjectList(generics.ListAPIView):
     # '$' regex search
 
     def get_queryset(self):
-        queryset = []
-        projects = Project.objects.exclude(project_privacy='Private')
-        
-        if self.request.user.institution:
-            account = self.request.user.institution
-            if account.is_subscribed:
-                creator_projects = account.institution_created_project.all().values_list(
-                    "project__unique_id", flat=True
-                )
-                creators = (Project.objects
-                            .filter(unique_id__in=creator_projects))
-                queryset = list(chain(projects, creators))
-            else: 
-                queryset = projects
-
-        elif self.request.user.researcher:
-            account = self.request.user.researcher
-            if account.is_subscribed:
-                creator_projects = account.researcher_created_project.all().values_list(
-                    "project__unique_id", flat=True
-                )
-                creators = (Project.objects
-                            .filter(unique_id__in=creator_projects))
-                queryset = list(chain(projects, creators))
-            else: 
-                queryset = projects
-        
-        elif self.request.user.community:
-            account = self.request.user.community
-            if account.is_approved:
-                creator_projects = account.community_created_project.all().values_list(
-                    "project__unique_id", flat=True
-                )
-                creators = (Project.objects
-                            .filter(unique_id__in=creator_projects))
-                queryset = list(chain(projects, creators))
-            else: 
-                queryset = projects
-
-        else:
-            queryset = projects
-
+        queryset = self.filter_queryset(Project.objects.exclude(project_privacy='Private'))
         return queryset
 
 class ProjectDetail(generics.RetrieveAPIView):
     authentication_classes = [APIKeyAuthentication]
+    filter_backends = [IsActiveCreatorFilter]
     lookup_field = 'unique_id'
 
     def get_queryset(self):
-        if self.request.user.institution:
-            account = self.request.user.institution
-            queryset = Project.objects.filter(project_creator__institution_created_project=account)
-                # projects_list = list(
-                #     chain(
-                #         account.institution_created_project.all().values_list("project__unique_id", flat=True),
-                #         account.institutions_notified.all().values_list("project__unique_id", flat=True),
-                #         account.contributing_institutions.all().values_list("project__unique_id", flat=True)
-                #     )
-                # )
-                # project_ids = list(set(projects_list))  # remove duplicate ids
-                # projects = Project.objects.filter(unique_id__in=project_ids)
-        elif self.request.user.researcher:
-            account = self.request.user.researcher
-            queryset = Project.objects.filter(project_creator=account)
-        elif self.request.user.community:
-            account = self.request.user.community
-            queryset = Project.objects.filter(project_creator=account)
-        elif self.request.user.developer:
-            account = self.request.user.developer
-            queryset = Project.objects.filter(project_creator=account)
-
-        print(account, queryset)
+        queryset = self.filter_queryset(Project.objects.exclude(project_privacy='Private'))
         return queryset
 
     def get_serializer_class(self):
@@ -210,13 +181,17 @@ class ProjectDetail(generics.RetrieveAPIView):
         else:
             return ProjectNoNoticeSerializer
     
-    # def get_object(self):
-    #     try:
-    #         unique_id = self.kwargs.get('unique_id')
-    #         obj = self.queryset.get(unique_id=unique_id)
-    #         return obj
-    #     except Project.DoesNotExist:
-    #         raise Http404("Project does not exist")
+    def get_object(self):
+        try:
+            queryset = self.get_queryset()
+            unique_id = self.kwargs.get('unique_id')
+            if queryset.filter(unique_id=unique_id).exists():
+                return queryset.get(unique_id=unique_id)
+            elif Project.objects.get(unique_id=unique_id):
+                raise AuthenticationFailed('Unauthorized user')
+
+        except Project.DoesNotExist:
+            raise Http404("Project does not exist")
 
 class ProjectsByIdViewSet(ViewSet):
     authentication_classes = [APIKeyAuthentication]
