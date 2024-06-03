@@ -30,6 +30,19 @@ from helpers.utils import decrypt_api_key
 VARIABLE NOTES
 - self.request.user or request.user = The API key being used is considered the user in this instance.
 The model being referenced is AccountAPIKey.
+
+ERROR MESSAGES TO USE:
+1. For calls made without API Keys: "Authentation not provided"
+2. For invalid API Keys (deleted, revoked, expired): "Invalid API key"
+3. For actions trying to be made by unsubscribed, uncertified, or unapproved accounts:
+    "Your account must be Subscribed, Certified, or Confirmed to perform this action."
+4. For actions trying to be made by an account that is not the owner/creator of the project:
+    "You do not have permission to view this project."
+5. For actions trying to be made by an account that does not have access to the call:
+    "You do not have permission to view this call."
+6. For invalid project IDs passed: "Project does not exist."
+7. For calls that require UUID but wrong ID is passed:
+    "Invalid Project ID Provided."
 '''
 
 '''
@@ -137,18 +150,25 @@ class OpenToCollaborateNotice(APIView):
     permission_classes = [IsActive]
 
     def get(self, request):
-        if not request.user.community:
+        account = request.user
+        if not account.community:
+            if account.institution:
+                profile_link = reverse('public-institution', request=request, kwargs={'pk': account.institution.id})
+            elif account.researcher:
+                profile_link = reverse('public-researcher', request=request, kwargs={'pk': account.researcher.id})
+
             api_urls = {
                 'notice_type': 'open_to_collaborate',
                 'name': 'Open to Collaborate Notice',
                 'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
+                'profile_link': profile_link,
                 'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
                 'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
                 'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
             }
             return Response(api_urls)
         else:
-            raise AuthenticationFailed('Unauthorized user')
+            raise PermissionDenied("You do not have permission to view this call.")
 
 class ProjectList(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
@@ -188,10 +208,11 @@ class ProjectDetail(generics.RetrieveAPIView):
             if queryset.filter(unique_id=unique_id).exists():
                 return queryset.get(unique_id=unique_id)
             elif Project.objects.get(unique_id=unique_id):
-                raise AuthenticationFailed('Unauthorized user')
+                raise PermissionDenied("You do not have permission to view this call.")
 
         except Project.DoesNotExist:
-            raise Http404("Project does not exist")
+            raise Http404("Project does not exist.")
+            # TODO: check to see why this message won't show properly
 
 class ProjectsByIdViewSet(ViewSet):
     authentication_classes = [APIKeyAuthentication]
@@ -257,18 +278,32 @@ class ProjectsByIdViewSet(ViewSet):
         
 class MultiProjectListDetail(ViewSet):
     authentication_classes = [APIKeyAuthentication]
+    filter_backends = [IsActiveCreatorFilter]
+
+    def get_queryset(self):
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, Project.objects.exclude(project_privacy='Private'), self)
+        return queryset
 
     def multisearch(self, request, unique_id):
         try:
-            project = Project.objects.all()
+            unique_id = unique_id.split(',')
+            query= Q()
+            for x in unique_id:
+                q = Q(unique_id=x)
+                query |= q  
+            project=self.get_queryset().filter(query)
+            
+            if not project:
+                if Project.objects.filter(query).exists():
+                    return Response(
+                        {"detail": "You do not have permission to view this project."}, 
+                        status=status.HTTP_403_FORBIDDEN)
+                else:
+                    return Response(
+                        {"detail": "Project does not exist."}, 
+                        status=status.HTTP_404_NOT_FOUND)
 
-            if unique_id is not None:
-                unique_id = unique_id.split(',')
-                query= Q()
-                for x in unique_id:
-                    q = Q(unique_id=x)
-                    query |= q  
-                project=project.filter(query).exclude(project_privacy='Private')
             notices = project.filter(Q(project_notice__isnull=False) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True))) 
             labels = project.filter(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)).distinct()
             no_notice_labels = project.filter(Q(project_notice__isnull=True) & (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True))).distinct()
@@ -283,24 +318,35 @@ class MultiProjectListDetail(ViewSet):
                 "no_labels_or_notices":no_notice_labels_serializer.data
             })
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Invalid Project ID Provided."}, 
+                status=status.HTTP_404_NOT_FOUND)
     
     def multisearch_date(self, request, unique_id):
         try:
-            project = Project.objects.all()
+            unique_id = unique_id.split(',')
+            query= Q()
+            for x in unique_id:
+                q = Q(unique_id=x)
+                query |= q  
+            project=self.get_queryset().filter(query)
 
-            if unique_id is not None:
-                unique_id = unique_id.split(',')
-                query= Q()
-                for x in unique_id:
-                    q = Q(unique_id=x)
-                    query |= q  
-                project=project.filter(query).exclude(project_privacy='Private')
+            if not project:
+                if Project.objects.filter(query).exists():
+                    return Response(
+                        {"detail": "You do not have permission to view this project."}, 
+                        status=status.HTTP_403_FORBIDDEN)
+                else:
+                    return Response(
+                        {"detail": "Project does not exist."}, 
+                        status=status.HTTP_404_NOT_FOUND)
 
             serializer = ProjectDateModified(project, many=True)
             return Response(serializer.data)
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Invalid Project ID Provided."}, 
+                status=status.HTTP_404_NOT_FOUND)
 
 # SALESFORCE CALLS
 class GetUserAPIView(APIView):
