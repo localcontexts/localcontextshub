@@ -199,19 +199,26 @@ def send_researcher_email(request, researcher):
             data, 
             settings.CC_EMAIL_LH)
 
-# TODO: send to account creator AND additional contact
 def send_institution_email(request, institution):
     if dev_prod_or_local(request.get_host()) == 'PROD':
         name = get_users_name(institution.institution_creator)
         subject = f'Institution Account: {institution.institution_name}'
         data = { 'name': name }
+
+        cc_emails = [
+            settings.SUPPORT_EMAIL, 
+            settings.CC_EMAIL_LH
+        ]
+        if institution.contact_email:
+            cc_emails.append(institution.contact_email)
+
         # Send email to institution
         send_mailgun_template_email(
             institution.institution_creator.email, 
             subject, 
             'new_institution_account', 
             data, 
-            settings.CC_EMAIL_LH)
+            cc_emails)
 
 """
     EMAILS FOR ACCOUNTS APP

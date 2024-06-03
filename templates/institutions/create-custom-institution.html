@@ -44,8 +44,8 @@
             </div>
         </div>
 
-        <div>
-            <label class="pad-top-1-5" for="country">Country</label><br>
+        <div class="pad-top-1-5">
+            <label for="country">Country</label><br>
             {{ noror_form.country }}                
         </div>
 
@@ -60,6 +60,36 @@
                 {{ noror_form.description }}
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
+        </div>
+
+        <h2 class="no-bottom-margin">Institutional contact</h2>
+        <p>
+            A <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscription program</a>
+            for institution accounts will be launched in October 2024. 
+            After you submit this form, we will reach out to you, and any institutional contact 
+            you indicate below, to discuss which subscription tier is best for your organization.
+        </p>
+
+        <div class="flex-this space-between margin-bottom-16">
+            <div class="margin-right-8 w-100">
+                <label for="contact_name">
+                    Contact name
+                </label>
+                {{ noror_form.contact_name }}<br>
+                {% if noror_form.contact_name.errors %}
+                    <div class="msg-red w-50"><small>{{ noror_form.contact_name.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
+    
+            <div class="w-100">
+                <label for="contact_email">
+                    Contact email
+                </label>
+                {{ noror_form.contact_email }} <br>
+                {% if noror_form.contact_email.errors %}
+                    <div class="msg-red w-50"><small>{{ noror_form.contact_email.errors.as_text }}</small></div> 
+                {% endif %}
+            </div>
         </div>
 
         <div class="flex-this space-between">

@@ -9,7 +9,7 @@ class CreateInstitutionForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description']
+        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email']
         error_messages = {
             'institution_name': {
                 'unique': _("An institution by that name already exists."),
@@ -22,6 +22,8 @@ class CreateInstitutionForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'id':'institutionStateProvRegion', 'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -36,7 +38,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror']
+        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email']
         error_messages = {
             'institution_name': {
                 'unique': _("An institution by that name already exists."),
@@ -48,20 +50,14 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
             'country': forms.TextInput(attrs={'class': 'w-100', }),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
+
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['is_ror'].required = False
-
-class ConfirmInstitutionForm(forms.ModelForm):
-    class Meta:
-        model = Institution
-        fields = ['contact_name', 'contact_email']
-        widgets = {
-            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
-        }
 
 class UpdateInstitutionForm(forms.ModelForm):
     class Meta:
