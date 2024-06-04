@@ -5,7 +5,6 @@ from django.http import Http404
 from django.db.models import Q
 from itertools import chain
 from .decorators import member_required
-from accounts.decorators import subscription_submission_required
 from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
