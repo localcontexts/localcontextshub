@@ -39,12 +39,15 @@ def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
     subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
+
+    exclude_choices = {"member", "service_provider", "cc_only"}
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
+        if choice[0] not in exclude_choices
+        
     ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
+    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     env = dev_prod_or_local(request.get_host())
     
     if not researcher:
@@ -184,13 +187,16 @@ def confirm_subscription_researcher(request, pk):
         "account_type": "researcher_account",
         "organization_name": request.user._wrapped.first_name,
     }
-    modified_account_type_choices = [
+    exclude_choices = {"member", "service_provider", "cc_only"}
+
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
+        if choice[0] not in exclude_choices
+        
     ]
     form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_account_type_choices
+    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
     if request.user._wrapped.first_name:
         form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})

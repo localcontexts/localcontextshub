@@ -65,6 +65,17 @@ def send_simple_email(email, subject, template):
             "html": template}
     )
 
+# Send error info
+def send_subscription_fail_email(subject, template):
+    return requests.post(
+        settings.MAILGUN_BASE_URL,
+        auth=("api", settings.MAILGUN_API_KEY),
+        data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+            "to": "support@localcontexts.org",
+            "subject": subject,
+            "html": template}
+    )
+
 # Send email with attachment
 def send_email_with_attachment(file, to_email, subject, template):
     return requests.post(
