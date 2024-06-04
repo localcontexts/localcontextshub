@@ -22,11 +22,7 @@
                             {% if researcher %}
                                 {% if not researcher.is_subscribed %}
                                     class="block a-disabled primary-btn blue-btn"
-                                    title="{% if not researcher.is_submitted %}
-                                    The account must be subscribed before download is available.
-                                    {% else %}
-                                    The subscription process of your account is not completed yet.
-                                    {% endif %}"
+                                    title="The subscription process of your account is not completed yet."
                                 {% else %}
                                     class="primary-btn blue-btn"
                                     href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
@@ -35,11 +31,7 @@
                             {% if institution %}
                                 {% if not institution.is_subscribed %}
                                     class="block a-disabled primary-btn blue-btn"
-                                    title="{% if not institution.is_submitted %}
-                                    The institution must be subscribed before download is available.
-                                    {% else %}
-                                    The subscription process of your institution is not completed yet.
-                                    {% endif %}"
+                                    title="The subscription process of your institution is not completed yet."
                                     {% else %}
                                     class="primary-btn blue-btn"
                                     href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
@@ -54,8 +46,8 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_approved %}Your institution account needs to be confirmed in order to download this Notice.{% endif %}{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_approved %}Your institution account needs to be confirmed in order to share this Notice.{% endif %}{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% endif %}{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to share this Notice.{% endif %}{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
                 </div>
             </div>
@@ -124,21 +116,21 @@
         <div>
             {% if researcher %}
                 <div class="flex-this align-center">
-                    <a
+                    <div class="btn-with-helptext">
+                        <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                            href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
+                            Create a Project <i class="fa fa-arrow-right"></i>
+                        </a>
                         {% if not researcher.is_subscribed or subscription.project_count == 0 %}
-                            class="primary-btn margin-top-2 block disabled-btn"
-                            title="{% if not researcher.is_subscribed %}
-                            The subscription process of your account is not completed yet.
-                            {% else %}
-                            Your account has reached its Project limit.
-                            {% endif %}"
-                        {% else %}
-                            class="primary-btn green-btn margin-top-2"
-                            href="{% url 'researcher-create-project' researcher.id %}"
+                            <span class="btn-help-text">
+                                {% if researcher.is_subscribed == False %}
+                                    The subscription process of your account is not completed yet. Please wait for the completion of the subscription process.
+                                {% else %}
+                                    Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                {% endif %}
+                            </span>
                         {% endif %}
-                        >
-                        Create a Project <i class="fa fa-arrow-right"></i>
-                    </a>
+                    </div>
                 </div>
             {% endif %}
 

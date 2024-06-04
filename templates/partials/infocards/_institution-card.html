@@ -1,14 +1,14 @@
 {% load static %}
 <div class="dashcard">
     <div class="flex-this">
-        <div class="{% if  institution.is_submitted %} dashcard-img-container {% else %} dashcard-img-container  disable {%endif%}">
+        <div class="dashcard-img-container">
             <img loading="lazy" 
                 class="profile-img" 
                 src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
                 alt="{{ institution.institution_name }} image"
             >
         </div>
-        <div class="{% if  institution.is_submitted %} flex-this column dashcard-text-container {% else %} flex-this column dashcard-text-container  disable {%endif%}">
+        <div class="flex-this column dashcard-text-container">
             <div class="subscribed-icon-wrapper">
                 <h3 class="dashcard-h3 darkteal-text">{{ institution }}</h3>
                 {% if institution and institution.is_subscribed %}
@@ -44,7 +44,6 @@
                         {% endif %}
                     </div>
                 {% endif %}
-                {% if institution.is_submitted %}   
                 <div>
                     {% if '/dashboard/' in request.path %}
                         {% if institution_projects %}
@@ -78,16 +77,6 @@
                             </div>
                         {% endif %}
                     </div>
-                {% endif %}
-                {% else %}
-                {% if '/dashboard/' in request.path %}
-                    <div>
-                        <a 
-                            class="primary-btn action-btn"
-                            href="{% url 'confirm-subscription-institution' institution.id  %}"
-                        >Complete Subscription Inquiry</a>
-                    </div>
-                {% endif %}
                 {% endif %}
             </div>
 
