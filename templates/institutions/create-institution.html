@@ -19,6 +19,18 @@
             <label for="institution_name">Institution Name</label>
             {{ form.institution_name }}
             <div id="suggestionsContainer"></div>
+            <div class="w-100 margin-top-1">
+                {% if form.errors %}
+                    {% for field_name, errors in form.errors.items %}
+                        <div class="red-text">
+                            <strong>{{ field_name }}</strong>:
+                            {% for error in errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
         <div>
             <p class="blue-highlight">These institutions come from <a class="default-a" href="https://ror.org/" target="_blank" rel="noopener">ROR <i class="fa-regular fa-arrow-up-right-from-square fa-2xs"></i></a>. If your institution is not listed here, <a href="{% url 'create-custom-institution' %}" class="default-a">fill out this form</a>.</p>
@@ -55,21 +67,8 @@
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
 
-        <div class="flex-this space-between margin-top-8">
-            <div class="create-account__container-width__errors">
-                {% if form.errors %}
-                    {% for field_name, errors in form.errors.items %}
-                        <div class="red-text">
-                            <strong>{{ field_name }}</strong>:
-                            {% for error in errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% include 'partials/_alerts.html' %}
-            </div>
+        <div class="flex-this flex-end margin-top-8">
+           
             
             {{ form.ror_id }}
             <div class="flex-this creat-account__container-width__buttons">
