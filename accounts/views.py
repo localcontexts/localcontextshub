@@ -650,7 +650,7 @@ def registry(request, filtertype=None):
             .order_by("community_name")
         )
         i = (
-            Institution.subscribed.select_related("institution_creator")
+            Institution.objects.select_related("institution_creator")
             .prefetch_related("admins", "editors", "viewers")
             .all()
             .order_by("institution_name")
@@ -726,16 +726,13 @@ def registry(request, filtertype=None):
 
 def projects_board(request, filtertype=None):
     try:
-        subscribed_institutions = Institution.objects.filter(
-            is_subscribed=True
-        ).values_list("id", flat=True)
+        institutions = Institution.objects.all()
         approved_communities = Community.objects.filter(
             is_approved=True
         ).values_list("id", flat=True)
 
-        public_projects_filter = Q(project_privacy="Public")
         institution_projects_filter = Q(
-            project_creator_project__institution__in=subscribed_institutions
+            project_creator_project__institution__in=institutions
         )
         community_projects_filter = Q(
             project_creator_project__community__in=approved_communities
@@ -747,8 +744,7 @@ def projects_board(request, filtertype=None):
 
         projects = (
             Project.objects.filter(
-                public_projects_filter
-                & (
+                (
                     institution_projects_filter
                     | community_projects_filter
                     | researcher_projects_filter
