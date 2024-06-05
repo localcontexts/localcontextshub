@@ -7,9 +7,25 @@
         <div><h3>Deactivate Your Profile</h3></div>
 
         <div class="w-70 margin-bottom-2">
-            <p class="no-top-margin">{{ deactivation_content }}</p>
-                {% csrf_token %}
-                <button id="submitDeactivation" class="primary-btn white-btn">Deactivate Profile</button>
+            <p class="no-top-margin">
+                {% if user_role == 'is_creator' %}
+                    It looks like you are the main administrator of an account.
+                    Please email us at
+                    <a href="mailto:support@localcontexts.org">support@localcontexts.org</a>
+                    for deactivation assistance.
+                {% elif user_role == 'is_admin' %}
+                    It looks like you're a member of an account. Before you can deactivate your user profile,
+                    you need to leave each account (see Accounts in this settings menu).
+                {% else %}
+                   Please note that you will not be able to sign-in after deactivation.
+                   Your profile and its associated data will be deleted 30 days after deactivation
+                {% endif %}
+            </p>
+            {% csrf_token %}
+            <button id="submitDeactivation" class="primary-btn white-btn
+                {% if user_role != 'default' %}disabled-btn pointer-event-none{% endif %}">
+                Deactivate Profile
+            </button>
         </div>
     </div>
 

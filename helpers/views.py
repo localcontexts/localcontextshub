@@ -22,7 +22,7 @@ def restricted_view(request, exception=None):
 @login_required(login_url='login')
 def delete_member_invite(request, pk):
     invite = InviteMember.objects.get(id=pk)
-    
+
     # Delete relevant UserNotification
     if UserNotification.objects.filter(to_user=invite.receiver, from_user=invite.sender, notification_type='invitation', reference_id=pk).exists():
         notification = UserNotification.objects.get(to_user=invite.receiver, notification_type='invitation', reference_id=pk)
@@ -34,7 +34,7 @@ def delete_member_invite(request, pk):
         return redirect('member-requests', invite.community.id)
     else:
         return redirect('institution-member-requests', invite.institution.id)
-    
+
 
 @login_required(login_url='login')
 def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None):
@@ -130,8 +130,22 @@ def boundary_view(request):
         raise Exception(message)
 
 
-def determine_deactivation_content(user: User) -> str:
-    deactivation_content = 'Please note that you will not be able to sign-in after deactivation. ' \
-                           'Your profile and its associated data will be deleted 30 days after deactivation.'
+def determine_user_role(user: User) -> str:
+    created_accounts_count = Researcher.objects.filter(user=user).count() + \
+                             Community.objects.filter(community_creator=user).count() + \
+                             Institution.objects.filter(institution_creator=user).count()
 
-    return deactivation_content
+    if created_accounts_count > 0:
+        return 'is_creator'
+
+    member_accounts_count = Community.objects.filter(admins=user).count() + \
+                            Community.objects.filter(editors=user).count() + \
+                            Community.objects.filter(viewers=user).count() + \
+                            Institution.objects.filter(admins=user).count() + \
+                            Institution.objects.filter(editors=user).count() + \
+                            Institution.objects.filter(viewers=user).count()
+
+    if member_accounts_count > 0:
+        return 'is_member'
+
+    return 'default'

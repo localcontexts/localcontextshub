@@ -29,7 +29,7 @@ from allauth.socialaccount.models import SocialAccount
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 
-from helpers.views import determine_deactivation_content
+from helpers.views import determine_user_role
 from institutions.models import Institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.models import Researcher
@@ -420,7 +420,7 @@ def change_password(request):
 
 @login_required(login_url='login')
 def deactivate_user(request):
-    deactivation_content = determine_deactivation_content(user=request.user)
+    user_role = determine_user_role(user=request.user)
     profile = Profile.objects.select_related('user').get(user=request.user)
     if request.method == "POST":
         user = request.user
@@ -433,7 +433,7 @@ def deactivate_user(request):
         return redirect('login')
 
     return render(request, 'accounts/deactivate.html', {
-        'profile': profile, 'deactivation_content': deactivation_content
+        'profile': profile, 'user_role': user_role
     })
 
 
