@@ -138,12 +138,12 @@ def determine_user_role(user: User) -> str:
     if created_accounts_count > 0:
         return 'is_creator'
 
-    member_accounts_count = Community.objects.filter(admins=user).count() + \
-                            Community.objects.filter(editors=user).count() + \
-                            Community.objects.filter(viewers=user).count() + \
-                            Institution.objects.filter(admins=user).count() + \
-                            Institution.objects.filter(editors=user).count() + \
-                            Institution.objects.filter(viewers=user).count()
+    member_accounts_count = Community.objects.filter(admins__id__contains=user.id).count() + \
+                            Community.objects.filter(editors__id__contains=user.id).count() + \
+                            Community.objects.filter(viewers__id__contains=user.id).count() + \
+                            Institution.objects.filter(admins__id__contains=user.id).count() + \
+                            Institution.objects.filter(editors__id__contains=user.id).count() + \
+                            Institution.objects.filter(viewers__id__contains=user.id).count()
 
     if member_accounts_count > 0:
         return 'is_member'
