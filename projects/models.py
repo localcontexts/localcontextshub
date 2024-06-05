@@ -178,8 +178,6 @@ class ProjectCreator(models.Model):
         """
         if self.community:
             return self.community.is_approved
-        elif self.institution:
-            return self.institution.is_subscribed
         else:
             return True
 
