@@ -139,11 +139,24 @@ def add_user(request, institution, member, current_role, new_role):
                             'Please upgrade your subscription plan to add more editors and admins.')
 
          
-def check_subscription(request, institution):
-    redirection = False
+def check_subscription(request, subscriber_type, id):
+    subscriber_field_mapping = {
+        'institution': 'institution_id',
+        'researcher': 'researcher_id',
+        'community': 'community_id'
+    }
+    
+    if subscriber_type not in subscriber_field_mapping:
+        raise ValueError("Invalid subscriber type provided.")
+    
+    subscriber_field = subscriber_field_mapping[subscriber_type]
+    
     try:
-        subscription = Subscription.objects.get(institution=institution)
+        subscription = Subscription.objects.get(**{subscriber_field: id})
     except Subscription.DoesNotExist:
-        redirection = True
-
-    return redirection
+        messages.add_message(request, messages.ERROR, 'The subscription process of your account is not completed yet. Please wait for the completion of subscription process.')
+        return True
+    if subscription.project_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your account has reached its Project limit. '
+                            'Please upgrade your subscription plan to create more Projects.')
+        return True

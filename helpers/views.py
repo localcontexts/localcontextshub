@@ -44,8 +44,8 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
     else:
         if researcher_id:
             researcher = get_object_or_404(Researcher, id=researcher_id)
-            validate_is_subscribed(researcher)
-            NoticeDownloadTracker.objects.create(researcher=researcher, user=request.user,open_to_collaborate_notice=True)
+            if researcher.is_subscribed:
+                NoticeDownloadTracker.objects.create(researcher=researcher, user=request.user,open_to_collaborate_notice=True)
 
         elif institution_id:
             institution = get_object_or_404(Institution, id=institution_id)

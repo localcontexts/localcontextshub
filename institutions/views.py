@@ -619,7 +619,6 @@ def member_requests(request, pk):
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
-        # redirection = check_subscription(request, institution)
         if check_subscription(request, institution) and selected_role.lower() in ('editor', 'administrator', 'admin'):
             messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
             return redirect('institution-members', institution.id)
@@ -917,18 +916,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-    redirection = check_subscription(request, institution)
-    if redirection:
-        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
+    
+    if check_subscription(request, 'institution', pk):      
         return redirect('institution-projects', institution.id)
     
     subscription = Subscription.objects.get(institution=institution)
-    if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
-                            'Please upgrade your subscription plan to create more Projects.')
-        return redirect('institution-projects', institution.id)
-    
-
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
