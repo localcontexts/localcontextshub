@@ -29,6 +29,7 @@ from allauth.socialaccount.models import SocialAccount
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 
+from helpers.views import determine_deactivation_content
 from institutions.models import Institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.models import Researcher
@@ -419,6 +420,7 @@ def change_password(request):
 
 @login_required(login_url='login')
 def deactivate_user(request):
+    deactivation_content = determine_deactivation_content(user=request.user)
     profile = Profile.objects.select_related('user').get(user=request.user)
     if request.method == "POST":
         user = request.user
@@ -429,7 +431,10 @@ def deactivate_user(request):
             request, messages.INFO, 'Your account has been deactivated. '
             'If this was a mistake please contact support@localcontexts.org.')
         return redirect('login')
-    return render(request, 'accounts/deactivate.html', {'profile': profile})
+
+    return render(request, 'accounts/deactivate.html', {
+        'profile': profile, 'deactivation_content': deactivation_content
+    })
 
 
 @login_required(login_url='login')

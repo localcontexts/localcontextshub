@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -127,3 +128,10 @@ def boundary_view(request):
         message = 'Invalid Boundary Format'
         print(f'{message}: {e}')
         raise Exception(message)
+
+
+def determine_deactivation_content(user: User) -> str:
+    deactivation_content = 'Please note that you will not be able to sign-in after deactivation. ' \
+                           'Your profile and its associated data will be deleted 30 days after deactivation.'
+
+    return deactivation_content

@@ -7,7 +7,7 @@
         <div><h3>Deactivate Your Profile</h3></div>
 
         <div class="w-70 margin-bottom-2">
-            <p class="no-top-margin">Please note that you will not be able to sign-in after deactivation. Your profile and its associated data will be deleted 30 days after deactivation.</p>
+            <p class="no-top-margin">{{ deactivation_content }}</p>
                 {% csrf_token %}
                 <button id="submitDeactivation" class="primary-btn white-btn">Deactivate Profile</button>
         </div>
