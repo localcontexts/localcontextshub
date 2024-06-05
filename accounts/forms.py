@@ -40,6 +40,19 @@ class UserCreateProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name"]
+        widgets = {
+            "first_name": forms.TextInput(
+                attrs={
+                    "class": "w-100",
+                    "autocomplete": "off",
+                    "required": True
+                }),
+            "last_name": forms.TextInput(
+                attrs={
+                    "class": "w-100",
+                    "autocomplete": "off"
+                })
+        }
 
 
 # updating user instance (same as above but includes email)

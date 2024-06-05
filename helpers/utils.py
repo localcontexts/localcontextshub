@@ -3,7 +3,7 @@ import urllib
 import zipfile
 import requests
 from django.conf import settings
-from django.template.loader import get_template
+from django.template.loader import get_template ,render_to_string
 from io import BytesIO
 from accounts.models import UserAffiliation, Subscription
 from tklabels.models import TKLabel
@@ -24,7 +24,7 @@ from notifications.models import *
 
 from accounts.utils import get_users_name
 from notifications.utils import send_user_notification_member_invite_accept
-from helpers.emails import send_membership_email
+from helpers.emails import send_membership_email, send_subscription_fail_email
 from django.contrib.staticfiles import finders
 from django.shortcuts import get_object_or_404
 
@@ -34,7 +34,11 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+import traceback
+import re
 
+class SalesforceAPIError(Exception):
+    pass
 
 def check_member_role(user, organization):
     # Check for creator roles
@@ -532,6 +536,16 @@ def validate_email(email):
         return False
 
 
+def extract_error_line(traceback_info):
+    pattern = r'File "(.*?)", line (\d+), in (.*?)\n\s+(.*)'
+    matches = re.findall(pattern, traceback_info)
+    
+    if matches:
+        return matches[0]
+    else:
+        return None
+
+
 def validate_recaptcha(request_object):
     recaptcha_response = request_object.POST.get("g-recaptcha-response")
     url = "https://www.google.com/recaptcha/api/siteverify"
@@ -549,7 +563,7 @@ def validate_recaptcha(request_object):
     )
 
 
-def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
+def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=True):
     salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {
         "grant_type": "client_credentials",
@@ -560,37 +574,69 @@ def create_salesforce_account_or_lead(hubId="", data="", isbusiness=True):
     salesforce_token_req = urllib.request.Request(
         salesforce_token_url, data=salesforce_token_data
     )
-    salesforce_token_response = urllib.request.urlopen(salesforce_token_req)
-    salesforce_token_result = json.loads(salesforce_token_response.read().decode())
-    access_token = salesforce_token_result["access_token"]
-
-    lead_data = {
-        "hubId": hubId,
-        "companyName": data["organization_name"],
-        "email": data["email"],
-        "firstname": data["first_name"],
-        "lastName": data["last_name"],
-        "oppName": data["organization_name"],
-        "inquiryType": data["inquiry_type"],
-        "isBusinessTrue": isbusiness,
-    }
-
-    # Make API call to create lead in Salesforce
-    create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    }
-    create_lead_req = urllib.request.Request(
-        create_lead_url, data=json.dumps(lead_data).encode(), headers=headers
-    )
     try:
-        create_lead_response = urllib.request.urlopen(create_lead_req)
-        return True
+        salesforce_token_response = urllib.request.urlopen(salesforce_token_req)
+        salesforce_token_result = json.loads(salesforce_token_response.read().decode())
+        access_token = salesforce_token_result["access_token"]
 
+        lead_data = {
+            "hubId": hubId,
+            "companyName": data["organization_name"],
+            "email": data["email"],
+            "firstname": data["first_name"],
+            "lastName": data["last_name"],
+            "oppName": data["organization_name"],
+            "inquiryType": data["inquiry_type"],
+            "isBusinessTrue": isbusiness,
+        }
+
+        # Make API call to create lead in Salesforce
+        create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        }
+        create_lead_req = urllib.request.Request(
+            create_lead_url, data=json.dumps(lead_data).encode(), headers=headers
+        )
+        try:
+            create_lead_response = urllib.request.urlopen(create_lead_req)
+            return True
+
+        except urllib.error.HTTPError as e:
+            reason= "Failed to create lead in Salesforce."
+            subject= "Subscription failed"
+            traceback_info = traceback.format_exc()
+            error = extract_error_line(traceback_info)
+            error_file, error_line, error_syntax = error[0], error[1], error[3]
+            context= { 
+                    "data" : data,
+                    "request": request,
+                    "reason": reason,
+                    "error_file": error_file,
+                    "error_line": error_line,
+                    "error_syntax": error_syntax,
+                }
+            template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
+            send_subscription_fail_email(subject, template)
+            raise SalesforceAPIError("Failed to create lead in Salesforce.")
     except urllib.error.HTTPError as e:
-        print(f"HTTP Error: {e.code} - {e.reason} - {e.read()}")
-        return False
+        reason= "Unable to get token of access from Salesforce"
+        subject= "Subscription failed"
+        traceback_info = traceback.format_exc()
+        error = extract_error_line(traceback_info)
+        error_file, error_line, error_syntax = error[0], error[1], error[3]
+        context= { 
+                "data" : data,
+                "request": request,
+                "reason": reason,
+                "error_file": error_file,
+                "error_line": error_line,
+                "error_syntax": error_syntax,
+            }
+        template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
+        send_subscription_fail_email(subject, template)
+        raise SalesforceAPIError("Failed to retrieve Salesforce access token.")
 
 def encrypt_api_key(key):
     encrypted_key = urlsafe_base64_encode(force_bytes(key))

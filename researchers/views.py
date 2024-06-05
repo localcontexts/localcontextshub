@@ -28,7 +28,6 @@ from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
 from .decorators import is_researcher
-from accounts.decorators import subscription_submission_required
 from .models import Researcher
 from .forms import *
 from .utils import *
@@ -39,12 +38,15 @@ def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
     subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
+
+    exclude_choices = {"member", "service_provider", "cc_only"}
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
+        if choice[0] not in exclude_choices
+        
     ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
+    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     env = dev_prod_or_local(request.get_host())
     
     if not researcher:
@@ -184,13 +186,16 @@ def confirm_subscription_researcher(request, pk):
         "account_type": "researcher_account",
         "organization_name": request.user._wrapped.first_name,
     }
-    modified_account_type_choices = [
+    exclude_choices = {"member", "service_provider", "cc_only"}
+
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
+        if choice[0] not in exclude_choices
+        
     ]
     form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_account_type_choices
+    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
     if request.user._wrapped.first_name:
         form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
@@ -251,7 +256,6 @@ def disconnect_orcid(request):
 
 @login_required(login_url='login')
 @is_researcher()
-@subscription_submission_required(Subscriber=Researcher)
 def update_researcher(request, pk):
     env = dev_prod_or_local(request.get_host())
     researcher = Researcher.objects.get(id=pk)
@@ -290,7 +294,6 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def researcher_notices(request, pk):
     researcher = Researcher.objects.get(id=pk)
     notify_restricted_message = False
@@ -354,7 +357,6 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def researcher_projects(request, pk):
     researcher = Researcher.objects.get(id=pk)
     create_restricted_message = False
@@ -467,7 +469,6 @@ def researcher_projects(request, pk):
 # Create Project
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
@@ -575,7 +576,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def edit_project(request, pk, project_uuid):
     researcher = Researcher.objects.get(id=pk)
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
@@ -647,7 +647,6 @@ def edit_project(request, pk, project_uuid):
     return render(request, 'researchers/edit-project.html', context)
 
 
-@subscription_submission_required(Subscriber=Researcher)
 def project_actions(request, pk, project_uuid):
     try:
         project = Project.objects.prefetch_related(
@@ -868,7 +867,6 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
         
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-@subscription_submission_required(Subscriber=Researcher)
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
 
