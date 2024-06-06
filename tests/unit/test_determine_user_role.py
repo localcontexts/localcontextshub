@@ -52,3 +52,7 @@ class TestDetermineUserRole(TransactionTestCase):
         assert determine_user_role(user=institution_admin_member_user) == 'is_member'
         assert determine_user_role(user=institution_editor_member_user) == 'is_member'
         assert determine_user_role(user=institution_viewer_member_user) == 'is_member'
+
+    def test_non_admin_and_non_member_user(self):
+        non_admin_and_non_member_user = UserFactory()
+        assert determine_user_role(user=non_admin_and_non_member_user) == 'default'
