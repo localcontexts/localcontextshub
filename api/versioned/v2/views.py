@@ -102,27 +102,48 @@ class IsActiveCreatorFilter(filters.BaseFilterBackend):
     """
     def filter_queryset(self, request, queryset, view):
         try:
-            user = request.user
-            if user.institution and user.institution.is_subscribed:
-                creator_projects = user.institution.institution_created_project.all().values_list(
-                    "project__unique_id", flat=True
+            account = request.user
+            if account.institution and account.institution.is_subscribed:
+                projects_list = list(
+                    chain(
+                        account.institution.institution_created_project.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # institution created project ids
+                        account.institution.contributing_institutions.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # projects where institution is contributor
+                    )
                 )
 
-            elif user.researcher and user.researcher.is_subscribed:
-                creator_projects = user.researcher.researcher_created_project.all().values_list(
-                    "project__unique_id", flat=True
+            elif account.researcher and account.researcher.is_subscribed:
+                projects_list = list(
+                    chain(
+                        account.researcher.researcher_created_project.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # researcher created project ids
+                        account.researcher.contributing_reserchers.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # projects where researcher is contributor
+                    )
                 )
             
-            elif user.community and user.community.is_approved:
-                creator_projects = user.community.community_created_project.all().values_list(
-                    "project__unique_id", flat=True
+            elif account.community and account.community.is_approved:
+                projects_list = list(
+                    chain(
+                        account.community.community_created_project.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # community created project ids
+                        account.community.contributing_communities.all().values_list(
+                            "project__unique_id", flat=True
+                        ),  # projects where community is contributor
+                    )
                 )
             
-            projects_list = list(chain(
+            projects = list(chain(
                 queryset.values_list("unique_id", flat=True), 
-                creator_projects
+                projects_list
             ))
-            project_ids = list(set(projects_list))
+            project_ids = list(set(projects))
             return Project.objects.filter(unique_id__in=project_ids)
 
         except:
@@ -182,7 +203,7 @@ class ProjectList(generics.ListAPIView):
     # '$' regex search
 
     def get_queryset(self):
-        queryset = self.filter_queryset(Project.objects.exclude(project_privacy='Private'))
+        queryset = self.filter_queryset(Project.objects.filter(project_privacy='Public'))
         return queryset
 
 class ProjectDetail(generics.RetrieveAPIView):
@@ -191,7 +212,7 @@ class ProjectDetail(generics.RetrieveAPIView):
     lookup_field = 'unique_id'
 
     def get_queryset(self):
-        queryset = self.filter_queryset(Project.objects.exclude(project_privacy='Private'))
+        queryset = self.filter_queryset(Project.objects.filter(project_privacy='Public'))
         return queryset
 
     def get_serializer_class(self):
@@ -220,7 +241,7 @@ class ProjectsByIdViewSet(ViewSet):
     def projects_by_user(self, request, pk):
         try:
             user = User.objects.get(id=pk)
-            projects = Project.objects.filter(project_creator=user).exclude(project_privacy='Private')
+            projects = Project.objects.filter(project_creator=user).filter(project_privacy='Public')
             serializer = ProjectOverviewSerializer(projects, many=True)
             return Response(serializer.data)
         except:
@@ -282,7 +303,7 @@ class MultiProjectListDetail(ViewSet):
 
     def get_queryset(self):
         for backend in list(self.filter_backends):
-            queryset = backend().filter_queryset(self.request, Project.objects.exclude(project_privacy='Private'), self)
+            queryset = backend().filter_queryset(self.request, Project.objects.filter(project_privacy='Public'), self)
         return queryset
 
     def multisearch(self, request, unique_id):
