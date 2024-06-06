@@ -57,17 +57,22 @@ def connect_researcher(request):
                 request.user.user_profile.is_researcher = True
                 request.user.user_profile.save()
 
-                # Add researcher to mailing list
-                manage_researcher_mailing_list(request.user.email, True)                
-                send_researcher_email(request, data) 
+                # sends one email to the account creator
+                # and one to either site admin or support
+                send_researcher_email(request) 
                 send_hub_admins_account_creation_email(request, data)
+
+                # Add researcher to mailing list
+                if env == 'PROD':
+                    manage_researcher_mailing_list(request.user.email, True)                
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(
                     action_user_id=request.user.id,
                     action_type="New Researcher"
                 )
-                    
+                messages.add_message(request, messages.INFO,
+                             'Your researcher account has been created.')
                 return redirect('dashboard')
         context = {'form': form, 'env': env}
         return render(request, 'researchers/connect-researcher.html', context)

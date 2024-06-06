@@ -32,40 +32,40 @@ def get_site_admin_email(request):
         email = settings.SITE_ADMIN_EMAIL
     return email
 
-def send_mailgun_template_email(email, subject, template_name, data, cc=None):
+def send_mailgun_template_email(
+        email, 
+        subject, 
+        template_name, 
+        data, 
+        cc=None,
+        tag=None,
+        from_email = "Local Contexts Hub <no-reply@localcontextshub.org>"
+        ):
     payload = {
-        "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+        "from": from_email,
         "to": email,
         "subject": subject,
         "template": template_name,
-        "t:variables": json.dumps(data)
+        "t:variables": json.dumps(data) if data else {}
     }
 
+    # if cc emails included
     if cc:
         # if cc is a list, join into comma separated string
         if isinstance(cc, list):
             payload["cc"] = ','.join(cc)
         else:
             payload["cc"] = cc
+    
+    # if tags included
+    if tag:
+        payload["o:tag"] = [tag]
 
     return requests.post(
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
         data=payload
     )
-
-def send_tagged_mailgun_template_email(email, subject, template_name, data, tag):
-    return requests.post(
-        settings.MAILGUN_BASE_URL,
-        auth=("api", settings.MAILGUN_API_KEY),
-        data={
-            "from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-            "to": email,
-            "subject": subject,
-            "template": template_name,
-            "t:variables": json.dumps(data),
-            "o:tag": [tag]
-            })
 
 """
     INTERNAL EMAILS
@@ -96,16 +96,14 @@ def send_email_with_attachment(file, to_email, subject, template):
 
 # Send email to any Mailing List (test, researchers, newsletter)
 def send_mailing_list_email(mailing_list, subject, template, tag=None):
-    response = requests.get(
-        ("https://api.mailgun.net/v3/lists/{}@localcontextshub.org/members".format(mailing_list)),
-        auth=('api', settings.MAILGUN_API_KEY),
-        )
-    email = "{}@localcontextshub.org".format(mailing_list)
-    data=None
-    if tag == None:
-        send_mailgun_template_email(email, subject, template, data)
-    else:
-        send_tagged_mailgun_template_email(email, subject, template, data, tag)
+    email = f"{mailing_list}@localcontextshub.org"
+    send_mailgun_template_email(
+        email=email,
+        subject=subject,
+        template_name=template,
+        data=None,
+        tag=tag
+    )
 
 # Add members to newsletter mailing list (updates users already on the mailing list)
 def add_to_newsletter_mailing_list(email, name, variables):
@@ -150,7 +148,10 @@ def manage_researcher_mailing_list(email, subscribed):
 		auth = ("api", settings.MAILGUN_API_KEY),
 		data = {"subscribed": subscribed, "upsert": True, "address": email,}
     )
-        
+
+'''
+    PRODUCTION ONLY EMAILS
+'''       
 # Send account details to support or the site admin
 def send_hub_admins_account_creation_email(request, data):
     def send_email(email, subject, template, attachment=None):
@@ -186,24 +187,35 @@ def send_hub_admins_account_creation_email(request, data):
 
 
 # Send email to support when a Researcher connects to the Hub in PRODUCTION
-def send_researcher_email(request, researcher):
+def send_researcher_email(request):
     if dev_prod_or_local(request.get_host()) == 'PROD':
-        name = get_users_name(researcher.user)
+        name = get_users_name(request.user)
         subject = f'Researcher Account: {name}'
         data = { 'name': name }
+
+        cc_emails = [
+            settings.SUPPORT_EMAIL, 
+            settings.CC_EMAIL_LH
+        ]
+
         # Send email to researcher
         send_mailgun_template_email(
-            researcher.user.email, 
+            request.user.email, 
             subject, 
             'new_researcher_account', 
             data, 
-            settings.CC_EMAIL_LH)
+            cc_emails,
+            "Local Contexts Hub <support@localcontexts.org>"
+        )
 
 def send_institution_email(request, institution):
     if dev_prod_or_local(request.get_host()) == 'PROD':
-        name = get_users_name(institution.institution_creator)
+        name = get_users_name(request.user)
         subject = f'Institution Account: {institution.institution_name}'
-        data = { 'name': name }
+        data = { 
+            'account_creator_name': name,
+            'institution_name': institution.institution_name
+        }
 
         cc_emails = [
             settings.SUPPORT_EMAIL, 
@@ -214,11 +226,13 @@ def send_institution_email(request, institution):
 
         # Send email to institution
         send_mailgun_template_email(
-            institution.institution_creator.email, 
+            request.user.email, 
             subject, 
             'new_institution_account', 
             data, 
-            cc_emails)
+            cc_emails,
+            "Local Contexts Hub <support@localcontexts.org>"
+        )
 
 """
     EMAILS FOR ACCOUNTS APP

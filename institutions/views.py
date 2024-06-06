@@ -108,9 +108,8 @@ def create_institution(request):
                     action_account_type='institution'
                 )
 
-                if environment == 'PROD':
-                    send_hub_admins_account_creation_email(request, data)
-                    send_institution_email(request, data)
+                send_hub_admins_account_creation_email(request, data)
+                send_institution_email(request, data)
 
                 messages.add_message(request, messages.INFO,
                              'Your institution account has been created.')
@@ -146,9 +145,8 @@ def create_custom_institution(request):
                 action_account_type='institution'
             )
 
-            if environment == 'PROD':
-                send_hub_admins_account_creation_email(request, data)
-                send_institution_email(request, data)
+            send_hub_admins_account_creation_email(request, data)
+            send_institution_email(request, data)
 
             messages.add_message(request, messages.INFO,
                              'Your institution account has been created.')
