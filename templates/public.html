@@ -110,8 +110,16 @@
         {% if community.boundary.coordinates %}
         <div>
             <h3>Community Location</h3>
-            <iframe src="{% url 'community-boundary-view' community.id %}"
-                    style="width: 100%; height: 450px; border: 1px solid cadetblue;">
+            {% if 'native-land.ca' in community.source_of_boundary %}
+                This community boundary originates from the
+                <a href="https://native-land.ca/contact"
+                   class="default-a" target="_blank" rel="noopener">
+                    Native Land Digital database
+                    <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                </a>.<br><br>
+            {% endif %}
+            <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
+            style="width: 100%; height: 450px; border: 1px solid cadetblue;">
             </iframe>
             {% if 'native-land.ca' in community.source_of_boundary %}
                 <span class="italic">
