@@ -154,8 +154,8 @@ def create_custom_institution(request):
         if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": request.user._wrapped.first_name,
-            "last_name": request.user._wrapped.last_name,
+            "first_name": user_form.cleaned_data['first_name'],
+            "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
             "account_type": "institution_account",
             "organization_name": noror_form.cleaned_data['institution_name'],
