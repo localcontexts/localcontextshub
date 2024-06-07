@@ -336,7 +336,7 @@ def dashboard(request):
     user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
     unsubscribed_institute = Institution.objects.filter(
-        institution_creator=user, is_submitted=False
+        institution_creator=user
     ).first()
 
     if request.method == "POST":
@@ -941,22 +941,17 @@ def newsletter_unsubscription(request, emailb64):
 @unauthenticated_user
 def subscription_inquiry(request):
     form = SubscriptionForm(request.POST or None)
+    form.fields.pop('account_type', None)
     non_ror_institutes = serializers.serialize(
         "json", Institution.objects.filter(is_ror=False)
     )
 
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():
-            account_type_key = form.cleaned_data["account_type"]
             inquiry_type_key = form.cleaned_data["inquiry_type"]
-
-            account_type_display = dict(
-                form.fields["account_type"].choices
-            ).get(account_type_key, "")
             inquiry_type_display = dict(
                 form.fields["inquiry_type"].choices
             ).get(inquiry_type_key, "")
-            form.cleaned_data["account_type"] = account_type_display
             form.cleaned_data["inquiry_type"] = inquiry_type_display
 
             first_name = form.cleaned_data["first_name"]

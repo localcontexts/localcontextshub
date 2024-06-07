@@ -5,7 +5,6 @@ from django.http import Http404
 from django.db.models import Q
 from itertools import chain
 from .decorators import member_required
-from accounts.decorators import subscription_submission_required
 from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
@@ -35,6 +34,7 @@ from accounts.forms import (
     ContactOrganizationForm,
     SignUpInvitationForm,
     SubscriptionForm,
+    UserCreateProfileForm,
 )
 from api.forms import APIKeyGeneratorForm
 from .forms import *
@@ -114,21 +114,15 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_institution(request):
     form = CreateInstitutionForm()
-    subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
+    user_form,subscription_form  = form_initiation(request)
+   
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
-
-        if form.is_valid() and validate_recaptcha(request):
+        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": request.user._wrapped.first_name,
-            "last_name": request.user._wrapped.last_name,
+            "first_name": user_form.cleaned_data['first_name'],
+            "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
             "account_type": "institution_account",
             "organization_name": form.cleaned_data['institution_name'],
@@ -136,56 +130,28 @@ def create_institution(request):
             
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
-            affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
-
-            data = form.save(commit=False)
-            data.institution_creator = request.user
-            data.save()
-            
-            affiliation.institutions.add(data)
-            affiliation.save()
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Institution",
-                institution_id=data.id,
-                action_account_type="institution",
-            )
 
             if subscription_form.is_valid():
-                handle_confirmation_and_subscription(request, subscription_form, data)
+                handle_institution_creation(request, form, subscription_form )
                 return redirect('dashboard')
             else:
-                error_messages = []
-                for field, errors in subscription_form.errors.items():
-                    for error in errors:
-                        error_messages.append(f"{field.capitalize()}: {error}")
-
-                concatenated_errors = "\n".join(error_messages)
                 messages.add_message(
-                                request,
-                                messages.ERROR,
-                                concatenated_errors,
-                            )
-                return redirect('confirm-subscription-institution',  data.id)
-    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form,})
+                    request,
+                    messages.ERROR,
+                    "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
+    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form, "user_form": user_form,})
 
 
 @login_required(login_url="login")
 def create_custom_institution(request):
-    noror_form = CreateInstitutionNoRorForm(request.POST or None)
-    subscription_form = SubscriptionForm()
-    modified_account_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_account_type_choices
-    if request.method == "POST":
-        affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
-            user=request.user
-        )
+    noror_form = CreateInstitutionNoRorForm()
+    user_form,subscription_form  = form_initiation(request)
 
-        if noror_form.is_valid():
+    if request.method == "POST":
+        noror_form = CreateInstitutionNoRorForm(request.POST)
+        if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
             "first_name": request.user._wrapped.first_name,
@@ -197,25 +163,8 @@ def create_custom_institution(request):
             
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
-
-            data = noror_form.save(commit=False)
-            data.institution_creator = request.user
-            data.save()
-
-            # Add to user affiliations
-            affiliation.institutions.add(data)
-            affiliation.save()
-
-            # Adds activity to Hub Activity
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Institution",
-                institution_id=data.id,
-                action_account_type="institution",
-            )
-
             if subscription_form.is_valid():
-                handle_confirmation_and_subscription(request, subscription_form, data)
+                handle_institution_creation(request, noror_form, subscription_form )
                 return redirect('dashboard')
             else:
                 error_messages = []
@@ -236,6 +185,7 @@ def create_custom_institution(request):
         {
             "noror_form": noror_form,
             "subscription_form": subscription_form,
+            "user_form": user_form,
         },
     )
 
@@ -250,13 +200,13 @@ def confirm_subscription_institution(request, institution_id):
         "account_type": "institution_account",
         "organization_name": institution.institution_name,
     }
-    modified_account_type_choices = [
+    modified_inquiry_type_choices = [
         choice
         for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
         if choice[0] != "member"
     ]
     form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_account_type_choices
+    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
     form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
     form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
     form.fields["email"].widget.attrs.update({"class": "readonly-input"})
@@ -438,7 +388,6 @@ def public_institution_view(request, pk):
 
 # Update institution
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def update_institution(request, pk):
     institution = get_institution(pk)
@@ -471,7 +420,6 @@ def update_institution(request, pk):
 
 # Notices
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def institution_notices(request, pk):
     institution = get_institution(pk)
@@ -534,7 +482,6 @@ def institution_notices(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
@@ -545,7 +492,6 @@ def delete_otc_notice(request, pk, notice_id):
 
 # Members
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def institution_members(request, pk):
     institution = get_institution(pk)
@@ -659,7 +605,6 @@ def institution_members(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def member_requests(request, pk):
     institution = get_institution(pk)
@@ -693,7 +638,6 @@ def member_requests(request, pk):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin"])
 def delete_join_request(request, pk, join_id):
     institution = get_institution(pk)
@@ -702,7 +646,6 @@ def delete_join_request(request, pk, join_id):
     return redirect('institution-member-requests', institution.id)
 
 @login_required(login_url='login')
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=['admin'])
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
@@ -714,9 +657,9 @@ def remove_member(request, pk, member_id):
     # what role does member have
     # remove from role
 
-    if subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
-            subscription.users_count += 1
-            subscription.save()
+    if subscription is not None and subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
+        subscription.users_count += 1
+        subscription.save()
     
     if member in institution.admins.all():
         institution.admins.remove(member)
@@ -755,7 +698,6 @@ def remove_member(request, pk, member_id):
 
 # Projects page
 @login_required(login_url='login')
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=['admin', 'editor', 'viewer'])
 def institution_projects(request, pk):
     institution = get_institution(pk)
@@ -967,7 +909,6 @@ def institution_projects(request, pk):
 
 # Create Project
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 @transaction.atomic
 def create_project(request, pk, source_proj_uuid=None, related=None):
@@ -1114,7 +1055,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def edit_project(request, pk, project_uuid):
     institution = get_institution(pk)
@@ -1420,7 +1360,6 @@ def project_actions(request, pk, project_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def archive_project(request, pk, project_uuid):
     if not ProjectArchived.objects.filter(
@@ -1442,7 +1381,6 @@ def archive_project(request, pk, project_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 @transaction.atomic
 def delete_project(request, pk, project_uuid):
@@ -1462,7 +1400,6 @@ def delete_project(request, pk, project_uuid):
     return redirect('institution-projects', institution.id)
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor"])
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     institution = get_institution(pk)
@@ -1487,7 +1424,6 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
 
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin", "editor", "viewer"])
 def connections(request, pk):
     institution = get_institution(pk)
@@ -1557,7 +1493,6 @@ def embed_otc_notice(request, pk):
 
 # Create API Key
 @login_required(login_url="login")
-@subscription_submission_required(Subscriber=Institution)
 @member_required(roles=["admin"])
 @transaction.atomic
 def api_keys(request, pk, related=None):

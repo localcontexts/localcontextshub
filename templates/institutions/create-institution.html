@@ -26,7 +26,19 @@
     <form action="{% url 'create-institution' %}" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div id="ror-input-container" class="margin-top-16">
+        <div class="w-100 flex-this margin-top-16">
+            <div class="w-50 margin-right-1">
+                <label class="pad-top-1-5" >First Name</label><br>
+                {{ user_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
+
+        <div id="ror-input-container" class="margin-top-8">
             <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ form.institution_name }}
             <div id="suggestionsContainer"></div>
@@ -79,12 +91,12 @@
 
         <div class="w-100 flex-this">
             <div class="w-50 margin-right-1">
-                <label class="pad-top-1-5" for="city_town">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                <label class="pad-top-1">Contact name<span class="orange-text required-label" title="">*</span></label><br>
                 {{ form.contact_name }}
             </div>
 
             <div class="w-50">
-                <label for="state_province_region">Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
                 {{ form.contact_email }}
             </div>
         </div>
