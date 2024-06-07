@@ -1444,6 +1444,18 @@ function copyToClipboard(elemID) {
     document.execCommand("Copy");
     textArea.remove();
 }
+function buttonPulse(btnElm, milliseconds= 1000) {
+    /*
+    * Allows simulates the pulsing effect for some time period
+    * */
+    const pulseClasses = ['fa-solid', 'fa-check', 'fa-beat']
+
+    btnElm.classList.add(...pulseClasses)
+    setTimeout(() => {
+        btnElm.classList.remove(...pulseClasses)
+    }, milliseconds)
+}
+
 
 function openMemberModal() {
     const memberModal = document.getElementById('memberModal')
