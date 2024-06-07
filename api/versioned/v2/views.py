@@ -174,15 +174,15 @@ class OpenToCollaborateNotice(APIView):
         account = request.user
         if not account.community:
             if account.institution:
-                profile_link = reverse('public-institution', request=request, kwargs={'pk': account.institution.id})
+                profile_url = reverse('public-institution', request=request, kwargs={'pk': account.institution.id})
             elif account.researcher:
-                profile_link = reverse('public-researcher', request=request, kwargs={'pk': account.researcher.id})
+                profile_url = reverse('public-researcher', request=request, kwargs={'pk': account.researcher.id})
 
             api_urls = {
                 'notice_type': 'open_to_collaborate',
                 'name': 'Open to Collaborate Notice',
                 'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-                'profile_link': profile_link,
+                'profile_url': profile_url,
                 'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
                 'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
                 'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
@@ -194,7 +194,7 @@ class OpenToCollaborateNotice(APIView):
 class ProjectList(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
 
-    serializer_class = ProjectOverviewSerializer
+    serializer_class = v2_serializers.ProjectOverviewSerializer
     filter_backends = [filters.SearchFilter, IsActiveCreatorFilter]
     search_fields = ['^providers_id', '=unique_id', '$title']
 
@@ -218,9 +218,9 @@ class ProjectDetail(generics.RetrieveAPIView):
     def get_serializer_class(self):
         project = self.get_object()
         if Notice.objects.filter(project=project, archived=False).exists():
-            return ProjectSerializer
+            return v2_serializers.ProjectSerializer
         else:
-            return ProjectNoNoticeSerializer
+            return v2_serializers.ProjectNoNoticeSerializer
     
     def get_object(self):
         try:
