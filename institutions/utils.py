@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib import messages
@@ -155,8 +156,9 @@ def check_subscription(request, subscriber_type, id):
         subscription = Subscription.objects.get(**{subscriber_field: id})
     except Subscription.DoesNotExist:
         messages.add_message(request, messages.ERROR, 'The subscription process of your account is not completed yet. Please wait for the completion of subscription process.')
-        return True
+        return HttpResponseForbidden('Forbidden: Subscription process isnt completed. ')
+
     if subscription.project_count == 0:
         messages.add_message(request, messages.ERROR, 'Your account has reached its Project limit. '
                             'Please upgrade your subscription plan to create more Projects.')
-        return True
+        return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')

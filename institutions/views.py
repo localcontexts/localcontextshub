@@ -167,18 +167,12 @@ def create_custom_institution(request):
                 handle_institution_creation(request, noror_form, subscription_form )
                 return redirect('dashboard')
             else:
-                error_messages = []
-                for field, errors in subscription_form.errors.items():
-                    for error in errors:
-                        error_messages.append(f"{field.capitalize()}: {error}")
-
-                concatenated_errors = "\n".join(error_messages)
                 messages.add_message(
-                                request,
-                                messages.ERROR,
-                                concatenated_errors,
-                            )
-                return redirect('confirm-subscription-institution',  data.id)
+                    request,
+                    messages.ERROR,
+                    "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
     return render(
         request,
         "institutions/create-custom-institution.html",
