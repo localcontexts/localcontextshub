@@ -4,8 +4,6 @@ from django.core.validators import MaxLengthValidator
 import uuid
 import os
 
-from helpers.exceptions import UnsubscribedAccountException
-
 
 def researcher_img_path(self, filename):
     ext = filename.split('.')[-1]
@@ -34,12 +32,3 @@ class Researcher(models.Model):
     
     class Meta:
         indexes = [models.Index(fields=['id', 'user', 'image'])]
-
-    def validate_is_subscribed(self, bypass_validation: bool = False):
-        if bypass_validation:
-            return
-
-        if self.is_subscribed:
-            return
-        message = 'Account Is Not Subscribed'
-        raise UnsubscribedAccountException(message)

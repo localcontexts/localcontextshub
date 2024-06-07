@@ -1,6 +1,8 @@
 import json
 import urllib
 import zipfile
+from typing import Union
+
 import requests
 from django.conf import settings
 from django.template.loader import get_template ,render_to_string
@@ -19,6 +21,7 @@ from xhtml2pdf import pisa
 from communities.models import Community, JoinRequest, InviteMember
 from institutions.models import Institution
 from researchers.models import Researcher
+from .exceptions import UnsubscribedAccountException
 from .models import Notice
 from notifications.models import *
 
@@ -635,3 +638,17 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
         template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
         send_subscription_fail_email(subject, template)
         raise SalesforceAPIError("Failed to retrieve Salesforce access token.")
+
+        
+def validate_is_subscribed(
+        account: Union[Researcher, Institution],
+        bypass_validation: bool = False
+):
+    if bypass_validation:
+        return
+
+    if account.is_subscribed:
+        return
+    message = 'Account Is Not Subscribed'
+    raise UnsubscribedAccountException(message)
+       

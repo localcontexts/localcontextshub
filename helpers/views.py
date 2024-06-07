@@ -12,6 +12,8 @@ import requests
 from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
+from .utils import validate_is_subscribed
+
 
 def restricted_view(request, exception=None):
     return render(request, '403.html', status=403)
@@ -42,7 +44,7 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
     else:
         if researcher_id:
             researcher = get_object_or_404(Researcher, id=researcher_id)
-            researcher.validate_is_subscribed()
+            validate_is_subscribed(researcher)
             NoticeDownloadTracker.objects.create(researcher=researcher, user=request.user,open_to_collaborate_notice=True)
 
         elif institution_id:
