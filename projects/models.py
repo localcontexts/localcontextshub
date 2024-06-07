@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from helpers.exceptions import UnconfirmedAccountException
 from institutions.models import Institution
-from communities.models import Community
+from communities.models import Community, Boundary
 from researchers.models import Researcher
 from helpers.utils import discoverable_project_view
 
@@ -55,6 +55,7 @@ class Project(models.Model):
     related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", db_index=True)
     bc_labels = models.ManyToManyField("bclabels.BCLabel", verbose_name="BC Labels", blank=True, related_name="project_bclabels", db_index=True)
     tk_labels = models.ManyToManyField("tklabels.TKLabel", verbose_name="TK Labels", blank=True, related_name="project_tklabels", db_index=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
 
     def has_labels(self):
         if self.bc_labels.exists() or self.tk_labels.exists():
@@ -121,6 +122,7 @@ class Project(models.Model):
     class Meta:
         indexes = [models.Index(fields=['unique_id', 'project_creator'])]
         ordering = ('-date_added',)
+
 
 class ProjectContributors(models.Model):
     project = models.OneToOneField(Project, related_name="project_contributors", null=True, on_delete=models.CASCADE)
