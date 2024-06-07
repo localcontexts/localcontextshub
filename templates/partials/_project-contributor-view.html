@@ -4,14 +4,14 @@
     <div><p class="bold no-top-margin">{{ project.project_privacy }} Project</p></div>
 
     <div class="flex-this margin-top-16">
-        <div><a onclick="copyToClipboard('uniqueIDToCopy')" class="primary-btn margin-top-2 copied-display"><i class="fa fa-copy round-btn"></i></a></div>
-        <div class="margin-left-1"><p class="no-top-margin"><span class="bold">Local Contexts Unique Project ID</span> <br><span id="uniqueIDToCopy">{{ project.unique_id }}</span><br></p></div>
+        <div><a onclick="copyToClipboard('uniqueIDToCopy'); buttonPulse(this)" class="primary-btn margin-top-2 copied-display"><i class="fa fa-copy round-btn"></i></a></div>
+        <div class="margin-left-1 margin-top-10"><p class="no-top-margin"><span class="bold">Local Contexts Unique Project ID</span> <br><span id="uniqueIDToCopy">{{ project.unique_id }}</span><br></p></div>
     </div>
 
     <div class="flex-this margin-top-16">
         {% if project.providers_id %}
-            <div><a onclick="copyToClipboard('providersIDToCopy')" class="primary-btn margin-top-2 copied-display"><i class="fa fa-copy round-btn"></i></a></div>
-            <div class="margin-left-1"><p class="no-top-margin"><span class="bold">Providers ID</span> <br><span id="providersIDToCopy">{{ project.providers_id }}</span><br></p></div>
+            <div><a onclick="copyToClipboard('providersIDToCopy'); buttonPulse(this)" class="primary-btn margin-top-2 copied-display"><i class="fa fa-copy round-btn"></i></a></div>
+            <div class="margin-left-1 margin-top-10"><p class="no-top-margin"><span class="bold">Providers ID</span> <br><span id="providersIDToCopy">{{ project.providers_id }}</span><br></p></div>
         {% endif %}
     </div>
 
