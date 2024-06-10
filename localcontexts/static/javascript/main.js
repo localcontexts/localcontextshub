@@ -1996,7 +1996,7 @@ function showProjectLabels(elem) {
 }
 
 
-if (window.location.href.includes('create-institution')) {
+if (window.location.href.includes('create-institution') && !window.location.href.includes('/noROR')) {
     const nameInputField = document.getElementById('organizationInput')
     const suggestionsContainer = document.getElementById('suggestionsContainer')
     const cityTownInputField = document.getElementById('institutionCityTown')
