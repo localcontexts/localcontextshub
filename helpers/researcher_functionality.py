@@ -22,8 +22,13 @@ class ResearcherRelationshipToProject(Enum):
     NOT_ASSOCIATED = 3      # This is when user is: not a creator, and not a contributor
 
 
-def allowed_researcher_project_actions(researcher: User, project_creator: User, project: Project):
+class AllowedUserActions(Enum):
+    EDIT = 1
+    DOWNLOAD = 2
+
+
+def allowed_researcher_project_actions(project: Project, project_creator: User, researcher: User):
     # Todo: get enum state based on input
-    researcher_relationship_to_project = ''
-    project_creator_subscription_state = ''
     project_visibility = ''
+    project_creator_subscription_state = ''
+    researcher_relationship_to_project = ''
