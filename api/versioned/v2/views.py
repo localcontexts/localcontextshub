@@ -7,14 +7,13 @@ from django.db import transaction
 
 from . import serializers as v2_serializers
 from rest_framework.views import APIView
-from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
-from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
+from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
+from rest_framework.permissions import BasePermission
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_api_key.permissions import HasAPIKey, BaseHasAPIKey
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, NumberFilter, CharFilter
 
 from api.base.views import *
 from api.base import views as base_views
@@ -24,7 +23,6 @@ from researchers.models import Researcher
 from accounts.models import Subscription
 from datetime import datetime
 from api.models import AccountAPIKey
-from helpers.utils import decrypt_api_key
 
 '''
 VARIABLE NOTES
@@ -149,6 +147,17 @@ class IsActiveCreatorFilter(filters.BaseFilterBackend):
         except:
             return queryset
 
+class ProjectListFilterSet(FilterSet):
+   institution_id = NumberFilter(field_name='project_creator_project__institution', lookup_expr='exact')
+   researcher_id = NumberFilter(field_name='project_creator_project__researcher', lookup_expr='exact')
+   community_id = NumberFilter(field_name='project_creator_project__community', lookup_expr='exact')
+   user_id = NumberFilter(field_name='project_creator', lookup_expr='exact')
+   title = CharFilter(field_name='title', lookup_expr='iregex')
+
+   class Meta:
+       model = Project
+       fields = ['institution_id', 'researcher_id', 'community_id', 'user_id', 'title', 'providers_id', 'unique_id'] 
+
 class APIOverview(APIView):
     def get(self, request, format=None):
         api_urls = {
@@ -156,10 +165,7 @@ class APIOverview(APIView):
             'projects_list': '/projects/',
             'project_detail': '/projects/<PROJECT_UNIQUE_ID>/',
             'multi_project_detail':'/projects/multi/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
-            'projects_by_user_id': '/projects/users/<USER_ID>/',
-            'projects_by_institution_id': '/projects/institutions/<INSTITUTION_ID>/',
-            'institution_projects_by_providers_id': '/projects/institutions/<INSTITUTION_ID>/<PROVIDERS_ID>',
-            'projects_by_researcher_id': '/projects/researchers/<RESEARCHER_ID>/',
+            'multi_project_date_modified':'/projects/date_modified/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
             'open_to_collaborate_notice': '/notices/open_to_collaborate/',
             'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
             'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
@@ -195,12 +201,8 @@ class ProjectList(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
 
     serializer_class = v2_serializers.ProjectOverviewSerializer
-    filter_backends = [filters.SearchFilter, IsActiveCreatorFilter]
-    search_fields = ['^providers_id', '=unique_id', '$title']
-
-    # '^' starts-with search
-    # '=' exact matches
-    # '$' regex search
+    filter_backends = [IsActiveCreatorFilter, DjangoFilterBackend,]
+    filterset_class = ProjectListFilterSet
 
     def get_queryset(self):
         queryset = self.filter_queryset(Project.objects.filter(project_privacy='Public'))
@@ -235,67 +237,6 @@ class ProjectDetail(generics.RetrieveAPIView):
             raise Http404("Project does not exist.")
             # TODO: check to see why this message won't show properly
 
-class ProjectsByIdViewSet(ViewSet):
-    authentication_classes = [APIKeyAuthentication]
-
-    def projects_by_user(self, request, pk):
-        try:
-            user = User.objects.get(id=pk)
-            projects = Project.objects.filter(project_creator=user).filter(project_privacy='Public')
-            serializer = ProjectOverviewSerializer(projects, many=True)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def projects_by_institution(self, request, institution_id, providers_id=None):
-        try:
-            institution = Institution.objects.get(id=institution_id)
-
-            projects = []
-            creators = ProjectCreator.objects.filter(institution=institution)
-            if providers_id != None:
-                for x in creators:
-                    if x.project.providers_id == providers_id:
-                        projects.append(x.project)
-            else:
-                for x in creators:
-                    projects.append(x.project)
-            
-            serializer = ProjectOverviewSerializer(projects, many=True)
-            return Response(serializer.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def projects_by_researcher(self, request, researcher_id):
-        try:
-            researcher = Researcher.objects.get(id=researcher_id)
-
-            projects = []
-            creators = ProjectCreator.objects.filter(researcher=researcher)
-            for x in creators:
-                projects.append(x.project)
-
-            serializers = ProjectOverviewSerializer(projects, many=True)
-            return Response(serializers.data)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-#TODO: remove this function or convert it so that the project detail (list view) can be used using either projectID or providersID. Two URLs that use one call. projects/external url would be removed
-# Make this a filter instead?
-    def project_detail_providers(self, request, providers_id):
-        try:
-            project = Project.objects.get(providers_id=providers_id)
-            if project.project_privacy == 'Public' or project.project_privacy == 'Contributor':
-                if project.has_notice():
-                    serializer = ProjectSerializer(project, many=False)
-                else:
-                    serializer = ProjectNoNoticeSerializer(project, many=False)
-                
-                return Response(serializer.data)
-            else:
-                raise PermissionDenied({"message":"You don't have permission to view this project", "providers_id": providers_id})
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
         
 class MultiProjectListDetail(ViewSet):
     authentication_classes = [APIKeyAuthentication]
