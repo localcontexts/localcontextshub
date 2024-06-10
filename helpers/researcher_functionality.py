@@ -1,25 +1,3 @@
-"""
-Parameters:
-
-project state
-	-public
-	-contributor
-		**this is a private project that has contributors
-	-private
-
-project creator subscription state:
-	-subscribed
-	-unsubscribed
-
-user attempting action with project:
-	-is creator
-	-is contributor
-	-is not associated
-		**this is means: not is creator, and not is contributor
-
-—------------------
-
-"""
 from enum import Enum
 
 from django.contrib.auth.models import User
@@ -34,14 +12,14 @@ class ProjectVisibility(Enum):
 
 
 class UserSubscriptionState(Enum):
-    SUBSCRIBED = 2
+    SUBSCRIBED = 1
     UNSUBSCRIBED = 2
 
 
 class ResearcherRelationshipToProject(Enum):
     CREATOR = 1
     CONTRIBUTOR = 2
-    NOT_ASSOCIATED = 2      # This is when user is: not a creator, and not a contributor
+    NOT_ASSOCIATED = 3      # This is when user is: not a creator, and not a contributor
 
 
 def allowed_researcher_project_actions(researcher: User, project_creator: User, project: Project):
