@@ -1331,6 +1331,22 @@ def update_community_boundary_data(request, pk):
     community = get_community(pk)
     data = json.loads(request.body)
 
+    name = data.get('name')
+    source = data.get('source')
+    boundary = data.get('boundary')
+    share_boundary_publicly = data.get('share_boundary_publicly', False)
+
+    if name:
+        community.name_of_boundary = name
+
+    if source:
+        community.source_of_boundary = source
+
+    if 'share_boundary_publicly' in data:
+        community.share_boundary_publicly = share_boundary_publicly
+
+    if boundary:
+        community.create_or_update_boundary(boundary)
 
     community.save()
     return HttpResponse(status=204)
