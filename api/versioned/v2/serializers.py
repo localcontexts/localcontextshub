@@ -67,15 +67,26 @@ class ProjectCreatorSerializer(base_serializers.ProjectCreatorSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        if instance.project.project_creator.first_name and instance.project.project_creator.last_name:
+            full_name = str(instance.project.project_creator.first_name) + ' ' + str(instance.project.project_creator.last_name)
+        else:
+            full_name = None
+
         if instance.institution:
             representation.pop('researcher')
             representation.pop('community')
+            representation['institution']['user_id'] = instance.project.project_creator.id
+            representation['institution']['user_name'] = full_name
         elif instance.community:
             representation.pop('institution')
             representation.pop('researcher')
+            representation['community']['user_id'] = instance.project.project_creator.id
+            representation['community']['user_name'] = full_name
         elif instance.researcher:
             representation.pop('institution')
             representation.pop('community')
+            representation['researcher']['user_id'] = instance.project.project_creator.id
+            representation['researcher']['user_name'] = full_name
         return representation
     
 class ProjectContributorSerializer(serializers.ModelSerializer):
