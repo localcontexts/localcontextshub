@@ -77,8 +77,8 @@ def preparation_step(request):
 
 @login_required(login_url='login')
 def create_institution(request):
+    form = CreateInstitutionForm(request.POST or None)
     if request.method == 'POST':
-        form = CreateInstitutionForm(request.POST)
         affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=request.user)
 
         if form.is_valid():
@@ -89,32 +89,31 @@ def create_institution(request):
             else:
                 data = form.save(commit=False)
                 data.institution_creator = request.user
-                # If in test site, approve immediately, skip confirmation step
-                if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+                environment = dev_prod_or_local(request.get_host())
+
+                # If in test site, approve immediately
+                if environment == 'SANDBOX':
                     data.is_approved = True
-                    data.save()
                     
-                    # Add to user affiliations
-                    affiliation.institutions.add(data)
-                    affiliation.save()
-                    return redirect('dashboard')
-                else:
-                    data.save()
+                data.save()
 
-                    # Add to user affiliations
-                    affiliation.institutions.add(data)
-                    affiliation.save()
+                # Add to user affiliations
+                affiliation.institutions.add(data)
 
-                    # Adds activity to Hub Activity
-                    HubActivity.objects.create(
-                        action_user_id=request.user.id,
-                        action_type="New Institution",
-                        institution_id=data.id,
-                        action_account_type='institution'
-                    )
-                    return redirect('confirm-institution', data.id)
-    else:
-       form = CreateInstitutionForm() 
+                # Adds activity to Hub Activity
+                HubActivity.objects.create(
+                    action_user_id=request.user.id,
+                    action_type="New Institution",
+                    institution_id=data.id,
+                    action_account_type='institution'
+                )
+
+                send_hub_admins_account_creation_email(request, data)
+                send_institution_email(request, data)
+
+                messages.add_message(request, messages.INFO,
+                             'Your institution account has been created.')
+                return redirect('dashboard')
     
     return render(request, 'institutions/create-institution.html', {'form': form })
 
@@ -127,12 +126,17 @@ def create_custom_institution(request):
         if noror_form.is_valid():
             data = noror_form.save(commit=False)
             data.institution_creator = request.user
+            environment = dev_prod_or_local(request.get_host())
+
+            # If in test site, approve immediately
+            if environment == 'SANDBOX':
+                data.is_approved = True
+            
             data.save()
 
             # Add to user affiliations
             affiliation.institutions.add(data)
-            affiliation.save()
-            
+
             # Adds activity to Hub Activity
             HubActivity.objects.create(
                 action_user_id=request.user.id,
@@ -140,28 +144,16 @@ def create_custom_institution(request):
                 institution_id=data.id,
                 action_account_type='institution'
             )
-            return redirect('confirm-institution', data.id)
+
+            send_hub_admins_account_creation_email(request, data)
+            send_institution_email(request, data)
+
+            messages.add_message(request, messages.INFO,
+                             'Your institution account has been created.')
+            return redirect('dashboard')
+
     return render(request, 'institutions/create-custom-institution.html', {'noror_form': noror_form,})
 
-
-@login_required(login_url='login')
-def confirm_institution(request, institution_id):
-    institution = Institution.objects.get(id=institution_id)
-
-    form = ConfirmInstitutionForm(request.POST or None, request.FILES, instance=institution)
-    if request.method == "POST":
-        if form.is_valid():
-            data = form.save(commit=False)
-            # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == 'SANDBOX':
-                data.is_approved = True
-                data.save()
-                return redirect('dashboard')
-            else:
-                data.save()
-                send_hub_admins_application_email(request, institution, data)
-                return redirect('dashboard')
-    return render(request, 'accounts/confirm-account.html', {'form': form, 'institution': institution,})
 
 def public_institution_view(request, pk):
     try:

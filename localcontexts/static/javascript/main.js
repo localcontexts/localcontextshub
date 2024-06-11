@@ -2126,11 +2126,11 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     })
  }
 
- if (window.location.href.includes('/confirm-institution/') || window.location.href.includes('/confirm-community/')) {
-    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn') || document.getElementById('institutionSupportLetterUploadBtn')
+ if (window.location.href.includes('/confirm-community/')) {
+    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn')
     const customFileUploadBtn = document.getElementById('customFileUploadBtn')
     const form = document.querySelector('#confirmationForm')
-    const contactEmailInput = document.getElementById('communityContactEmailField') || document.getElementById('institutionContactEmailField')
+    const contactEmailInput = document.getElementById('communityContactEmailField')
 
     function showFileName() {
         const selectedFile = realFileUploadBtn.files[0]

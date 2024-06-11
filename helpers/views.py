@@ -76,20 +76,6 @@ def download_community_support_letter(request):
     except:
         raise Http404()
 
-@login_required(login_url='login')
-def download_institution_support_letter(request):
-    try:
-        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            file_content = response.content
-            response = HttpResponse(file_content, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = 'attachment; filename="LC_Institution_Support_Letter_Template.docx"'
-            return response
-    except:
-        raise Http404()
-
 
 @xframe_options_sameorigin
 def community_boundary_view(request, community_id):
