@@ -8,7 +8,6 @@ from django.conf import settings
 from django.template.loader import get_template ,render_to_string
 from io import BytesIO
 from accounts.models import UserAffiliation, Subscription
-from projects.models import Project
 from tklabels.models import TKLabel
 from bclabels.models import BCLabel
 from helpers.models import (
@@ -89,7 +88,6 @@ def add_user_to_role(account, role, user):
     account.save()
 
 
-    
 def request_possible(request, org, selected_role):
     if selected_role.lower() in ('editor', 'administrator', 'admin') and isinstance(org, Institution): 
         try:
@@ -652,15 +650,3 @@ def validate_is_subscribed(
         return
     message = 'Account Is Not Subscribed'
     raise UnsubscribedAccountException(message)
-
-
-def project_creator_is_subscribed(project: Project) -> bool:
-    project_creator_user = project.project_creator
-
-    if Researcher.objects.filter(is_subscribed=True, user=project_creator_user).exists():
-        return True
-
-    if Institution.objects.filter(is_subscribed=True, community_creator=project_creator_user).exists():
-        return True
-
-    return False
