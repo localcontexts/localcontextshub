@@ -69,11 +69,13 @@ def connect_institution(request):
 
 @login_required(login_url='login')
 def preparation_step(request):
-    if dev_prod_or_local(request.get_host()) == "SANDBOX":
-        return redirect('create-institution')
-    else:
-        institution = True
-        return render(request, 'accounts/preparation.html', { 'institution': institution })
+    environment = dev_prod_or_local(request.get_host())
+    institution = True
+    context = {
+        'institution': institution,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 @login_required(login_url='login')
 def create_institution(request):

@@ -29,11 +29,13 @@ from .utils import *
 
 @login_required(login_url='login')
 def preparation_step(request):
-    if dev_prod_or_local(request.get_host()) == "SANDBOX":
-        return redirect('connect-researcher')
-    else:
-        researcher = True
-        return render(request, 'accounts/preparation.html', { 'researcher': researcher })
+    environment = dev_prod_or_local(request.get_host())
+    researcher = True
+    context = {
+        'researcher': researcher,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 @login_required(login_url='login')
 def connect_researcher(request):
