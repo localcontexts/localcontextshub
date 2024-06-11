@@ -731,6 +731,7 @@ def projects_board(request, filtertype=None):
             is_approved=True
         ).values_list("id", flat=True)
 
+        public_projects_filter = Q(project_privacy="Public")
         institution_projects_filter = Q(
             project_creator_project__institution__in=institutions
         )
@@ -741,10 +742,10 @@ def projects_board(request, filtertype=None):
             project_creator_project__researcher__user__isnull=False,
             project_creator_project__researcher__is_subscribed=True
         )
-
         projects = (
             Project.objects.filter(
-                (
+                public_projects_filter
+                & (
                     institution_projects_filter
                     | community_projects_filter
                     | researcher_projects_filter
