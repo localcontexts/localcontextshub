@@ -2,9 +2,8 @@ from enum import Enum
 
 from django.contrib.auth.models import User
 
+from helpers.utils import project_creator_is_subscribed
 from projects.models import Project, ProjectContributors
-from researchers.models import Researcher
-from institutions.models import Institution
 
 
 class ProjectVisibility(Enum):
@@ -37,18 +36,6 @@ def get_project_visibility_enum(project: Project) -> ProjectVisibility:
     return ProjectVisibility.PRIVATE
 
 
-def project_creator_is_subscribed(project: Project) -> bool:
-    project_creator_user = project.project_creator
-
-    if Researcher.objects.filter(is_subscribed=True, user=project_creator_user).exists():
-        return True
-
-    if Institution.objects.filter(is_subscribed=True, community_creator=project_creator_user).exists():
-        return True
-
-    return False
-
-
 def get_project_creator_subscription_state_enum(project: Project) -> UserSubscriptionState:
     if project_creator_is_subscribed(project):
         return UserSubscriptionState.SUBSCRIBED
@@ -67,7 +54,6 @@ def get_researcher_relationship_to_project_enum(researcher: User, project: Proje
 
 
 def allowed_researcher_project_actions(researcher: User, project: Project,):
-    # Todo: transform input args into enums
     project_visibility = get_project_visibility_enum(project)
     project_creator_subscription_state = get_project_creator_subscription_state_enum(project)
     researcher_relationship_to_project = get_researcher_relationship_to_project_enum(researcher, project)
