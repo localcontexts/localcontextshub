@@ -43,13 +43,25 @@ def registration_boundary(request):
     post_data = json.loads(request.body.decode('UTF-8'))
     # update community with boundary-related information
     community = get_community(request.session.get('new_community_id'))
-    community.source_of_boundary = post_data['source']
-    community.name_of_boundary = post_data['name']
 
-    # add new boundary in this community
-    community.create_or_update_boundary(post_data['boundary'])
+    source = post_data.get('source')
+    name = post_data.get('name')
+    boundary = post_data.get('boundary')
+
+    if source:
+        community.source_of_boundary = source
+
+    if name:
+        community.name_of_boundary = name
+
+    if boundary:
+        # add new boundary in this community
+        community.create_or_update_boundary(post_data['boundary'])
+
+    if 'share_boundary_publicly' in post_data:
+        community.share_boundary_publicly = post_data.get('share_boundary_publicly')
+
     community.save()
-
     return HttpResponse(status=201)
 
 
