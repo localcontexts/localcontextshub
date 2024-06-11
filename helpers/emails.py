@@ -284,9 +284,15 @@ def send_password_reset_email(request, context):
 
 # User has activated account and has logged in: Welcome email
 def send_welcome_email(request, user):   
-    subject = 'Welcome to Local Contexts Hub!'
+    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+        subject = "Welcome to the Local Contexts Hub Sandbox!"
+        template_name = 'welcome_sandbox'
+    else:
+        subject = 'Welcome to Local Contexts Hub!'
+        template_name = 'welcome'
+
     url = get_site_url(request, 'login')
-    send_mailgun_template_email(user.email, subject, 'welcome', {"login_url": url})
+    send_mailgun_template_email(user.email, subject, template_name, {"login_url": url})
 
 # Email to invite user to join the hub
 def send_invite_user_email(request, data):
