@@ -68,6 +68,7 @@ class Community(models.Model):
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
     boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    share_boundary_publicly = models.BooleanField(default=True)
 
     # Managers
     objects = models.Manager()
