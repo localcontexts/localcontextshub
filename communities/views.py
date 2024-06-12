@@ -10,12 +10,14 @@ from notifications.models import *
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
 from projects.models import *
+from api.models import AccountAPIKey
 
 from helpers.forms import *
 from bclabels.forms import *
 from tklabels.forms import *
 from projects.forms import *
 from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
+from api.forms import APIKeyGeneratorForm
 
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
@@ -1347,3 +1349,53 @@ def reset_community_boundary(request, pk):
     community.create_or_update_boundary([])
     community.save()
     return HttpResponse(status=204)
+
+# Create API Key
+@login_required(login_url="login")
+@member_required(roles=["admin"])
+def api_keys(request, pk):
+    community = get_community(pk)
+    member_role = check_member_role(request.user, community)
+    
+    try:       
+        if request.method == 'GET':
+            form = APIKeyGeneratorForm(request.GET or None)
+            account_keys = AccountAPIKey.objects.filter(community=community).values_list("prefix", "name", "encrypted_key")
+    
+        elif request.method == "POST":
+            if "generate_api_key" in request.POST:
+                form = APIKeyGeneratorForm(request.POST)
+
+                if community.is_approved and form.is_valid():
+                    data = form.save(commit=False)
+                    api_key, key = AccountAPIKey.objects.create_key(
+                        name = data.name,
+                        community_id = community.id
+                    )
+                    prefix = key.split(".")[0]
+                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                
+                else:
+                    messages.add_message(request, messages.ERROR, 'Your community is not yet confirmed. '
+                                        'Your account must be confirmed to create API Keys.')
+                    return redirect("community-api-key", community.id)
+
+                return redirect("community-api-key", community.id)
+            
+            elif "delete_api_key" in request.POST:
+                prefix = request.POST['delete_api_key']
+                api_key = AccountAPIKey.objects.filter(prefix=prefix)
+                api_key.delete()
+
+                return redirect("community-api-key", community.id)
+
+        context = {
+            "community" : community,
+            "form" : form,
+            "account_keys" : account_keys,
+            "member_role" : member_role
+        }
+        return render(request, 'account_settings_pages/_api-keys.html', context)
+    except:
+        raise Http404()
