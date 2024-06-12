@@ -55,9 +55,9 @@
                 </a>
             {% endif %}
 
-            {% if institution %}
-                <a class="side-nav-a" href="{% url 'institution-api-key' institution.id %}">
-                    <div class="side-nav-item {% if 'api-key' in request.path %} selected {% else %} grey-text {% endif %}">
+            {% if not community%}
+                <a href="{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}">
+                    <div class="side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
                         <div class="w-20 margin-right-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
                         <div class="w-80">
                             <p class="no-top-margin"><strong>API Keys</strong><br>Manage API Keys</p>

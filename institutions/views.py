@@ -1495,7 +1495,7 @@ def embed_otc_notice(request, pk):
 @login_required(login_url="login")
 @member_required(roles=["admin"])
 @transaction.atomic
-def api_keys(request, pk, related=None):
+def api_keys(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
     subscription_api_key_count = 0
@@ -1507,17 +1507,17 @@ def api_keys(request, pk, related=None):
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
-            institution_keys = AccountAPIKey.objects.filter(institution=institution).values_list("prefix", "name", "encrypted_key")
+            account_keys = AccountAPIKey.objects.filter(institution=institution).values_list("prefix", "name", "encrypted_key")
     
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
-                if subscription.api_key_count == 0:
+                if institution.is_subscribed and subscription.api_key_count == 0:
                     messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
                                         'Please upgrade your subscription plan to create more API Keys.')
                     return redirect("institution-api-key", institution.id)
                 form = APIKeyGeneratorForm(request.POST)
 
-                if form.is_valid():
+                if institution.is_subscribed and form.is_valid():
                     data = form.save(commit=False)
                     api_key, key = AccountAPIKey.objects.create_key(
                         name = data.name,
@@ -1530,6 +1530,11 @@ def api_keys(request, pk, related=None):
                     if subscription.api_key_count > 0:
                         subscription.api_key_count -= 1
                         subscription.save()
+                
+                else:
+                    messages.add_message(request, messages.ERROR, 'Your institution is not subscribed. '
+                                        'You must have an active subscription to create more API Keys.')
+                    return redirect("institution-api-key", institution.id)
 
                 return redirect("institution-api-key", institution.id)
             
@@ -1538,7 +1543,7 @@ def api_keys(request, pk, related=None):
                 api_key = AccountAPIKey.objects.filter(prefix=prefix)
                 api_key.delete()
 
-                if subscription.api_key_count >= 0:
+                if institution.is_subscribed and subscription.api_key_count >= 0:
                     subscription.api_key_count +=1
                     subscription.save()
 
@@ -1547,7 +1552,7 @@ def api_keys(request, pk, related=None):
         context = {
             "institution" : institution,
             "form" : form,
-            "institution_keys" : institution_keys,
+            "account_keys" : account_keys,
             "member_role" : member_role,
             "subscription_api_key_count" : subscription_api_key_count
         }
