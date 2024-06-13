@@ -19,24 +19,27 @@ def unauthenticated_user(view_func):
 def zero_account_user(view_func):
 
     def wrapper_func(request, *args, **kwargs):
-        user = request.user
-        affiliations = (
-            user.user_affiliations.prefetch_related(
-                "institutions",
+        if request.user.is_authenticated:
+            user = request.user
+            affiliations = (
+                user.user_affiliations.prefetch_related(
+                    "institutions",
+                )
+                .all()
             )
-            .all()
-        )
-        has_institutions = any(
-            affiliation.institutions.exists()
-            for affiliation in affiliations
-        )
-        if has_institutions or is_user_researcher(user):
-            messages.add_message(
-                request,
-                messages.INFO,
-                "Try creating account from Create an account button.")
-            return redirect('dashboard')
-        else:
+            has_institutions = any(
+                affiliation.institutions.exists()
+                for affiliation in affiliations
+            )
+            if has_institutions or is_user_researcher(user):
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    "Try creating account from Create an account button.")
+                return redirect('dashboard')
+            else:
+                return view_func(request, *args, **kwargs)
+        elif not request.user.is_authenticated:
             return view_func(request, *args, **kwargs)
 
     return wrapper_func
