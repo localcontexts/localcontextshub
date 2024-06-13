@@ -7,7 +7,11 @@ from .models import Researcher
 from .utils import checkif_user_researcher
 
 
-def is_researcher(pk_arg_name='pk'):
+def get_researcher(pk_arg_name='pk'):
+    """
+    * Injects the researcher object into the request context
+    * Removes the pk_arg_name being used from the request context
+    """
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
