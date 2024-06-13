@@ -481,8 +481,7 @@ def researcher_projects(request, pk):
 # Create Project
 @login_required(login_url='login')
 @is_researcher(pk_arg_name='pk')
-def create_project(request, pk, source_proj_uuid=None, related=None):
-    researcher = Researcher.objects.get(id=pk)
+def create_project(request, researcher, source_proj_uuid=None, related=None):
     bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
     validate_is_subscribed(researcher, bypass_validation)
     name = get_users_name(request.user)
