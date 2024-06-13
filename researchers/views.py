@@ -34,6 +34,16 @@ from .utils import *
 
 
 @login_required(login_url='login')
+def preparation_step(request):
+    environment = dev_prod_or_local(request.get_host())
+    researcher = True
+    context = {
+        'researcher': researcher,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
+
+@login_required(login_url='login')
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
@@ -75,12 +85,14 @@ def connect_researcher(request):
                 request.user.user_profile.is_researcher = True
                 request.user.user_profile.save()
 
-                # Add researcher to mailing list
-                manage_researcher_mailing_list(request.user.email, True)                
+                # sends one email to the account creator
+                # and one to either site admin or support
+                send_researcher_email(request) 
+                send_hub_admins_account_creation_email(request, data)
 
-                if dev_prod_or_local(request.get_host()) == 'PROD':
-                    send_email_to_support(data) # Send support an email in prod only about a Researcher signing up
-                    send_researcher_survey(data) # Send survey email
+                # Add researcher to mailing list
+                if env == 'PROD':
+                    manage_researcher_mailing_list(request.user.email, True)                
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(

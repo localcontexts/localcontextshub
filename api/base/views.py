@@ -25,7 +25,7 @@ def apiOverview(request, format=None):
         'institution_projects_by_providers_id': '/projects/institutions/<INSTITUTION_ID>/<PROVIDERS_ID>',
         'projects_by_researcher_id': '/projects/researchers/<RESEARCHER_ID>/',
         'open_to_collaborate_notice': reverse('api-open-to-collaborate', request=request, format=format),
-        'api_documentation': 'https://github.com/biocodellc/localcontexts_db/wiki/API-Documentation',
+        'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
         'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
     }
     return Response(api_urls)

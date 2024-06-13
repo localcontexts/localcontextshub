@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 import pytest
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.test import RequestFactory
 
 from researchers.decorators import is_researcher
@@ -10,7 +10,7 @@ from factories.researchers_factories import ResearcherFactory
 
 
 @is_researcher()
-def view(request, pk):
+def view(request, researcher):
     return HttpResponse(status=200)
 
 
@@ -41,3 +41,15 @@ class TestIsResearcher(TestCase):
         request.user = self.researcher1.user
         resp = view(request, pk=self.researcher2.id)
         self.assertEqual(resp.status_code, 302)
+
+    def test_return_404_when_researcher_object_does_not_exist(self):
+        """
+        Response should be a 404 since pk is an integer
+        which does not match researcher1 or research2
+        """
+        request = self.request.get('/')
+        request.user = self.researcher1.user
+        pk_without_matching_researcher_object = self.researcher2.id + 1
+
+        with self.assertRaisesMessage(Http404, 'Researcher Does Not Exist'):
+            view(request, pk=pk_without_matching_researcher_object)

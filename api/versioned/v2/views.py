@@ -54,7 +54,7 @@ class APIOverview(APIView):
             'projects_by_institution_id': '/projects/institutions/<INSTITUTION_ID>/',
             'projects_by_researcher_id': '/projects/researchers/<RESEARCHER_ID>/',
             'open_to_collaborate_notice': '/notices/open_to_collaborate/',
-            'api_documentation': 'https://github.com/biocodellc/localcontexts_db/wiki/API-Documentation',
+            'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
             'usage_guides': 'https://localcontexts.org/support/downloadable-resources',
         }
         return Response(api_urls)

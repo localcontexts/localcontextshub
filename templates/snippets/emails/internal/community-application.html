@@ -1,22 +1,41 @@
 {% autoescape off %}
 <h3>
     {% firstof data.community_creator.get_full_name data.community_creator.username %}
-    has applied to create a community.
+    has created a community account.
 </h3>
 
-<p>
-    Confirmation Contact Name: {{ data.contact_name }}<br>
-    {% if data.contact_email == data.community_creator.email %}
-        Confirmation Contact Email: {{ data.contact_email }}<br>
-    {% else %}
-        Confirmation Contact Email: {{ data.contact_email }}<br>
-        Community Account Creator Email: {{ data.community_creator.email }}<br><br>
+<table cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Confirmation contact name:</th>
+        <td>{{ data.contact_name }}</td>
+    </tr>
+    <tr>
+        <th>Confirmation contact email:</th>
+        <td>{{ data.contact_email }}</td>
+    </tr>
+    {% if data.contact_email != data.community_creator.email %}
+        <tr>
+            <th>Community account creator email:</th>
+            <td>{{ data.community_creator.email }}</td>
+        </tr>
     {% endif %}
+    <tr>
+        <th>Community name:</th>
+        <td>{{ data.community_name }}</td>
+    </tr>
+    <tr>
+        <th>Community entity:</th>
+        <td>{{ data.community_entity }}</td>
+    </tr>
+    <tr>
+        <th>Location:</th>
+        <td>{{ data.state_province_region }} {{ data.country.name }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{{ data.description }}</td>
+    </tr>
+</table>
 
-    Community Name: {{ data.community_name }} <br>
-    Community Entity: {{ data.community_entity }} <br>
-    Location: {{ data.state_province_region}} {{ data.country.name }}<br>
-    Description: {{ data.description }}  <br>
-</p>
 
 {% endautoescape %}
