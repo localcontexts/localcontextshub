@@ -4,7 +4,7 @@ from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
 from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead
-from helpers.emails import send_hub_admins_application_email
+from helpers.emails import send_hub_admins_account_creation_email
 from institutions.models import Institution
 from helpers.models import HubActivity
 from accounts.forms import UserCreateProfileForm, SubscriptionForm
@@ -73,7 +73,7 @@ def handle_confirmation_and_subscription(request, subscription_form, institution
         subscription_form.cleaned_data["last_name"] = first_name
     response = confirm_subscription(request, institution, join_flag, subscription_form)
     data = Institution.objects.get(institution_name=institution.institution_name)
-    send_hub_admins_application_email(request, institution, data)
+    send_hub_admins_account_creation_email(request, data)
     return response
 
 # This is for retroactively adding ROR IDs to Institutions.

@@ -198,7 +198,7 @@ def confirm_subscription(request, user, join_flag, form, account_type):
 
 
 def handle_confirmation_and_subscription(request, subscription_form, user):
-    from helpers.emails import send_hub_admins_application_email
+    from helpers.emails import send_hub_admins_account_creation_email
     join_flag = False
     first_name = subscription_form.cleaned_data["first_name"]
     if not subscription_form.cleaned_data["last_name"]:
@@ -218,8 +218,8 @@ def handle_confirmation_and_subscription(request, subscription_form, user):
             data = Institution.objects.get(
                 institution_name=user.institution_name
             )
-            send_hub_admins_application_email(
-                request, user, data
+            send_hub_admins_account_creation_email(
+                request, data
             )
             return response
     except Exception:

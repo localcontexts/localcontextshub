@@ -187,7 +187,7 @@ def confirm_community(request):
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
-            send_hub_admins_application_email(request, community, data)
+            send_hub_admins_account_creation_email(request, data)
 
             # remove new_community_id from session to prevent
             # future access with this particular new_community_id
