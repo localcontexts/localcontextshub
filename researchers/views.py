@@ -485,7 +485,7 @@ def researcher_projects(request, pk):
 
 # Create Project
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
     name = get_users_name(request.user)
@@ -928,7 +928,7 @@ def embed_otc_notice(request, pk):
 
 # Create API Key
 @login_required(login_url="login")
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 @transaction.atomic
 def api_keys(request, pk, related=None):
     researcher = Researcher.objects.get(id=pk)
