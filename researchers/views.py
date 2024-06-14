@@ -486,13 +486,12 @@ def researcher_projects(request, pk):
 # Create Project
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
-def create_project(request, pk, source_proj_uuid=None, related=None):
-    researcher = Researcher.objects.get(id=pk)
+def create_project(request, researcher, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
 
-    if check_subscription(request, 'researcher', pk) and dev_prod_or_local(request.get_host()) != 'SANDBOX':
+    if check_subscription(request, 'researcher', researcher.id) and dev_prod_or_local(request.get_host()) != 'SANDBOX':
         return redirect('researcher-projects', researcher.id)
     
     subscription = Subscription.objects.get(researcher=researcher)
