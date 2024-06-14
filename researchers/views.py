@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
+from django.db import transaction
 from django.db.models import Q
 from itertools import chain
 
@@ -16,6 +17,7 @@ from communities.models import Community
 from notifications.models import ActionNotification
 from helpers.models import *
 from projects.models import *
+from api.models import AccountAPIKey
 
 from projects.forms import *
 from helpers.forms import ProjectCommentForm, OpenToCollaborateNoticeURLForm
@@ -24,6 +26,7 @@ from accounts.forms import (
     SubscriptionForm,
 )
 from accounts.forms import ContactOrganizationForm
+from api.forms import APIKeyGeneratorForm
 
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
@@ -910,3 +913,70 @@ def embed_otc_notice(request, pk):
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response
+
+# Create API Key
+@login_required(login_url="login")
+@is_researcher(pk_arg_name='pk')
+@transaction.atomic
+def api_keys(request, pk, related=None):
+    researcher = Researcher.objects.get(id=pk)
+    subscription_api_key_count = 0
+    
+    try:
+        if researcher.is_subscribed:
+                subscription = Subscription.objects.get(researcher=researcher)
+                subscription_api_key_count = subscription.api_key_count
+                
+        if request.method == 'GET':
+            form = APIKeyGeneratorForm(request.GET or None)
+            account_keys = AccountAPIKey.objects.filter(researcher=researcher).values_list("prefix", "name", "encrypted_key")
+    
+        elif request.method == "POST":
+            if "generate_api_key" in request.POST:
+                if researcher.is_subscribed and subscription.api_key_count == 0:
+                    messages.add_message(request, messages.ERROR, 'Your account has reached its API Key limit. '
+                                        'Please upgrade your subscription plan to create more API Keys.')
+                    return redirect("researcher-api-key", researcher.id)
+                form = APIKeyGeneratorForm(request.POST)
+
+                if researcher.is_subscribed and form.is_valid():
+                    data = form.save(commit=False)
+                    api_key, key = AccountAPIKey.objects.create_key(
+                        name = data.name,
+                        researcher_id = researcher.id
+                    )
+                    prefix = key.split(".")[0]
+                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+
+                    if subscription.api_key_count > 0:
+                        subscription.api_key_count -= 1
+                        subscription.save()
+                
+                else:
+                    messages.add_message(request, messages.ERROR, 'Your account is not subscribed. '
+                                        'You must have an active subscription to create more API Keys.')
+                    return redirect("researcher-api-key", researcher.id)
+
+                return redirect("researcher-api-key", researcher.id)
+            
+            elif "delete_api_key" in request.POST:
+                prefix = request.POST['delete_api_key']
+                api_key = AccountAPIKey.objects.filter(prefix=prefix)
+                api_key.delete()
+
+                if researcher.is_subscribed and subscription.api_key_count >= 0:
+                    subscription.api_key_count +=1
+                    subscription.save()
+
+                return redirect("researcher-api-key", researcher.id)
+
+        context = {
+            "researcher" : researcher,
+            "form" : form,
+            "account_keys" : account_keys,
+            "subscription_api_key_count" : subscription_api_key_count
+        }
+        return render(request, 'account_settings_pages/_api-keys.html', context)
+    except:
+        raise Http404()
