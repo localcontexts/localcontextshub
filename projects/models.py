@@ -92,13 +92,11 @@ class Project(models.Model):
 
     def can_user_access(self, user):
         # returns either True, False, or 'partial'
-        if user == self.project_creator:
-            return True
-        elif self.project_privacy == 'Public':
+        if user == self.project_creator or  self.project_privacy == 'Public' or  self.project_privacy == 'Private':
             return True
         elif self.project_privacy == 'Contributor':
             return discoverable_project_view(self, user)
-        elif self.project_privacy == 'Private':
+        else:
             return False
 
     def get_template_name(self, user):
@@ -109,7 +107,7 @@ class Project(models.Model):
                 return 'partials/_project-actions.html'
             else:
                 return 'partials/_project-contributor-view.html'
-        elif self.project_privacy == 'Private' and user == self.project_creator:
+        elif self.project_privacy == 'Private':
             return 'partials/_project-actions.html'
         else:
             return None
@@ -180,8 +178,6 @@ class ProjectCreator(models.Model):
         """
         if self.community:
             return self.community.is_approved
-        elif self.institution:
-            return self.institution.is_subscribed
         else:
             return True
 
