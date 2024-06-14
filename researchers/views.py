@@ -10,6 +10,7 @@ from projects.utils import *
 from helpers.utils import *
 from accounts.utils import get_users_name, handle_confirmation_and_subscription, confirm_subscription
 from notifications.utils import send_action_notification_to_project_contribs
+from institutions.utils import check_subscription
 
 from communities.models import Community
 from notifications.models import ActionNotification
@@ -471,17 +472,14 @@ def researcher_projects(request, pk):
 @is_researcher(pk_arg_name='pk')
 def create_project(request, pk, source_proj_uuid=None, related=None):
     researcher = Researcher.objects.get(id=pk)
-    bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
-    validate_is_subscribed(researcher, bypass_validation)
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
 
-    try:
-        subscription = Subscription.objects.get(researcher=researcher.id)
-    except Subscription.DoesNotExist:
-        subscription = None
-
+    if check_subscription(request, 'researcher', pk) and dev_prod_or_local(request.get_host()) != 'SANDBOX':
+        return redirect('researcher-projects', researcher.id)
+    
+    subscription = Subscription.objects.get(researcher=researcher)
     if request.method == "GET":
         form = CreateProjectForm(request.POST or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
@@ -578,8 +576,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
 @is_researcher(pk_arg_name='pk')
 def edit_project(request, pk, project_uuid):
     researcher = Researcher.objects.get(id=pk)
-    bypass_validation = dev_prod_or_local(request.get_host()) == 'SANDBOX'
-    validate_is_subscribed(researcher, bypass_validation)
 
     project = Project.objects.get(unique_id=project_uuid)
     form = EditProjectForm(request.POST or None, instance=project)
