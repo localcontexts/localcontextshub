@@ -31,7 +31,7 @@ from api.forms import APIKeyGeneratorForm
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
-from .decorators import is_researcher
+from .decorators import get_researcher
 from .models import Researcher
 from .forms import *
 from .utils import *
@@ -271,7 +271,7 @@ def disconnect_orcid(request):
 
 
 @login_required(login_url='login')
-@is_researcher()
+@get_researcher()
 def update_researcher(request, pk):
     env = dev_prod_or_local(request.get_host())
     researcher = Researcher.objects.get(id=pk)
@@ -308,8 +308,9 @@ def update_researcher(request, pk):
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
 
+
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 def researcher_notices(request, pk):
     researcher = Researcher.objects.get(id=pk)
     notify_restricted_message = False
@@ -372,7 +373,7 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 def researcher_projects(request, pk):
     researcher = Researcher.objects.get(id=pk)
     create_restricted_message = False
@@ -586,9 +587,8 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     return render(request, 'researchers/create-project.html', context)
 
 
-
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 def edit_project(request, pk, project_uuid):
     researcher = Researcher.objects.get(id=pk)
 
@@ -877,7 +877,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 def connections(request, pk):
     researcher = Researcher.objects.get(id=pk)
 
