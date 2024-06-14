@@ -78,18 +78,16 @@ class MyAdminSite(admin.AdminSite):
         return render(request, 'admin/dashboard.html', context)
     
     # change the title of the page (the name that shows on the tab)
-    def app_index(self, request, app_label, extra_context = None):
-        app_dict = self._build_app_dict(request, app_label)
+    def app_index(self, request, app_label, extra_context=None):
+        app_dict = self.get_app_list(request, app_label)
         if not app_dict:
-            raise Http404('The requested admin page does not exist.')
-        # Sort the models alphabetically within each app.
-        app_dict['models'].sort(key = lambda x: x['name'])
+            raise Http404("The requested admin page does not exist.")
         app_name = apps.get_app_config(app_label).verbose_name
         context = {
             **self.each_context(request),
-            'title': _('%(app)s') % {'app': app_name},
-            'app_list': [app_dict],
-            'app_label': app_label,
+            "title": _("%(app)s") % {"app": app_name},
+            "app_list": app_dict,
+            "app_label": app_label,
             **(extra_context or {}),
         }
 

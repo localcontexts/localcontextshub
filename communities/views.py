@@ -43,13 +43,25 @@ def registration_boundary(request):
     post_data = json.loads(request.body.decode('UTF-8'))
     # update community with boundary-related information
     community = get_community(request.session.get('new_community_id'))
-    community.source_of_boundary = post_data['source']
-    community.name_of_boundary = post_data['name']
 
-    # add new boundary in this community
-    community.create_or_update_boundary(post_data['boundary'])
+    source = post_data.get('source')
+    name = post_data.get('name')
+    boundary = post_data.get('boundary')
+
+    if source:
+        community.source_of_boundary = source
+
+    if name:
+        community.name_of_boundary = name
+
+    if boundary:
+        # add new boundary in this community
+        community.create_or_update_boundary(post_data['boundary'])
+
+    if 'share_boundary_publicly' in post_data:
+        community.share_boundary_publicly = post_data.get('share_boundary_publicly')
+
     community.save()
-
     return HttpResponse(status=201)
 
 
@@ -93,12 +105,13 @@ def connect_community(request):
 
 @login_required(login_url='login')
 def preparation_step(request):
-    if dev_prod_or_local(request.get_host()) == "SANDBOX":
-        return redirect('create-community')
-    else:
-        community = True
-        return render(request, 'accounts/preparation.html', { 'community' : community })
-
+    environment = dev_prod_or_local(request.get_host())
+    community = True
+    context = {
+        'community': community,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 # Create Community
 @login_required(login_url='login')
@@ -174,7 +187,7 @@ def confirm_community(request):
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
-            send_hub_admins_application_email(request, community, data)
+            send_hub_admins_account_creation_email(request, data)
 
             # remove new_community_id from session to prevent
             # future access with this particular new_community_id
@@ -1330,10 +1343,24 @@ def update_community_boundary(request, pk):
 def update_community_boundary_data(request, pk):
     community = get_community(pk)
     data = json.loads(request.body)
-    community.name_of_boundary = data.get('name')
-    community.source_of_boundary = data.get('source')
-    boundary_data = data.get('boundary')
-    community.create_or_update_boundary(boundary_data)
+
+    name = data.get('name')
+    source = data.get('source')
+    boundary = data.get('boundary')
+    share_boundary_publicly = data.get('share_boundary_publicly', False)
+
+    if name:
+        community.name_of_boundary = name
+
+    if source:
+        community.source_of_boundary = source
+
+    if 'share_boundary_publicly' in data:
+        community.share_boundary_publicly = share_boundary_publicly
+
+    if boundary:
+        community.create_or_update_boundary(boundary)
+
     community.save()
     return HttpResponse(status=204)
 
