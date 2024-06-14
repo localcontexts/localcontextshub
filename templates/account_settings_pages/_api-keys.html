@@ -8,10 +8,17 @@
 <p class="no-top-margin">Generating API Keys enables access to the Local Contexts Hub database. Keep these keys confidential. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
 
 <div class="flex-this">
-    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> {% if subscription_api_key_count == -1 and institution.is_subscribed %}Unlimited{% elif institution.is_subscribed %}{{ subscription_api_key_count }}{% else %}0{% endif %}</p>
+    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> 
+        {% if institution and institution.is_subscribed %}
+            {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
+        {% elif researcher and researcher.is_subscribed %}
+            {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
+        {% else %}0
+        {% endif %}
+    </p>
 </div>
 
-{% if institution_keys %}
+{% if account_keys %}
     <table class="projects-table">
         <tr>
             <th>Name</th>
@@ -20,7 +27,7 @@
             <th>Delete</th>
         </tr>
 
-        {% for id, name, key in institution_keys %}
+        {% for id, name, key in account_keys %}
             <tr>
                 <td class="bold">{{ name }}</td>
                 <td id="{{ id }}">{{ key }}</td>
@@ -29,12 +36,12 @@
             </tr>
         {% endfor %}
     </table>
-{% elif not institution_keys %}
+{% elif not account_keys %}
     <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
 {% endif %}
 
 <div class="flex-this margin-top-2">
-    {% if institution.is_subscribed and subscription_api_key_count != 0 %}
+    {% if institution.is_subscribed or researcher.is_subscribed and subscription_api_key_count != 0 %}
         <div>
             <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Generate API Key</button>
         </div>
@@ -42,7 +49,10 @@
         <div class="btn-with-helptext">
             <button id="generateAPIKeybtn" class="primary-btn margin-top-2 disabled-btn" disabled>Generate API Key</button>
             <span class="btn-help-text" style="left: 5px;right: 0px;">
-                {% if not institution.is_subscribed %}The subscription process for your institution is not completed yet.{% elif subscription_api_key_count == 0 %}Your institution has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.{% endif %}
+                {% if institution and not institution.is_subscribed %}The subscription process for your institution is not completed yet.
+                {% elif researcher and not researcher.is_subscribed %}The subscription process for your account is not completed yet.
+                {% elif subscription_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
+                {% endif %}
             </span>
         </div>
     {% endif %}

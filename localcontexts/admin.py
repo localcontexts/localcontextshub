@@ -30,6 +30,7 @@ from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
 from helpers.models import *
+from helpers.utils import encrypt_api_key
 from institutions.models import Institution
 from researchers.utils import is_user_researcher
 from notifications.models import UserNotification, ActionNotification
@@ -1073,7 +1074,7 @@ class AccountAPIKeyAdmin(APIKeyModelAdmin):
     
     def save_model(self, request, obj, form, change):
         if obj.encrypted_key:
-            obj.encrypted_key = urlsafe_base64_encode(force_bytes(obj.encrypted_key))
+            obj.encrypted_key = encrypt_api_key(obj.encrypted_key)
         return super().save_model(request, obj, form, change)
 
 admin_site.register(AccountAPIKey, AccountAPIKeyAdmin)

@@ -178,7 +178,7 @@
                             {% join_request_inst institution.id request.user as request_exists %}
                             {% if request_exists or institution in user_institutions %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
-                            {% else %}
+                            {% elif institution.is_subscribed %}
                                 <div class="margin-top-8 margin-bottom-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
