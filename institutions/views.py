@@ -1502,8 +1502,8 @@ def api_keys(request, pk, related=None):
     
     try:
         if institution.is_subscribed:
-                subscription = Subscription.objects.get(institution=institution)
-                subscription_api_key_count = subscription.api_key_count
+            subscription = Subscription.objects.get(institution=institution)
+            subscription_api_key_count = subscription.api_key_count
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
@@ -1524,7 +1524,7 @@ def api_keys(request, pk, related=None):
                         institution_id = institution.id
                     )
                     prefix = key.split(".")[0]
-                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                    encrypted_key = encrypt_api_key(key)
                     AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
                     if subscription.api_key_count > 0:
