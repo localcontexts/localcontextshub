@@ -35,7 +35,7 @@ from unidecode import unidecode
 from institutions.models import Institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.models import Researcher
-from .decorators import unauthenticated_user
+from .decorators import unauthenticated_user, zero_account_user
 
 from communities.models import InviteMember, Community
 from helpers.models import HubActivity
@@ -935,7 +935,7 @@ def newsletter_unsubscription(request, emailb64):
         return redirect("login")
 
 
-@unauthenticated_user
+@zero_account_user
 def subscription_inquiry(request):
     form = SubscriptionForm(request.POST or None)
     form.fields.pop('account_type', None)
