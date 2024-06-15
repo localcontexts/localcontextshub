@@ -228,6 +228,7 @@
 </span>
 <script>
     let BoundaryPayLoad = {}
+    let InitialShareBoundaryPublicly = {% if community.share_boundary_publicly %}true{% else %}false{% endif %}
 
     fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
@@ -270,6 +271,15 @@
     }
     function clearShapeFileInput(selectionUnit) {
        selectionUnit.querySelector('.input-field.select-file-input').value = ''
+    }
+    function selectInitialShareBoundaryPublicly() {
+
+      if (InitialShareBoundaryPublicly) {
+        document.getElementById("share-boundary-publicly").checked = true
+      } else {
+        document.getElementById("share-boundary-publicly").checked = false
+      }
+
     }
     function hideSearchDropDown() {
        document.querySelector('.region-results').innerHTML = ''
@@ -501,6 +511,7 @@
 
       clearNLInput(selectionUnit)
       clearShapeFileInput(selectionUnit)
+      selectInitialShareBoundaryPublicly()
       disableContinueButton()
     }
 </script>
