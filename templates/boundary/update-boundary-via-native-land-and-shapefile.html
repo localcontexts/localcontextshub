@@ -175,7 +175,7 @@
                         Browse files
                     </div>
                     <input
-                        type="file" class="shapefile-input" name="shapefile" style="display: none"
+                        type="file" class="shapefile-input" style="display: none"
                         onchange="uploadShapeFileData(this)"
                         accept=".zip"
                     >
@@ -205,7 +205,7 @@
         <div class="message">File upload successful</div>
     </div>
     <div id="share-boundary-publicly-wrapper">
-        <input type="checkbox" id="share-boundary-publicly"
+        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly" class="no-auto-validate"
                onchange="enableContinueButton()"
                {% if community.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Publicly</label>
@@ -225,6 +225,7 @@
         </div>
         <i class="fa fa-spinner fa-spin fa-2x spinner"></i>
     </div>
+    <input type="text" id="boundary-data" name="boundary" class="invisible" />
 </span>
 <script>
     let BoundaryPayLoad = {}
@@ -309,6 +310,12 @@
         document.querySelector('.save-cancel-container .spinner').classList.remove('shown')
     }
 
+    function setBoundaryPayloadForInputElement() {
+      /*
+      This is useful when submitting the boundary via a form
+      * */
+      document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
+    }
     async function getNativeLandBoundary(selectionUnit, slug) {
         /*
         * This code attempts to get the actual boundary data from Native Land.
@@ -339,6 +346,7 @@
                 name: boundary.properties.Name,
                 boundary: boundaryCoordinates
             }
+            setBoundaryPayloadForInputElement()
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
             clearShapeFileInput(selectionUnit)
 
@@ -451,7 +459,7 @@
             name: fileName,
             boundary: distinctBoundaryReordered
         }
-
+        setBoundaryPayloadForInputElement()
         setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
 
         successMessage.classList.toggle('invisible')
