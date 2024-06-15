@@ -446,6 +446,9 @@
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
         enableContinueButton()
 
+        // clear search input
+        self.closest('.boundary-selection-unit').querySelector('input.search').value = ''
+
       } catch (e) {
         raiseError(selectionUnit, 'File not accepted. Please upload another file')
         console.log('Error extracting boundary data from Shapefile', e)
