@@ -327,6 +327,7 @@
                 boundary: boundaryCoordinates
             }
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
+            selectionUnit.querySelector('.community-boundary-upload .input-field.select-file-input').value = ''
 
         } catch (error) {
             console.error('Error Fetching boundary:', error)
