@@ -62,7 +62,6 @@ def view_project(request, unique_id):
         'can_download': can_download,
         'label_groups': label_groups,
         'status': status,
-        'user_is_creator': request.user == project.project_creator
     }
 
     if template_name:

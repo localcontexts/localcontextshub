@@ -253,7 +253,7 @@
                         </p>
                     </div>
                 </div>
-                {% if user_is_creator or project.share_boundary_publicly %}
+                {% if request.user.is_authenticated or project.share_boundary_publicly %}
                     {% if project.boundary.coordinates %}
                     <div class="flex-this">
                     <div class="project-left-sidebar"><p class="bold">Boundary</p></div>
