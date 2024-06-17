@@ -4,9 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.conf import settings
+from django.views.decorators.clickjacking import xframe_options_sameorigin
+
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
+from projects.models import Project
 from .downloads import download_otc_notice, download_cc_notices
 import requests
 from .models import NoticeDownloadTracker
@@ -112,6 +115,23 @@ def community_boundary_view(request, community_id):
         return render(request, 'boundary/boundary-view.html', context)
     except:
         raise Http404()
+
+
+@xframe_options_sameorigin
+def project_boundary_view(request, project_id):
+    project = Project.objects.filter(id=project_id).first()
+    if not project:
+        message = 'Project Does Not Exist'
+        raise Http404(message)
+
+    boundary = []
+    if project.boundary:
+        boundary = project.boundary.get_coordinates(as_tuple=False)
+
+    context = {
+        'boundary': boundary
+    }
+    return render(request, 'boundary/boundary-view.html', context)
 
 
 @login_required(login_url='login')
