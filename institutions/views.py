@@ -954,6 +954,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
                 subscription.project_count -= 1
                 subscription.save()
 
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             if source_proj_uuid and not related:
