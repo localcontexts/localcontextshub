@@ -55,8 +55,11 @@ class Project(models.Model):
     related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", db_index=True)
     bc_labels = models.ManyToManyField("bclabels.BCLabel", verbose_name="BC Labels", blank=True, related_name="project_bclabels", db_index=True)
     tk_labels = models.ManyToManyField("tklabels.TKLabel", verbose_name="TK Labels", blank=True, related_name="project_tklabels", db_index=True)
-    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
 
+    source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
+    name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    share_boundary_publicly = models.BooleanField(default=True)
 
     def has_labels(self):
         if self.bc_labels.exists() or self.tk_labels.exists():
