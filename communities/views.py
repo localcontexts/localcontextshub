@@ -880,7 +880,6 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             data = form.save(commit=False)
             data.project_creator = request.user
 
-            # boundary_payload = json.loads(request.POST.get())
             create_or_update_boundary(
                 post_data=request.POST,
                 entity=data
