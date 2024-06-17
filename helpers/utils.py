@@ -35,6 +35,8 @@ import urllib.parse
 import urllib.request
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 import traceback
 import re
 
@@ -679,3 +681,13 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
         # create boundary when it does not exist
         entity.boundary = Boundary(coordinates=boundary_coordinates)
     entity.boundary.save()
+
+       
+def encrypt_api_key(key):
+    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+    return encrypted_key
+
+  
+def decrypt_api_key(key):
+    api_key = force_str(urlsafe_base64_decode(key))
+    return api_key

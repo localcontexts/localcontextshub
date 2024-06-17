@@ -16,7 +16,7 @@ from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
 from .utils import validate_is_subscribed
-
+from .exceptions import UnsubscribedAccountException
 
 def restricted_view(request, exception=None):
     return render(request, '403.html', status=403)
@@ -46,15 +46,21 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
         return redirect('restricted')
     else:
         if researcher_id:
-            researcher = get_object_or_404(Researcher, id=researcher_id)
-            validate_is_subscribed(researcher)
-            NoticeDownloadTracker.objects.create(researcher=researcher, user=request.user,open_to_collaborate_notice=True)
+            entity = get_object_or_404(Researcher, id=researcher_id)
+            entity_type = 'researcher'
+        if institution_id:
+            entity = get_object_or_404(Institution, id=institution_id)
+            entity_type = 'institution'
 
-        elif institution_id:
-            institution = get_object_or_404(Institution, id=institution_id)
-            NoticeDownloadTracker.objects.create(institution=institution, user=request.user, open_to_collaborate_notice=True)
-
-        return download_otc_notice(request)
+        if entity.is_subscribed:
+            entity_field = {entity_type: entity}
+            entity_field['user'] = request.user
+            entity_field['open_to_collaborate_notice'] = True
+            NoticeDownloadTracker.objects.create(**entity_field)
+            return download_otc_notice(request)   
+        else:
+            message = 'Account Is Not Subscribed'
+            raise UnsubscribedAccountException(message)
 
 
 @login_required(login_url='login')
