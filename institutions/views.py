@@ -1082,6 +1082,10 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
             data.save()
 
             editor_name = get_users_name(request.user)
@@ -1124,6 +1128,8 @@ def edit_project(request, pk, project_uuid):
         "contributors": contributors,
         "urls": project.urls,
         "notice_translations": notice_translations,
+        'boundary_reset_url': reverse('reset-project-boundary', kwargs={'pk': project.id}),
+        'boundary_preview_url': reverse('project-boundary-view', kwargs={'project_id': project.id}),
     }
     return render(request, "institutions/edit-project.html", context)
 
