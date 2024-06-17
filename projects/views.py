@@ -50,7 +50,6 @@ def view_project(request, unique_id):
                 user_researcher = Researcher.objects.get(id=researcher.id)
     
     template_name = project.get_template_name(request.user)
-            
     context = {
         'project': project, 
         'notices': notices,
@@ -63,6 +62,7 @@ def view_project(request, unique_id):
         'can_download': can_download,
         'label_groups': label_groups,
         'status': status,
+        'user_is_creator': request.user == project.project_creator
     }
 
     if template_name:
