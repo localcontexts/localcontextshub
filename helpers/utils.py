@@ -18,7 +18,7 @@ from helpers.models import (
 )
 from xhtml2pdf import pisa
 
-from communities.models import Community, JoinRequest, InviteMember
+from communities.models import Community, JoinRequest, InviteMember, Boundary
 from institutions.models import Institution
 from researchers.models import Researcher
 from .exceptions import UnsubscribedAccountException
@@ -651,4 +651,27 @@ def validate_is_subscribed(
         return
     message = 'Account Is Not Subscribed'
     raise UnsubscribedAccountException(message)
-       
+
+
+def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Project']):
+    data = json.loads(
+        post_data.get('boundary_payload', {})
+    )
+    name = data.get('name')
+    source = data.get('source')
+    boundary_data = data.get('boundary')
+
+    if name:
+        entity.name_of_boundary = name
+
+    if source:
+        entity.source_of_boundary = source
+
+    boundary_coordinates = boundary_data if boundary_data else []
+    if entity.boundary:
+        # update boundary when it exists
+        entity.boundary.coordinates = boundary_coordinates
+    else:
+        # create boundary when it does not exist
+        entity.boundary = Boundary(coordinates=boundary_coordinates)
+    entity.boundary.save()

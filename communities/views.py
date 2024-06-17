@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -877,6 +879,12 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
         if form.is_valid() and formset.is_valid():
             data = form.save(commit=False)
             data.project_creator = request.user
+
+            # boundary_payload = json.loads(request.POST.get())
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
 
             # Define project_page field
             data.project_page = f'{request.scheme}://{request.get_host()}/projects/{data.unique_id}'

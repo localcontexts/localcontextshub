@@ -57,17 +57,6 @@ class Project(models.Model):
     tk_labels = models.ManyToManyField("tklabels.TKLabel", verbose_name="TK Labels", blank=True, related_name="project_tklabels", db_index=True)
     boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
 
-    def create_or_update_boundary(self, boundary_coordinates):
-        boundary_coordinates = boundary_coordinates if boundary_coordinates else []
-
-        if self.boundary:
-            # update boundary when it exists
-            self.boundary.coordinates = boundary_coordinates
-        else:
-            # create boundary when it does not exist
-            self.boundary = Boundary(coordinates=boundary_coordinates)
-
-        self.boundary.save()
 
     def has_labels(self):
         if self.bc_labels.exists() or self.tk_labels.exists():
