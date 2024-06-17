@@ -1005,6 +1005,8 @@ def edit_project(request, pk, project_uuid):
         'formset': formset,
         'contributors': contributors,
         'urls': project.urls,
+        'boundary_reset_url': reverse('reset-project-boundary', kwargs={'pk': project.id}),
+        'boundary_preview_url': reverse('project-boundary-view', kwargs={'project_id': project.id}),
     }
     return render(request, 'communities/edit-project.html', context)
 
