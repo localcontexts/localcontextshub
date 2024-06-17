@@ -970,6 +970,10 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
             data.save()
 
             editor_name = get_users_name(request.user)

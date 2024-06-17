@@ -207,7 +207,7 @@
     <div id="share-boundary-publicly-wrapper">
         <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly" class="no-auto-validate"
                onchange="enableContinueButton()"
-               {% if community.share_boundary_publicly %}checked{% endif %}>
+               {% if entity.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Publicly</label>
     </div>
     <div class="save-cancel-container w-90 flex-this flex-start">
@@ -229,7 +229,7 @@
 </span>
 <script>
     let BoundaryPayLoad = {}
-    let InitialShareBoundaryPublicly = {% if community.share_boundary_publicly %}true{% else %}false{% endif %}
+    let InitialShareBoundaryPublicly = {% if entity.share_boundary_publicly %}true{% else %}false{% endif %}
 
     fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
@@ -489,7 +489,7 @@
         showSpinner()
         BoundaryPayLoad.share_boundary_publicly = document.getElementById("share-boundary-publicly").checked
 
-        const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
+        const response = await fetch("{% url 'update-community-boundary-data' entity.id %}", {
             method: 'POST',
             body: JSON.stringify(BoundaryPayLoad),
             headers: {

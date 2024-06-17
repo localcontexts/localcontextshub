@@ -654,22 +654,22 @@ def validate_is_subscribed(
 
 
 def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Project']):
-    data = json.loads(
-        post_data.get('boundary-payload', {})
-    )
+    entity.share_boundary_publicly = post_data.get('share-boundary-publicly') == 'on'
+    raw_boundary_payload = post_data.get('boundary-payload')
+
+    if raw_boundary_payload in ['', None]:
+        return
+
+    data = json.loads(raw_boundary_payload)
     name = data.get('name')
     source = data.get('source')
     boundary_data = data.get('boundary')
-    share_boundary_publicly = post_data.get('share-boundary-publicly')
 
     if name:
         entity.name_of_boundary = name
 
     if source:
         entity.source_of_boundary = source
-
-    if share_boundary_publicly:
-        entity.share_boundary_publicly = True if share_boundary_publicly == 'on' else False
 
     boundary_coordinates = boundary_data if boundary_data else []
     if entity.boundary:
