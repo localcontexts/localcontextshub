@@ -156,9 +156,9 @@ def add_community_boundary(request):
 @has_new_community_id
 @login_required(login_url='login')
 def upload_boundary_file(request):
-    community_id = get_community(request.session.get('new_community_id'))
+    community = get_community(request.session.get('new_community_id'))
     context = {
-        'community_id': community_id.id
+        'community_id': community.id,
     }
     return render(request, 'boundary/upload-boundary-file.html', context)
 
@@ -1332,6 +1332,7 @@ def update_community_boundary(request, pk):
         'community': community,
         # 'main_area': 'boundary',
         'member_role': member_role,
+        'set_boundary_url': reverse('update-community-boundary-data', kwargs={'pk': community.id})
     }
     return render(request, 'account_settings_pages/_community-boundary.html', context)
 
