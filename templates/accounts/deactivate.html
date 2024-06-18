@@ -14,11 +14,12 @@
                     <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a>
                     for deactivation assistance.
                 {% elif user_role == 'is_member' %}
-                    It looks like you're a member of an account. Before you can deactivate your user profile,
-                    you need to leave each account (see Accounts in this settings menu).
+                    It looks like you are a member of an account. When you deactivate your profile,
+                    you will be removed from all accounts and unable to log in.
+                    Your profile and its associated data will be deleted 30 days after deactivation.
                 {% else %}
-                   Please note that you will not be able to sign-in after deactivation.
-                   Your profile and its associated data will be deleted 30 days after deactivation
+                    You will not be able to log in after you deactivate your profile.
+                    Your profile and its associated data will be deleted 30 days after deactivation.
                 {% endif %}
             </p>
             {% csrf_token %}
