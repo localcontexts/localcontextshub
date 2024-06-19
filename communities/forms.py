@@ -15,12 +15,13 @@ from .widgets import BoundaryWidget
 class CreateCommunityForm(forms.ModelForm):
     class Meta:
         model = Community
-        fields = ['community_name', 'community_entity', 'state_province_region', 'country', 'description',]
+        fields = ['community_name', 'community_entity', 'state_province_region', 'country', 'description', 'website']
         widgets = {
             'community_name': forms.TextInput(attrs={'class': 'w-100'}),
             'community_entity': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
             'description': forms.Textarea(attrs={'rows': 2, 'class': 'w-100'}),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
         error_messages = {
             'community_name': {
