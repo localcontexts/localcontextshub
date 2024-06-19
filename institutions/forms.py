@@ -9,7 +9,7 @@ class CreateInstitutionForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email']
+        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email', 'website']
         error_messages = {
             'institution_name': {
                 'unique': _("This institution is already on the Hub."),
@@ -24,6 +24,7 @@ class CreateInstitutionForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
             'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
             'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
     def __init__(self, *args, **kwargs):
