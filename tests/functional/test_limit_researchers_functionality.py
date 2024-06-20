@@ -3,14 +3,21 @@ from django.test import Client, TransactionTestCase
 from factories.researchers_factories import ResearcherFactory
 from factories.accounts_factories import UserFactory
 from factories.projects_factories import ProjectFactory
-
 from helpers.exceptions import UnsubscribedAccountException
+from accounts.models import Subscription
 
 
 class TestFeatures(TransactionTestCase):
     def setUp(self):
         self.client = Client()
         self.subscribed_researcher = ResearcherFactory(user=UserFactory(), is_subscribed=True)
+        self.subscription = Subscription.objects.create(
+        researcher=self.subscribed_researcher,
+        project_count=1,
+        users_count=1,
+        notification_count=1,
+        api_key_count=1,
+        )
         self.subscribed_researcher_project = ProjectFactory(project_creator=self.subscribed_researcher.user)
         self.unsubscribed_researcher = ResearcherFactory(user=UserFactory(), is_subscribed=False)
         self.unsubscribed_researcher_project = ProjectFactory(project_creator=self.unsubscribed_researcher.user)
@@ -40,7 +47,7 @@ class TestFeatures(TransactionTestCase):
             'pk': self.unsubscribed_researcher.id,
         }
         response = self.client.get(reverse('researcher-create-project', kwargs=kwargs))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
 
     def test_create_project_as_subscribed(self):
         self.client.force_login(user=self.subscribed_researcher.user)
@@ -56,7 +63,7 @@ class TestFeatures(TransactionTestCase):
             'pk': self.unsubscribed_researcher.id,
         }
         response = self.client.get(reverse('researcher-create-project', kwargs=kwargs))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
 
     def test_edit_project_as_subscribed(self):
         self.client.force_login(user=self.subscribed_researcher.user)

@@ -154,8 +154,8 @@ def create_custom_institution(request):
         if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": request.user._wrapped.first_name,
-            "last_name": request.user._wrapped.last_name,
+            "first_name": user_form.cleaned_data['first_name'],
+            "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
             "account_type": "institution_account",
             "organization_name": noror_form.cleaned_data['institution_name'],
@@ -167,18 +167,12 @@ def create_custom_institution(request):
                 handle_institution_creation(request, noror_form, subscription_form )
                 return redirect('dashboard')
             else:
-                error_messages = []
-                for field, errors in subscription_form.errors.items():
-                    for error in errors:
-                        error_messages.append(f"{field.capitalize()}: {error}")
-
-                concatenated_errors = "\n".join(error_messages)
                 messages.add_message(
-                                request,
-                                messages.ERROR,
-                                concatenated_errors,
-                            )
-                return redirect('confirm-subscription-institution',  data.id)
+                    request,
+                    messages.ERROR,
+                    "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
     return render(
         request,
         "institutions/create-custom-institution.html",
@@ -619,7 +613,6 @@ def member_requests(request, pk):
     if request.method == 'POST':
         selected_role = request.POST.get('selected_role')
         join_request_id = request.POST.get('join_request_id')
-        # redirection = check_subscription(request, institution)
         if check_subscription(request, institution) and selected_role.lower() in ('editor', 'administrator', 'admin'):
             messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
             return redirect('institution-members', institution.id)
@@ -917,18 +910,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_translations = get_notice_translations()
     notice_defaults = get_notice_defaults()
-    redirection = check_subscription(request, institution)
-    if redirection:
-        messages.add_message(request, messages.ERROR, 'The subscription process of your institution is not completed yet. Please wait for the completion of subscription process.')
+    
+    if check_subscription(request, 'institution', pk):      
         return redirect('institution-projects', institution.id)
     
     subscription = Subscription.objects.get(institution=institution)
-    if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your institution has reached its Project limit. '
-                            'Please upgrade your subscription plan to create more Projects.')
-        return redirect('institution-projects', institution.id)
-    
-
     if request.method == 'GET':
         form = CreateProjectForm(request.GET or None)
         formset = ProjectPersonFormset(queryset=ProjectPerson.objects.none())
@@ -1502,8 +1488,8 @@ def api_keys(request, pk):
     
     try:
         if institution.is_subscribed:
-                subscription = Subscription.objects.get(institution=institution)
-                subscription_api_key_count = subscription.api_key_count
+            subscription = Subscription.objects.get(institution=institution)
+            subscription_api_key_count = subscription.api_key_count
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
@@ -1524,7 +1510,7 @@ def api_keys(request, pk):
                         institution_id = institution.id
                     )
                     prefix = key.split(".")[0]
-                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                    encrypted_key = encrypt_api_key(key)
                     AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
                     if subscription.api_key_count > 0:
