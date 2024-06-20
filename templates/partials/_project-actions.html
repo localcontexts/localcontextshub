@@ -253,6 +253,33 @@
                         </p>
                     </div>
                 </div>
+                {% if request.user.is_authenticated or project.share_boundary_publicly %}
+                    {% if project.boundary.coordinates %}
+                    <div class="flex-this">
+                    <div class="project-left-sidebar"><p class="bold">Boundary</p></div>
+                    <div>
+                        <div class="flex-this">
+                            <p>
+                                <iframe src="{% url 'project-boundary-view' project.id %}" data-testid="project-boundary-iframe"
+                                style="width: 100%; height: 450px; border: 1px solid cadetblue;">
+                                </iframe>
+                                {% if 'native-land.ca' in project.source_of_boundary %}
+                                    <span class="italic">
+                                        This project boundary originates from the
+                                        <a href="https://native-land.ca/contact"
+                                           class="default-a" target="_blank" rel="noopener">
+                                            Native Land Digital database
+                                            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                                        </a>.
+                                    </span>
+                                    <br><br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                    {% endif %}
+                {% endif %}
             </div>
 
             {% if notices %}
