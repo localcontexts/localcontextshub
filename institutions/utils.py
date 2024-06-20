@@ -10,6 +10,8 @@ from institutions.models import Institution
 from helpers.models import HubActivity
 from accounts.forms import UserCreateProfileForm, SubscriptionForm
 from django.db import transaction
+from django.utils import timezone
+from localcontexts.utils import dev_prod_or_local
 
 
 def get_institution(pk):
@@ -101,10 +103,20 @@ def set_ror_id(institution):
         
 def confirm_subscription(request, institution, join_flag, form):
     if institution.institution_creator == request.user._wrapped:
-        if create_salesforce_account_or_lead(request, hubId=str(institution.id)+"_i", data=form.cleaned_data):
-            institution.is_submitted = True
-            institution.save()
+        if dev_prod_or_local(request.get_host()) != 'SANDBOX' and create_salesforce_account_or_lead(request, hubId=str(institution.id)+"_i", data=form.cleaned_data):
             messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
+        elif dev_prod_or_local(request.get_host()) == 'SANDBOX':
+            institution.is_subscribed = True
+            institution.save()
+            subscription = Subscription.objects.create(
+            institution=institution,
+            users_count=-1,
+            api_key_count=-1,
+            project_count=-1,
+            notification_count=-1,
+            start_date=timezone.now(),
+            end_date=None
+            )
         else:
             messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
         return redirect('dashboard')
