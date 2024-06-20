@@ -29,6 +29,7 @@ urlpatterns = [
     path('communities/', include('communities.urls')),
     path('institutions/', include('institutions.urls')),
     path('researchers/', include('researchers.urls')),
+    path('service-providers/', include('serviceproviders.urls')),
     path('projects/', include('projects.urls')),
     path('helpers/', include('helpers.urls')),
     path('api/', include('api.urls')),
