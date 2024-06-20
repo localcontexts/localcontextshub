@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.contrib import messages
 from researchers.utils import is_user_researcher
+from localcontexts.utils import dev_prod_or_local
 
 
 def unauthenticated_user(view_func):
@@ -19,6 +20,12 @@ def unauthenticated_user(view_func):
 def zero_account_user(view_func):
 
     def wrapper_func(request, *args, **kwargs):
+        if dev_prod_or_local(request.get_host()) == "SANDBOX":
+            messages.add_message(
+                    request,
+                    messages.INFO,
+                    "This page is not available on the sandbox site. ")
+            return redirect('login')
         if request.user.is_authenticated:
             user = request.user
             affiliations = (

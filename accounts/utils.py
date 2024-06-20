@@ -12,6 +12,7 @@ from accounts.models import Subscription
 from unidecode import unidecode
 from django.utils import timezone
 
+
 def get_users_name(user):
     if user:
         return user.get_full_name() or user.username
@@ -196,8 +197,10 @@ def confirm_subscription(request, user, join_flag, form, account_type):
     return redirect('dashboard')
 
 
-def handle_confirmation_and_subscription(request, subscription_form, user, env):
-    from helpers.emails import send_hub_admins_application_email
+def handle_confirmation_and_subscription(
+    request, subscription_form, user, env
+):
+    from helpers.emails import send_hub_admins_account_creation_email
     join_flag = False
     first_name = subscription_form.cleaned_data["first_name"]
     if not subscription_form.cleaned_data["last_name"]:
@@ -213,14 +216,14 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
             user.is_subscribed = True
             user.save()
             response = Subscription.objects.create(
-            researcher=user,
-            users_count=-1,
-            api_key_count=-1,
-            project_count=-1,
-            notification_count=-1,
-            start_date=timezone.now(),
-            end_date=None
-            )
+                researcher=user,
+                users_count=-1,
+                api_key_count=-1,
+                project_count=-1,
+                notification_count=-1,
+                start_date=timezone.now(),
+                end_date=None
+                )
             return response
         elif isinstance(user, Institution):
             response = confirm_subscription(
