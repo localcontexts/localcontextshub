@@ -167,11 +167,11 @@ def add_community_boundary(request):
 @has_new_community_id
 @login_required(login_url='login')
 def upload_boundary_file(request):
-    community_id = get_community(request.session.get('new_community_id'))
+    community = get_community(request.session.get('new_community_id'))
     context = {
-        'community_id': community_id.id
+        'community_id': community.id,
     }
-    return render(request, 'communities/upload-boundary-file.html', context)
+    return render(request, 'boundary/update-boundary-via-native-land-and-shapefile.html', context)
 
 
 # Confirm Community
@@ -898,6 +898,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
 
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             if source_proj_uuid and not related:
@@ -976,6 +981,10 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
             data.save()
 
             editor_name = get_users_name(request.user)
@@ -1007,6 +1016,8 @@ def edit_project(request, pk, project_uuid):
         'formset': formset,
         'contributors': contributors,
         'urls': project.urls,
+        'boundary_reset_url': reverse('reset-project-boundary', kwargs={'pk': project.id}),
+        'boundary_preview_url': reverse('project-boundary-view', kwargs={'project_id': project.id}),
     }
     return render(request, 'communities/edit-project.html', context)
 
@@ -1334,6 +1345,7 @@ def update_community_boundary(request, pk):
         'community': community,
         'main_area': 'boundary',
         'member_role': member_role,
+        'set_boundary_url': reverse('update-community-boundary-data', kwargs={'pk': community.id})
     }
     return render(request, 'communities/update-community.html', context)
 
