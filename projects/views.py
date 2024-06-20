@@ -1,11 +1,13 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from projects.models import Boundary
 from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
 from helpers.models import Notice
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from accounts.models import UserAffiliation
 from researchers.models import Researcher
 from helpers.downloads import download_project_zip
@@ -117,3 +119,26 @@ def embed_project(request, unique_id):
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response
+
+
+@login_required(login_url='login')
+def reset_project_boundary(request, pk):
+    try:
+        project = Project.objects.get(id=pk)
+        creator = ProjectCreator.objects.get(project=project)
+        creator.validate_user_access(request.user)
+
+        project.name_of_boundary = ''
+        project.source_of_boundary = ''
+
+        if project.boundary:
+            # update boundary when it exists
+            project.boundary.coordinates = []
+        else:
+            # create boundary when it does not exist
+            project.boundary = Boundary(coordinates=[])
+
+        project.save()
+        return HttpResponse(status=204)
+    except (Project.DoesNotExist, UnconfirmedAccountException):
+        return render(request, '404.html', status=404)
