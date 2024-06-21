@@ -171,7 +171,7 @@ def upload_boundary_file(request):
     context = {
         'community_id': community.id,
     }
-    return render(request, 'boundary/update-boundary-via-native-land-and-shapefile.html', context)
+    return render(request, 'communities/upload-boundary-file.html', context)
 
 
 # Confirm Community
