@@ -33,6 +33,7 @@ from helpers.models import *
 from helpers.utils import encrypt_api_key
 from institutions.models import Institution
 from researchers.utils import is_user_researcher
+from serviceproviders.models import ServiceProvider
 from notifications.models import UserNotification, ActionNotification
 from projects.models import *
 from researchers.models import Researcher
@@ -1253,3 +1254,10 @@ class InactiveUserAdmin(admin.ModelAdmin):
     list_display = ('user', 'username', 'email', 'date_joined')
 
 admin_site.register(InactiveUser, InactiveUserAdmin)
+
+# SERVICE PROVIDER ADMIN
+class ServiceProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'account_creator', 'contact_name', 'contact_email', 'is_certified', 'created',)
+    search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
+
+admin_site.register(ServiceProvider, ServiceProviderAdmin)

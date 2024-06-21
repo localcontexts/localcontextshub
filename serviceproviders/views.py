@@ -52,35 +52,42 @@ def preparation_step(request):
             request, "accounts/preparation.html", {"service_provider": service_provider}
         )
 
+@login_required(login_url="login")
+def create_service_provider(request):
+    form = CreateServiceProviderForm()
+    user_form,subscription_form  = form_initiation(request)
 
-# @login_required(login_url="login")
-# def create_institution(request):
-#     form = CreateInstitutionForm()
-#     user_form,subscription_form  = form_initiation(request)
-   
-#     if request.method == "POST":
-#         form = CreateInstitutionForm(request.POST)
-#         if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
-#             mutable_post_data = request.POST.copy()
-#             subscription_data = {
-#             "first_name": user_form.cleaned_data['first_name'],
-#             "last_name": user_form.cleaned_data['last_name'],
-#             "email": request.user._wrapped.email,
-#             "account_type": "institution_account",
-#             "organization_name": form.cleaned_data['institution_name'],
-#             }
+    if request.method == "POST":
+        form = CreateServiceProviderForm(request.POST)
+        # if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
+        if form.is_valid() and validate_recaptcha(request):
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+            "first_name": user_form.cleaned_data['first_name'],
+            "last_name": user_form.cleaned_data['last_name'],
+            "email": request.user._wrapped.email,
+            "account_type": "service_provider_account",
+            "organization_name": form.cleaned_data['name'],
+            }
             
-#             mutable_post_data.update(subscription_data)
-#             subscription_form = SubscriptionForm(mutable_post_data)
-
-#             if subscription_form.is_valid():
-#                 handle_institution_creation(request, form, subscription_form )
-#                 return redirect('dashboard')
-#             else:
-#                 messages.add_message(
-#                     request,
-#                     messages.ERROR,
-#                     "Something went wrong. Please Try again later.",
-#                 )
-#                 return redirect('dashboard')
-#     return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form, "user_form": user_form,})
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
+            if subscription_form.is_valid():
+                handle_service_provider_creation(request, form, subscription_form )
+                return redirect('dashboard')
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
+    return render(
+        request,
+        "serviceproviders/create-service-provider.html",
+        {
+            "form": form,
+            "subscription_form": subscription_form,
+            "user_form": user_form,
+        },
+    )
