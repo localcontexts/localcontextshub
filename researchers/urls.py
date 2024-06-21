@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('preparation-step/', views.preparation_step, name="prep-researcher"),
     path('connect-researcher/', views.connect_researcher, name="connect-researcher"),
     path('connect-orcid/', views.connect_orcid, name="connect-orcid"),
     path('disconnect-orcid/', views.disconnect_orcid, name="disconnect-orcid"),
@@ -30,4 +31,6 @@ urlpatterns = [
     path('projects/unlink/<str:pk>/<uuid:target_proj_uuid>/<uuid:proj_to_remove_uuid>', views.unlink_project, name="researcher-unlink-project"),
 
     path('connections/<str:pk>/', views.connections, name="researcher-connections"),
+
+    path('api-key/<str:pk>/', views.api_keys, name="researcher-api-key"),
 ]

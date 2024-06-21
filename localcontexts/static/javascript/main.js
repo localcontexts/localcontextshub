@@ -1035,71 +1035,97 @@ function cancelCommunitySelection(elem) {
 
 // Add project people on institution create-project
 // h/t: https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
-var count = 0
-
-function cloneForm(el) {
-    const clonedItemsContainer = document.getElementById('clonedItems')
-
-    // In CREATE PROJECT:
+document.addEventListener('DOMContentLoaded', (event) => {
     if (window.location.href.includes('/projects/create-project')) {
-
-        // Total forms hidden input needs to be incremented
-        let hiddenInputs = document.getElementsByName('form-TOTAL_FORMS')
-        let totalFormInput = hiddenInputs[0]
-
-        // Need to increment that number by 1 each time parent div is duplicated
-        // Get parent div, clone it and change its attributes
-        let parentDiv = document.getElementById('person-form-0')
-        let clone = parentDiv.cloneNode(true)
-        clone.id = 'person-form-'+ count++ // needs to increment by 1 for unique id
-        clone.classList.add('margin-top-8')
-
-        // Name input has name='form-0-name' and id='id_form-0-name'
-        // Email input has name='form-0-email' and id='id_form-0-email'
-
-        let nameInput = clone.getElementsByTagName('input')[0]
-        let emailInput = clone.getElementsByTagName('input')[1]
-        nameInput.value = ''
-        emailInput.value = ''
-        nameInput.id = `id_form-${count}-name`
-        nameInput.name = `form-${count}-name`
-        emailInput.id = `id_form-${count}-email`
-        emailInput.name = `form-${count}-email`
-        totalFormInput.value = parseInt(totalFormInput.value) + 1
-
-        // Append clone to sibling
-        clonedItemsContainer.appendChild(clone)
-
-        // IN EDIT PROJECT:
+        initializeCreateProject();
     } else if (window.location.href.includes('/projects/edit-project')) {
-        // Total forms hidden input needs to be incremented
-        let hiddenInputs = document.getElementsByName('additional_contributors-TOTAL_FORMS')
-        let totalFormInput = hiddenInputs[0]
-
-        // Need to increment that number by 1 each time parent div is duplicated
-        // Get parent div, clone it and change its attributes
-        let parentDiv = document.getElementById('person-form-0')
-        let clone = parentDiv.cloneNode(true)
-        clone.id = 'person-form-'+ count++ // needs to increment by 1 for unique id
-
-        // Name input has name='additional_contributors-0-name' and id='id_additional_contributors-0-name'
-        // Email input has name='additional_contributors-0-email' and id='id_additional_contributors-0-email'
-
-        let nameInput = clone.getElementsByTagName('input')[0]
-        let emailInput = clone.getElementsByTagName('input')[1]
-        nameInput.value = ''
-        emailInput.value = ''
-        nameInput.id = `id_additional_contributors-${count}-name`
-        nameInput.name = `additional_contributors-${count}-name`
-        emailInput.id = `id_additional_contributors-${count}-email`
-        emailInput.name = `additional_contributors-${count}-email`
-        totalFormInput.value = parseInt(totalFormInput.value) + 1
-
-        // Append clone to sibling
-        clonedItemsContainer.appendChild(clone)
+        initializeEditProject();
     }
-}
 
+    function initializeCreateProject() {
+        var count = 0;
+
+        document.querySelectorAll('.clone-form-btn').forEach(button => {
+            button.addEventListener('click', () => cloneCreateProjectForm(count));
+        });
+
+        function cloneCreateProjectForm() {
+            const clonedItemsContainer = document.getElementById('clonedItems');
+
+            // Total forms hidden input needs to be incremented
+            let hiddenInputs = document.getElementsByName('form-TOTAL_FORMS');
+            let totalFormInput = hiddenInputs[0];
+
+            // Need to increment that number by 1 each time parent div is duplicated
+            // Get parent div, clone it and change its attributes
+            let parentDiv = document.getElementById('person-form-0');
+            let clone = parentDiv.cloneNode(true);
+            clone.id = 'person-form-' + ++count; // unique id
+            clone.classList.add('margin-top-8');
+
+            // Name input has name='form-0-name' and id='id_form-0-name'
+            // Email input has name='form-0-email' and id='id_form-0-email'
+
+            let nameInput = clone.getElementsByTagName('input')[0];
+            let emailInput = clone.getElementsByTagName('input')[1];
+            nameInput.value = '';
+            emailInput.value = '';
+            nameInput.id = `id_form-${count}-name`;
+            nameInput.name = `form-${count}-name`;
+            emailInput.id = `id_form-${count}-email`;
+            emailInput.name = `form-${count}-email`;
+            totalFormInput.value = parseInt(totalFormInput.value) + 1;
+
+            // Append clone to sibling
+            clonedItemsContainer.appendChild(clone);
+
+            // Attach event listener to new clone button
+            clone.querySelector('.clone-form-btn').addEventListener('click', () => cloneCreateProjectForm(count));
+        }
+    }
+
+    function initializeEditProject() {
+        var count = parseInt(document.getElementById('id_additional_contributors-INITIAL_FORMS').value);
+
+        document.querySelectorAll('.clone-form-btn').forEach(button => {
+            button.addEventListener('click', () => cloneEditProjectForm(count));
+        });
+
+        function cloneEditProjectForm() {
+            const clonedItemsContainer = document.getElementById('clonedItems');
+
+            // Total forms hidden input needs to be incremented
+            let totalFormInput = document.getElementsByName('additional_contributors-TOTAL_FORMS')[0];
+
+            // Need to increment that number by 1 each time parent div is duplicated
+            let currentIndex = parseInt(totalFormInput.value);
+            let newIndex = currentIndex + 1;
+
+            // Get parent div, clone it and change its attributes
+            let parentDiv = document.getElementById('person-form-0');
+            let clone = parentDiv.cloneNode(true);
+            clone.id = 'person-form-' + newIndex; // unique id
+
+            // Name input has name='additional_contributors-0-name' and id='id_additional_contributors-0-name'
+            // Email input has name='additional_contributors-0-email' and id='id_additional_contributors-0-email'
+            let nameInput = clone.querySelector('input[name$="-name"]');
+            let emailInput = clone.querySelector('input[name$="-email"]');
+            nameInput.value = '';
+            emailInput.value = '';
+            nameInput.id = `id_additional_contributors-${newIndex}-name`;
+            nameInput.name = `additional_contributors-${newIndex}-name`;
+            emailInput.id = `id_additional_contributors-${newIndex}-email`;
+            emailInput.name = `additional_contributors-${newIndex}-email`;
+
+            totalFormInput.value = newIndex;
+            clonedItemsContainer.appendChild(clone);
+            count++;
+
+            // Attach event listener to new clone button
+            clone.querySelector('.clone-form-btn').addEventListener('click', () => cloneEditProjectForm(count));
+        }
+    }
+});
 if (window.location.href.includes('/projects/edit-project') || window.location.href.includes('/projects/create-project') ) {
     // PROJECT LINKS
     const addProjectLinkBtn = document.getElementById('addProjectUrlBtn')
@@ -1212,25 +1238,36 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
         const removeResearcherBtns = document.querySelectorAll('.removeSelectedResearcherBtn')
         const removeInstitutionBtns = document.querySelectorAll('.removeSelectedInstitutionBtn')
         const removeCommunityBtns = document.querySelectorAll('.removeSelectedCommunityBtn')
+        const removeProjectPersonBtns = document.querySelectorAll('.removeSelectedProjectPerson');
 
         function remove(btnGroup, btnIDStrToSplit, elemIDToHide, inputIDStrToRemove) {
             btnGroup.forEach(btn => {
-                let btnID = btn.id.trim()
-                let arr = btnID.split(btnIDStrToSplit)
-                let targetID = arr[1]
+                let btnID = btn.id.trim();
+                let arr = btnID.split(btnIDStrToSplit);
+                let targetID = arr[1];
 
-                btn.onclick = function() { 
-                    // hide chip, remove the hidden input only
-                    let divToHide = document.getElementById(`${elemIDToHide}${targetID}`)
-                    divToHide.classList.replace('show', 'hide')
-                    document.getElementById(`${inputIDStrToRemove}${targetID}`).remove()
-                }
-            })
+                btn.onclick = function() {
+                    let divToHide = document.getElementById(`${elemIDToHide}${targetID}`);
+                    divToHide.classList.replace('show', 'hide');
+                    document.getElementById(`${inputIDStrToRemove}${targetID}`).remove();
+                };
+            });
         }
 
         remove(removeResearcherBtns, 'closeRes-', 'selected-researcher-', 'hiddenRes-')
         remove(removeInstitutionBtns, 'closeInst-', 'selected-institution-', 'hiddenInst-')
         remove(removeCommunityBtns, 'closeComm-', 'selected-community-', 'hiddenComm-')
+        removeProjectPersonBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const parent = btn.closest('li')
+                const deleteField = parent.querySelector('input[name$="-DELETE"]')
+
+                if (deleteField) {
+                    deleteField.checked = true
+                    parent.style.display = 'none'
+                }
+            })
+        })
     }
 
     // SHOW/HIDE NOTICE TRANSLATIONS
@@ -1271,7 +1308,7 @@ function setProjectStatus(elem) {
 var submitProjectBtn = document.getElementById('submitProjectBtn')
 if (submitProjectBtn) { 
     const projectForm = document.querySelector('#createProjectForm')
-    const notices = projectForm.querySelectorAll('input[type=checkbox]')
+    const notices = projectForm.querySelectorAll('input[type=checkbox]:not([id*="DELETE"])')
 
     if (notices) {
         for (let i = 0; i < notices.length; i++) {
@@ -1300,7 +1337,7 @@ function validateProjectDisableSubmitBtn() {
     // h/t: https://vyspiansky.github.io/2019/07/13/javascript-at-least-one-checkbox-must-be-selected/
 
     let form = document.querySelector('#createProjectForm')
-    let checkboxes = form.querySelectorAll('input[type=checkbox]')
+    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"])')
 
     if (checkboxes.length == 0) {
         disableSubmitBtn()
@@ -1417,6 +1454,18 @@ function copyToClipboard(elemID) {
     document.execCommand("Copy");
     textArea.remove();
 }
+function buttonPulse(btnElm, milliseconds= 1000) {
+    /*
+    * Allows simulates the pulsing effect for some time period
+    * */
+    const pulseClasses = ['fa-solid', 'fa-check', 'fa-beat']
+
+    btnElm.classList.add(...pulseClasses)
+    setTimeout(() => {
+        btnElm.classList.remove(...pulseClasses)
+    }, milliseconds)
+}
+
 
 function openMemberModal() {
     const memberModal = document.getElementById('memberModal')
@@ -1988,7 +2037,7 @@ function showProjectLabels(elem) {
 }
 
 
-if (window.location.href.includes('create-institution')) {
+if (window.location.href.includes('create-institution') && !window.location.href.includes('/noROR')) {
     const nameInputField = document.getElementById('organizationInput')
     const suggestionsContainer = document.getElementById('suggestionsContainer')
     const cityTownInputField = document.getElementById('institutionCityTown')
@@ -2122,11 +2171,11 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     })
  }
 
- if (window.location.href.includes('/confirm-institution/') || window.location.href.includes('/confirm-community/')) {
-    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn') || document.getElementById('institutionSupportLetterUploadBtn')
+ if (window.location.href.includes('/confirm-community/')) {
+    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn')
     const customFileUploadBtn = document.getElementById('customFileUploadBtn')
     const form = document.querySelector('#confirmationForm')
-    const contactEmailInput = document.getElementById('communityContactEmailField') || document.getElementById('institutionContactEmailField')
+    const contactEmailInput = document.getElementById('communityContactEmailField')
 
     function showFileName() {
         const selectedFile = realFileUploadBtn.files[0]

@@ -30,6 +30,7 @@ from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
 from helpers.models import *
+from helpers.utils import encrypt_api_key
 from institutions.models import Institution
 from researchers.utils import is_user_researcher
 from notifications.models import UserNotification, ActionNotification
@@ -83,18 +84,16 @@ class MyAdminSite(admin.AdminSite):
         return render(request, 'admin/dashboard.html', context)
     
     # change the title of the page (the name that shows on the tab)
-    def app_index(self, request, app_label, extra_context = None):
-        app_dict = self._build_app_dict(request, app_label)
+    def app_index(self, request, app_label, extra_context=None):
+        app_dict = self.get_app_list(request, app_label)
         if not app_dict:
-            raise Http404('The requested admin page does not exist.')
-        # Sort the models alphabetically within each app.
-        app_dict['models'].sort(key = lambda x: x['name'])
+            raise Http404("The requested admin page does not exist.")
         app_name = apps.get_app_config(app_label).verbose_name
         context = {
             **self.each_context(request),
-            'title': _('%(app)s') % {'app': app_name},
-            'app_list': [app_dict],
-            'app_label': app_label,
+            "title": _("%(app)s") % {"app": app_name},
+            "app_list": app_dict,
+            "app_label": app_label,
             **(extra_context or {}),
         }
 
@@ -1075,7 +1074,7 @@ class AccountAPIKeyAdmin(APIKeyModelAdmin):
     
     def save_model(self, request, obj, form, change):
         if obj.encrypted_key:
-            obj.encrypted_key = urlsafe_base64_encode(force_bytes(obj.encrypted_key))
+            obj.encrypted_key = encrypt_api_key(obj.encrypted_key)
         return super().save_model(request, obj, form, change)
 
 admin_site.register(AccountAPIKey, AccountAPIKeyAdmin)

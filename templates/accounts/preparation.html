@@ -1,52 +1,161 @@
 {% extends 'register-base.html' %} {% block title %} Preparation Step {% endblock %} {% load static %} {% block card %}
 
     <div class="w-90">
-        <h2 class="no-top-margin">Preparation Step</h2>
+        {% if community %}
+            {% if environment == "SANDBOX" %}
+                <h2 class="no-top-margin">Creating a community account on the sandbox Hub</h2>
+                <p class="bold">
+                    Please note the following before creating a community account:
+                </p>
+                <p>
+                    <strong>01 Accounts created in the sandbox Hub can be created without the agreements that are needed on the live Hub.</strong> 
+                    The sandbox Hub can be used for testing Hub workflows. Accounts created in the sandbox Hub have limited functionality to 
+                    protect the integrity of the Labels and Notices.
+                    <br><br>   
 
-        <p class="bold">Things to know before you start creating a new account.</p>
-        <p>
-            {% if community %}
-                <strong>01 As the creator of this new account, you will become the account contact by default.</strong> You will be the main administrator and the point of contact for the account. 
-                If you would like to change the account contact or your role after creating your account, please contact us.
+                    <strong>02 A community account is for a sovereign collective Indigenous or local community group who will use Labels.</strong>
+                    This includes Nations, First Nations, Iwi, Bands, Tribes, Confederations, Land Councils, Native Hawaiian Organizations, and 
+                    Alaskan Native Village Corporations. Community accounts can customize and apply Traditional Knowledge and Biocultural 
+                    Labels on behalf of their community.
+                    <br><br> 
+
+                    <strong>03 As the creator of this new account, you will become the account contact by default. </strong>
+                    You will be the main administrator and the point of contact for the account. If you would like to change the 
+                    account contact or your role after creating your account, please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                    <br><br> 
+                </p>  
+            {% else %}
+                <h2 class="no-top-margin">Creating a Community Account</h2>
+                <p class="bold">
+                    Please note the following before creating a community account:
+                </p>
+                <p>
+                    <strong>01 A community account is for a sovereign collective Indigenous or local community group who will use Labels. </strong> 
+                    This includes a Nation, First Nation, Iwi, Band, Tribe, Confederation, Land Council, Native Hawaiian Organization, and Alaskan Native Village Corporation. 
+                    A community account can customize and apply Traditional Knowledge and Biocultural Labels on behalf of their community.
+                    <br><br>   
+
+                    <strong>02 As the creator of this new account, you will become the account contact by default.  </strong>
+                    You will be the main administrator and the point of contact for the account. If you would like to change the account 
+                    contact or your role after creating your account, please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                    <br><br> 
+
+                    <strong>03 In order to confirm your account, we will ask for the contact information for a community representative or a letter outlining their approval.</strong>
+                    Since this account will represent your community on the Hub, we ask to confirm the account with a community representative who has the responsibility 
+                    for approving community initiatives.
+                    <br><br> 
+
+                    We will ask for the representative’s name and email, or you may upload a signed letter outlining their approval to join the Hub. The contact information or 
+                    letter is needed in order to create a new account. Until the account is confirmed, certain features will not be available. This confirmation must be completed 
+                    within 90 days, or the incomplete account will be removed.
+                </p>  
+            {% endif %} 
+        {% endif %}     
+        
+        {% if institution %}
+            {% if environment == "SANDBOX" %}
+                <h2 class="no-top-margin">Creating an institution account on the sandbox Hub</h2>
+                <p class="bold">
+                    Please note the following before creating an institution account:
+                </p>
+                <p>
+                    <strong>01 Accounts created in the sandbox Hub can be created without the agreements that are needed on the live Hub.</strong> 
+                    The sandbox Hub can be used for testing Hub workflows. Accounts created in the sandbox Hub have limited functionality to protect the integrity of the Labels and Notices.
+                    <br><br>
+
+                    <strong>02 An institution account is for a cultural or research institution, data repository, or other organization that will use Notices. </strong>
+                    An archive, library, museum, historical society, gallery, data repository, university, research lab, or media production company 
+                    might create an institution account. This account will represent your organization on the Hub and potentially in relationships 
+                    with sovereign Indigenous communities. If you are an Indigenous institution and plan to use Labels on behalf of your community, 
+                    a community account may be a better fit. Please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>
+                    if you have any questions.
+                    <br><br>
+
+                    <strong>03 As the creator of this new account, you will become the main administrator by default.</strong>
+                    As the main administrator, you will be the point of contact for the account and responsible for adding other 
+                    users to the account. If you would like to change the account contact or your role after creating your account, 
+                    please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                </p>
+            {% else %}
+                <h2 class="no-top-margin">Creating an Institution Account</h2>
+                <p class="bold">
+                    Please note the following before creating an institution account:
+                </p>
+                <p>
+                    <strong>01 An institution account is for a cultural or research institution, data repository, or other organization that will use Notices.</strong> 
+                    An archive, library, museum, historical society, gallery, data repository, university, research lab, or media production company might create an institution account. 
+                    This account will represent your organization on the Hub and potentially in relationships with sovereign Indigenous communities. If you are an Indigenous institution 
+                    and plan to use Labels on behalf of your community, a community account may be a better fit. Please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a> if you have any questions.
+                    <br><br>
+
+                    <strong>02 As the creator of this new account, you will become the main administrator by default. </strong>
+                    As the main administrator, you will be the point of contact for the account and responsible for adding other users to the account. If you would like to change the 
+                    account contact or your role after creating your account, please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                    <br><br>
+
+                    <strong>03 A subscription program for institution accounts will be launched in October 2024.</strong>
+                    More information about this program is available on our 
+                    <a class="default-a" href="https://localcontexts.org/generational-sustainability-of-local-contexts/" target="_blank" rel="noopener">website blog</a> 
+                    and <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscribers page</a>. 
+                    After you complete the institution account creation process, you will have 
+                    limited account functionality until completion of the subscription agreement. We will reach out to you, and any institutional contacts you indicate, to discuss which 
+                    subscription tier is best for your organization. If we do not hear from you within 90 days, this incomplete account will be deleted.
+                </p>
             {% endif %}
+        {% endif %}
 
-            {% if institution %}
-                <strong>01 As the creator of this new account, you will become the main administrator by default.</strong>
-                You will be the main administrator and the point of contact for the account. If you would like to change the account contact or your role after creating your account, please contact us.
+        {% if researcher %}
+            {% if environment == "SANDBOX" %}
+                <h2 class="no-top-margin">Creating a researcher account on the sandbox Hub</h2>
+                <p class="bold">
+                    Please note the following before creating a researcher account:
+                </p>
+                <p>
+                    <strong>01 Accounts created in the sandbox Hub can be created without the agreements that are needed on the live Hub.</strong> 
+                    The sandbox Hub can be used for testing Hub workflows. Accounts created in the sandbox Hub have limited functionality to 
+                    protect the integrity of the Labels and Notices.
+                    <br><br>
+
+                    <strong>02 A researcher account is for an individual who carries out academic or scientific research independently or 
+                        in an institution and who will use Notices.</strong>
+                        Researcher accounts are only for one user. This account will represent you on the Hub and potentially in relationships with sovereign Indigenous communities.
+                    <br><br>
+                </p>
+            {% else %}
+                <h2 class="no-top-margin">Creating a Researcher Account</h2>
+                <p class="bold">
+                    Please note the following before creating a researcher account:
+                </p>
+                <p>
+                    <strong>01 A researcher account is for an individual who carries out academic or scientific research independently or in an institution and who will use Notices.</strong> 
+                    Researcher accounts are only for one user. This account will represent you on the Hub and potentially in relationships with sovereign Indigenous communities.
+                    <br><br>
+
+                    <strong>02 A subscription program for researcher accounts will be launched in October 2024. </strong>
+                    More information about this program is available on our 
+                    <a class="default-a" href="https://localcontexts.org/generational-sustainability-of-local-contexts/" target="_blank" rel="noopener">website blog</a> 
+                    and <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscribers page</a>. 
+                    After you complete the researcher account creation process, 
+                    we will reach out to you to discuss the subscription program. Beginning in October, you will have limited account functionality until completion of the 
+                    subscription agreement. If we do not hear from you within 90 days, this incomplete account will be deleted.
+                    <br><br>
+                </p>
             {% endif %}
-
-            <br><br>   
-
-            <strong>02 In order to confirm your account, we will ask for the contact information for a {% if community %} community {% else %} institution {% endif %} representative or a letter outlining their approval. </strong>
-            We want to confirm that the account you are creating has the permission from an appropriate representative of your {% if community %} community {% else %} institution {% endif %} to be active on the platform. 
-            Since this account will represent your {% if community %} community {% else %} institution {% endif %} on the Hub, your {% if community %} community {% else %} institutional {% endif %} representative should be someone 
-            who has the responsibility for {% if community %} approving community initiatives. {% else %} authorizing third-party and/or external agreements on behalf of your organization. {% endif %}
-            <br><br> 
-
-            We will ask for the representative’s name and email, or you may upload a signed letter outlining their approval to join the Hub. The contact information or letter are needed in order to create a new account. 
-
-            <br><br>
-            Until the account is confirmed, certain features will not be available. This confirmation must be completed within 90 days, or the account will be suspended. If you have any questions, please contact us. 
-            If you are trying out the Hub, please join our <a class="default-a" href="https://sandbox.localcontextshub.org" target="_blank" rel="noopener">sandbox site <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>. 
-
-        </p>            
+        {% endif %}
     </div>
 
     <div class="flex-this w-90">
-        <div class="w-60">
-            <a 
-                {% if community %}
+        {% if community and not environment == "SANDBOX" %}
+            <div class="w-60">
+                <a 
                     href="{% url 'download-community-support-letter' %}"
-                {% endif %}
-                {% if institution %}
-                    href="{% url 'download-institution-support-letter' %}"
-                {% endif %}
-                class="primary-btn blue-btn"
-            > Download letter template <i class="fa-solid fa-download"></i>
-            </a>
-        </div>
+                    class="primary-btn blue-btn"
+                > Download letter template <i class="fa-solid fa-download"></i>
+                </a>
+            </div>
+        {% endif %}
 
-        <div class="w-90 flex-this flex-end">
+        <div class="w-100 flex-this flex-end">
             <div class="margin-right-8">
                 <a class="primary-btn white-btn" href="{% url 'dashboard' %}">Complete step later</a>
             </div>
@@ -58,6 +167,9 @@
                     {% endif %}
                     {% if institution %}
                         href="{% url 'create-institution' %}"
+                    {% endif %}
+                    {% if researcher %}
+                        href="{% url 'connect-researcher' %}"
                     {% endif %}
                 >
                     Continue <i class="fa fa-arrow-right"></i>
