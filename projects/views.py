@@ -134,6 +134,7 @@ def reset_project_boundary(request, pk):
         if project.boundary:
             # update boundary when it exists
             project.boundary.coordinates = []
+            project.boundary.save()
         else:
             # create boundary when it does not exist
             project.boundary = Boundary(coordinates=[])
