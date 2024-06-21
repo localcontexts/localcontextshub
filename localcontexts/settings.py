@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'api',
     'helpers',
     'notifications',
-    'serviceproviders'
+    'serviceproviders',
 
     'django.contrib.admin',
     'django.contrib.auth',
