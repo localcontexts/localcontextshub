@@ -21,6 +21,7 @@ from xhtml2pdf import pisa
 from communities.models import Community, JoinRequest, InviteMember
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from .exceptions import UnsubscribedAccountException
 from .models import Notice
 from notifications.models import *
@@ -643,13 +644,13 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
 
         
 def validate_is_subscribed(
-        account: Union[Researcher, Institution],
+        account: Union[Researcher, Institution, ServiceProvider],
         bypass_validation: bool = False
 ):
     if bypass_validation:
         return
 
-    if account.is_subscribed:
+    if account.is_subscribed or account.is_certified:
         return
     message = 'Account Is Not Subscribed'
     raise UnsubscribedAccountException(message)

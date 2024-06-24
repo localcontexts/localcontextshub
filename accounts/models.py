@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 
 class Profile(models.Model):
@@ -69,6 +70,9 @@ class UserAffiliation(models.Model):
     institutions = models.ManyToManyField(
         Institution, blank=True, related_name="user_institutions"
     )
+    service_providers = models.ManyToManyField(
+        ServiceProvider, blank=True, related_name="user_service_providers"
+    )
 
     @classmethod
     def create(cls, user):
@@ -126,6 +130,14 @@ class Subscription(models.Model):
         related_name="subscribed_researcher",
         blank=True,
     )
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="subscribed_service_provider",
+        blank=True,
+    )
     users_count = models.IntegerField(
         help_text="For unlimited counts the value shoud be -1"
     )
@@ -144,10 +156,10 @@ class Subscription(models.Model):
 
     def clean(self):
         count = sum([bool(self.institution_id),
-                    bool(self.community_id), bool(self.researcher_id)])
+                    bool(self.community_id), bool(self.researcher_id), bool(self.service_provider_id)])
         if count != 1:
             raise ValidationError("Exactly one of institution, "
-                                  "community, researcher should be present.")
+                                  "community, researcher, service provider should be present.")
 
         super().clean()
 

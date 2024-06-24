@@ -1,0 +1,71 @@
+{% load static %}
+<div class="dashcard">
+    <div class="flex-this">
+        <div class="dashcard-img-container">
+            <img loading="lazy" 
+                class="profile-img" 
+                src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
+                alt="{{ service_provider.name }} image"
+            >
+        </div>
+        <div class="flex-this column dashcard-text-container">
+            <div class="subscribed-icon-wrapper">
+                <h3 class="dashcard-h3 darkteal-text">{{ service_provider }}</h3>
+                {% if service_provider and service_provider.is_certified %}
+                    <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Certified"></i>
+                {% endif %}
+            </div>
+            <div>
+                <p class="dashcard-subheader">
+                    Service Provider
+                </p>
+            </div>
+            <div><p class="dashcard-description description-sm">
+                {% if service_provider.description %}{{ service_provider.description }} {% else %} No description provided. {% endif %}
+            </p></div>
+        </div>
+
+        <div class="dashcard-btn-container">
+
+            <div class="flex-this gap-half">
+                <!-- {% if '/registry/' in request.path %}
+                    <div>
+                        <div class="margin-bottom-16">
+                            <a 
+                                class="primary-btn action-btn"
+                                href="{% url 'public-institution' institution.id %}"                    
+                            >View public page</a>                        
+                        </div>
+                        {% if institution.otc_institution_url.all %}
+                            <div class="flex-this flex-end">
+                                <img class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %} -->
+                <div>
+                    {% if '/dashboard/' in request.path %}
+                        <a 
+                            class="primary-btn action-btn"
+                            href="{% url 'service-provider-notices' service_provider.id %}"
+                        >View account</a>
+                    {% endif %}
+                </div>
+                {% if '/dashboard/' in request.path %}
+                    <div class="margin-left-8 flex-this gap-half">
+                        <!-- Notification -->
+                        {% include 'snippets/notifications.html' with scope=service_provider %}
+                        <!-- Settings -->
+                        {% if request.user == service_provider.account_creator %}
+                            <div>
+                                <a href="{% url 'update-service-provider' service_provider.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</div>

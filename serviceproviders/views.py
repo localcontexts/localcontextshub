@@ -59,8 +59,7 @@ def create_service_provider(request):
 
     if request.method == "POST":
         form = CreateServiceProviderForm(request.POST)
-        # if noror_form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
-        if form.is_valid() and validate_recaptcha(request):
+        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
             "first_name": user_form.cleaned_data['first_name'],

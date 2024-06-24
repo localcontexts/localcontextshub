@@ -23,6 +23,9 @@ class ServiceProvider(models.Model):
     # Managers
     objects = models.Manager()
 
+    def __str__(self):
+        return str(self.name)
+
     class Meta:
         indexes = [models.Index(fields=['id', 'account_creator', 'image'])]
         verbose_name = 'Service Provider'

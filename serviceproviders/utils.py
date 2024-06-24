@@ -43,8 +43,8 @@ def handle_service_provider_creation(request, form, subscription_form ):
             response = handle_confirmation_and_subscription(request, subscription_form, data)
             if not response:
                 raise SalesforceAPIError("Salesforce account or lead creation failed.")
-            affiliation = UserAffiliation.objects.prefetch_related("service_provider").get(user=request.user)
-            affiliation.service_provider.add(data)
+            affiliation = UserAffiliation.objects.prefetch_related("service_providers").get(user=request.user)
+            affiliation.service_providers.add(data)
             affiliation.save()
 
             HubActivity.objects.create(
