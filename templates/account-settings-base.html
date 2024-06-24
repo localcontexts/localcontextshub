@@ -116,7 +116,7 @@
                     </a>
                 {% endif %}
                 
-                {% if institution %}
+                {% if institution and envi != "SANDBOX" %}
                 <a class="side-nav-a" href="{% if institution %}{% url 'subscription' institution.id 'institution' %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
                         <div class="side-nav-item {% if 'subscription' in request.path %} selected {% else %} grey-text {% endif %}">
                             <div class="w-20 margin-right-8"><i class="fa fa-calendar-check-o fa-3x" aria-hidden="true"></i></div>

@@ -46,7 +46,7 @@ from institutions.utils import get_institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha, check_member_role)
-
+from institutions.decorators import member_required
 from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from helpers.models import HubActivity
 from projects.models import Project
@@ -848,8 +848,11 @@ def subscription_inquiry(request):
 
 
 @login_required(login_url="login")
-# @member_required(roles=["admin"])
+@member_required(roles=["admin"])
 def subscription(request, pk, account_type, related=None):
+    if dev_prod_or_local(request.get_host()) == "SANDBOX":
+        return redirect("dashboard")
+
     if account_type == 'institution':
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)

@@ -21,20 +21,25 @@
     <button type="submit" class="primary-btn action-btn" name="generatebtn">Fill out Subscription Form</button>
   </div> 
   {% else %}
-    <div class="flex-this subscription-details">
-      <div><h6>Start Date</h6> <p><small>{{ start_date }}</small></p></div>
+    <div class="flex-this w-50 subscription-details">
+      <div><h6>Entity Type</h6> <p><small>Large Organization <span class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+        <span class="tooltiptext">
+            Your institution is Large Organization.
+        </span>
+      </span> </small></p></div>
+      <div class="vl pad-left-2"><h6>Start Date</h6> <p><small>{{ start_date }}</small></p></div>
       <div class="vl pad-left-2"><h6 class="margin-left-8">End Date</h6> <p class="margin-left-8"><small>{{ end_date }}</small></p></div>
     </div>
     <div class="flex-this space-between">
       <div><h4 class="no-bottom-margin">Subscription Activity</h4></div>
     </div>
     <p class="no-top-margin"><small>See an overview of the activities happening within your subscription</small></p>
-    <div class="flex-this subscription-activity margin-5">
-      <div><h6>Users Added</h6> <p><small>{{ subscription.users_count }}</small></p></div>
-      <div class="vl"><h6>Projects Created</h6> <p><small>{{ subscription.project_count }}</small></p></div>
-      <div class="vl"><h6>Notifications Sent</h6> <p><small>{{ subscription.notification_count }}</small></p></div>
-      <div class="vl"><h6>Notices Sent</h6> <p><small>{{ end_date }}</small></p></div>
-      <div class="vl"><h6>API Keys</h6> <p><small>{{ subscription.api_key_count }}</small></p></div>
+    <div class="flex-this subscription-activity subscription-details w-70 margin-5">
+      <div><h6>Users Added</h6> <p><small>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</small></p></div>
+      <div class="vl"><h6>Projects Created</h6> <p><small>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</small></p></div>
+      <div class="vl"><h6>Notifications Sent</h6> <p><small>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</small></p></div>
+      <div class="vl"><h6>Notices and Labels</h6> <p><small>Unlimited</small></p></div>
+      <div class="vl"><h6>API Keys</h6> <p><small>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</small></p></div>
     </div>
     <div class="flex-this space-between">
       <div><h4 class="no-bottom-margin">Edit Subscription</h4></div>
