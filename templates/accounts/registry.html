@@ -68,6 +68,8 @@
             {% include 'partials/infocards/_institution-card.html' with institution=account %}
         {% elif account in researchers %}
             {% include 'partials/infocards/_researcher-card.html' with researcher=account %}
+        {% elif account in service_providers %}
+            {% include 'partials/infocards/_service-provider-card.html' with service_provider=account %}
         {% endif %}
     {% endfor %}
 

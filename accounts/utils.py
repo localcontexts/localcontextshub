@@ -8,6 +8,7 @@ from django.contrib import messages
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from unidecode import unidecode
 
 
@@ -45,7 +46,7 @@ def manage_mailing_list(request, first_name, emailb64):
 
 
 def return_registry_accounts(
-    community_accounts, researcher_accounts, institution_accounts
+    community_accounts, researcher_accounts, institution_accounts, service_provider_accounts
 ):
     combined_accounts = []
 
@@ -54,6 +55,7 @@ def return_registry_accounts(
 
     combined_accounts.extend(researcher_accounts)
     combined_accounts.extend(institution_accounts)
+    combined_accounts.extend(service_provider_accounts)
 
     cards = sorted(
         combined_accounts,
@@ -64,13 +66,16 @@ def return_registry_accounts(
                 unidecode(obj.institution_name.lower().strip())
                 if isinstance(obj, Institution)
                 else (
-                    unidecode(obj.user.first_name.lower().strip())
-                    if isinstance(obj, Researcher)
-                    and obj.user.first_name.strip()
+                    unidecode(obj.name.lower().strip())
+                    if isinstance(obj, ServiceProvider)
                     else (
-                        unidecode(obj.user.username.lower().strip())
-                        if isinstance(obj, Researcher)
-                        else ""
+                        unidecode(obj.user.first_name.lower().strip())
+                        if isinstance(obj, Researcher) and obj.user.first_name.strip()
+                        else (
+                            unidecode(obj.user.username.lower().strip())
+                            if isinstance(obj, Researcher)
+                            else ""
+                        )
                     )
                 )
             )

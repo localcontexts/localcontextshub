@@ -670,8 +670,8 @@ def registry(request, filtertype=None):
         sp = (
             ServiceProvider.objects.select_related("account_creator")
             .all()
-            .order_by("name")
             .exclude(is_certified=False)
+            .order_by("name")
         )
 
         if ("q" in request.GET) and (filtertype is not None):

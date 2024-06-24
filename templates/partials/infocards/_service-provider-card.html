@@ -28,26 +28,26 @@
         <div class="dashcard-btn-container">
 
             <div class="flex-this gap-half">
-                <!-- {% if '/registry/' in request.path %}
+                {% if '/registry/' in request.path %}
                     <div>
                         <div class="margin-bottom-16">
                             <a 
                                 class="primary-btn action-btn"
-                                href="{% url 'public-institution' institution.id %}"                    
+                                href=""                    
                             >View public page</a>                        
                         </div>
-                        {% if institution.otc_institution_url.all %}
+                        {% if service_provider.otc_service_provider_url.all %}
                             <div class="flex-this flex-end">
                                 <img class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
                             </div>
                         {% endif %}
                     </div>
-                {% endif %} -->
+                {% endif %}
                 <div>
                     {% if '/dashboard/' in request.path %}
                         <a 
                             class="primary-btn action-btn"
-                            href="{% url 'service-provider-notices' service_provider.id %}"
+                            href=""
                         >View account</a>
                     {% endif %}
                 </div>
@@ -58,7 +58,7 @@
                         <!-- Settings -->
                         {% if request.user == service_provider.account_creator %}
                             <div>
-                                <a href="{% url 'update-service-provider' service_provider.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                                <a href="" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
                             </div>
                         {% endif %}
                     </div>
