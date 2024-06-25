@@ -77,9 +77,7 @@
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
-                            Login
-                        </a> 
-                        to contact
+                            Login</a> to contact
                     </small>
                 </div>
             {% endif %}                
@@ -235,9 +233,7 @@
                 <div class="loc grey-text bold margin-bottom-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
-                            Login
-                        </a> 
-                        to contact
+                            Login</a> to contact
                     </small>
                 </div>
             {% endif %}                
@@ -284,6 +280,114 @@
                 </div>
             </div>
 
+            {% if otc_notices %}
+                <div class="flex-this column">
+                    <h3>Open To Collaboration</h3>
+                    <div class="flex-this">
+                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
+                        <ul>
+                            {% for notice in otc_notices %}
+                                <li>
+                                    <a href="{{ notice.url }}" class="default-a">
+                                        {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>                          
+                    </div>          
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if service_provider %}
+        <div class="flex-this space-between">
+            <div class="loc grey-text bold  margin-bottom-16">
+                <small>
+                    <a href="{% url 'registry' %}" class="default-a">
+                        Local Contexts Registry
+                    </a> 
+                    >> {{ service_provider.name }}
+                    >> Public                    
+                </small>
+            </div>
+            {% if request.user.is_authenticated %}
+                {% if not service_provider.account_creator == request.user %}
+                    <div class="dashcard-btn-container">
+                        <div class="margin-left-16">
+                            {% if env == "SANDBOX" %}
+                                <div class="btn-with-helptext">
+                                    <a class="primary-btn disabled-btn">Contact Us</a>
+                                    <span class="btn-help-text">
+                                        Contacting other accounts is not available in the Sandbox.
+                                    </span>
+                                </div>
+                            {% else %}
+                                <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if not env == "SANDBOX" %}
+                        <div id="contactModal" class="modal hide">
+                            <div class="modal-defaults contact-modal flex-this column w-100">
+                                <div class="w-100">
+                                    <div class="flex-this space-between">
+                                        <div class="w-70">
+                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                            <p>This message will be sent to the administrator of {{ service_provider.name }}.</p>  
+                                        </div>
+                                        <div>
+                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                        </div>
+                                    </div>
+
+                                    <form id="sendMsgForm" method="POST" action="">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <input type="hidden" name="contact_btn">
+                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                                    </form>    
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endif %}
+
+            {% else %}
+                <div class="loc grey-text bold margin-bottom-16">
+                    <small>
+                        <a href="{% url 'login' %}" class="default-a">
+                            Login</a> to contact
+                    </small>
+                </div>
+            {% endif %}                
+        </div>
+
+        <div class="flex-this">
+            <div class="dashcard-img-container">
+                <img loading="lazy" 
+                    class="profile-img" 
+                    src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
+                    alt="{{ service_provider.name }} image"
+                >
+            </div>
+            <div class="flex-this column dashcard-text-container">
+                <div class="subscribed-icon-wrapper">
+                    <h3 class="dashcard-h3">{{ service_provider }}</h3>
+                    {% if service_provider and service_provider.is_certified %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Certified"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <p class="dashcard-subheader">Service Provider</p>
+                </div>
+                <div><p class="dashcard-description description-sm">{% if service_provider.description %}{{ service_provider.description }}{% else %} No description provided. {% endif %}</p></div>
+                {% include 'partials/_alerts.html' %}
+            </div>
+        </div>
+        <div class="flex-this">
             {% if otc_notices %}
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
@@ -431,24 +535,30 @@
     {% endif %}
 
     <div>
-        <h3>Public Projects </h3>
+        {% if not service_provider%}
+            <h3>Public Projects </h3>
 
-        {% if projects %}
-            <table class="projects-table">
-                <tr>
-                    <th><i class="fa-regular fa-line-columns"></i> Title</th>
-                    <th><i class="fa-light fa-user"></i> Creator</th>
-                    <th><i class="fa-light fa-calendar"></i> Last updated</th>
-                    <th>Visibility</th>
-                </tr>
+            {% if projects %}
+                <table class="projects-table">
+                    <tr>
+                        <th><i class="fa-regular fa-line-columns"></i> Title</th>
+                        <th><i class="fa-light fa-user"></i> Creator</th>
+                        <th><i class="fa-light fa-calendar"></i> Last updated</th>
+                        <th>Visibility</th>
+                    </tr>
 
-                {% for project in projects %}
-                    {% include 'projects/project-overview.html' %}
-                {% endfor %}
-            </table>
+                    {% for project in projects %}
+                        {% include 'projects/project-overview.html' %}
+                    {% endfor %}
+                </table>
+            {% else %}
+                No public Projects available
+            {% endif %}
+
         {% else %}
-            No public Projects available
-        {% endif %}                       
+            <h3>Connections </h3>
+
+        {% endif %}
     </div>
 
 </div> <!-- dashcard-->

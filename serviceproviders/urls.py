@@ -7,7 +7,7 @@ urlpatterns = [
     # path('confirm-subscription-service-provider/<str:service_provider_id>/', views.confirm_subscription_service_provider, name="confirm-subscription-service-provider"),
 
     # Public view
-    # path('view/<str:pk>/', views.public_service_provider_view, name="public-service-provider"),
+    path('view/<str:pk>/', views.public_service_provider_view, name="public-service-provider"),
     # path('embed/<str:pk>/', views.embed_otc_notice, name="embed-notice-service-provider"),
 
     # path('update/<str:pk>/', views.update_service_provider, name="update-service-provider"),

@@ -59,7 +59,8 @@ def create_service_provider(request):
 
     if request.method == "POST":
         form = CreateServiceProviderForm(request.POST)
-        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
+        if (form.is_valid() and user_form.is_valid() and 
+        validate_recaptcha(request)):
             mutable_post_data = request.POST.copy()
             subscription_data = {
             "first_name": user_form.cleaned_data['first_name'],
@@ -72,7 +73,7 @@ def create_service_provider(request):
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
             if subscription_form.is_valid():
-                handle_service_provider_creation(request, form, subscription_form )
+                handle_service_provider_creation(request, form, subscription_form)
                 return redirect('dashboard')
             else:
                 messages.add_message(
@@ -90,3 +91,74 @@ def create_service_provider(request):
             "user_form": user_form,
         },
     )
+
+
+def public_service_provider_view(request, pk):
+    try:
+        environment = dev_prod_or_local(request.get_host())
+        service_provider = ServiceProvider.objects.get(id=pk)
+
+        # Do notices exist
+        otc_notices = None
+        # otc_notices = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider)
+
+        if request.user.is_authenticated:
+            user_service_providers = (
+                UserAffiliation.objects.prefetch_related("service_providers")
+                .get(user=request.user)
+                .service_providers.all()
+            )
+            form = ContactOrganizationForm(request.POST or None)
+
+            if request.method == "POST":
+                if "contact_btn" in request.POST:
+                    # contact service provider
+                    if form.is_valid():
+                        from_name = form.cleaned_data["name"]
+                        from_email = form.cleaned_data["email"]
+                        message = form.cleaned_data["message"]
+                        to_email = service_provider.account_creator.email
+
+                        send_contact_email(
+                            request,
+                            to_email,
+                            from_name,
+                            from_email,
+                            message,
+                            service_provider,
+                        )
+                        messages.add_message(request, messages.SUCCESS, "Message sent!")
+                        return redirect("public-service-provider", service_provider.id)
+                    else:
+                        if not form.data["message"]:
+                            messages.add_message(
+                                request,
+                                messages.ERROR,
+                                "Unable to send an empty message.",
+                            )
+                            return redirect("public-service-provider", service_provider.id)
+
+                else:
+                    messages.add_message(
+                        request, messages.ERROR, "Something went wrong."
+                    )
+                    return redirect("public-service-provider", service_provider.id)
+
+        else:
+            context = {
+                "service_provider": service_provider,
+                "otc_notices": otc_notices,
+                "env": environment,
+            }
+            return render(request, "public.html", context)
+
+        context = {
+            "service_provider": service_provider,
+            "form": form,
+            "user_service_providers": user_service_providers,
+            "otc_notices": otc_notices,
+            "env": environment,
+        }
+        return render(request, "public.html", context)
+    except:
+        raise Http404()

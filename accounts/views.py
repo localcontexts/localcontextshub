@@ -664,13 +664,11 @@ def registry(request, filtertype=None):
         r = (
             Researcher.objects.select_related("user")
             .all()
-            .exclude(is_subscribed=False)
             .order_by("user__username")
         )
         sp = (
             ServiceProvider.objects.select_related("account_creator")
             .all()
-            .exclude(is_certified=False)
             .order_by("name")
         )
 
@@ -691,7 +689,7 @@ def registry(request, filtertype=None):
                 Q(user__username__unaccent__icontains=q)
                 | Q(user__first_name__unaccent__icontains=q)
                 | Q(user__last_name__unaccent__icontains=q)
-            ).exclude(is_subscribed=False)
+            )
 
             cards = return_registry_accounts(c, r, i, sp)
 

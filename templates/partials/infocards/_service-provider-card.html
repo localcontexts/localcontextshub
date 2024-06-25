@@ -33,7 +33,7 @@
                         <div class="margin-bottom-16">
                             <a 
                                 class="primary-btn action-btn"
-                                href=""                    
+                                href="{% url 'public-service-provider' service_provider.id %}"                    
                             >View public page</a>                        
                         </div>
                         {% if service_provider.otc_service_provider_url.all %}
