@@ -41,31 +41,6 @@
                         </div>
                     </div>
 
-                    {% if not env == "SANDBOX" %}
-                        <div id="contactModal" class="modal hide">
-                            <div class="modal-defaults contact-modal flex-this column w-100">
-                                <div class="w-100">
-                                    <div class="flex-this space-between">
-                                        <div class="w-80">
-                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                            <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
-                                        </div>
-                                        <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                        </div>
-                                    </div>
-
-                                    <form id="sendMsgForm" method="POST" action="">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <input type="hidden" name="contact_btn">
-                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                    </form>    
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
                 {% else %}
                     <div class="loc bold margin-bottom-16">
                         <small>
@@ -197,31 +172,6 @@
                         </div>
                     </div>
 
-                    {% if not env == "SANDBOX" %}
-                        <div id="contactModal" class="modal hide">
-                            <div class="modal-defaults contact-modal flex-this column w-100">
-                                <div class="w-100">
-                                    <div class="flex-this space-between">
-                                        <div class="w-70">
-                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                            <p>This message will be sent to the administrator of {{ institution.institution_name }}.</p>  
-                                        </div>
-                                        <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                        </div>
-                                    </div>
-
-                                    <form id="sendMsgForm" method="POST" action="">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <input type="hidden" name="contact_btn">
-                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                    </form>    
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
                 {% else %}
                     <div class="loc bold margin-bottom-16">
                         <small>
@@ -327,32 +277,6 @@
                             {% endif %}
                         </div>
                     </div>
-
-                    {% if not env == "SANDBOX" %}
-                        <div id="contactModal" class="modal hide">
-                            <div class="modal-defaults contact-modal flex-this column w-100">
-                                <div class="w-100">
-                                    <div class="flex-this space-between">
-                                        <div class="w-70">
-                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                            <p>This message will be sent to the administrator of {{ service_provider.name }}.</p>  
-                                        </div>
-                                        <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                        </div>
-                                    </div>
-
-                                    <form id="sendMsgForm" method="POST" action="">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <input type="hidden" name="contact_btn">
-                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                    </form>    
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
                 {% endif %}
 
             {% else %}
@@ -441,32 +365,6 @@
                         
                     {% endif %}
                 {% endif %}
-                
-                {% if not env == "SANDBOX" %}
-                    <div id="contactModal" class="modal hide">
-                        <div class="modal-defaults contact-modal flex-this column w-100">
-                            <div class="w-100">
-                                <div class="flex-this space-between">
-                                    <div>
-                                        <h2 class="primary-black-text no-top-margin">Contact form</h2>  
-                                        <p>This message will be sent to {% firstof researcher.user.get_full_name researcher.user.username %}.</p>  
-                                    </div>
-                                    <div>
-                                        <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                    </div>
-                                </div>
-
-                                <form id="sendMsgForm" method="POST" action="">
-                                    {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <input type="hidden" name="contact_btn">
-                                    <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                </form>    
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-
             {% endif %}
 
         </div>
@@ -629,6 +527,32 @@
                 </div>
             </div>
         </div>
+
+        {% if not env == "SANDBOX" %}
+            <div id="contactModal" class="modal hide">
+                <div class="modal-defaults contact-modal flex-this column w-100">
+                    <div class="w-100">
+                        <div class="flex-this space-between">
+                            <div class="w-70">
+                                <h2 class="primary-black-text no-top-margin no-bottom-margin">Contact form</h2>
+                            </div>
+                            <div>
+                                <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                            </div>
+                        </div>
+
+                        <form id="sendMsgForm" method="POST" action="">
+                            <p>This message will be sent to the administrator of 
+                                {% if institution %}{{ institution.institution_name }}{% elif community %}{{ community.community_name }}{% elif service_provider %}{{ service_provider.name }}{% endif %}.</p>
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="hidden" name="contact_btn">
+                            <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                        </form>    
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 
 {% endblock %}

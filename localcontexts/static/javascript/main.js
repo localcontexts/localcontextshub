@@ -1615,7 +1615,7 @@ if (window.location.href.includes('api-key')) {
 }
 
 // REGISTRY FILTERING AND JOIN REQUESTS / CONTACT MODAL
-if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') ) {
+if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') || window.location.href.includes('service-providers/view/') ) {
 
     // Join request modal and form
     const openRequestToJoinModalBtn = document.getElementById('openRequestToJoinModalBtn') 

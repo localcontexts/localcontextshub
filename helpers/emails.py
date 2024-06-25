@@ -1,6 +1,7 @@
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from django.contrib.auth.models import User
 from helpers.models import LabelNote
 from notifications.models import ActionNotification
@@ -359,6 +360,8 @@ def send_contact_email(request, to_email, from_name, from_email, message, accoun
             account_name = account.community_name
         if isinstance(account, Researcher):
             account_name = 'your researcher account'
+        if isinstance(account, ServiceProvider):
+            account_name = account.name
 
         data = { "from_name": from_name, "message": message, "account_name": account_name }
 
