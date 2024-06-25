@@ -18,4 +18,10 @@
         {% block researcher_content %}{% endblock %}
     {% endif %}
 
+    {% if service_provider %}
+        {% include 'partials/infocards/_service-provider-dashcard.html' %}
+        {% include 'partials/_subnav.html' %}
+        {% block service_provider_content %}{% endblock %}
+    {% endif %}
+
 {% endblock %}

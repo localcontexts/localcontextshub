@@ -37,6 +37,15 @@
                                     href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
                                 {% endif %}
                             {% endif %}
+                            {% if service_provider %}
+                                {% if not service_provider.is_certified %}
+                                    class="block a-disabled primary-btn blue-btn"
+                                    title="The certification process of your account is not completed yet."
+                                    {% else %}
+                                    class="primary-btn blue-btn"
+                                    href=""
+                                {% endif %}
+                            {% endif %}
                             >                            
                             Download Notice <i class="fa-regular fa-arrow-down-to-line"></i>
                         </a>
@@ -46,8 +55,9 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% endif %}{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to share this Notice.{% endif %}{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
+                        <a class="primary-btn disabled-btn" title="
+                        {% if institution and not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% elif service_provider and not service_provider.is_certified %}Your account needs to be certified in order to download this Notice.{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution and not institution.is_subscribed %}Your institution account needs to be subscribed in order to share this Notice.{% elif service_provider and not service_provider.is_certified %}Your account needs to be certified in order to share this Notice.{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
                 </div>
             </div>
@@ -93,7 +103,10 @@
                                             {% if member_role == 'admin' or member_role == 'editor' %}
                                                 <a class="default-a block" href="{% url 'institution-delete-otc' institution.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
                                             {% endif %}
-                                        {% endif %}                                   
+                                        {% endif %}
+                                        {% if service_provider %}
+                                            <a class="default-a block" href=""> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                        {% endif %}
                                     </div>
                                 </li>
                             {% endfor %}
@@ -108,155 +121,157 @@
     </div>
 </div>
 
-<div class="content-card content-card-space white-bg">
-    <div class="flex-this space-between">
-        <div>
-            <h2 class="no-top-margin">Disclosure Notices</h2>
-        </div>
-        <div>
-            {% if researcher %}
-                <div class="flex-this align-center">
-                    <div class="btn-with-helptext">
-                        <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
-                            href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
-                            Create a Project <i class="fa fa-arrow-right"></i>
-                        </a>
-                        {% if not researcher.is_subscribed or subscription.project_count == 0 %}
-                            <span class="btn-help-text">
-                                {% if researcher.is_subscribed == False %}
-                                    The subscription process of your account is not completed yet. Please wait for the completion of the subscription process.
-                                {% else %}
-                                    Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
-                                {% endif %}
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if institution %}
-                <div class="flex-this align-center">
-                    {% if member_role == 'admin' or member_role == 'editor' %}
+{% if not service_provider %}
+    <div class="content-card content-card-space white-bg">
+        <div class="flex-this space-between">
+            <div>
+                <h2 class="no-top-margin">Disclosure Notices</h2>
+            </div>
+            <div>
+                {% if researcher %}
+                    <div class="flex-this align-center">
                         <div class="btn-with-helptext">
-                            <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
-                                href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
+                            <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                                href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
                                 Create a Project <i class="fa fa-arrow-right"></i>
                             </a>
-                            {% if not institution.is_subscribed or subscription.project_count == 0 %}
+                            {% if not researcher.is_subscribed or subscription.project_count == 0 %}
                                 <span class="btn-help-text">
-                                    {% if institution.is_subscribed == False %}
-                                        The subscription process of your institution is not completed yet. Please wait for the completion of the subscription process.
+                                    {% if researcher.is_subscribed == False %}
+                                        The subscription process of your account is not completed yet. Please wait for the completion of the subscription process.
                                     {% else %}
-                                        Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                        Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
                                     {% endif %}
                                 </span>
                             {% endif %}
                         </div>
-                    {% endif %}
-                </div>
-            {% endif %}      
-        </div>        
-    </div>
-
-    <div class="w-80">
-        <p>
-            <span class="bold">Why use these Notices?</span><br>
-            The Disclosure Notices are used to identify Indigenous collections and data and to recognize there could be accompanying cultural rights, protocols, and responsibilities. The Notices allow institutions and researchers to engage, acknowledge, and make visible Indigenous interests in collections, information, and data.
-        </p>
-        <p>
-            <span class="bold">How can I use these Notices?</span><br>
-            To apply the Disclosure Notices, you will create a Project to describe the context. After creating a Project, you can use the Hub API or download from the Project page to use the Notice(s). For detailed information about the Disclosure Notices and how to apply them, 
-            <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-        </p>        
-    </div>
-
-    <div class="flex-this justify-center">
-        <div id="disclosureTK" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
-            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="119px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-            <div><p>Traditional Knowledge</p></div>
-        </div>
-        <div id="disclosureBC" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
-            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="119px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
-            <div><p>Biocultural</p></div>
-        </div>
-        
-        <div id="disclosureAI" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
-            <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
-            <div><p>Attribution Incomplete</p></div>
-        </div>
-    </div>
-
-    <div class="w-80 auto-margin">
-
-        <div id="openDiv-disclosureTK" class="disclosure-notice__expanded-container hide">
-            <div class="flex-this">
-                <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-                <div class="flex-this column margin-left-16">
-                    <div class="w-90">
-                        <h2 class="no-top-margin">Traditional Knowledge Notice</h2>
-                        <p class="no-top-margin">
-                            <span class="bold">Why Use this Notice?</span><br>
-                            This Notice should be used to recognize that place-based knowledge carries accompanying cultural rights and responsibilities and that appropriate permissions may need to be sought for future use of this material.
-                        </p>        
                     </div>
-                    <div class="w-90">
-                        <p>
-                            <span class="bold">Notice Text</span><br>                        
-                            The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated. For more information about the TK Notice click 
-                            <a class="default-a" href="https://localcontexts.org/notice/tk-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-                        </p>         
+                {% endif %}
+
+                {% if institution %}
+                    <div class="flex-this align-center">
+                        {% if member_role == 'admin' or member_role == 'editor' %}
+                            <div class="btn-with-helptext">
+                                <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                                    href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
+                                    Create a Project <i class="fa fa-arrow-right"></i>
+                                </a>
+                                {% if not institution.is_subscribed or subscription.project_count == 0 %}
+                                    <span class="btn-help-text">
+                                        {% if institution.is_subscribed == False %}
+                                            The subscription process of your institution is not completed yet. Please wait for the completion of the subscription process.
+                                        {% else %}
+                                            Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </div>
-                </div>
-            </div>            
+                {% endif %}      
+            </div>        
         </div>
 
-        <div id="openDiv-disclosureBC" class="disclosure-notice__expanded-container hide">
-            <div class="flex-this">
-                <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
-                <div class="flex-this column margin-left-16">
-                    <div class="w-90">
-                        <h2 class="no-top-margin">Biocultural Notice</h2>
-                        <p class="no-top-margin">
-                            <span class="bold">Why Use this Notice?</span><br>
-                            The BC Notice should be used to recognize the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity and genetic resources associated with their traditional lands, waters, and territories. It acknowledges the importance of cultural protocols and recognizes that appropriate permissions may need to be sought for future use of this material or data.
-                        </p>        
-                    </div>
-                    <div class="w-90">
-                        <p>
-                            <span class="bold">Notice Text</span><br>
-                            The BC Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material or data. The BC Notice recognizes the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity or genetic resources associated with traditional lands, waters, and territories. The BC Notice may indicate that BC (Biocultural) Labels are in development and their implementation is being negotiated. For more information about the BC Notice click 
-                            <a class="default-a" href="https://localcontexts.org/notice/bc-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-                        </p>         
-                    </div>
-                </div>
-            </div>            
+        <div class="w-80">
+            <p>
+                <span class="bold">Why use these Notices?</span><br>
+                The Disclosure Notices are used to identify Indigenous collections and data and to recognize there could be accompanying cultural rights, protocols, and responsibilities. The Notices allow institutions and researchers to engage, acknowledge, and make visible Indigenous interests in collections, information, and data.
+            </p>
+            <p>
+                <span class="bold">How can I use these Notices?</span><br>
+                To apply the Disclosure Notices, you will create a Project to describe the context. After creating a Project, you can use the Hub API or download from the Project page to use the Notice(s). For detailed information about the Disclosure Notices and how to apply them, 
+                <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+            </p>        
         </div>
 
-        <div id="openDiv-disclosureAI" class="disclosure-notice__expanded-container hide">
-            <div class="flex-this">
+        <div class="flex-this justify-center">
+            <div id="disclosureTK" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
+                <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="119px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                <div><p>Traditional Knowledge</p></div>
+            </div>
+            <div id="disclosureBC" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
+                <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="119px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                <div><p>Biocultural</p></div>
+            </div>
+            
+            <div id="disclosureAI" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
-                <div class="flex-this column margin-left-16">
-                    <div class="w-90">
-                        <h2 class="no-top-margin">Attribution Incomplete Notice</h2>
-                        <p class="no-top-margin">
-                            <span class="bold">Why Use this Notice?</span><br>
-                            The Attribution Incomplete Notice is attached to a collection or at an item level where there is incomplete, inaccurate, or missing attribution. This Notice indicates to the public that the record and/or metadata is incomplete. Visibly identifying missing attribution within collections is the first step towards correcting existing attribution to include: contributors, collaborators, other authors and/or communities of origin.
-                        </p>        
+                <div><p>Attribution Incomplete</p></div>
+            </div>
+        </div>
+
+        <div class="w-80 auto-margin">
+
+            <div id="openDiv-disclosureTK" class="disclosure-notice__expanded-container hide">
+                <div class="flex-this">
+                    <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                    <div class="flex-this column margin-left-16">
+                        <div class="w-90">
+                            <h2 class="no-top-margin">Traditional Knowledge Notice</h2>
+                            <p class="no-top-margin">
+                                <span class="bold">Why Use this Notice?</span><br>
+                                This Notice should be used to recognize that place-based knowledge carries accompanying cultural rights and responsibilities and that appropriate permissions may need to be sought for future use of this material.
+                            </p>        
+                        </div>
+                        <div class="w-90">
+                            <p>
+                                <span class="bold">Notice Text</span><br>                        
+                                The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated. For more information about the TK Notice click 
+                                <a class="default-a" href="https://localcontexts.org/notice/tk-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+                            </p>         
+                        </div>
                     </div>
-                    <div class="w-90">
-                        <p>
-                            <span class="bold">Notice Text</span><br>
-                            Collections and items in our institution have incomplete, inaccurate, and/or missing attribution. We are using this notice to clearly identify this material so that it can be updated, or corrected by communities of origin. Our institution is committed to collaboration and partnerships to address this problem of incorrect or missing attribution.
-                        </p>         
+                </div>            
+            </div>
+
+            <div id="openDiv-disclosureBC" class="disclosure-notice__expanded-container hide">
+                <div class="flex-this">
+                    <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                    <div class="flex-this column margin-left-16">
+                        <div class="w-90">
+                            <h2 class="no-top-margin">Biocultural Notice</h2>
+                            <p class="no-top-margin">
+                                <span class="bold">Why Use this Notice?</span><br>
+                                The BC Notice should be used to recognize the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity and genetic resources associated with their traditional lands, waters, and territories. It acknowledges the importance of cultural protocols and recognizes that appropriate permissions may need to be sought for future use of this material or data.
+                            </p>        
+                        </div>
+                        <div class="w-90">
+                            <p>
+                                <span class="bold">Notice Text</span><br>
+                                The BC Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material or data. The BC Notice recognizes the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity or genetic resources associated with traditional lands, waters, and territories. The BC Notice may indicate that BC (Biocultural) Labels are in development and their implementation is being negotiated. For more information about the BC Notice click 
+                                <a class="default-a" href="https://localcontexts.org/notice/bc-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
+                            </p>         
+                        </div>
                     </div>
-                </div>
-            </div>            
-        </div>   
+                </div>            
+            </div>
+
+            <div id="openDiv-disclosureAI" class="disclosure-notice__expanded-container hide">
+                <div class="flex-this">
+                    <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
+                    <div class="flex-this column margin-left-16">
+                        <div class="w-90">
+                            <h2 class="no-top-margin">Attribution Incomplete Notice</h2>
+                            <p class="no-top-margin">
+                                <span class="bold">Why Use this Notice?</span><br>
+                                The Attribution Incomplete Notice is attached to a collection or at an item level where there is incomplete, inaccurate, or missing attribution. This Notice indicates to the public that the record and/or metadata is incomplete. Visibly identifying missing attribution within collections is the first step towards correcting existing attribution to include: contributors, collaborators, other authors and/or communities of origin.
+                            </p>        
+                        </div>
+                        <div class="w-90">
+                            <p>
+                                <span class="bold">Notice Text</span><br>
+                                Collections and items in our institution have incomplete, inaccurate, and/or missing attribution. We are using this notice to clearly identify this material so that it can be updated, or corrected by communities of origin. Our institution is committed to collaboration and partnerships to address this problem of incorrect or missing attribution.
+                            </p>         
+                        </div>
+                    </div>
+                </div>            
+            </div>   
+
+        </div>
+
 
     </div>
-
-
-</div>
+{% endif %}
 
 {% if institution %}
     <div class="content-card content-card-space white-bg">

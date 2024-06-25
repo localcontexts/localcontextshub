@@ -82,3 +82,6 @@ def confirm_subscription(request, service_provider, join_flag, form):
     elif request.user._wrapped not in service_provider.get_admins():
         join_flag = True
         return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':service_provider, "subscription_url": 'confirm-subscription-service-provider', 'join_flag':join_flag,})
+    
+def get_service_provider(pk):
+    return ServiceProvider.objects.select_related('account_creator').get(id=pk)

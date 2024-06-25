@@ -1,0 +1,64 @@
+{% load static %}
+
+    <div class="dashcard">
+
+        <!-- Top Nav -->
+        <div class="flex-this w-100 space-between">
+            <div class="loc grey-text bold">
+                <small>
+                    <a href="{% url 'dashboard' %}" class="default-a">
+                        {% firstof request.user.first_name request.user %}
+                    </a> 
+                    >> {{ service_provider.name }}                    
+                </small>
+            </div>
+
+            <!-- Notifications -->
+            <div class="flex-this w-30 flex-end">
+                {% include 'snippets/notifications.html' with scope=service_provider %}
+
+                {% if request.user == service_provider.account_creator%}
+                    <div class="margin-left-8">
+                        <a href="" class="darkteal-text primary-btn white-btn"> Settings <i class="fa fa-cog" aria-hidden="true"></i></a>
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+            <!-- Image, headers, description -->
+        <div class="flex-this">
+
+                <div class="dashcard-img-container">
+                    <img loading="lazy" 
+                        class="profile-img" 
+                        src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
+                        alt="{{ service_provider.name }} image"
+                    >
+                </div>
+                <div class="flex-this column dashcard-text-container">
+                    <div class="subscribed-icon-wrapper">
+                        <h3 class="dashcard-h3 darkteal-text">{{ service_provider.name }}</h3>
+                        {% if service_provider and service_provider.is_certified %}
+                            <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Certified"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p class="primary-black-text dashcard-subheader">Service Provider</p>
+                    </div>
+                    <div><p class="dashcard-description description-sm">{% if service_provider.description %}{{ service_provider.description }} {% else %} No description provided. {% endif %}</p></div>
+                </div>
+
+                <!-- Count cards -->
+                <div class="flex-this column stats-card-container">
+    
+                    <div class="stats-card flex-this space-between">
+                        <div>
+                            <p>0</p>
+                        </div>
+                        <div><span>Connections</span></div>
+                    </div>
+                </div>
+
+        </div>
+
+    </div>

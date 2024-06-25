@@ -543,7 +543,14 @@
 
                         <form id="sendMsgForm" method="POST" action="">
                             <p>This message will be sent to the administrator of 
-                                {% if institution %}{{ institution.institution_name }}{% elif community %}{{ community.community_name }}{% elif service_provider %}{{ service_provider.name }}{% endif %}.</p>
+                                {% if institution %}
+                                    {{ institution.institution_name }}.
+                                {% elif community %}
+                                    {{ community.community_name }}.
+                                {% elif service_provider %}
+                                    {{ service_provider.name }}.
+                                {% endif %}
+                            </p>
                             {% csrf_token %}
                             {{ form.as_p }}
                             <input type="hidden" name="contact_btn">
