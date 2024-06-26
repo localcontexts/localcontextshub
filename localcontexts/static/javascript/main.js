@@ -2298,7 +2298,7 @@ if (window.location.href.includes('subscription-inquiry')) {
     nameInputField.addEventListener('input', () => {
         clearTimeout(delayTimer)
 
-        const inputValue = nameInputField.value
+        const inputValue = nameInputField.value.trim()
         if (inputValue.length >= 3) { // Minimum characters required before making a request
             let queryURL = 'https://api.ror.org/organizations?query='
 
@@ -2311,7 +2311,7 @@ if (window.location.href.includes('subscription-inquiry')) {
             fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
                 .then(response => response.json())
                 .then(data => {
-                    showSuggestions(data.items, matchingInstitutions)
+                    showSuggestions(data.items, matchingInstitutions, inputValue)
                     
                 })
                 .catch(error => { console.error(error)})
@@ -2319,36 +2319,63 @@ if (window.location.href.includes('subscription-inquiry')) {
         } else { clearSuggestions() }
     })
 
-    function showSuggestions(items, matchingInstitutions) {
+    function showSuggestions(items, matchingInstitutions, userInput) {
         // Clear previous suggestions
         clearSuggestions()
         // Get the first 5 most relevant itemss
         const combinedItems = items.concat(matchingInstitutions);
-        const relevantItems = combinedItems.slice(0, 5)
+        const relevantItems = combinedItems.some(
+          item =>
+            (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' &&
+              item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase())
+        );
+  
+        if (relevantItems) {
+          const relevantItems = combinedItems.slice(0, 5);
+          displaySuggestions(relevantItems);
+        } else {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.classList.add('suggestion-item');
+          suggestionItem.innerHTML = `${userInput} (Not Found in ROR List)`;
 
-        relevantItems.forEach(item => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.classList.add('suggestion-item');
-    
-            let displayName = "";
-            let displayDetails = "";
-    
-            if (typeof(item) === 'object' && item.hasOwnProperty('name')) {
-                displayName = item.name;
-                displayDetails = `${item.types.join(", ")}, ${item.country.country_name}`;
-            } 
-            else if (typeof(item) === 'object' && item.hasOwnProperty('fields')) {
-                displayName = item.fields.institution_name;
-                displayDetails = `${item.fields.city_town}, ${item.fields.country}`;
-            }    
-            suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
-    
-            suggestionItem.addEventListener('click', () => {
-                nameInputField.value = displayName;
-                clearSuggestions();
-            });
-    
-            suggestionsContainer.appendChild(suggestionItem);
+          suggestionItem.addEventListener('click', () => {
+            nameInputField.value = userInput;
+            clearSuggestions();
+          });
+  
+          suggestionsContainer.appendChild(suggestionItem);
+  
+          const relevantItems = items.slice(0, 5);
+          if (relevantItems.length > 0) {
+            displaySuggestions(relevantItems);
+          }
+        }
+      }
+  
+      function displaySuggestions(items) {
+        items.forEach(item => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.classList.add('suggestion-item');
+  
+          let displayName = '';
+          let displayDetails = '';
+  
+          if (typeof item === 'object' && item.hasOwnProperty('name')) {
+            displayName = item.name;
+            displayDetails = `${item.types.join(", ")}, ${item.country.country_name}`;
+          } else if (typeof item === 'object' && item.hasOwnProperty('fields')) {
+            displayName = item.fields.institution_name;
+            displayDetails = `${item.fields.city_town}, ${item.fields.country}`;
+          }
+          suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
+  
+          suggestionItem.addEventListener('click', () => {
+            nameInputField.value = displayName;
+            clearSuggestions();
+          });
+  
+          suggestionsContainer.appendChild(suggestionItem);
         });
     }
     
