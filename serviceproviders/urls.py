@@ -15,7 +15,7 @@ urlpatterns = [
     path('notices/<str:pk>/', views.service_provider_notices, name="service-provider-notices"),
     # path('notices/otc/delete/<str:pk>/<str:notice_id>/', views.delete_otc_notice, name="service-provider-delete-otc"),
 
-    # path('connections/<str:pk>/', views.connections, name="service-provider-connections"),
+    path('connections/<str:pk>/', views.connections, name="service-provider-connections"),
 
     # path('api-key/<str:pk>/', views.api_keys, name="service-provider-api-key"),
 ]

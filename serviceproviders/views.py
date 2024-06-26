@@ -222,3 +222,13 @@ def service_provider_notices(request, pk):
         "is_sandbox": is_sandbox,
     }
     return render(request, "serviceproviders/notices.html", context)
+
+@login_required(login_url="login")
+# TODO: add is_researcher similar decorator
+def connections(request, pk):
+    service_provider = get_service_provider(pk)
+
+    context = {
+        "service_provider": service_provider,
+    }
+    return render(request, "serviceproviders/connections.html", context)
