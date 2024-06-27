@@ -177,6 +177,8 @@ def confirm_subscription(request, user, join_flag, form, account_type):
         hub_id = str(user.id) + "_i"
     elif account_type == "researcher_account":
         hub_id = str(user.id) + "_r"
+    elif account_type == "service_provider_account":
+        hub_id = str(user.id) + "_sp"
     else:
         raise ValueError("Invalid account type")
 
@@ -224,6 +226,18 @@ def handle_confirmation_and_subscription(request, subscription_form, user):
             )
             data = Institution.objects.get(
                 institution_name=user.institution_name
+            )
+            send_hub_admins_account_creation_email(
+                request, data
+            )
+            return response
+        elif isinstance(user, ServiceProvider):
+            response = confirm_subscription(
+                request, user, join_flag,
+                subscription_form, 'service_provider_account'
+            )
+            data = ServiceProvider.objects.get(
+                service_provider_name=user.name
             )
             send_hub_admins_account_creation_email(
                 request, data
