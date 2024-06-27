@@ -47,12 +47,12 @@ def handle_service_provider_creation(request, form, subscription_form ):
             affiliation.service_providers.add(data)
             affiliation.save()
 
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Service Provider",
-                service_provider_id=data.id,
-                action_account_type="service_provider",
-            )
+            # HubActivity.objects.create(
+            #     action_user_id=request.user.id,
+            #     action_type="New Service Provider",
+            #     service_provider_id=data.id,
+            #     action_account_type="service_provider",
+            # )
     except SalesforceAPIError as e:
         messages.add_message(
             request,
