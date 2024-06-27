@@ -11,12 +11,13 @@
             {% if community %} {{ community.id }} {% endif %}
             {% if institution %} {{ institution.id }} {% endif %}
             {% if researcher %} {{ researcher.id }} {% endif %}
+            {% if service_provider %} {{ service_provider.id }} {% endif %}
         </div>
     </div>
     
     <form
         method="POST"
-        action="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}"
+        action="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'update-service-provider' service_provider.id %}{% endif %}"
         enctype="multipart/form-data">
         {% csrf_token %}
     
@@ -54,6 +55,16 @@
                                 <img src="{% static 'images/placeholders/researcher-place.jpg' %}">
                             {% else %}
                                 <img src="{{ update_form.instance.image.url }}" alt="researcher account image">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if service_provider %}
+                        <div id="imagePreviewContainer" class="img-preview__container__rectangle">
+                            {% if not service_provider.image %}
+                                <img src="{% static 'images/placeholders/service-provider-place.jpg' %}">
+                            {% else %}
+                                <img src="{{ update_form.instance.image.url }}" alt="{{ update_form.instance.name }} image">
                             {% endif %}
                         </div>
                     {% endif %}

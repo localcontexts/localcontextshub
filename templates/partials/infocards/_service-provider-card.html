@@ -58,7 +58,7 @@
                         <!-- Settings -->
                         {% if request.user == service_provider.account_creator %}
                             <div>
-                                <a href="" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                                <a href="{% url 'update-service-provider' service_provider.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
                             </div>
                         {% endif %}
                     </div>

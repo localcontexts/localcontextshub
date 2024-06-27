@@ -2135,8 +2135,8 @@ if (window.location.href.includes('create-institution') && !window.location.href
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
 }
 
-if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/')) {
-    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn')
+if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/') || window.location.href.includes('/service-providers/update/')) {
+    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn') || document.getElementById('serviceProviderImgUploadBtn')
     const customImageUploadBtn = document.getElementById('altImageUploadBtn')
     const imagePreviewContainer = document.getElementById('imagePreviewContainer')
 

@@ -223,3 +223,32 @@ def connections(request, pk):
         "service_provider": service_provider,
     }
     return render(request, "serviceproviders/connections.html", context)
+
+# Update institution
+@login_required(login_url="login")
+# TODO: add is_researcher similar decorator
+def update_service_provider(request, pk):
+    service_provider = get_service_provider(pk)
+
+    if request.method == "POST":
+        update_form = UpdateServiceProviderForm(
+            request.POST, request.FILES, instance=service_provider
+        )
+
+        if "clear_image" in request.POST:
+            service_provider.image = None
+            service_provider.save()
+            return redirect("update-service-provider", service_provider.id)
+        else:
+            if update_form.is_valid():
+                update_form.save()
+                messages.add_message(request, messages.SUCCESS, "Settings updated!")
+                return redirect("update-service-provider", service_provider.id)
+    else:
+        update_form = UpdateServiceProviderForm(instance=service_provider)
+
+    context = {
+        "service_provider": service_provider,
+        "update_form": update_form,
+    }
+    return render(request, 'account_settings_pages/_update-account.html', context)
