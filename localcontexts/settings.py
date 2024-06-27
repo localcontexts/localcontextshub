@@ -308,3 +308,8 @@ LOGIN_REDIRECT_URL= '/dashboard/'
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
+
+from django_countries.widgets import LazyChoicesMixin
+
+LazyChoicesMixin.get_choices = lambda self: self._choices
+LazyChoicesMixin.choices = property(LazyChoicesMixin.get_choices, LazyChoicesMixin.set_choices)

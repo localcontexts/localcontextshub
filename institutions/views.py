@@ -1503,19 +1503,22 @@ def api_keys(request, pk):
                     return redirect("institution-api-key", institution.id)
                 form = APIKeyGeneratorForm(request.POST)
 
-                if institution.is_subscribed and form.is_valid():
-                    data = form.save(commit=False)
-                    api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        institution_id = institution.id
-                    )
-                    prefix = key.split(".")[0]
-                    encrypted_key = encrypt_api_key(key)
-                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                if institution.is_subscribed:
+                    if form.is_valid():
+                        api_key, key = AccountAPIKey.objects.create_key(
+                            name = form.cleaned_data["name"],
+                            institution_id = institution.id
+                        )
+                        prefix = key.split(".")[0]
+                        encrypted_key = encrypt_api_key(key)
+                        AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
-                    if subscription.api_key_count > 0:
-                        subscription.api_key_count -= 1
-                        subscription.save()
+                        if subscription.api_key_count > 0:
+                            subscription.api_key_count -= 1
+                            subscription.save()
+                    else:
+                        messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
+                        return redirect("institution-api-key", institution.id)
                 
                 else:
                     messages.add_message(request, messages.ERROR, 'Your institution is not subscribed. '

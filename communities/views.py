@@ -1366,16 +1366,19 @@ def api_keys(request, pk):
             if "generate_api_key" in request.POST:
                 form = APIKeyGeneratorForm(request.POST)
 
-                if community.is_approved and form.is_valid():
-                    data = form.save(commit=False)
-                    api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        community_id = community.id
-                    )
-                    prefix = key.split(".")[0]
-                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
-                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
-                
+                if community.is_approved:
+                    if form.is_valid():
+                        api_key, key = AccountAPIKey.objects.create_key(
+                            name = form.cleaned_data["name"],
+                            community_id = community.id
+                        )
+                        prefix = key.split(".")[0]
+                        encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                        AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                    else:
+                        messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
+                        return redirect("community-api-key", community.id)
+
                 else:
                     messages.add_message(request, messages.ERROR, 'Your community is not yet confirmed. '
                                         'Your account must be confirmed to create API Keys.')
@@ -1387,6 +1390,7 @@ def api_keys(request, pk):
                 prefix = request.POST['delete_api_key']
                 api_key = AccountAPIKey.objects.filter(prefix=prefix)
                 api_key.delete()
+                messages.add_message(request, messages.SUCCESS, 'API Key deleted.')
 
                 return redirect("community-api-key", community.id)
 

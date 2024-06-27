@@ -939,19 +939,23 @@ def api_keys(request, pk, related=None):
                     return redirect("researcher-api-key", researcher.id)
                 form = APIKeyGeneratorForm(request.POST)
 
-                if researcher.is_subscribed and form.is_valid():
-                    data = form.save(commit=False)
-                    api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        researcher_id = researcher.id
-                    )
-                    prefix = key.split(".")[0]
-                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
-                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                if researcher.is_subscribed:
+                    if form.is_valid():
+                        data = form.save(commit=False)
+                        api_key, key = AccountAPIKey.objects.create_key(
+                            name = data.name,
+                            researcher_id = researcher.id
+                        )
+                        prefix = key.split(".")[0]
+                        encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                        AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
-                    if subscription.api_key_count > 0:
-                        subscription.api_key_count -= 1
-                        subscription.save()
+                        if subscription.api_key_count > 0:
+                            subscription.api_key_count -= 1
+                            subscription.save()
+                    else:
+                        messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
+                        return redirect("researcher-api-key", researcher.id)
                 
                 else:
                     messages.add_message(request, messages.ERROR, 'Your account is not subscribed. '
