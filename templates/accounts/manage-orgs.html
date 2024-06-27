@@ -40,6 +40,14 @@
         {% include 'snippets/modals/leave-account-modal.html' %}
     {% endfor %}
 
+    {% for service_provider in affiliations.service_providers.all %}
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+            <div class="w-70"><h3>{{ service_provider.name }} | Service Provider</h3></div>
+            <small class="block">You're the creator of this account</small>
+        </div>
+        {% include 'snippets/modals/leave-account-modal.html' %}
+    {% endfor %}
+
     <div class="w-20 margin-top-16">
         <a class="primary-btn white-btn" href="{% url 'select-account' %}">Create a new account</a>
     </div>
