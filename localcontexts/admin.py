@@ -324,7 +324,8 @@ class AccountTypeFilter(admin.SimpleListFilter):
         return [
             ('institution', 'Institution'),
             ('researcher', 'Researcher'),
-            ('community', 'Community')
+            ('community', 'Community'),
+            ('service_provider', 'Service Provider')
         ]
     
     def queryset(self, request, queryset):
@@ -354,6 +355,13 @@ class AccountTypeFilter(admin.SimpleListFilter):
                     qs = queryset.distinct().filter(project_creator_project__community_id__isnull=False)
                 else:
                     qs = queryset.distinct().filter(community_id__isnull=False)
+                return qs
+            except:
+                return queryset.none()
+            
+        elif self.value() == "service_provider":
+            try:
+                qs = queryset.distinct().filter(service_provider_id__isnull=False)
                 return qs
             except:
                 return queryset.none()
@@ -615,7 +623,7 @@ class OTCLinks(OpenToCollaborateNoticeURL):
 class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
     model = OTCLinks
     list_display = ('name', 'view', 'added_by', 'datetime')
-    search_fields = ('institution__institution_name', 'researcher__user__username', 'researcher__user__first_name', 'researcher__user__last_name', 'name')
+    search_fields = ('institution__institution_name', 'researcher__user__username', 'researcher__user__first_name', 'researcher__user__last_name', 'name', 'service_provider__name')
     ordering = ('-added',)
     list_filter = (AccountTypeFilter, )
     actions = ['export_as_csv']
@@ -630,10 +638,14 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
             account_id = obj.institution_id
             account_url = 'institutions/institution'
             account_name = obj.institution.institution_name
-        else:
+        elif obj.researcher_id:
             account_id = obj.researcher_id
             account_url = 'researchers/researcher'
             account_name = get_users_name(obj.researcher.user)
+        elif obj.service_provider_id:
+            account_id = obj.service_provider_id
+            account_url = 'serviceproviders/serviceprovider'
+            account_name = obj.service_provider.name
         
         return format_html('<a href="/admin/{}/{}/change/">{} </a>', account_url, account_id, account_name)
     

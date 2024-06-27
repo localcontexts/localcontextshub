@@ -24,7 +24,7 @@
                                     class="block a-disabled primary-btn blue-btn"
                                     title="The subscription process of your account is not completed yet."
                                 {% else %}
-                                    class="primary-btn blue-btn"
+                                    class="primary-btn"
                                     href="{% url 'download-open-to-collaborate-notice-researcher' perm=otc_download_perm researcher_id=researcher.id %}"
                                 {% endif %}
                             {% endif %}
@@ -33,7 +33,7 @@
                                     class="block a-disabled primary-btn blue-btn"
                                     title="The subscription process of your institution is not completed yet."
                                     {% else %}
-                                    class="primary-btn blue-btn"
+                                    class="primary-btn"
                                     href="{% url 'download-open-to-collaborate-notice-institution' perm=otc_download_perm institution_id=institution.id %}"
                                 {% endif %}
                             {% endif %}
@@ -42,8 +42,8 @@
                                     class="block a-disabled primary-btn blue-btn"
                                     title="The certification process of your account is not completed yet."
                                     {% else %}
-                                    class="primary-btn blue-btn"
-                                    href=""
+                                    class="primary-btn"
+                                    href="{% url 'download-open-to-collaborate-notice-service-provider' perm=otc_download_perm service_provider_id=service_provider.id %}"
                                 {% endif %}
                             {% endif %}
                             >                            
@@ -55,8 +55,7 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a class="primary-btn disabled-btn" title="
-                        {% if institution and not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% elif service_provider and not service_provider.is_certified %}Your account needs to be certified in order to download this Notice.{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution and not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% elif service_provider and not service_provider.is_certified %}Your account needs to be certified in order to download this Notice.{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
                         <a class="primary-btn disabled-btn" title="{% if institution and not institution.is_subscribed %}Your institution account needs to be subscribed in order to share this Notice.{% elif service_provider and not service_provider.is_certified %}Your account needs to be certified in order to share this Notice.{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
                 </div>
@@ -105,7 +104,7 @@
                                             {% endif %}
                                         {% endif %}
                                         {% if service_provider %}
-                                            <a class="default-a block" href=""> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            <a class="default-a block" href="{% url 'service-provider-delete-otc' service_provider.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
                                         {% endif %}
                                     </div>
                                 </li>
@@ -595,7 +594,7 @@
                 <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Registry URL</label>
 
                 <div class="text-input-to-copy">
-                    <input class="w-100 grey-chip" type="text" value="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}" id="profilePageUrlToCopy" readonly>
+                    <input class="w-100 grey-chip" type="text" value="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}" id="profilePageUrlToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
                 </div>
 
@@ -624,19 +623,19 @@
             <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
                     <i class="socials-btn fa-solid fa-envelope" style="margin-right: 10px;" title="Share via Email"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
                     <i class="socials-btn fa-brands fa-whatsapp" style="margin-right: 10px;" title="Share via WhatsApp"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
                     <i class="socials-btn fa-brands fa-facebook-f" style="margin-right: 10px;" title="Share on Facebook"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
                     <i class="socials-btn fa-brands fa-twitter" style="margin-right: 10px;" title="Share on Twitter"></i>
                 </div>
-                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
+                <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
                     <i class="socials-btn fa-brands fa-linkedin" style="margin-right: 10px;" title="Share on LinkedIn"></i>
                 </div>
             </div>

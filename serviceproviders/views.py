@@ -99,8 +99,7 @@ def public_service_provider_view(request, pk):
         service_provider = ServiceProvider.objects.get(id=pk)
 
         # Do notices exist
-        otc_notices = None
-        # otc_notices = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider)
+        otc_notices = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider)
 
         if request.user.is_authenticated:
             user_service_providers = (
@@ -168,17 +167,10 @@ def public_service_provider_view(request, pk):
 # TODO: add is_researcher similar decorator
 def service_provider_notices(request, pk):
     service_provider = get_service_provider(pk)
-    # urls = OpenToCollaborateNoticeURL.objects.filter(
-    #     service_provider=service_provider
-    # ).values_list("url", "name", "id")
-    # form = OpenToCollaborateNoticeURLForm(request.POST or None)
-    # cc_policy_form = CollectionsCareNoticePolicyForm(
-    #     request.POST or None, request.FILES
-    # )
-    # try:
-    #     subscription = Subscription.objects.get(institution=institution)
-    # except Subscription.DoesNotExist:
-    #     subscription = None
+    urls = OpenToCollaborateNoticeURL.objects.filter(
+        service_provider=service_provider
+    ).values_list("url", "name", "id")
+    form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -189,39 +181,38 @@ def service_provider_notices(request, pk):
         is_sandbox = False
         otc_download_perm = 1 if service_provider.is_certified else 0
         ccn_download_perm = 1 if service_provider.is_certified else 0
-
-    # if request.method == "POST":
-    #     if "add_policy" in request.POST:
-    #         pass
-    #         if cc_policy_form.is_valid():
-    #             cc_data = cc_policy_form.save(commit=False)
-    #             cc_data.institution = institution
-    #             cc_data.save()
-    #     else:
-    #         if form.is_valid():
-    #             data = form.save(commit=False)
-    #             data.institution = institution
-    #             data.save()
-    #             # Adds activity to Hub Activity
-    #             HubActivity.objects.create(
-    #                 action_user_id=request.user.id,
-    #                 action_type="Engagement Notice Added",
-    #                 project_id=data.id,
-    #                 action_account_type="institution",
-    #                 institution_id=institution.id,
-    #             )
-    #     return redirect("institution-notices", institution.id)
+    
+    if request.method == "POST" and form.is_valid():
+        data = form.save(commit=False)
+        data.service_provider = service_provider
+        data.save()
+        # Adds activity to Hub Activity
+        # HubActivity.objects.create(
+        #     action_user_id=request.user.id,
+        #     action_type="Engagement Notice Added",
+        #     project_id=data.id,
+        #     action_account_type="service_provider",
+        #     service_provider_id=service_provider.id,
+        # )
+        return redirect("service-provider-notices", service_provider.id)
 
     context = {
         "service_provider": service_provider,
-        # "form": form,
-        # "cc_policy_form": cc_policy_form,
-        # "urls": urls,
+        "form": form,
+        "urls": urls,
         "otc_download_perm": otc_download_perm,
         "ccn_download_perm": ccn_download_perm,
         "is_sandbox": is_sandbox,
     }
     return render(request, "serviceproviders/notices.html", context)
+
+@login_required(login_url="login")
+# TODO: add is_researcher similar decorator
+def delete_otc_notice(request, pk, notice_id):
+    if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
+        otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
+        otc.delete()
+    return redirect("service-provider-notices", pk)
 
 @login_required(login_url="login")
 # TODO: add is_researcher similar decorator
