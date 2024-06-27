@@ -8,7 +8,6 @@ from helpers.utils import change_member_role, SalesforceAPIError, create_salesfo
 from helpers.emails import send_hub_admins_account_creation_email
 from institutions.models import Institution
 from helpers.models import HubActivity
-from accounts.forms import UserCreateProfileForm, SubscriptionForm
 from django.db import transaction
 from django.utils import timezone
 from localcontexts.utils import dev_prod_or_local
@@ -17,28 +16,6 @@ from localcontexts.utils import dev_prod_or_local
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
-
-def form_initiation(request):
-    subscription_form = SubscriptionForm()
-
-    fields_to_update = {
-        "first_name": request.user._wrapped.first_name,
-        "last_name": request.user._wrapped.last_name,
-    }
-    user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
-    exclude_choices = {"member", "service_provider"}
-    
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] not in exclude_choices
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-    for field, value in fields_to_update.items():
-        if value:
-            user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
-        
-    return  user_form,subscription_form
 
 def handle_institution_creation(request, form, subscription_form ):
     try:

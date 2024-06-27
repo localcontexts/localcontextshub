@@ -51,16 +51,8 @@ def preparation_step(request):
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
-    subscription_form = SubscriptionForm()
-
-    exclude_choices = {"member", "service_provider", "cc_only"}
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] not in exclude_choices
-        
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+    subscription_form  = form_initiation(request, "researcher_action")
+    
     env = dev_prod_or_local(request.get_host())
     
     if not researcher:

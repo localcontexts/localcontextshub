@@ -25,6 +25,8 @@ from .exceptions import UnsubscribedAccountException
 from .models import Notice
 from notifications.models import *
 
+from accounts.forms import UserCreateProfileForm, SubscriptionForm
+
 from accounts.utils import get_users_name
 from notifications.utils import send_user_notification_member_invite_accept
 from helpers.emails import send_membership_email, send_subscription_fail_email
@@ -661,3 +663,37 @@ def encrypt_api_key(key):
 def decrypt_api_key(key):
     api_key = force_str(urlsafe_base64_decode(key))
     return api_key
+
+def form_initiation(request,account_type=""):
+    subscription_form = SubscriptionForm()
+    if account_type == "institution_action":
+        fields_to_update = {
+            "first_name": request.user._wrapped.first_name,
+            "last_name": request.user._wrapped.last_name,
+        }
+        user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
+        exclude_choices = {"member", "service_provider"}
+        
+        modified_inquiry_type_choices = [
+            choice
+            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+            if choice[0] not in exclude_choices
+        ]
+        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+        for field, value in fields_to_update.items():
+            if value:
+                user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
+            
+        return  user_form,subscription_form
+    elif account_type == "researcher_action":
+        subscription_form = SubscriptionForm()
+        exclude_choices = {"member", "service_provider", "cc_only"}
+        modified_inquiry_type_choices = [
+            choice
+            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+            if choice[0] not in exclude_choices
+            
+        ]
+        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+        
+        return subscription_form

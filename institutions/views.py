@@ -113,7 +113,7 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_institution(request):
     form = CreateInstitutionForm()
-    user_form,subscription_form  = form_initiation(request)
+    user_form,subscription_form  = form_initiation(request, "institution_action")
    
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
@@ -154,7 +154,7 @@ def create_institution(request):
 @login_required(login_url="login")
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm()
-    user_form,subscription_form  = form_initiation(request)
+    user_form,subscription_form  = form_initiation(request, "institution_action")
 
     if request.method == "POST":
         noror_form = CreateInstitutionNoRorForm(request.POST)
