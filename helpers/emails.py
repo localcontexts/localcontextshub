@@ -174,18 +174,27 @@ def send_hub_admins_account_creation_email(request, data):
     def get_email_and_template():
         if isinstance(data, Community):
             subject = f'New Community Account: {data.community_name}'
-            template = render_to_string('snippets/emails/internal/community-application.html', {'data': data})
+            template = render_to_string(
+                'snippets/emails/internal/community-application.html', 
+                {'data': data}
+            )
             return subject, template, data.support_document
         elif isinstance(data, Institution):
             subject_prefix = "New Institution Account"
             subject_suffix = "(non-ROR)" if not data.is_ror else ""
             subject = f'{subject_prefix}: {data.institution_name} {subject_suffix}'
-            template = render_to_string('snippets/emails/internal/institution-application.html', {'data': data})
+            template = render_to_string(
+                'snippets/emails/internal/institution-application.html',
+                {'data': data}
+            )
             return subject, template, None
         elif isinstance(data, Researcher):
             name = get_users_name(data.user)
             subject = f'New Researcher Account: {name}'
-            template = render_to_string('snippets/emails/internal/researcher-account-connection.html', { 'researcher': data })
+            template = render_to_string(
+                'snippets/emails/internal/researcher-account-connection.html',
+                { 'researcher': data }
+            )
             return subject, template, None
         else:
             return None, None, None
@@ -434,7 +443,12 @@ def send_email_notice_placed(request, project, community, account):
             'community_name': community.community_name,
             'login_url': login_url
         }
-        send_mailgun_template_email(community.community_creator.email, subject, 'notice_placed', data)
+        send_mailgun_template_email(
+            community.community_creator.email, 
+            subject, 
+            'notice_placed', 
+            data
+        )
 
 #Project status has been changed
 def send_action_notification_project_status(request, project, communities):
@@ -446,7 +460,12 @@ def send_action_notification_project_status(request, project, communities):
     for community in communities:
         community = get_community(community)
         title = f"{request.user} has edited a Project: '{project}'."
-        ActionNotification.objects.create(community=community, sender=request.user, notification_type="Projects", title=title, reference_id=project.unique_id)
+        ActionNotification.objects.create(
+            community=community, 
+            sender=request.user, 
+            notification_type="Projects", 
+            title=title, reference_id=project.unique_id
+        )
 
 """
     EMAILS FOR COMMUNITY APP
@@ -464,7 +483,12 @@ def send_email_labels_applied(request, project, community):
             'project_title': project.title,
             'login_url': login_url
         }
-        send_mailgun_template_email(project.project_creator.email, subject, 'labels_applied', data)
+        send_mailgun_template_email(
+            project.project_creator.email, 
+            subject, 
+            'labels_applied', 
+            data
+        )
 
 
 # Label has been approved or not
@@ -643,9 +667,23 @@ def send_project_person_email(request, to_email, proj_id, account):
 
 def send_email_verification(request, old_email, new_email, verification_url):
     subject = 'Email Verification Link For Your Local Contexts Hub Profile'
-    data = {'user':request.user.username, 'new_email':new_email, 'old_email':old_email, 'verification_url':verification_url}
+    data = {
+        'user': request.user.username, 
+        'new_email': new_email, 
+        'old_email': old_email, 
+        'verification_url': verification_url
+    }
     send_mailgun_template_email(new_email, subject, 'verify_email_update', data)
     
     old_subject = 'Change of Email For Your Local Contexts Hub Profile'
-    old_email_data = {'user':request.user.username, 'old_email':old_email, 'new_email':new_email}
-    send_mailgun_template_email(old_email, old_subject,'notify_email_on_email_update', old_email_data)
+    old_email_data = {
+        'user': request.user.username, 
+        'old_email': old_email, 
+        'new_email': new_email
+    }
+    send_mailgun_template_email(
+        old_email, 
+        old_subject,
+        'notify_email_on_email_update', 
+        old_email_data
+    )

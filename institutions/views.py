@@ -34,7 +34,6 @@ from accounts.forms import (
     ContactOrganizationForm,
     SignUpInvitationForm,
     SubscriptionForm,
-    UserCreateProfileForm,
 )
 from api.forms import APIKeyGeneratorForm
 from .forms import *
@@ -141,7 +140,15 @@ def create_institution(request):
                     "Something went wrong. Please Try again later.",
                 )
                 return redirect('dashboard')
-    return render(request, "institutions/create-institution.html", {"form": form, "subscription_form": subscription_form, "user_form": user_form,})
+    return render(
+        request, 
+        "institutions/create-institution.html", 
+        {
+            "form": form, 
+            "subscription_form": subscription_form, 
+            "user_form": user_form,
+        }
+    )
 
 
 @login_required(login_url="login")
@@ -164,7 +171,7 @@ def create_custom_institution(request):
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
             if subscription_form.is_valid():
-                handle_institution_creation(request, noror_form, subscription_form )
+                handle_institution_creation(request, noror_form, subscription_form)
                 return redirect('dashboard')
             else:
                 messages.add_message(
