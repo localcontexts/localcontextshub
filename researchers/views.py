@@ -272,9 +272,8 @@ def disconnect_orcid(request):
 
 @login_required(login_url='login')
 @get_researcher()
-def update_researcher(request, pk):
+def update_researcher(request, researcher):
     env = dev_prod_or_local(request.get_host())
-    researcher = Researcher.objects.get(id=pk)
 
     if request.method == 'POST':
         update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
@@ -311,12 +310,11 @@ def update_researcher(request, pk):
 
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
-def researcher_notices(request, pk):
-    researcher = Researcher.objects.get(id=pk)
+def researcher_notices(request, researcher):
     notify_restricted_message = False
     create_restricted_message = False
     try:
-        subscription = Subscription.objects.get(researcher=pk)
+        subscription = Subscription.objects.get(researcher=researcher.id)
     except Subscription.DoesNotExist:
         subscription = None
 
@@ -374,8 +372,7 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
-def researcher_projects(request, pk):
-    researcher = Researcher.objects.get(id=pk)
+def researcher_projects(request, researcher):
     create_restricted_message = False
     try:
         subscription = Subscription.objects.get(researcher=researcher.id)
@@ -588,9 +585,7 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
 
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
-def edit_project(request, pk, project_uuid):
-    researcher = Researcher.objects.get(id=pk)
-
+def edit_project(request, researcher, project_uuid):
     project = Project.objects.get(unique_id=project_uuid)
     form = EditProjectForm(request.POST or None, instance=project)
     formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
@@ -877,9 +872,7 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
         
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
-def connections(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-
+def connections(request, researcher):
     institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
     institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
 
@@ -929,8 +922,7 @@ def embed_otc_notice(request, pk):
 @login_required(login_url="login")
 @get_researcher(pk_arg_name='pk')
 @transaction.atomic
-def api_keys(request, pk, related=None):
-    researcher = Researcher.objects.get(id=pk)
+def api_keys(request, researcher, related=None):
     subscription_api_key_count = 0
     
     try:
@@ -950,19 +942,23 @@ def api_keys(request, pk, related=None):
                     return redirect("researcher-api-key", researcher.id)
                 form = APIKeyGeneratorForm(request.POST)
 
-                if researcher.is_subscribed and form.is_valid():
-                    data = form.save(commit=False)
-                    api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        researcher_id = researcher.id
-                    )
-                    prefix = key.split(".")[0]
-                    encrypted_key = urlsafe_base64_encode(force_bytes(key))
-                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                if researcher.is_subscribed:
+                    if form.is_valid():
+                        data = form.save(commit=False)
+                        api_key, key = AccountAPIKey.objects.create_key(
+                            name = data.name,
+                            researcher_id = researcher.id
+                        )
+                        prefix = key.split(".")[0]
+                        encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                        AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
 
-                    if subscription.api_key_count > 0:
-                        subscription.api_key_count -= 1
-                        subscription.save()
+                        if subscription.api_key_count > 0:
+                            subscription.api_key_count -= 1
+                            subscription.save()
+                    else:
+                        messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
+                        return redirect("researcher-api-key", researcher.id)
                 
                 else:
                     messages.add_message(request, messages.ERROR, 'Your account is not subscribed. '
