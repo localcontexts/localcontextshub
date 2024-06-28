@@ -59,6 +59,8 @@ jobs:
           COLLECTIONS_CARE_NOTICES_DOWNLOAD_ZIP: ${{ secrets.COLLECTIONS_CARE_NOTICES_DOWNLOAD_ZIP }}
           OPEN_TO_COLLABORATE_NOTICE_DOWNLOAD_ZIP: ${{ secrets.OPEN_TO_COLLABORATE_NOTICE_DOWNLOAD_ZIP }}
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+          CC_EMAIL_LH: ${{ secrets.CC_EMAIL_LH }}
+          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
         run: |
           python manage.py migrate
           flake8 accounts

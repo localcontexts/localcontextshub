@@ -85,6 +85,21 @@
                     <input id="hiddenInst-{{ institution.id }}" type="hidden" name="selected_institutions" value="{{ institution.id }}">
                 </li>
             {% endfor %}
+
+            {% for f in formset %}
+                {% if f.name.value or f.email.value  %}
+                    <li id="selected-project-person-{{f.instance.pk}}" class="margin-bottom-8 show">
+                        <div class="grey-chip flex-this row space-between">
+                            <div><p class="center-name">Name: {{ f.name.value }} Email: {{ f.email.value }} (Contributor not on HUB)</p></div>
+                            <div id="closeProjectPerson-{{ f.instance.pk }}" class="removeSelectedProjectPerson pointer">&times;</div>
+                            <div class="hide projrct-person{{f.instance.pk}}">
+                                <label>{{ f.DELETE.label }}</label><br>
+                                {{ f.DELETE }}
+                            </div>
+                        </div>
+                        </li>
+                {% endif %}
+            {% endfor %}
         {% endif %}
 
         <!-- If create project and new selections-->

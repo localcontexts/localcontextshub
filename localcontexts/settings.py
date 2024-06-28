@@ -38,6 +38,9 @@ SITE_ADMIN_NAME = os.environ['SITE_ADMIN_NAME']
 SITE_ADMIN_EMAIL = os.environ['SITE_ADMIN_EMAIL']
 ADMINS = [(SITE_ADMIN_NAME, SITE_ADMIN_EMAIL)]
 
+CC_EMAIL_LH = os.environ['CC_EMAIL_LH']
+SUPPORT_EMAIL = os.environ['SUPPORT_EMAIL']
+
 # reCAPTCHA
 GOOGLE_RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
 RECAPTCHA_REQUIRED_SCORE = 0.5
@@ -308,3 +311,8 @@ LOGIN_REDIRECT_URL= '/dashboard/'
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
+
+from django_countries.widgets import LazyChoicesMixin
+
+LazyChoicesMixin.get_choices = lambda self: self._choices
+LazyChoicesMixin.choices = property(LazyChoicesMixin.get_choices, LazyChoicesMixin.set_choices)

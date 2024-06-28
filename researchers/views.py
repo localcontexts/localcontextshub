@@ -31,11 +31,21 @@ from api.forms import APIKeyGeneratorForm
 from helpers.emails import *
 from maintenance_mode.decorators import force_maintenance_mode_off
 
-from .decorators import is_researcher
+from .decorators import get_researcher
 from .models import Researcher
 from .forms import *
 from .utils import *
 
+
+@login_required(login_url='login')
+def preparation_step(request):
+    environment = dev_prod_or_local(request.get_host())
+    researcher = True
+    context = {
+        'researcher': researcher,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 @login_required(login_url='login')
 def connect_researcher(request):
@@ -79,12 +89,14 @@ def connect_researcher(request):
                 request.user.user_profile.is_researcher = True
                 request.user.user_profile.save()
 
-                # Add researcher to mailing list
-                manage_researcher_mailing_list(request.user.email, True)                
+                # sends one email to the account creator
+                # and one to either site admin or support
+                send_researcher_email(request) 
+                send_hub_admins_account_creation_email(request, data)
 
-                if dev_prod_or_local(request.get_host()) == 'PROD':
-                    send_email_to_support(data) # Send support an email in prod only about a Researcher signing up
-                    send_researcher_survey(data) # Send survey email
+                # Add researcher to mailing list
+                if env == 'PROD':
+                    manage_researcher_mailing_list(request.user.email, True)                
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(
@@ -259,10 +271,9 @@ def disconnect_orcid(request):
 
 
 @login_required(login_url='login')
-@is_researcher()
-def update_researcher(request, pk):
+@get_researcher()
+def update_researcher(request, researcher):
     env = dev_prod_or_local(request.get_host())
-    researcher = Researcher.objects.get(id=pk)
 
     if request.method == 'POST':
         update_form = UpdateResearcherForm(request.POST, request.FILES, instance=researcher)
@@ -296,14 +307,14 @@ def update_researcher(request, pk):
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
 
+
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
-def researcher_notices(request, pk):
-    researcher = Researcher.objects.get(id=pk)
+@get_researcher(pk_arg_name='pk')
+def researcher_notices(request, researcher):
     notify_restricted_message = False
     create_restricted_message = False
     try:
-        subscription = Subscription.objects.get(researcher=pk)
+        subscription = Subscription.objects.get(researcher=researcher.id)
     except Subscription.DoesNotExist:
         subscription = None
 
@@ -360,9 +371,8 @@ def delete_otc_notice(request, researcher_id, notice_id):
 
 
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
-def researcher_projects(request, pk):
-    researcher = Researcher.objects.get(id=pk)
+@get_researcher(pk_arg_name='pk')
+def researcher_projects(request, researcher):
     create_restricted_message = False
     try:
         subscription = Subscription.objects.get(researcher=researcher.id)
@@ -472,14 +482,13 @@ def researcher_projects(request, pk):
 
 # Create Project
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
-def create_project(request, pk, source_proj_uuid=None, related=None):
-    researcher = Researcher.objects.get(id=pk)
+@get_researcher(pk_arg_name='pk')
+def create_project(request, researcher, source_proj_uuid=None, related=None):
     name = get_users_name(request.user)
     notice_defaults = get_notice_defaults()
     notice_translations = get_notice_translations()
 
-    if check_subscription(request, 'researcher', pk) and dev_prod_or_local(request.get_host()) != 'SANDBOX':
+    if check_subscription(request, 'researcher', researcher.id) and dev_prod_or_local(request.get_host()) != 'SANDBOX':
         return redirect('researcher-projects', researcher.id)
     
     subscription = Subscription.objects.get(researcher=researcher)
@@ -574,12 +583,9 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
     return render(request, 'researchers/create-project.html', context)
 
 
-
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
-def edit_project(request, pk, project_uuid):
-    researcher = Researcher.objects.get(id=pk)
-
+@get_researcher(pk_arg_name='pk')
+def edit_project(request, researcher, project_uuid):
     project = Project.objects.get(unique_id=project_uuid)
     form = EditProjectForm(request.POST or None, instance=project)
     formset = ProjectPersonFormsetInline(request.POST or None, instance=project)
@@ -865,10 +871,8 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
 
         
 @login_required(login_url='login')
-@is_researcher(pk_arg_name='pk')
-def connections(request, pk):
-    researcher = Researcher.objects.get(id=pk)
-
+@get_researcher(pk_arg_name='pk')
+def connections(request, researcher):
     institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
     institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
 
@@ -916,10 +920,9 @@ def embed_otc_notice(request, pk):
 
 # Create API Key
 @login_required(login_url="login")
-@is_researcher(pk_arg_name='pk')
+@get_researcher(pk_arg_name='pk')
 @transaction.atomic
-def api_keys(request, pk, related=None):
-    researcher = Researcher.objects.get(id=pk)
+def api_keys(request, researcher, related=None):
     subscription_api_key_count = 0
     
     try:

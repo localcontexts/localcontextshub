@@ -168,6 +168,8 @@ class APIOverview(APIView):
             'multi_project_date_modified':'/projects/date_modified/<PROJECT_UNIQUE_ID_1>,<PROJECT_UNIQUE_ID_2>/',
             'open_to_collaborate_notice': '/notices/open_to_collaborate/',
             'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
+            'usage_guides': 'https://localcontexts.org/support/downloadable-resources',
+            'api_documentation': 'https://github.com/localcontexts/localcontextshub/wiki/API-Documentation',
             'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
         }
         return Response(api_urls)

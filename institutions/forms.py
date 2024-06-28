@@ -12,7 +12,7 @@ class CreateInstitutionForm(forms.ModelForm):
         fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email',]
         error_messages = {
             'institution_name': {
-                'unique': _("An institution by that name already exists."),
+                'unique': _("This institution is already on the Hub."),
             },
         }
         widgets = {
@@ -41,7 +41,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
         fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email',]
         error_messages = {
             'institution_name': {
-                'unique': _("An institution by that name already exists."),
+                'unique': _("This institution is already on the Hub."),
             },
         }
         widgets = {
