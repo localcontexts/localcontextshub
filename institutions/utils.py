@@ -5,7 +5,8 @@ from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
 from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead
-from helpers.emails import send_hub_admins_account_creation_email
+from accounts.utils import confirm_subscription, handle_confirmation_and_subscription
+from helpers.emails import send_hub_admins_application_email
 from institutions.models import Institution
 from helpers.models import HubActivity
 from django.db import transaction
@@ -46,19 +47,6 @@ def handle_institution_creation(request, form, subscription_form ):
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
 
-def handle_confirmation_and_subscription(request, subscription_form, institution):
-    first_name = subscription_form.cleaned_data["first_name"]
-    join_flag = False
-    if not subscription_form.cleaned_data["last_name"]:
-        subscription_form.cleaned_data["last_name"] = first_name
-    response = confirm_subscription(request, institution, join_flag, subscription_form)
-    data = Institution.objects.get(institution_name=institution.institution_name)
-    send_hub_admins_account_creation_email(request, data)
-    return response
-
-# This is for retroactively adding ROR IDs to Institutions.
-# Currently not being used anywhere.
-
 def set_ror_id(institution):
     import requests
 
@@ -77,29 +65,6 @@ def set_ror_id(institution):
             print('No matching institution found.')
     else:
         print('Error:', response.status_code)
-        
-def confirm_subscription(request, institution, join_flag, form):
-    if institution.institution_creator == request.user._wrapped:
-        if dev_prod_or_local(request.get_host()) != 'SANDBOX' and create_salesforce_account_or_lead(request, hubId=str(institution.id)+"_i", data=form.cleaned_data):
-            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
-        elif dev_prod_or_local(request.get_host()) == 'SANDBOX':
-            institution.is_subscribed = True
-            institution.save()
-            subscription = Subscription.objects.create(
-            institution=institution,
-            users_count=-1,
-            api_key_count=-1,
-            project_count=-1,
-            notification_count=-1,
-            start_date=timezone.now(),
-            end_date=None
-            )
-        else:
-            messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
-        return redirect('dashboard')
-    elif request.user._wrapped not in institution.get_admins():
-        join_flag = True
-        return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':institution, "subscription_url": 'confirm-subscription-institution', 'join_flag':join_flag,})
 
 def add_user(request, institution, member, current_role, new_role):
     try:

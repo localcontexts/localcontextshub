@@ -2372,35 +2372,33 @@ if (window.location.href.includes('subscription-inquiry')) {
         // Clear previous suggestions
         clearSuggestions()
         // Get the first 5 most relevant itemss
-        const combinedItems = items.concat(matchingInstitutions);
-        const relevantItems = combinedItems.some(
-          item =>
-            (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
-            (typeof item === 'object' &&
-              item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase())
-        );
-  
-        if (relevantItems) {
-          const relevantItems = combinedItems.slice(0, 5);
-          displaySuggestions(relevantItems);
-        } else {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.classList.add('suggestion-item');
-          suggestionItem.innerHTML = `${userInput} (Not Found in ROR List)`;
+        const combinedItems = [...matchingInstitutions, ...items];
 
-          suggestionItem.addEventListener('click', () => {
-            nameInputField.value = userInput;
-            clearSuggestions();
-          });
-  
-          suggestionsContainer.appendChild(suggestionItem);
-  
-          const relevantItems = items.slice(0, 5);
-          if (relevantItems.length > 0) {
-            displaySuggestions(relevantItems);
-          }
+        const filteredItems = combinedItems.filter(item =>
+            (typeof item === 'object' && item.name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase().includes(userInput.toLowerCase()))
+        );
+
+        // Check if any item exactly matches the user input
+        const exactMatch = combinedItems.some(item =>
+            (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase())
+        );
+        const relevantItems = filteredItems.slice(0, 5);        
+        // If no exact match, show 'not found in ROR List' message
+        if (!exactMatch) {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.classList.add('suggestion-item');
+            suggestionItem.innerHTML = `${userInput} (Not Found in ROR List)`;
+            suggestionItem.addEventListener('click', () => {
+                nameInputField.value = userInput;
+                clearSuggestions();
+                });
+                suggestionsContainer.appendChild(suggestionItem);
         }
-      }
+        displaySuggestions(relevantItems);
+    
+    }
   
       function displaySuggestions(items) {
         items.forEach(item => {
