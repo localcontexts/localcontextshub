@@ -119,7 +119,18 @@ class Project(models.Model):
             return 'partials/_project-actions.html'
         else:
             return None
-    
+
+    def create_or_update_boundary(self, boundary_coordinates):
+        boundary_coordinates = boundary_coordinates if boundary_coordinates else []
+
+        if self.boundary:
+            # update boundary when it exists
+            self.boundary.coordinates = boundary_coordinates
+        else:
+            # create boundary when it does not exist
+            self.boundary = Boundary(coordinates=boundary_coordinates)
+
+        self.boundary.save()
 
     def __str__(self):
         return self.title
