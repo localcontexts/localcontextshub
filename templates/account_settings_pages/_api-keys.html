@@ -13,6 +13,7 @@
             {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
         {% elif researcher and researcher.is_subscribed %}
             {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
+        {% elif community and community.is_approved %}Unlimited
         {% else %}0
         {% endif %}
     </p>
@@ -41,7 +42,7 @@
 {% endif %}
 
 <div class="flex-this margin-top-2">
-    {% if institution.is_subscribed or researcher.is_subscribed and subscription_api_key_count != 0 %}
+    {% if institution.is_subscribed or researcher.is_subscribed or community.is_approved and subscription_api_key_count != 0 %}
         <div>
             <button id="generateAPIKeybtn" class="primary-btn action-btn margin-top-2">Generate API Key</button>
         </div>
@@ -51,7 +52,8 @@
             <span class="btn-help-text" style="left: 5px;right: 0px;">
                 {% if institution and not institution.is_subscribed %}The subscription process for your institution is not completed yet.
                 {% elif researcher and not researcher.is_subscribed %}The subscription process for your account is not completed yet.
-                {% elif subscription_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
+                {% elif community and not community.is_approved %}The confirmation process for your account is not completed yet.
+                {% elif institution.is_subscribed or researcher.is_subscribed and subscription_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
                 {% endif %}
             </span>
         </div>

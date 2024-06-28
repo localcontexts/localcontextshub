@@ -54,4 +54,6 @@ urlpatterns = [
     
     path('labels-pdf/<str:pk>/', views.labels_pdf, name="labels-pdf"),
     path('labels-download/<str:pk>/', views.download_labels, name="download-labels"),
+
+    path('api-key/<str:pk>/', views.api_keys, name="community-api-key"),
 ]
