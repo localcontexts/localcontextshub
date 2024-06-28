@@ -94,10 +94,14 @@
             <label for="primary_institution"> Primary Institution </label><br>
             {{ update_form.primary_institution }}
         </div>
-        <div class="margin-bottom-8">
-            {{ update_form.website.label }} <br>
-            {{ update_form.website }}
-        </div>
+    {% endif %}
+
+    <div class="margin-bottom-8">
+        {{ update_form.website.label }} <br>
+        {{ update_form.website }}
+    </div>
+
+    {% if researcher %}
         {% if update_form.primary_institution.errors %}
             <div class="msg-red w-50"><small>{{ update_form.primary_institution.errors.as_text }}</small></div>
         {% endif %}

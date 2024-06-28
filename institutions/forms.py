@@ -9,7 +9,7 @@ class CreateInstitutionForm(forms.ModelForm):
 
     class Meta:
         model = Institution
-        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email']
+        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email', 'website']
         error_messages = {
             'institution_name': {
                 'unique': _("This institution is already on the Hub."),
@@ -24,6 +24,7 @@ class CreateInstitutionForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
             'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
             'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +53,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'class': 'w-100', }),
             'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
             'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
-
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -62,11 +63,12 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 class UpdateInstitutionForm(forms.ModelForm):
     class Meta:
         model = Institution
-        fields = ['city_town', 'state_province_region', 'country', 'image', 'description']
+        fields = ['city_town', 'state_province_region', 'country', 'image', 'description', 'website']
         widgets = {
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
             'city_town': forms.TextInput(attrs={'class': 'w-100'}),
             'country': forms.TextInput(attrs={'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 3,}),
             'image': forms.ClearableFileInput(attrs={'class': 'w-100 hide', 'id': 'institutionImgUploadBtn', 'onchange': 'showFile()'}),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
