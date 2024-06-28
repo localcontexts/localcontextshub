@@ -106,10 +106,7 @@ def institute_account_subscription(
                 messages.INFO,
                 "Your Account already exists on Hub. Please login.",
             )
-            return redirect(
-                "confirm-subscription-institution",
-                institution_id=institution.id,
-            )
+            return redirect("dashboard")
         elif account_exist and institution:
             next_url = reverse(
                 "public-institution", kwargs={"pk": institution.id}

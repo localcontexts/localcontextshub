@@ -190,65 +190,6 @@ def create_custom_institution(request):
         },
     )
 
-@login_required(login_url="login")
-def confirm_subscription_institution(request, institution_id):
-    join_flag = False
-    institution = get_object_or_404(Institution, id=institution_id)
-    initial_data = {
-        "first_name": request.user._wrapped.first_name,
-        "last_name": request.user._wrapped.last_name,
-        "email": request.user._wrapped.email,
-        "account_type": "institution_account",
-        "organization_name": institution.institution_name,
-    }
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-    form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
-    form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
-    form.fields["email"].widget.attrs.update({"class": "readonly-input"})
-    if request.method == "POST":
-        if validate_recaptcha(request) and form.is_valid():
-            account_type_key = form.cleaned_data["account_type"]
-            inquiry_type_key = form.cleaned_data["inquiry_type"]
-
-            account_type_display = dict(form.fields["account_type"].choices).get(
-                account_type_key, ""
-            )
-            inquiry_type_display = dict(form.fields["inquiry_type"].choices).get(
-                inquiry_type_key, ""
-            )
-            form.cleaned_data["account_type"] = account_type_display
-            form.cleaned_data["inquiry_type"] = inquiry_type_display
-
-            first_name = form.cleaned_data["first_name"]
-            if not form.cleaned_data["last_name"]:
-                form.cleaned_data["last_name"] = first_name
-            try:
-                response = confirm_subscription(request, institution, join_flag, form)
-                return response
-            except:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "An unexpected error has occurred. Please contact support@localcontexts.org.",
-                )
-                return redirect("dashboard")
-    return render(
-        request,
-        "accounts/confirm-subscription.html",
-        {
-            "form": form,
-            "account": institution,
-            "subscription_url": 'confirm-subscription-institution',
-            "join_flag": join_flag,
-        },
-    )
-
 
 def public_institution_view(request, pk):
     try:

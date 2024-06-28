@@ -6,7 +6,6 @@ urlpatterns = [
     path('connect-researcher/', views.connect_researcher, name="connect-researcher"),
     path('connect-orcid/', views.connect_orcid, name="connect-orcid"),
     path('disconnect-orcid/', views.disconnect_orcid, name="disconnect-orcid"),
-    path('confirm-subscription-researcher/<str:pk>/', views.confirm_subscription_researcher, name="confirm-subscription-researcher"),
     
     # Public view
     path('view/<str:pk>/', views.public_researcher_view, name="public-researcher"),
