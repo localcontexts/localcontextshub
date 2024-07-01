@@ -20,5 +20,5 @@ urlpatterns = [
 
     # Settings
     path('update/<str:pk>/', views.update_service_provider, name="update-service-provider"),
-    # path('api-key/<str:pk>/', views.api_keys, name="service-provider-api-key"),
+    path('api-key/<str:pk>/', views.api_keys, name="service-provider-api-key"),
 ]

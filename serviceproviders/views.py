@@ -315,3 +315,59 @@ def update_service_provider(request, pk):
         "update_form": update_form,
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
+
+# Create API Key
+@login_required(login_url="login")
+# TODO: add is_researcher similar decorator
+def api_keys(request, pk):
+    service_provider = get_service_provider(pk)
+    remaining_api_key_count = 0
+    
+    try:
+        account_keys = AccountAPIKey.objects.filter(service_provider=service_provider).values_list("prefix", "name", "encrypted_key")
+
+        if service_provider.is_certified and account_keys.count() == 0:
+            remaining_api_key_count = 1
+                
+        if request.method == 'GET':
+            form = APIKeyGeneratorForm(request.GET or None)
+    
+        elif request.method == "POST":
+            if "generate_api_key" in request.POST:
+                if service_provider.is_certified and remaining_api_key_count == 0:
+                    messages.add_message(request, messages.ERROR, 'Your account has reached its API Key limit.')
+                    return redirect("service-provider-api-key", service_provider.id)
+                form = APIKeyGeneratorForm(request.POST)
+
+                if service_provider.is_certified and form.is_valid():
+                    data = form.save(commit=False)
+                    api_key, key = AccountAPIKey.objects.create_key(
+                        name = data.name,
+                        service_provider_id = service_provider.id
+                    )
+                    prefix = key.split(".")[0]
+                    encrypted_key = encrypt_api_key(key)
+                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                
+                else:
+                    messages.add_message(request, messages.ERROR, 'Your account is not confirmed. Your account must be confirmed to create an API Key.')
+                    return redirect("service-provider-api-key", service_provider.id)
+
+                return redirect("service-provider-api-key", service_provider.id)
+            
+            elif "delete_api_key" in request.POST:
+                prefix = request.POST['delete_api_key']
+                api_key = AccountAPIKey.objects.filter(prefix=prefix)
+                api_key.delete()
+
+                return redirect("service-provider-api-key", service_provider.id)
+
+        context = {
+            "service_provider" : service_provider,
+            "form" : form,
+            "account_keys" : account_keys,
+            "remaining_api_key_count" : remaining_api_key_count,
+        }
+        return render(request, 'account_settings_pages/_api-keys.html', context)
+    except:
+        raise Http404()

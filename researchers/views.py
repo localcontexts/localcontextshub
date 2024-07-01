@@ -923,12 +923,12 @@ def embed_otc_notice(request, pk):
 @get_researcher(pk_arg_name='pk')
 @transaction.atomic
 def api_keys(request, researcher, related=None):
-    subscription_api_key_count = 0
+    remaining_api_key_count = 0
     
     try:
         if researcher.is_subscribed:
                 subscription = Subscription.objects.get(researcher=researcher)
-                subscription_api_key_count = subscription.api_key_count
+                remaining_api_key_count = subscription.api_key_count
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
@@ -982,7 +982,7 @@ def api_keys(request, researcher, related=None):
             "researcher" : researcher,
             "form" : form,
             "account_keys" : account_keys,
-            "subscription_api_key_count" : subscription_api_key_count
+            "remaining_api_key_count" : remaining_api_key_count
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except:

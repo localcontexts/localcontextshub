@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 class AccountAPIKey(AbstractAPIKey):
     institution = models.ForeignKey(
@@ -34,6 +35,13 @@ class AccountAPIKey(AbstractAPIKey):
         blank=True,
         null=True,
         related_name="user_api_keys"
+    )
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="service_provider_api_keys"
     )
     encrypted_key = models.CharField(unique=True, max_length=255, null=True, blank=True)
 
