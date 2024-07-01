@@ -4,8 +4,7 @@ from django.db.models import Q
 from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
-from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead
-from accounts.utils import confirm_subscription, handle_confirmation_and_subscription
+from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead, handle_confirmation_and_subscription
 from helpers.emails import send_hub_admins_application_email
 from institutions.models import Institution
 from helpers.models import HubActivity
@@ -92,27 +91,3 @@ def add_user(request, institution, member, current_role, new_role):
         messages.add_message(request, messages.ERROR, 
                             'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
-
-         
-def check_subscription(request, subscriber_type, id):
-    subscriber_field_mapping = {
-        'institution': 'institution_id',
-        'researcher': 'researcher_id',
-        'community': 'community_id'
-    }
-    
-    if subscriber_type not in subscriber_field_mapping:
-        raise ValueError("Invalid subscriber type provided.")
-    
-    subscriber_field = subscriber_field_mapping[subscriber_type]
-    
-    try:
-        subscription = Subscription.objects.get(**{subscriber_field: id})
-    except Subscription.DoesNotExist:
-        messages.add_message(request, messages.ERROR, 'The subscription process of your account is not completed yet. Please wait for the completion of subscription process.')
-        return HttpResponseForbidden('Forbidden: Subscription process isnt completed. ')
-
-    if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your account has reached its Project limit. '
-                            'Please upgrade your subscription plan to create more Projects.')
-        return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')

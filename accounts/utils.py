@@ -163,7 +163,7 @@ def institute_account_subscription(
             return redirect("subscription-inquiry")
 
 
-def confirm_subscription(request, user, join_flag, form, account_type):
+def confirm_subscription(request, user, form, account_type):
     from helpers.utils import create_salesforce_account_or_lead
     if account_type == "institution_account":
         hub_id = str(user.id) + "_i"
@@ -193,52 +193,3 @@ def confirm_subscription(request, user, join_flag, form, account_type):
 
     return redirect('dashboard')
 
-
-def handle_confirmation_and_subscription(
-    request, subscription_form, user, env
-):
-    from helpers.emails import send_hub_admins_account_creation_email
-    join_flag = False
-    first_name = subscription_form.cleaned_data["first_name"]
-    if not subscription_form.cleaned_data["last_name"]:
-        subscription_form.cleaned_data["last_name"] = first_name
-    try:
-        if isinstance(user, Researcher) and env != 'SANDBOX':
-            response = confirm_subscription(
-                request, user, join_flag,
-                subscription_form, 'researcher_account'
-            )
-            return response
-        elif isinstance(user, Researcher) and env == 'SANDBOX':
-            user.is_subscribed = True
-            user.save()
-            response = Subscription.objects.create(
-                researcher=user,
-                users_count=-1,
-                api_key_count=-1,
-                project_count=-1,
-                notification_count=-1,
-                start_date=timezone.now(),
-                end_date=None
-                )
-            return response
-        elif isinstance(user, Institution):
-            response = confirm_subscription(
-                request, user, join_flag,
-                subscription_form, 'institution_account'
-            )
-            data = Institution.objects.get(
-                institution_name=user.institution_name
-            )
-            send_hub_admins_account_creation_email(
-                request, data
-            )
-            return response
-    except Exception:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "An unexpected error has occurred here."
-            " Please contact support@localcontexts.org.",
-        )
-        return redirect("dashboard")

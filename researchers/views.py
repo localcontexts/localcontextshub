@@ -9,9 +9,8 @@ from itertools import chain
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
-from accounts.utils import get_users_name, handle_confirmation_and_subscription, confirm_subscription
+from accounts.utils import get_users_name
 from notifications.utils import send_action_notification_to_project_contribs
-from institutions.utils import check_subscription
 
 from communities.models import Community
 from notifications.models import ActionNotification
