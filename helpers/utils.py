@@ -41,6 +41,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 import traceback
 import re
+from django.http import HttpResponseForbidden
 
 class SalesforceAPIError(Exception):
     pass
