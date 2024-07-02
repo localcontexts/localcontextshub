@@ -260,6 +260,15 @@
                     <div>
                         <div class="flex-this">
                             <p>
+                                {% if project.name_of_boundary %}
+                                    <span class="italic" style="font-size: 20px">
+                                        <a href="{{ project.source_of_boundary }}"
+                                           class="default-a" target="_blank" rel="noopener">
+                                            {{ project.name_of_boundary }}
+                                            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                                        </a><br><br>
+                                    </span>
+                                {% endif %}
                                 <iframe src="{% url 'project-boundary-view' project.id %}" data-testid="project-boundary-iframe"
                                 style="width: 100%; height: 450px; border: 1px solid cadetblue;">
                                 </iframe>
