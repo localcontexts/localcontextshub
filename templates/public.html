@@ -1,4 +1,17 @@
 {% extends 'auth-base.html' %} {% block title %} View Account {% endblock %}{% load static %} {% load custom_acct_tags %} {% block main %}
+<script>
+    function closeRequestToJoinModal() {
+        const modalContent = document.getElementById('requestToJoinModal')
+        const elementClickedIsChild = modalContent.contains(event.target)
+        const elementClickedIsSelf = modalContent === event.target
+        const elementClickedIsNotChild = !elementClickedIsChild || elementClickedIsSelf
+
+        if (elementClickedIsNotChild) {
+            const modal = document.getElementById('requestToJoinModal')
+            modal.classList.replace('show', 'hide')
+        }
+    }
+</script>
 <div class="dashcard">
 
     {% if community %}
@@ -441,7 +454,7 @@
 </div> <!-- dashcard-->
 
     {% if request.user.is_authenticated %}
-        <div id="requestToJoinModal" class="modal hide">
+        <div id="requestToJoinModal" class="modal hide" onclick="closeRequestToJoinModal()">
             <div class="modal-defaults join-modal flex-this column w-100">
                 <div class="w-100">
                     <div>
