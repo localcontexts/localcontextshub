@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
-from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead, handle_confirmation_and_subscription
+from helpers.utils import change_member_role, SalesforceAPIError, handle_confirmation_and_subscription
 from helpers.emails import send_hub_admins_application_email
 from institutions.models import Institution
 from helpers.models import HubActivity
