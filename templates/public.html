@@ -51,7 +51,9 @@
                                             <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
                                         </div>
                                         <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                            <div class="close-modal-btn">
+                                                <i class="fa-regular fa-xmark fa-xl"></i>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -241,7 +243,7 @@
         <div class="flex-this">
             <div class="dashcard-img-container">
                 <img loading="lazy" 
-                    class="profile-img" 
+                    class="profile-img"
                     src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
                     alt="{{ institution.institution_name }} image"
                 >
