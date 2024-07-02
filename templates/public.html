@@ -459,7 +459,10 @@
                         </div>
 
 
-                        <p class="no-top-margin">Every account has various responsibilities within the community.<br>
+                        <p class="no-top-margin">
+                            Every account has various responsibilities within the
+                            {% if institution %}institution{% elif community %}community{% endif %}.
+                            <br>
                             <strong>Administrator:</strong> responsible for adding, editing and removing members<br>
                             <strong>Editor:</strong> responsible for customizing Labels and Projects<br>
                             <strong>Viewer:</strong> can view activity happening on the hub
