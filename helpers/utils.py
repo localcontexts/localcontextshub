@@ -29,7 +29,7 @@ from accounts.forms import UserCreateProfileForm, SubscriptionForm
 
 from accounts.utils import get_users_name, confirm_subscription
 from notifications.utils import send_user_notification_member_invite_accept
-from helpers.emails import send_membership_email, send_subscription_fail_email
+from helpers.emails import send_membership_email, send_subscription_fail_email, send_hub_admins_account_creation_email
 from django.contrib.staticfiles import finders
 from django.shortcuts import get_object_or_404
 
@@ -741,8 +741,8 @@ def handle_confirmation_and_subscription(request, subscription_form, user):
             data = Institution.objects.get(
                 institution_name=user.institution_name
             )
-            send_hub_admins_application_email(
-                request, user, data
+            send_hub_admins_account_creation_email(
+                request, data
             )
             return response
     except Exception:

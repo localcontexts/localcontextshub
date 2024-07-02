@@ -4,7 +4,7 @@ from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
 from helpers.utils import change_member_role, SalesforceAPIError, handle_confirmation_and_subscription
-from helpers.emails import send_hub_admins_application_email
+from helpers.emails import  send_hub_admins_account_creation_email
 from institutions.models import Institution
 from helpers.models import HubActivity
 from django.db import transaction
