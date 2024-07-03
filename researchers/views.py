@@ -469,8 +469,13 @@ def edit_project(request, researcher, project_uuid):
 
             instances = formset.save(commit=False)
             for instance in instances:
-                instance.project = data
-                instance.save()
+                if instance.name or instance.email:
+                    instance.project = project
+                    instance.save()
+
+            # Delete instances marked for deletion
+            for instance in formset.deleted_objects:
+                instance.delete()
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, researcher, data)
