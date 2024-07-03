@@ -192,4 +192,3 @@ def confirm_subscription(request, user, form, account_type):
             " Please contact support@localcontexts.org.")
 
     return redirect('dashboard')
-
