@@ -257,6 +257,7 @@ def crud_notices(request, selected_notices, selected_translations, organization,
                 has_changes = True
                 notice.delete()
                 ProjectActivity.objects.create(project=project, activity=f'{notice.name} was removed from the Project by {name}')
+                continue
             update_notice_translation(notice, selected_translations)
         create_notices(existing_notice_types)
         return has_changes
