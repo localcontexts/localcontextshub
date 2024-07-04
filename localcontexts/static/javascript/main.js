@@ -2355,12 +2355,15 @@ if (window.location.href.includes('subscription-inquiry')) {
             
                 var matchingInstitutions = nonRorInstitutes.filter(function(item) {
                 return item.fields.institution_name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+                var matchingCommunities = communities.filter(function(item){
+                return item.fields.community_name.toLowerCase().includes(inputValue.toLowerCase());
             });
             
             fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
                 .then(response => response.json())
                 .then(data => {
-                    showSuggestions(data.items, matchingInstitutions, inputValue)
+                    showSuggestions(data.items, matchingInstitutions, matchingCommunities, inputValue)
                     
                 })
                 .catch(error => { console.error(error)})
@@ -2368,28 +2371,30 @@ if (window.location.href.includes('subscription-inquiry')) {
         } else { clearSuggestions() }
     })
 
-    function showSuggestions(items, matchingInstitutions, userInput) {
+    function showSuggestions(items, matchingInstitutions, matchingCommunities, userInput) {
         // Clear previous suggestions
         clearSuggestions()
         // Get the first 5 most relevant itemss
-        const combinedItems = [...matchingInstitutions, ...items];
+        const combinedItems = [...matchingInstitutions, ...matchingCommunities, ...items];
 
         const filteredItems = combinedItems.filter(item =>
             (typeof item === 'object' && item.name?.toLowerCase().includes(userInput.toLowerCase())) ||
-            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase().includes(userInput.toLowerCase()))
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase().includes(userInput.toLowerCase())) 
         );
 
         // Check if any item exactly matches the user input
         const exactMatch = combinedItems.some(item =>
             (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
-            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase())
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase() === userInput.toLowerCase())
         );
         const relevantItems = filteredItems.slice(0, 5);        
         // If no exact match, show 'not found in ROR List' message
         if (!exactMatch) {
             const suggestionItem = document.createElement('div');
             suggestionItem.classList.add('suggestion-item');
-            suggestionItem.innerHTML = `${userInput} (Not Found in ROR List)`;
+            suggestionItem.innerHTML = `${userInput} (Not Found in List)`;
             suggestionItem.addEventListener('click', () => {
                 nameInputField.value = userInput;
                 clearSuggestions();
@@ -2410,11 +2415,14 @@ if (window.location.href.includes('subscription-inquiry')) {
   
           if (typeof item === 'object' && item.hasOwnProperty('name')) {
             displayName = item.name;
-            displayDetails = `${item.types.join(", ")}, ${item.country.country_name}`;
-          } else if (typeof item === 'object' && item.hasOwnProperty('fields')) {
+            displayDetails = `${item.types.join(", ")}, ${item.country.country_name} Institution`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "institutions.institution") {
             displayName = item.fields.institution_name;
-            displayDetails = `${item.fields.city_town}, ${item.fields.country}`;
-          }
+            displayDetails = `${item.fields.country ? item.fields.country + " " : ""}Institution`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "communities.community") {
+            displayName = item.fields.community_name;
+            displayDetails = `${item.fields.country ? item.fields.country + " " : ""}Community`;
+        }
           suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
   
           suggestionItem.addEventListener('click', () => {
