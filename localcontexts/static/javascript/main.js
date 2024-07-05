@@ -2394,7 +2394,7 @@ if (window.location.href.includes('subscription-inquiry')) {
         if (!exactMatch) {
             const suggestionItem = document.createElement('div');
             suggestionItem.classList.add('suggestion-item');
-            suggestionItem.innerHTML = `${userInput} (Not Found in List)`;
+            suggestionItem.innerHTML = `${userInput} (Not in List)`;
             suggestionItem.addEventListener('click', () => {
                 nameInputField.value = userInput;
                 clearSuggestions();
