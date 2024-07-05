@@ -103,17 +103,24 @@ def embed_project(request, unique_id):
                     ).get(unique_id=unique_id)
     notices = Notice.objects.filter(project=project, archived=False)
     label_groups = return_project_labels_by_community(project)
-    
-    context = {
-        'layout' : layout,
-        'lang' : lang,
-        'align' : align,
-        'notices' : notices,
-        'label_groups' :  label_groups,
-        'project' : project
-    }
 
-    response = render(request, 'projects/embed-project.html', context)
+    if project.project_privacy == "Public":
+        context = {
+            'layout' : layout,
+            'lang' : lang,
+            'align' : align,
+            'notices' : notices,
+            'label_groups' :  label_groups,
+            'project' : project,
+            'restricted': False,
+        }
+    
+    else:
+        context = {
+            'restricted': True,
+        }
+
+    response = render(request, 'partials/_embed.html', context)
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response

@@ -1,0 +1,410 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+        <script src="/static/javascript/main.js" defer></script>
+        {% if project %}{{ project.unique_id|json_script:"embed-project-id" }}{% endif %}
+    </head>
+
+    <body>
+        {% if restricted %}
+            <div class="flex-this w-100">
+                <div class="margin-left-8 margin-right-8 auto-margin" style="display: inherit;">
+                    <a 
+                        href="https://localcontexts.org" 
+                        style="display: inline-flex;">
+                        <img style="width:60px;" loading="lazy" src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" alt="404 Local Contexts round logo">
+                    </a>
+                </div>
+                <div class="font-size-14 align-center flex-this margin-right-8 margin-left-8 column">
+                    <h1 class="orange-text no-bottom-margin">Oops!</h1>
+                    <p>We can't seem to find the page you are looking for.<br><strong>Error Code: 404 Not Found</strong></p>
+                </div>
+            </div>
+
+        {% else %}
+            <div style="padding: 12px;padding-bottom: 0px;">
+                <div id="group" class="flex-this{% if align == 'right' %} flex-end {% else %} flex-start {% endif%}{% if layout == '2' %} column {% endif %}{% if layout == '3' %} wrap w-100 {% endif %}"{% if layout == '2' and align == 'right' %} style= "width: fit-content; margin-left: auto;" {% endif %}>
+                    <!-- Notices -->
+                    {% if notices %}
+                        {% for notice in notices %}
+                            <div id="notice" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                <div id="notice-icon" style="padding-right: 12px;">
+                                    <img 
+                                        loading="lazy" 
+                                        class="pointer"
+                                        src="{{ notice.img_url }}" 
+                                        {% if layout == "3"%}
+                                            width="100px"
+                                        {% else %}
+                                            width="60px"
+                                        {% endif %}
+                                        {% if not lang or lang == 'en' %}
+                                            title="{% if notice.notice_type == 'traditional_knowledge' %}Traditional Knowledge Notice{% endif %}{% if notice.notice_type == 'biocultural' %}Biocultural Notice{% endif %}{% if notice.notice_type == 'attribution_incomplete' %}Attribution Incomplete Notice{% endif %}"
+                                        {% else %}
+                                            {% for translation in notice.notice_translations.all %}
+                                                {% if lang == translation.language_tag %}
+                                                    title="{{ translation.translated_name }}"
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        alt="{% if notice.notice_type == 'traditional_knowledge' %}TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center.{% endif %}{% if notice.notice_type == 'biocultural' %}BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.{% endif %}{% if notice.notice_type == 'attribution_incomplete' %}Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line.{% endif %}"
+                                    >
+                                </div>
+
+                                {% if layout == "2" %}
+                                    <div id="notice-title">
+                                        <h4>
+                                            {% if not lang or lang == 'en' %}
+                                                {% if notice.notice_type == 'traditional_knowledge' %}Traditional Knowledge Notice{% endif %}
+                                                {% if notice.notice_type == 'biocultural' %}Biocultural Notice{% endif %}
+                                                {% if notice.notice_type == 'attribution_incomplete' %}Attribution Incomplete Notice{% endif %}
+                                            {% else %}
+                                                {% for translation in notice.notice_translations.all %}
+                                                    {% if lang == translation.language_tag %}
+                                                        {{ translation.translated_name }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </h4>
+                                    </div>
+                                
+                                {% elif layout == "3" %}
+                                    <div id="notice-text">
+                                        <h3 style="margin-top: 0;margin-bottom: 0;">
+                                            {% if not lang or lang == 'en' %}
+                                                {% if notice.notice_type == 'traditional_knowledge' %}Traditional Knowledge Notice{% endif %}
+                                                {% if notice.notice_type == 'biocultural' %}Biocultural Notice{% endif %}
+                                                {% if notice.notice_type == 'attribution_incomplete' %}Attribution Incomplete Notice{% endif %}
+                                            {% else %}
+                                                {% for translation in notice.notice_translations.all %}
+                                                    {% if lang == translation.language_tag %}
+                                                        {{ translation.translated_name }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </h3>
+                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">
+                                            {% if not lang or lang == 'en' %}
+                                                English
+                                            {% else %}
+                                                {% for translation in notice.notice_translations.all %}
+                                                    {% if lang == translation.language_tag %}
+                                                        {{ translation.language }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </h4>
+                                        <p style="margin-top: 10px;margin-bottom: 10px;">
+                                            {% if not lang or lang == 'en' %}
+                                                {{ notice.default_text }}
+                                            {% else %}
+                                                {% for translation in notice.notice_translations.all %}
+                                                    {% if lang == translation.language_tag %}
+                                                        {{ translation.translated_text }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% elif otc_notices %}
+                        <div id="notice" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                            <div id="notice-icon" style="padding-left: 12px;padding-right: 12px;">
+                                <img 
+                                    loading="lazy" 
+                                    class="pointer"
+                                    src="/static/images/notices/ci-open-to-collaborate.png"
+                                    {% if layout == "3"%}
+                                        width="100px"
+                                    {% else %}
+                                        width="60px"
+                                    {% endif %}
+                                    title="Open to Collaborate Notice"
+                                    alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."
+                                >
+                            </div>
+
+                            {% if layout == "2" %}
+                                <div id="notice-title">
+                                    <h4>Open to Collaborate Notice</h4>
+                                </div>
+                            {% elif layout == "3" %}
+                                <div id="notice-text">
+                                    <h3 style="margin-top: 0;margin-bottom: 0;">Open to Collaborate
+                                    </h3>
+                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
+                                    <p style="margin-top: 10px;margin-bottom: 10px;">
+                                        {% if institution %}
+                                            {{ institution.institution_name }}
+                                        {% elif researcher %}
+                                            {% firstof researcher.user.get_full_name researcher.user.username %}
+                                        {% endif %}
+                                        is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.
+                                    </p>
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                    <!-- Labels -->
+                    {% if project and project.has_bclabels or project.has_tklabels %}
+                        {% for community, labels in label_groups.items %}
+                            <!-- TK Labels -->
+                            {% for tklabel in labels.tk_labels %}
+                                {% if not lang or lang == 'en' %}
+                                    {% if tklabel.language_tag == 'en' %}
+                                        <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label-icon" style="padding-right: 12px;">
+                                                <img 
+                                                    loading="lazy" 
+                                                    class="pointer"
+                                                    src="{{ tklabel.img_url }}" 
+                                                    {% if layout == "3" %}
+                                                        width="100px"
+                                                    {% else %}
+                                                        width="80px"
+                                                    {% endif %}
+                                                    title="{{ tklabel.name }}"
+                                                    alt=""
+                                                >
+                                            </div>
+                                            
+                                            <div id="label-details">
+                                                {% if layout == "2" %}
+                                                    <h4>{{ tklabel.name }}</h4>
+                                                
+                                                {% elif layout == "3" %}
+                                                    <h3 style="margin-top: 0;margin-bottom: 0;">{{ tklabel.name }}</h3>
+                                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
+                                                    <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                                {% endif %}
+                                            </div>
+
+                                        </div>       
+                                    {% endif %}
+
+                                {% elif lang == tklabel.language_tag %}
+                                    <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label-icon" style="padding-right: 12px;">
+                                            <img 
+                                                loading="lazy" 
+                                                class="pointer"
+                                                src="{{ tklabel.img_url }}" 
+                                                {% if layout == "3" %}
+                                                    width="100px"
+                                                {% else %}
+                                                    width="80px"
+                                                {% endif %}
+                                                title="{{ tklabel.name }}"
+                                                alt=""
+                                            >
+                                        </div>
+                                        
+                                        <div id="label-details">
+                                            {% if layout == "2" %}
+                                                <h4>{{ tklabel.name }}</h4>
+                                            
+                                            {% elif layout == "3" %}
+                                                <h3 style="margin-top: 0;margin-bottom: 0;">{{ tklabel.name }}</h3>
+                                                <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.language }}</h4>
+                                                <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+                                
+                                {% else %}
+                                    {% for translation in tklabel.tklabel_translation.all %}
+                                        {% if lang == translation.language_tag %}
+                                            <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                                <div id="label-icon" style="padding-right: 12px;">
+                                                    <img 
+                                                        loading="lazy" 
+                                                        class="pointer"
+                                                        src="{{ tklabel.img_url }}" 
+                                                        {% if layout == "3" %}
+                                                            width="100px"
+                                                        {% else %}
+                                                            width="80px"
+                                                        {% endif %}
+                                                        title="{{ translation.translated_name }}"
+                                                        alt=""
+                                                    >
+                                                </div>
+
+                                                <div id="label-details">
+                                                    {% if layout == "2" %}
+                                                        <h4>{{ translation.translated_name }}</h4>
+
+                                                    {% elif layout == "3" %}
+                                                        <h3 style="margin-top: 0;margin-bottom: 0;">{{ translation.translated_name }}</h3>
+                                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
+                                                        <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                    {% endif %}
+                                                </div>
+
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- BC Labels -->
+                            {% for bclabel in labels.bc_labels %}
+                                {% if not lang or lang == 'en' %}
+                                    {% if bclabel.language_tag == 'en' %}
+                                        <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label-icon" style="padding-right: 12px;">
+                                                <img 
+                                                    loading="lazy" 
+                                                    class="pointer"
+                                                    src="{{ bclabel.img_url }}" 
+                                                    {% if layout == "3" %}
+                                                        width="100px"
+                                                    {% else %}
+                                                        width="80px"
+                                                    {% endif %}
+                                                    title="{{ bclabel.name }}"
+                                                    alt=""
+                                                >
+                                            </div>
+                                            
+                                            <div id="label-details">
+                                                {% if layout == "2" %}
+                                                    <h4>{{ bclabel.name }}</h4>
+                                                
+                                                {% elif layout == "3" %}
+                                                    <h3 style="margin-top: 0;margin-bottom: 0;">{{ bclabel.name }}</h3>
+                                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
+                                                    <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                                {% endif %}
+                                            </div>
+
+                                        </div>       
+                                    {% endif %}
+
+                                {% elif lang == bclabel.language_tag %}
+                                    <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label-icon" style="padding-right: 12px;">
+                                            <img 
+                                                loading="lazy" 
+                                                class="pointer"
+                                                src="{{ bclabel.img_url }}" 
+                                                {% if layout == "3" %}
+                                                    width="100px"
+                                                {% else %}
+                                                    width="80px"
+                                                {% endif %}
+                                                title="{{ bclabel.name }}"
+                                                alt=""
+                                            >
+                                        </div>
+                                        
+                                        <div id="label-details">
+                                            {% if layout == "2" %}
+                                                <h4>{{ bclabel.name }}</h4>
+                                            
+                                            {% elif layout == "3" %}
+                                                <h3 style="margin-top: 0;margin-bottom: 0;">{{ bclabel.name }}</h3>
+                                                <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.language }}</h4>
+                                                <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+                                
+                                {% else %}
+                                    {% for translation in bclabel.bclabel_translation.all %}
+                                        {% if lang == translation.language_tag %}
+                                            <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                                <div id="label-icon" style="padding-right: 12px;">
+                                                    <img 
+                                                        loading="lazy" 
+                                                        class="pointer"
+                                                        src="{{ bclabel.img_url }}" 
+                                                        {% if layout == "3" %}
+                                                            width="100px"
+                                                        {% else %}
+                                                            width="80px"
+                                                        {% endif %}
+                                                        title="{{ translation.translated_name }}"
+                                                        alt=""
+                                                    >
+                                                </div>
+
+                                                <div id="label-details">
+                                                    {% if layout == "2" %}
+                                                        <h4>{{ translation.translated_name }}</h4>
+
+                                                    {% elif layout == "3" %}
+                                                        <h3 style="margin-top: 0;margin-bottom: 0;">{{ translation.translated_name }}</h3>
+                                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
+                                                        <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                    {% endif %}
+                                                </div>
+
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Logo and Page Link -->
+            <div class="flex-this w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
+                <div class="margin-left-8 margin-right-8 auto-margin" style="display: inherit;">
+                    <a 
+                        href="https://localcontexts.org" 
+                        style="display: inline-flex;">
+                        <img 
+                            style="width:30px;" 
+                            src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" 
+                            alt="Local Contexts Icon"
+                        >
+                    </a>
+                </div>
+                <div class="font-size-14 align-center flex-this margin-right-8">
+                    <a 
+                        class="darkteal-text underline-hover bold pointer" 
+                        href="{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif project %}{{project.project_page}}{% endif %}" 
+                        target="_top" 
+                        rel="noopener noreferrer"
+                    >
+                            Local Contexts {% if project %}Project{% else %}Profile{% endif %}: 
+                            {% if institution %}
+                                {{ institution.institution_name }}
+                            {% elif researcher %}
+                                {% firstof researcher.user.get_full_name researcher.user.username %}
+                            {% elif project %}
+                                {{project.title}}
+                            {% endif %}
+                    </a>
+                </div>
+            </div>
+
+        {% endif %}
+    </body>
+
+
+    <style>
+        body {
+            background: none transparent;
+        }
+    </style>
+</html>
