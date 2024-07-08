@@ -104,7 +104,7 @@ def connect_researcher(request):
                     action_type="New Researcher"
                 )
                 if subscription_form.is_valid():
-                    handle_confirmation_and_subscription(request, subscription_form, data)
+                    handle_confirmation_and_subscription(request, subscription_form, data, env)
                     return redirect('dashboard')
                 else:
                     error_messages = []
@@ -840,11 +840,10 @@ def archive_project(request, researcher_id, project_uuid):
 
 
 @login_required(login_url='login')
-def delete_project(request, researcher_id, project_uuid):
-    researcher = Researcher.objects.get(id=researcher_id)
+def delete_project(request, pk, project_uuid):
     project = Project.objects.get(unique_id=project_uuid)
 
-    subscription = Subscription.objects.get(researcher=researcher.id)
+    subscription = Subscription.objects.get(researcher=pk)
     if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
         for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
             notification.delete()
@@ -853,7 +852,7 @@ def delete_project(request, researcher_id, project_uuid):
     if subscription.project_count >= 0:
         subscription.project_count +=1
         subscription.save()
-    return redirect('researcher-projects', researcher.id)
+    return redirect('researcher-projects', pk)
 
 @login_required(login_url='login')
 def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
