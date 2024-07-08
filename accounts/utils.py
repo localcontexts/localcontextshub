@@ -8,9 +8,7 @@ from django.contrib import messages
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
-from accounts.models import Subscription
 from unidecode import unidecode
-from django.utils import timezone
 
 
 def get_users_name(user):
