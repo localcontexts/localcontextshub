@@ -1,24 +1,38 @@
 {% load static %}
 {% if messages %}
-    {% for message in messages %}
-        <div id="alert-message">
-            <div class="{{ message.tags }} flex-this">
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                    <script>
-                        toastr["error"]("{{ message }}")
-                    </script>
-                {% endif %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                    <script>
-                        toastr["info"]("{{ message }}")
-                    </script>
-                {% endif %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <script>
-                        toastr["success"]("{{ message }}")
-                    </script>
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  // options for toastr alert
+  toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-bottom-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
+
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+      toastr["error"]("{{ message }}")
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+      toastr["info"]("{{ message }}")
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+      toastr["success"]("{{ message }}")
+    {% endif %}
+  {% endfor %}
+})
+</script>
+
 {% endif %}
