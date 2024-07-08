@@ -988,7 +988,7 @@ def embed_otc_notice(request, pk):
         'institution' : institution 
     }
 
-    response = render(request, 'accounts/embed-notice.html', context)
+    response = render(request, 'partials/_embed.html', context)
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response

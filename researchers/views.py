@@ -736,10 +736,10 @@ def embed_otc_notice(request, pk):
         'lang' : lang,
         'align' : align,
         'otc_notices' : otc_notices,
-        'researcher' : researcher 
+        'researcher' : researcher,
     }
 
-    response = render(request, 'accounts/embed-notice.html', context)
+    response = render(request, 'partials/_embed.html', context)
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response
