@@ -667,6 +667,7 @@ def projects_board(request, filtertype=None):
 def hub_counter(request):
     return redirect('/admin/dashboard/')
 
+
 @force_maintenance_mode_off
 def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
@@ -703,6 +704,7 @@ def newsletter_subscription(request):
         return render(request, 'accounts/newsletter-subscription.html')
     else:
         return redirect('login')
+
 
 @force_maintenance_mode_off
 def newsletter_unsubscription(request, emailb64):
