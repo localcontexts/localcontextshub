@@ -23,6 +23,8 @@ from django.contrib.auth.views import (PasswordChangeForm, SetPasswordForm,
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+from maintenance_mode.decorators import force_maintenance_mode_off
+
 from allauth.socialaccount.views import SignupView, ConnectionsView
 from allauth.socialaccount.models import SocialAccount
 
@@ -665,7 +667,7 @@ def projects_board(request, filtertype=None):
 def hub_counter(request):
     return redirect('/admin/dashboard/')
 
-
+@force_maintenance_mode_off
 def newsletter_subscription(request):
     environment = dev_prod_or_local(request.get_host())
 
@@ -702,7 +704,7 @@ def newsletter_subscription(request):
     else:
         return redirect('login')
 
-
+@force_maintenance_mode_off
 def newsletter_unsubscription(request, emailb64):
     environment = dev_prod_or_local(request.get_host())
 
