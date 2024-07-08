@@ -104,7 +104,7 @@ def connect_researcher(request):
                     action_type="New Researcher"
                 )
                 if subscription_form.is_valid():
-                    handle_confirmation_and_subscription(request, subscription_form, data)
+                    handle_confirmation_and_subscription(request, subscription_form, data, env)
                     return redirect('dashboard')
                 else:
                     error_messages = []
