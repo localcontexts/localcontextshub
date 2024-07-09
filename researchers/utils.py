@@ -1,6 +1,8 @@
 from .models import Researcher
-from django.contrib import messages
-from django.shortcuts import redirect
+from helpers.utils import handle_confirmation_and_subscription, SalesforceAPIError
+from helpers.emails import send_researcher_email, send_hub_admins_account_creation_email, manage_researcher_mailing_list
+from helpers.models import HubActivity
+from django.db import transaction
 
 def is_user_researcher(user):
     if Researcher.objects.filter(user=user).exists():
@@ -17,3 +19,36 @@ def checkif_user_researcher(current_researcher, user):
             return False
     else:
         return False
+
+def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid_token, env):
+    try:
+        with transaction.atomic():
+            data = form.save(commit=False)
+            data.user = request.user
+            data.orcid_auth_token = orcid_token
+            data.orcid = orcid_id
+            response = handle_confirmation_and_subscription(request, subscription_form, data, env)
+            if env != 'SANDBOX' and not response:
+                raise SalesforceAPIError("Salesforce account or lead creation failed.")
+            data.save()
+
+            # Mark current user as researcher
+            request.user.user_profile.is_researcher = True
+            request.user.user_profile.save()
+
+            # sends one email to the account creator
+            # and one to either site admin or support
+            send_researcher_email(request) 
+            send_hub_admins_account_creation_email(request, data)
+
+            # Add researcher to mailing list
+            if env == 'PROD':
+                manage_researcher_mailing_list(request.user.email, True)                
+
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Researcher"
+            )
+    except SalesforceAPIError as e:
+        pass  

@@ -4,26 +4,23 @@ from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
 from helpers.utils import change_member_role, SalesforceAPIError, handle_confirmation_and_subscription
-from helpers.emails import  send_hub_admins_account_creation_email
 from institutions.models import Institution
 from helpers.models import HubActivity
 from django.db import transaction
-from django.utils import timezone
-from localcontexts.utils import dev_prod_or_local
 
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
 
-def handle_institution_creation(request, form, subscription_form ):
+def handle_institution_creation(request, form, subscription_form, env):
     try:
         with transaction.atomic():
             data = form.save(commit=False)
             data.institution_creator = request.user
             data.save()
-            response = handle_confirmation_and_subscription(request, subscription_form, data)
-            if not response:
+            response = handle_confirmation_and_subscription(request, subscription_form, data, env)
+            if env != 'SANDBOX' and not response:
                 raise SalesforceAPIError("Salesforce account or lead creation failed.")
             affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
             affiliation.institutions.add(data)
@@ -36,11 +33,7 @@ def handle_institution_creation(request, form, subscription_form ):
                 action_account_type="institution",
             )
     except SalesforceAPIError as e:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "Something went wrong. Please Try again later."
-        )
+        pass
 
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.

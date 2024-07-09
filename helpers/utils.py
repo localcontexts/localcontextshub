@@ -42,6 +42,7 @@ from django.utils.encoding import force_bytes, force_str
 import traceback
 import re
 from django.http import HttpResponseForbidden
+from django.utils import timezone
 
 class SalesforceAPIError(Exception):
     pass
@@ -722,18 +723,35 @@ def check_subscription(request, subscriber_type, id):
                             'Please upgrade your subscription plan to create more Projects.')
         return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')
     
-def handle_confirmation_and_subscription(request, subscription_form, user):
+def handle_confirmation_and_subscription(request, subscription_form, user, env):
     first_name = subscription_form.cleaned_data["first_name"]
     if not subscription_form.cleaned_data["last_name"]:
         subscription_form.cleaned_data["last_name"] = first_name
     try:
-        if isinstance(user, Researcher):
+        if env == 'SANDBOX':
+            subscription_params = {
+                'users_count': -1,
+                'api_key_count': -1,
+                'project_count': -1,
+                'notification_count': -1,
+                'start_date': timezone.now(),
+                'end_date': None
+            }
+            if isinstance(user, Researcher):
+                subscription_params['researcher'] = user
+            elif isinstance(user, Institution):
+                subscription_params['institution'] = user
+            user.is_subscribed = True
+            user.save()
+            response = Subscription.objects.create(**subscription_params)
+            return response
+        elif isinstance(user, Researcher) and env != 'SANDBOX':
             response = confirm_subscription(
                 request, user,
                 subscription_form, 'researcher_account'
             )
             return response
-        elif isinstance(user, Institution):
+        elif isinstance(user, Institution) and env != 'SANDBOX':
             response = confirm_subscription(
                 request, user,
                 subscription_form, 'institution_account'
