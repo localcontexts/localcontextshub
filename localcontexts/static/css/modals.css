@@ -5,6 +5,7 @@
     left: 0;
     top: 0;
     overflow: auto;
+    height: 100vw;
     background-color: #fff;
     width: 100%;
     border-radius: 4px;
