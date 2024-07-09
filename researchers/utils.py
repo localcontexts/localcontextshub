@@ -1,7 +1,6 @@
 from .models import Researcher
 from django.contrib import messages
 from django.shortcuts import redirect
-from helpers.utils import create_salesforce_account_or_lead
 
 def is_user_researcher(user):
     if Researcher.objects.filter(user=user).exists():
