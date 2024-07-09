@@ -88,7 +88,7 @@ def send_subscription_fail_email(subject, template):
         settings.MAILGUN_BASE_URL,
         auth=("api", settings.MAILGUN_API_KEY),
         data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
-            "to": "support@localcontexts.org",
+            "to": "tech@localcontexts.org",
             "subject": subject,
             "html": template}
     )
