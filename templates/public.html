@@ -1,4 +1,17 @@
 {% extends 'auth-base.html' %} {% block title %} View Account {% endblock %}{% load static %} {% load custom_acct_tags %} {% block main %}
+<script>
+    function closeRequestToJoinModal() {
+        const modalContent = document.getElementById('requestToJoinModal')
+        const elementClickedIsChild = modalContent.contains(event.target)
+        const elementClickedIsSelf = modalContent === event.target
+        const elementClickedIsNotChild = !elementClickedIsChild || elementClickedIsSelf
+
+        if (elementClickedIsNotChild) {
+            const modal = document.getElementById('requestToJoinModal')
+            modal.classList.replace('show', 'hide')
+        }
+    }
+</script>
 <div class="dashcard">
 
     {% if community %}
@@ -51,7 +64,9 @@
                                             <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
                                         </div>
                                         <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                            <div class="close-modal-btn">
+                                                <i class="fa-regular fa-xmark fa-xl"></i>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -241,7 +256,7 @@
         <div class="flex-this">
             <div class="dashcard-img-container">
                 <img loading="lazy" 
-                    class="profile-img" 
+                    class="profile-img"
                     src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
                     alt="{{ institution.institution_name }} image"
                 >
@@ -439,46 +454,67 @@
 </div> <!-- dashcard-->
 
     {% if request.user.is_authenticated %}
-        <div id="requestToJoinModal" class="modal hide">
+        <div id="requestToJoinModal" class="modal hide" onclick="closeRequestToJoinModal()">
             <div class="modal-defaults join-modal flex-this column w-100">
                 <div class="w-100">
                     <div>
                         <div class="flex-this space-between">
                             <div class="flex-this">
-                                <h2 class="primary-black-text no-top-margin">Request to join</h2>  
-                                <div class="tooltip" style="margin-top: 10px; margin-left: 5px;"><strong>i</strong>
-                                    <span class="tooltiptext">
-                                        <strong>You should request to join community and institution accounts you are already affiliated with. </strong> <br><br>
-                                        If you wish to collaborate with a community or institution you are not affiliated with, you will connect with them through Projects. You do not need to join their account.
-                                    </span>
-                                </div>                            
+                                <h2 class="primary-black-text no-top-margin">Request to join</h2>
                             </div>
                             <div>
                                 <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
                             </div>
                         </div>
 
+                        {% if institution %}
+                            Request to join an account for an institution you are already affiliated with.
+                            If you wish to collaborate with an institution you are not affiliated with,
+                            you can contact them or connect with them through Projects and do not need
+                            to join their account.
+                            <br><br>
+                        {% elif community %}
+                            Request to join an account for a community that you are already affiliated with.
+                            If you wish to collaborate with a community you are not affiliated with,
+                            you can contact them or connect with them through Projects and do not need to join
+                            their account.
+                            <br><br>
+                        {% endif %}
 
-                        <p class="no-top-margin">Every account has various responsibilities within the community.<br>
-                            <strong>Administrator:</strong> responsible for adding, editing and removing members<br>
-                            <strong>Editor:</strong> responsible for customizing Labels and Projects<br>
-                            <strong>Viewer:</strong> can view activity happening on the hub
-                        </p>  
                     </div>
 
-                        <div class="margin-left-8">
+                        <div>
                             <form id="requestToJoinForm" method="POST" action="">
                                 {% csrf_token %}
 
                                 <div class="flex-this column w-100">
                                     <div class="margin-top-8">
-                                        <label>Requested Responsibility</label><br>
+                                        <label>Requested Responsibility</label>
+                                        {% if institution %}
+                                            <div class="tooltip" style="margin-top: 10px; margin-left: 5px;"><strong>i</strong>
+                                                <span class="tooltiptext" >
+                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                    <strong>Editor:</strong> Place Notices, create and edit Projects, and notify communities<br><br>
+                                                    <strong>Viewer:</strong> View account’s Projects, Connections, and Members without edit access
+                                                </span>
+                                            </div>
+                                        {% elif community %}
+                                            <div class="tooltip" style="margin-top: 10px; margin-left: 5px;"><strong>i</strong>
+                                                <span class="tooltiptext">
+                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                    <strong>Editor:</strong> Customize, edit, and review account Labels, and create and edit Projects<br><br>
+                                                    <strong>Viewer:</strong> View account’s Labels, Projects, Connections, and Members without edit access
+                                                </span>
+                                            </div>
+                                        {% endif %}
+
+                                        <br>
                                         {{ join_form.role }}
                                         {% if join_form.role.errors %}
                                             <div class="msg-red w-50"><small>{{ join_form.role.errors.as_text }}</small></div> 
                                         {% endif %}
                                     </div>
-                                    
+
                                     <div class="margin-top-8">
                                         <label>Include a message with this request</label><br>
                                         {{ join_form.message }}
