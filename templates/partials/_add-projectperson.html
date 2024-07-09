@@ -38,9 +38,9 @@
 
     {% endfor %}
 
-    {% if formset.errors %}
-        {% for error in formset.errors %}
+    {% for error in formset.errors %}
+        {% if error %}
             <div class="msg-red w-50"><small>{{ error.as_text }}</small></div> 
-        {% endfor %}
-    {% endif %}
+        {% endif %}
+    {% endfor %}
 </div>
