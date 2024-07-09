@@ -53,14 +53,20 @@ def check_member_role(user, organization):
         and user == organization.institution_creator
     ):
         return "admin"
+    if isinstance(organization, ServiceProvider) and user == organization.account_creator:
+        return "admin"
 
     # Check for admin/editor/viewer roles
-    if organization.admins.filter(id=user.id).exists():
-        return "admin"
-    elif organization.editors.filter(id=user.id).exists():
-        return "editor"
-    elif organization.viewers.filter(id=user.id).exists():
-        return "viewer"
+    if isinstance(organization, ServiceProvider):
+        if organization.editors.filter(id=user.id).exists():
+            return "editor"
+    else:
+        if organization.admins.filter(id=user.id).exists():
+            return "admin"
+        elif organization.editors.filter(id=user.id).exists():
+            return "editor"
+        elif organization.viewers.filter(id=user.id).exists():
+            return "viewer"
 
     return False
 
@@ -82,13 +88,17 @@ def change_member_role(org, member, current_role, new_role):
 
 
 def add_user_to_role(account, role, user):
-    role_map = {
-        "admin": account.admins,
-        "editor": account.editors,
-        "viewer": account.viewers,
-    }
-    role_map[role].add(user)
-    account.save()
+    if isinstance(account, ServiceProvider) and role == "editor":
+        account.editors.add(user)
+        account.save()
+    else:
+        role_map = {
+            "admin": account.admins,
+            "editor": account.editors,
+            "viewer": account.viewers,
+        }
+        role_map[role].add(user)
+        account.save()
 
 
     
@@ -115,7 +125,7 @@ def accept_member_invite(request, invite_id):
     affiliation = get_object_or_404(UserAffiliation, user=invite.receiver)
 
     # Which organization, add to user affiliation
-    account = invite.community or invite.institution
+    account = invite.community or invite.institution or invite.service_provider
     if invite.institution and not request_possible(request, account, invite.role):
         return redirect("member-invitations")
     
@@ -123,6 +133,8 @@ def accept_member_invite(request, invite_id):
         affiliation.communities.add(account)
     if invite.institution:
         affiliation.institutions.add(account)
+    if invite.service_provider:
+        affiliation.service_providers.add(account)
 
     affiliation.save()
 

@@ -171,11 +171,17 @@ class InviteMemberForm(forms.ModelForm):
   
     def __init__(self, *args, **kwargs):
         subscription = kwargs.pop('subscription', None)
+        service_provider = kwargs.pop('service_provider', None)
         super().__init__(*args, **kwargs)
         if subscription is not None and subscription.users_count == 0:
             modified_choices = [
-                ('', '---------'),
                 ('viewer', 'Viewer'),
+            ]
+            self.fields['role'].choices = modified_choices
+
+        if service_provider is not None:
+            modified_choices = [
+                ('editor', 'Editor'),
             ]
             self.fields['role'].choices = modified_choices
 

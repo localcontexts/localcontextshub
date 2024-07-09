@@ -300,6 +300,7 @@ class HubActivity(models.Model):
     action_account_type = models.CharField(max_length=250, null=True, blank=True)
     community_id = models.IntegerField(null=True, blank=True)
     institution_id = models.IntegerField(null=True, blank=True)
+    service_provider_id = models.IntegerField(null=True, blank=True)
     project_id = models.IntegerField(null=True, blank=True)
     action_type = models.CharField(max_length=30, null=True, choices=TYPES)
     date = models.DateTimeField(auto_now_add=True, null=True)

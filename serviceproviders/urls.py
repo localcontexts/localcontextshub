@@ -18,6 +18,11 @@ urlpatterns = [
     # Connections
     path('connections/<str:pk>/', views.connections, name="service-provider-connections"),
 
+    # Members
+    path('members/<str:pk>/', views.service_provider_members, name="service-provider-members"),
+    path('members/invites/<str:pk>/', views.service_provider_member_invites, name="service-provider-member-intives"),
+    path('members/remove/<str:pk>/<str:member_id>', views.service_provider_remove_member, name="service-provider-remove-member"),
+
     # Settings
     path('update/<str:pk>/', views.update_service_provider, name="update-service-provider"),
     path('api-key/<str:pk>/', views.api_keys, name="service-provider-api-key"),

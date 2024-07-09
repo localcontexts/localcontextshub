@@ -34,6 +34,8 @@ def delete_member_invite(request, pk):
 
     if '/communities/' in request.META.get('HTTP_REFERER'):
         return redirect('member-requests', invite.community.id)
+    elif '/service-providers/' in request.META.get('HTTP_REFERER'):
+        return redirect('service-provider-member-intives', invite.service_provider.id)
     else:
         return redirect('institution-member-requests', invite.institution.id)
     

@@ -5,18 +5,28 @@
             <p>View all members and their associated responsibilities.</p>
         </div>
         <div class="flex-this">
+            {% if not service_provider%}
+                <div>
+                    <a 
+                        {% if community %}
+                            href="{% url 'member-requests' community.id %}"
+                        {% endif %} 
+                        {% if institution %}
+                            href="{% url 'institution-member-requests' institution.id %}"
+                        {% endif %}
+                        class="primary-btn white-btn">
+                        Member Requests {% if join_requests_count %}({% if join_requests_count < 10 %}0{{ join_requests_count }}{% else %}{{ join_requests_count }}{% endif %}){% endif %}
+                    </a>                
+                </div>
+            {% elif service_provider %}
             <div>
                 <a 
-                    {% if community %}
-                        href="{% url 'member-requests' community.id %}"
-                    {% endif %} 
-                    {% if institution %}
-                        href="{% url 'institution-member-requests' institution.id %}"
-                    {% endif %}
+                    href="{% url 'service-provider-member-intives' service_provider.id %}"
                     class="primary-btn white-btn">
-                    Member Requests {% if join_requests_count %}({% if join_requests_count < 10 %}0{{ join_requests_count }}{% else %}{{ join_requests_count }}{% endif %}){% endif %}
+                    Member Invites
                 </a>                
             </div>
+            {% endif %}
             {% if member_role == 'admin' %}
                 <div class="margin-left-8">
                     <a class="primary-btn green-btn" onclick="openMemberModal()">Add a new member <i class="fa fa-user-plus" aria-hidden="true"></i></a>
@@ -40,12 +50,17 @@
                 {% if institution %}
                     Editors can create and contribute to Projects, place Notices, and notify communities. 
                 {% endif %}
+                {% if service_provider %}
+                    Editors can edit the account profile and generate new API keys. 
+                {% endif %}
             </span></div>
         </div>
-        <div class="flex-this margin-bottom-8">
-            <div class="member-roles"><span class="bold">Viewer</span> | </div>
-            <div><span>Viewers can see the activity happening in the account but cannot change or edit anything.</span></div>
-        </div>
+        {% if not service_provider %}
+            <div class="flex-this margin-bottom-8">
+                <div class="member-roles"><span class="bold">Viewer</span> | </div>
+                <div><span>Viewers can see the activity happening in the account but cannot change or edit anything.</span></div>
+            </div>
+        {% endif %}
     </div>
 
         <!-- Alerts -->
@@ -608,6 +623,135 @@
 
         </section>
     {% endfor %}
+{% endif %}
+
+{% if service_provider %}
+    <section class="dash-driver flex-this column">
+        <div class="flex-this space-between">
+            <div class="margin-bottom-16">
+                <small class="bold">Role - Main Admininstrator</small>
+            </div>
+        </div>
+
+        <div class="w-70">
+            <h2 class="no-top-margin no-bottom-margin">
+                {% firstof service_provider.account_creator.get_full_name service_provider.account_creator.username %}
+            </h2>
+            {% if service_provider.account_creator.user_profile.position %}
+                <h3 class="no-top-margin">{{ service_provider.account_creator.user_profile.position }}</h3>
+            {% endif %}
+
+            <h4 class="no-top-margin"> {{ service_provider.account_creator.user_profile.get_location }} </h4>
+
+            {% if service_provider.account_creator.user_profile.languages_spoken %}
+                <div class="flex-this">
+                    <div class="dash-icons-big">
+                        <i class="fa fa-language fa-2x orange-text" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <small class="orange-text">Languages</small>
+                        <p class="no-top-margin">{{ service_provider.account_creator.user_profile.languages_spoken }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if service_provider.account_creator.user_profile.affiliation %}
+                <div class="flex-this">
+                    <div class="dash-icons-big">
+                        <i class="fa fa-object-group fa-2x orange-text" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <small class="orange-text">Affiliations</small>
+                        <p class="no-top-margin">{{ service_provider.account_creator.user_profile.affiliation }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if member_role == 'admin' %}
+                <div class="flex-this">
+                    <div class="dash-icons-big">
+                        <i class="fa-solid fa-envelope fa-2x orange-text"></i>
+                    </div>
+                    <div>
+                        <small class="orange-text">Email</small>
+                        <p class="no-top-margin">{{ service_provider.account_creator.email }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    {% for editor in service_provider.get_editors %}
+        <section class="dash-driver flex-this column">
+            <div class="flex-this space-between">
+                <div>
+                    <small class="bold">Role - Editor</small>
+                </div>
+
+                {% if member_role == 'admin' %}
+                    <div class="flex-this">
+                        <div class="margin-right-16 margin-top-8">
+                            <a id="removeMemberBtn_{{editor.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
+                        </div>
+                    </div>
+                    {% include 'snippets/modals/remove-member-modal.html' %}
+                {% endif %} 
+
+            </div>
+
+            <div class="w-70">
+                <h2 class="no-top-margin no-bottom-margin">
+                    {% firstof editor.get_full_name editor.username %}
+                </h2>
+                {% if editor.user_profile.position %}
+                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                {% endif %}
+
+                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+
+                {% if editor.user_profile.languages_spoken %}
+                    <div class="flex-this">
+                        <div class="dash-icons-big">
+                            <i class="fa fa-language fa-2x orange-text" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <small class="orange-text">Languages</small>
+                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if editor.user_profile.affiliation %}
+                    <div class="flex-this">
+                        <div class="dash-icons-big">
+                            <i class="fa fa-object-group fa-2x orange-text" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <small class="orange-text">Affiliations</small>
+                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if member_role == 'admin' %}
+                    <div class="flex-this">
+                        <div class="dash-icons-big">
+                            <i class="fa-solid fa-envelope fa-2x orange-text"></i>
+                        </div>
+                        <div>
+                            <small class="orange-text">Email</small>
+                            <p class="no-top-margin">{{ editor.email }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </section>
+    {% endfor %}
+
 {% endif %}
 
 

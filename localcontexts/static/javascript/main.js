@@ -2293,7 +2293,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
 
  }
 
- if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/')) {
+ if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/') || window.location.href.includes('service-providers/members/')) {
 
     // Add member modal
     function openAddModalView() {

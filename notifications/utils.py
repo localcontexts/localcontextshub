@@ -39,10 +39,10 @@ def send_action_notification_to_project_contribs(project): # sent when a new com
 
 
 # MEMBER INVITES 
-def send_account_member_invite(invite): # Send notification when community or institution sends a member invite to a user
+def send_account_member_invite(invite): # Send notification when community or institution or service provider sends a member invite to a user
     sender_name = get_users_name(invite.sender)
-    entity = invite.community or invite.institution
-    entity_type = 'community' if invite.community else 'institution'
+    entity = invite.community or invite.institution or invite.service_provider
+    entity_type = 'community' if invite.community else 'institution' if invite.institution else 'service_provider'
 
     title = f"{sender_name} has invited you to join {entity}."
     message = invite.message or f"You've been invited to join {entity} with the role of {invite.role}"
@@ -59,12 +59,12 @@ def send_account_member_invite(invite): # Send notification when community or in
     )
 
 
-def send_user_notification_member_invite_accept(member_invite): # Send notification when user accepts a member invite from community or institution
+def send_user_notification_member_invite_accept(member_invite): # Send notification when user accepts a member invite from community or institution or service provider
     sender_ = member_invite.sender
     receiver_ = member_invite.receiver
     receiver_name = get_users_name(receiver_)
-    entity = member_invite.community or member_invite.institution
-    entity_type = 'community' if member_invite.community else 'institution'
+    entity = member_invite.community or member_invite.institution or member_invite.service_provider
+    entity_type = 'community' if member_invite.community else 'institution' if member_invite.institution else 'service_provider'
 
     # Lets user know they are now a member
     title = f"You are now a member of {entity}."

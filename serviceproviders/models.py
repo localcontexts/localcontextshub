@@ -17,6 +17,8 @@ class ServiceProvider(models.Model):
     image = models.ImageField(upload_to=service_provider_img_path, blank=True, null=True)
     description = models.TextField(null=True, blank=True, validators=[MaxLengthValidator(200)])
     website = models.URLField(max_length=150, blank=True, null=True)
+    documentation = models.URLField(max_length=150, blank=True, null=True)
+    editors = models.ManyToManyField(User, blank=True, related_name="service_provider_editors")
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
 
@@ -25,6 +27,21 @@ class ServiceProvider(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
+    def get_member_count(self):
+        admins = 1
+        editors = self.editors.count()
+        total_members = admins + editors + 1
+        return total_members
+    
+    def get_editors(self):
+        return self.editors.all()
+    
+    def is_user_in_institution(self, user):
+        if user in self.editors.all() or user == self.account_creator:
+            return True
+        else:
+            return False
 
     class Meta:
         indexes = [models.Index(fields=['id', 'account_creator', 'image'])]

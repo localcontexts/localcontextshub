@@ -65,6 +65,11 @@
                 <div class="{% if 'members' in request.path %} active-nav {% endif %}">Members</div>
             </a>
         {% endif %}
+        {% if service_provider %}
+            <a href="{% url 'service-provider-members' service_provider.id %}">
+                <div class="{% if 'members' in request.path %} active-nav {% endif %}">Members</div>
+            </a>
+        {% endif %}
 
     </div>
 </div>

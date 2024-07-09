@@ -104,7 +104,9 @@
                                             {% endif %}
                                         {% endif %}
                                         {% if service_provider %}
-                                            <a class="default-a block" href="{% url 'service-provider-delete-otc' service_provider.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            {% if member_role == 'admin' or member_role == 'editor' %}
+                                                <a class="default-a block" href="{% url 'service-provider-delete-otc' service_provider.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </li>

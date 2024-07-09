@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import Http404
 from django.db.models import Q
 from itertools import chain
+from .decorators import member_required
 from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
@@ -227,9 +228,10 @@ def public_service_provider_view(request, pk):
     
 # Notices
 @login_required(login_url="login")
-# TODO: add is_researcher similar decorator
+@member_required(roles=["admin", "editor"])
 def service_provider_notices(request, pk):
     service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
     urls = OpenToCollaborateNoticeURL.objects.filter(
         service_provider=service_provider
     ).values_list("url", "name", "id")
@@ -261,6 +263,7 @@ def service_provider_notices(request, pk):
 
     context = {
         "service_provider": service_provider,
+        "member_role": member_role,
         "form": form,
         "urls": urls,
         "otc_download_perm": otc_download_perm,
@@ -270,7 +273,7 @@ def service_provider_notices(request, pk):
     return render(request, "serviceproviders/notices.html", context)
 
 @login_required(login_url="login")
-# TODO: add is_researcher similar decorator
+@member_required(roles=["admin", "editor"])
 def delete_otc_notice(request, pk, notice_id):
     if OpenToCollaborateNoticeURL.objects.filter(id=notice_id).exists():
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
@@ -278,20 +281,134 @@ def delete_otc_notice(request, pk, notice_id):
     return redirect("service-provider-notices", pk)
 
 @login_required(login_url="login")
-# TODO: add is_researcher similar decorator
+@member_required(roles=["admin", "editor"])
 def connections(request, pk):
     service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
 
     context = {
         "service_provider": service_provider,
+        "member_role": member_role,
     }
     return render(request, "serviceproviders/connections.html", context)
 
+# Members
+@login_required(login_url='login')
+@member_required(roles=['admin', 'editor'])
+def service_provider_members(request, pk):
+    service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
+
+    # Get list of users in this account, alphabetized by name
+    members = list(chain(
+        service_provider.editors.all().values_list('id', flat=True),
+    ))
+    members.append(service_provider.account_creator.id) # include community creator
+    users = User.objects.exclude(id__in=members).order_by('username')
+
+    # join_requests_count = JoinRequest.objects.filter(community=community).count()
+    form = InviteMemberForm(request.POST or None, service_provider=service_provider)
+
+    if request.method == "POST":
+        if 'change_member_role_btn' in request.POST:
+            current_role = request.POST.get('current_role')
+            new_role = request.POST.get('new_role')
+            user_id = request.POST.get('user_id')
+            member = User.objects.get(id=user_id)
+            change_member_role(service_provider, member, current_role, new_role)
+            return redirect('members', service_provider.id)
+
+        elif 'send_invite_btn' in request.POST:
+            selected_user = User.objects.none()
+            if form.is_valid():
+                data = form.save(commit=False)
+
+                # Get target User
+                selected_username = request.POST.get('userList')
+                username_to_check = ''
+
+                if ' ' in selected_username: #if username includes spaces means it has a first and last name (last name,first name)
+                    x = selected_username.split(' ')
+                    username_to_check = x[0]
+                else:
+                    username_to_check = selected_username
+
+                if not username_to_check in users.values_list('username', flat=True):
+                    messages.add_message(request, messages.INFO, 'Invalid user selection. Please select user from the list.')
+                else:
+                    selected_user = User.objects.get(username=username_to_check)
+
+                    # Check to see if an invite request aleady exists
+                    invitation_exists = InviteMember.objects.filter(receiver=selected_user, service_provider=service_provider).exists() # Check to see if invitation already exists
+
+                    if not invitation_exists: # If invitation request does not exist, save form
+                        data.receiver = selected_user
+                        data.sender = request.user
+                        data.status = 'sent'
+                        data.service_provider = service_provider
+                        data.save()
+
+                        send_account_member_invite(data) # Send action notification
+                        send_member_invite_email(request, data, service_provider) # Send email to target user
+                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}!')
+                        return redirect('service-provider-members', service_provider.id)
+                    else:
+                        messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {service_provider.name}.')
+            else:
+                messages.add_message(request, messages.INFO, 'Something went wrong.')
+
+    context = {
+        'service_provider': service_provider,
+        'member_role': member_role,
+        'form': form,
+        'users': users,
+        'invite_form': SignUpInvitationForm(),
+        'env': dev_prod_or_local(request.get_host()),
+    }
+    return render(request, 'serviceproviders/members.html', context)
+
+@login_required(login_url='login')
+@member_required(roles=['admin', 'editor', 'viewer'])
+def service_provider_member_invites(request, pk):
+    service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
+    member_invites = InviteMember.objects.filter(service_provider=service_provider)
+
+    context = {
+        'member_role': member_role,
+        'service_provider': service_provider,
+        'member_invites': member_invites,
+    }
+    return render(request, 'serviceproviders/member-requests.html', context)
+
+@login_required(login_url='login')
+@member_required(roles=['admin'])
+def service_provider_remove_member(request, pk, member_id):
+    service_provider = get_service_provider(pk)
+    member = User.objects.get(id=member_id)
+    # what role does member have
+    # remove from role
+    if member in service_provider.editors.all():
+        service_provider.editors.remove(member)
+
+    # remove account from userAffiliation instance
+    affiliation = UserAffiliation.objects.get(user=member)
+    affiliation.service_providers.remove(service_provider)
+
+    title = f'You have been removed as a member from {service_provider.name}.'
+    UserNotification.objects.create(from_user=request.user, to_user=member, title=title, notification_type="Remove", service_provider=service_provider)
+
+    if '/manage/' in request.META.get('HTTP_REFERER'):
+        return redirect('manage-orgs')
+    else:
+        return redirect('service-provider-members', service_provider.id)
+
 # ACCOUNT SETTINGS
 @login_required(login_url="login")
-# TODO: add is_researcher similar decorator
+@member_required(roles=["admin", "editor"])
 def update_service_provider(request, pk):
     service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
 
     if request.method == "POST":
         update_form = UpdateServiceProviderForm(
@@ -313,14 +430,16 @@ def update_service_provider(request, pk):
     context = {
         "service_provider": service_provider,
         "update_form": update_form,
+        "member_role": member_role,
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
 
 # Create API Key
 @login_required(login_url="login")
-# TODO: add is_researcher similar decorator
+@member_required(roles=["admin", "editor"])
 def api_keys(request, pk):
     service_provider = get_service_provider(pk)
+    member_role = check_member_role(request.user, service_provider)
     remaining_api_key_count = 0
     
     try:
@@ -366,6 +485,7 @@ def api_keys(request, pk):
             "service_provider" : service_provider,
             "form" : form,
             "account_keys" : account_keys,
+            "member_role" : member_role,
             "remaining_api_key_count" : remaining_api_key_count,
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
