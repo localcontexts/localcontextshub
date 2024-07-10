@@ -113,8 +113,9 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_institution(request):
     form = CreateInstitutionForm()
-    user_form,subscription_form  = form_initiation(request, "institution_action")
-   
+    user_form,subscription_form  = form_initiation(request, "institution_action")    
+    env = dev_prod_or_local(request.get_host())
+    
     if request.method == "POST":
         form = CreateInstitutionForm(request.POST)
         if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
@@ -131,7 +132,7 @@ def create_institution(request):
             subscription_form = SubscriptionForm(mutable_post_data)
 
             if subscription_form.is_valid():
-                handle_institution_creation(request, form, subscription_form )
+                handle_institution_creation(request, form, subscription_form, env )
                 return redirect('dashboard')
             else:
                 messages.add_message(
@@ -155,6 +156,7 @@ def create_institution(request):
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm()
     user_form,subscription_form  = form_initiation(request, "institution_action")
+    env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
         noror_form = CreateInstitutionNoRorForm(request.POST)
@@ -171,7 +173,7 @@ def create_custom_institution(request):
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
             if subscription_form.is_valid():
-                handle_institution_creation(request, noror_form, subscription_form)
+                handle_institution_creation(request, noror_form, subscription_form, env )
                 return redirect('dashboard')
             else:
                 messages.add_message(
