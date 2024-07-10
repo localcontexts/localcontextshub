@@ -1,8 +1,10 @@
 from .models import Researcher
-from helpers.utils import handle_confirmation_and_subscription, SalesforceAPIError
+from helpers.utils import handle_confirmation_and_subscription
 from helpers.emails import send_researcher_email, send_hub_admins_account_creation_email, manage_researcher_mailing_list
 from helpers.models import HubActivity
 from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
 
 def is_user_researcher(user):
     if Researcher.objects.filter(user=user).exists():
@@ -27,9 +29,8 @@ def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid
             data.user = request.user
             data.orcid_auth_token = orcid_token
             data.orcid = orcid_id
-            response = handle_confirmation_and_subscription(request, subscription_form, data, env)
-            if env != 'SANDBOX' and not response:
-                raise SalesforceAPIError("Salesforce account or lead creation failed.")
+            if env != 'SANDBOX':
+                handle_confirmation_and_subscription(request, subscription_form, data, env)
             data.save()
 
             # Mark current user as researcher
@@ -50,5 +51,11 @@ def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid
                 action_user_id=request.user.id,
                 action_type="New Researcher"
             )
-    except SalesforceAPIError as e:
-        pass  
+    except Exception as e:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "An unexpected error has occurred here."
+            " Please contact support@localcontexts.org.",
+        )
+        return redirect('dashboard')  
