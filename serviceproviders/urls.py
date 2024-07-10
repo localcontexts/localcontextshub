@@ -5,7 +5,6 @@ urlpatterns = [
     # Account Creation
     path('preparation-step/', views.preparation_step, name="prep-service-provider"),
     path('create-service-provider/', views.create_service_provider, name="create-service-provider"),
-    path('confirm-subscription-service-provider/<str:service_provider_id>/', views.confirm_subscription_service_provider, name="confirm-subscription-service-provider"),
 
     # Public view
     path('view/<str:pk>/', views.public_service_provider_view, name="public-service-provider"),

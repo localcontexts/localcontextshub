@@ -2,46 +2,38 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
-from django.db.models import Q
 from itertools import chain
 from .decorators import member_required
-from django.shortcuts import get_object_or_404
 
 from localcontexts.utils import dev_prod_or_local
-from projects.utils import *
-from helpers.utils import *
-from notifications.utils import *
-from .utils import *
-
-from .models import *
-from projects.models import *
-from communities.models import Community, JoinRequest
-from notifications.models import ActionNotification
-from helpers.models import *
-from api.models import AccountAPIKey
+from helpers.utils import (
+    InviteMember,
+    validate_recaptcha, 
+    check_member_role, 
+    encrypt_api_key,
+    form_initiation, 
+    change_member_role
+)
+from notifications.utils import UserNotification, send_account_member_invite
+from .utils import handle_service_provider_creation, get_service_provider
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation, Subscription
+from helpers.models import OpenToCollaborateNoticeURL
+from api.models import AccountAPIKey
+from accounts.models import UserAffiliation
+from .models import ServiceProvider
 
-from projects.forms import *
-from helpers.forms import (
-    ProjectCommentForm,
-    OpenToCollaborateNoticeURLForm,
-    CollectionsCareNoticePolicyForm,
-)
-from communities.forms import InviteMemberForm, JoinRequestForm
+from helpers.forms import OpenToCollaborateNoticeURLForm
+from communities.forms import InviteMemberForm
 from accounts.forms import (
     ContactOrganizationForm,
     SignUpInvitationForm,
     SubscriptionForm,
-    UserCreateProfileForm,
 )
 from api.forms import APIKeyGeneratorForm
-from .forms import *
+from .forms import CreateServiceProviderForm, UpdateServiceProviderForm
 
-from helpers.emails import *
-from maintenance_mode.decorators import force_maintenance_mode_off
-from django.db import transaction
+from helpers.emails import send_contact_email, send_member_invite_email
 
 
 # ACCOUNT CREATION
@@ -59,7 +51,7 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_service_provider(request):
     form = CreateServiceProviderForm()
-    user_form,subscription_form  = form_initiation(request)
+    user_form,subscription_form  = form_initiation(request, "service_provider_action")
 
     if request.method == "POST":
         form = CreateServiceProviderForm(request.POST)
@@ -97,73 +89,15 @@ def create_service_provider(request):
     )
 
 
-@login_required(login_url="login")
-def confirm_subscription_service_provider(request, service_provider_id):
-    join_flag = False
-    service_provider = get_object_or_404(ServiceProvider, id=service_provider_id)
-    initial_data = {
-        "first_name": request.user._wrapped.first_name,
-        "last_name": request.user._wrapped.last_name,
-        "email": request.user._wrapped.email,
-        "account_type": "service_provider_account",
-        "organization_name": service_provider.name,
-    }
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] != "member"
-    ]
-    form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-    form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
-    form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
-    form.fields["email"].widget.attrs.update({"class": "readonly-input"})
-    if request.method == "POST":
-        if validate_recaptcha(request) and form.is_valid():
-            account_type_key = form.cleaned_data["account_type"]
-            inquiry_type_key = form.cleaned_data["inquiry_type"]
-
-            account_type_display = dict(form.fields["account_type"].choices).get(
-                account_type_key, ""
-            )
-            inquiry_type_display = dict(form.fields["inquiry_type"].choices).get(
-                inquiry_type_key, ""
-            )
-            form.cleaned_data["account_type"] = account_type_display
-            form.cleaned_data["inquiry_type"] = inquiry_type_display
-
-            first_name = form.cleaned_data["first_name"]
-            if not form.cleaned_data["last_name"]:
-                form.cleaned_data["last_name"] = first_name
-            try:
-                response = confirm_subscription(request, service_provider, join_flag, form)
-                return response
-            except:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "An unexpected error has occurred. Please contact support@localcontexts.org.",
-                )
-                return redirect("dashboard")
-    return render(
-        request,
-        "accounts/confirm-subscription.html",
-        {
-            "form": form,
-            "account": service_provider,
-            "subscription_url": 'confirm-subscription-service-provider',
-            "join_flag": join_flag,
-        },
-    )
-
-
 def public_service_provider_view(request, pk):
     try:
         environment = dev_prod_or_local(request.get_host())
         service_provider = ServiceProvider.objects.get(id=pk)
 
         # Do notices exist
-        otc_notices = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider)
+        otc_notices = OpenToCollaborateNoticeURL.objects.filter(
+            service_provider=service_provider
+        )
 
         if request.user.is_authenticated:
             user_service_providers = (
@@ -334,12 +268,18 @@ def service_provider_members(request, pk):
                     username_to_check = selected_username
 
                 if not username_to_check in users.values_list('username', flat=True):
-                    messages.add_message(request, messages.INFO, 'Invalid user selection. Please select user from the list.')
+                    messages.add_message(
+                        request, 
+                        messages.INFO, 
+                        'Invalid user selection. Please select user from the list.')
                 else:
                     selected_user = User.objects.get(username=username_to_check)
 
                     # Check to see if an invite request aleady exists
-                    invitation_exists = InviteMember.objects.filter(receiver=selected_user, service_provider=service_provider).exists() # Check to see if invitation already exists
+                    invitation_exists = InviteMember.objects.filter(
+                        receiver=selected_user, 
+                        service_provider=service_provider
+                    ).exists() # Check to see if invitation already exists
 
                     if not invitation_exists: # If invitation request does not exist, save form
                         data.receiver = selected_user
@@ -350,10 +290,18 @@ def service_provider_members(request, pk):
 
                         send_account_member_invite(data) # Send action notification
                         send_member_invite_email(request, data, service_provider) # Send email to target user
-                        messages.add_message(request, messages.INFO, f'Invitation sent to {selected_user}!')
+                        messages.add_message(
+                            request, 
+                            messages.INFO, 
+                            f'Invitation sent to {selected_user}!'
+                        )
                         return redirect('service-provider-members', service_provider.id)
                     else:
-                        messages.add_message(request, messages.INFO, f'The user you are trying to add already has an invitation pending to join {service_provider.name}.')
+                        messages.add_message(
+                            request, 
+                            messages.INFO, 
+                            f'The user you are trying to add already has an invitation pending to join {service_provider.name}.'
+                        )
             else:
                 messages.add_message(request, messages.INFO, 'Something went wrong.')
 
@@ -396,7 +344,13 @@ def service_provider_remove_member(request, pk, member_id):
     affiliation.service_providers.remove(service_provider)
 
     title = f'You have been removed as a member from {service_provider.name}.'
-    UserNotification.objects.create(from_user=request.user, to_user=member, title=title, notification_type="Remove", service_provider=service_provider)
+    UserNotification.objects.create(
+        from_user=request.user, 
+        to_user=member, 
+        title=title, 
+        notification_type="Remove", 
+        service_provider=service_provider
+    )
 
     if '/manage/' in request.META.get('HTTP_REFERER'):
         return redirect('manage-orgs')
@@ -443,7 +397,9 @@ def api_keys(request, pk):
     remaining_api_key_count = 0
     
     try:
-        account_keys = AccountAPIKey.objects.filter(service_provider=service_provider).values_list("prefix", "name", "encrypted_key")
+        account_keys = AccountAPIKey.objects.filter(
+            service_provider=service_provider
+        ).values_list("prefix", "name", "encrypted_key")
 
         if service_provider.is_certified and account_keys.count() == 0:
             remaining_api_key_count = 1
@@ -454,7 +410,11 @@ def api_keys(request, pk):
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
                 if service_provider.is_certified and remaining_api_key_count == 0:
-                    messages.add_message(request, messages.ERROR, 'Your account has reached its API Key limit.')
+                    messages.add_message(
+                        request, 
+                        messages.ERROR, 
+                        'Your account has reached its API Key limit.'
+                    )
                     return redirect("service-provider-api-key", service_provider.id)
                 form = APIKeyGeneratorForm(request.POST)
 
@@ -469,7 +429,11 @@ def api_keys(request, pk):
                     AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
                 
                 else:
-                    messages.add_message(request, messages.ERROR, 'Your account is not confirmed. Your account must be confirmed to create an API Key.')
+                    messages.add_message(
+                        request, 
+                        messages.ERROR, 
+                        'Your account is not confirmed. Your account must be confirmed to create an API Key.'
+                    )
                     return redirect("service-provider-api-key", service_provider.id)
 
                 return redirect("service-provider-api-key", service_provider.id)
