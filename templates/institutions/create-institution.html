@@ -23,7 +23,6 @@
                 {% if form.errors %}
                     {% for field_name, errors in form.errors.items %}
                         <div class="red-text">
-                            <strong>{{ field_name }}</strong>:
                             {% for error in errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
