@@ -58,14 +58,12 @@ def connect_researcher(request):
         if request.method == "POST":
             if form.is_valid() and validate_recaptcha(request):
                 mutable_post_data = request.POST.copy()
-                if not form.cleaned_data['primary_institution']:
-                        form.cleaned_data['primary_institution'] = request.user._wrapped.first_name
                 subscription_data = {
                 "first_name": request.user._wrapped.first_name,
                 "last_name": request.user._wrapped.last_name,
                 "email": request.user._wrapped.email,
                 "account_type": "researcher_account",
-                "organization_name": form.cleaned_data['primary_institution'],
+                "organization_name": request.user._wrapped.first_name,
                 }
                 mutable_post_data.update(subscription_data)
                 subscription_form = SubscriptionForm(mutable_post_data)
