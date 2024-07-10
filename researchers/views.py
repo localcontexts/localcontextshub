@@ -58,6 +58,8 @@ def connect_researcher(request):
         if request.method == "POST":
             if form.is_valid() and validate_recaptcha(request):
                 mutable_post_data = request.POST.copy()
+                if not form.cleaned_data['primary_institution']:
+                        form.cleaned_data['primary_institution'] = request.user._wrapped.first_name
                 subscription_data = {
                 "first_name": request.user._wrapped.first_name,
                 "last_name": request.user._wrapped.last_name,
