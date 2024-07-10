@@ -1,14 +1,12 @@
-from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
-from helpers.utils import change_member_role, SalesforceAPIError, create_salesforce_account_or_lead
-from helpers.emails import send_hub_admins_account_creation_email
+from helpers.utils import change_member_role, SalesforceAPIError, handle_confirmation_and_subscription
+from helpers.emails import  send_hub_admins_account_creation_email
 from institutions.models import Institution
 from helpers.models import HubActivity
-from accounts.forms import UserCreateProfileForm, SubscriptionForm
 from django.db import transaction
 from django.utils import timezone
 from localcontexts.utils import dev_prod_or_local
@@ -17,28 +15,6 @@ from localcontexts.utils import dev_prod_or_local
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
-
-def form_initiation(request):
-    subscription_form = SubscriptionForm()
-
-    fields_to_update = {
-        "first_name": request.user._wrapped.first_name,
-        "last_name": request.user._wrapped.last_name,
-    }
-    user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
-    exclude_choices = {"member", "service_provider"}
-    
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] not in exclude_choices
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-    for field, value in fields_to_update.items():
-        if value:
-            user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
-        
-    return  user_form,subscription_form
 
 def handle_institution_creation(request, form, subscription_form ):
     try:
@@ -69,19 +45,6 @@ def handle_institution_creation(request, form, subscription_form ):
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
 
-def handle_confirmation_and_subscription(request, subscription_form, institution):
-    first_name = subscription_form.cleaned_data["first_name"]
-    join_flag = False
-    if not subscription_form.cleaned_data["last_name"]:
-        subscription_form.cleaned_data["last_name"] = first_name
-    response = confirm_subscription(request, institution, join_flag, subscription_form)
-    data = Institution.objects.get(institution_name=institution.institution_name)
-    send_hub_admins_account_creation_email(request, data)
-    return response
-
-# This is for retroactively adding ROR IDs to Institutions.
-# Currently not being used anywhere.
-
 def set_ror_id(institution):
     import requests
 
@@ -100,29 +63,6 @@ def set_ror_id(institution):
             print('No matching institution found.')
     else:
         print('Error:', response.status_code)
-        
-def confirm_subscription(request, institution, join_flag, form):
-    if institution.institution_creator == request.user._wrapped:
-        if dev_prod_or_local(request.get_host()) != 'SANDBOX' and create_salesforce_account_or_lead(request, hubId=str(institution.id)+"_i", data=form.cleaned_data):
-            messages.add_message(request, messages.INFO, 'Thank you for your submission, our team will review and be in contact with the subscription contract. You will be notified once your subscription has been processed.')
-        elif dev_prod_or_local(request.get_host()) == 'SANDBOX':
-            institution.is_subscribed = True
-            institution.save()
-            subscription = Subscription.objects.create(
-            institution=institution,
-            users_count=-1,
-            api_key_count=-1,
-            project_count=-1,
-            notification_count=-1,
-            start_date=timezone.now(),
-            end_date=None
-            )
-        else:
-            messages.add_message(request, messages.ERROR, 'An unexpected error has occurred. Please contact support@localcontexts.org.')
-        return redirect('dashboard')
-    elif request.user._wrapped not in institution.get_admins():
-        join_flag = True
-        return render(request, 'accounts/confirm-subscription.html', {'form': form, 'account':institution, "subscription_url": 'confirm-subscription-institution', 'join_flag':join_flag,})
 
 def add_user(request, institution, member, current_role, new_role):
     try:
@@ -150,27 +90,3 @@ def add_user(request, institution, member, current_role, new_role):
         messages.add_message(request, messages.ERROR, 
                             'Your institution has reached its editors and admins limit. '
                             'Please upgrade your subscription plan to add more editors and admins.')
-
-         
-def check_subscription(request, subscriber_type, id):
-    subscriber_field_mapping = {
-        'institution': 'institution_id',
-        'researcher': 'researcher_id',
-        'community': 'community_id'
-    }
-    
-    if subscriber_type not in subscriber_field_mapping:
-        raise ValueError("Invalid subscriber type provided.")
-    
-    subscriber_field = subscriber_field_mapping[subscriber_type]
-    
-    try:
-        subscription = Subscription.objects.get(**{subscriber_field: id})
-    except Subscription.DoesNotExist:
-        messages.add_message(request, messages.ERROR, 'The subscription process of your account is not completed yet. Please wait for the completion of subscription process.')
-        return HttpResponseForbidden('Forbidden: Subscription process isnt completed. ')
-
-    if subscription.project_count == 0:
-        messages.add_message(request, messages.ERROR, 'Your account has reached its Project limit. '
-                            'Please upgrade your subscription plan to create more Projects.')
-        return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')

@@ -9,9 +9,8 @@ from itertools import chain
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
-from accounts.utils import get_users_name, handle_confirmation_and_subscription, confirm_subscription
+from accounts.utils import get_users_name
 from notifications.utils import send_action_notification_to_project_contribs
-from institutions.utils import check_subscription
 
 from communities.models import Community
 from notifications.models import ActionNotification
@@ -51,39 +50,32 @@ def preparation_step(request):
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
-    subscription_form = SubscriptionForm()
-
-    exclude_choices = {"member", "service_provider", "cc_only"}
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] not in exclude_choices
-        
-    ]
-    subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+    subscription_form  = form_initiation(request, "researcher_action")
+    
     env = dev_prod_or_local(request.get_host())
     
     if not researcher:
         if request.method == "POST":
             if form.is_valid() and validate_recaptcha(request):
-                mutable_post_data = request.POST.copy()
-                subscription_data = {
-                "first_name": request.user._wrapped.first_name,
-                "last_name": request.user._wrapped.last_name,
-                "email": request.user._wrapped.email,
-                "account_type": "researcher_account",
-                "organization_name": form.cleaned_data['primary_institution'],
-                }
-                mutable_post_data.update(subscription_data)
-                subscription_form = SubscriptionForm(mutable_post_data)
-                orcid_id = request.POST.get('orcidId')
-                orcid_token = request.POST.get('orcidIdToken')
-                
-                data = form.save(commit=False)
-                data.user = request.user
-                data.orcid_auth_token = orcid_token
-                data.orcid = orcid_id
-                data.save()
+                with transaction.atomic():
+                    mutable_post_data = request.POST.copy()
+                    subscription_data = {
+                    "first_name": request.user._wrapped.first_name,
+                    "last_name": request.user._wrapped.last_name,
+                    "email": request.user._wrapped.email,
+                    "account_type": "researcher_account",
+                    "organization_name": form.cleaned_data['primary_institution'],
+                    }
+                    mutable_post_data.update(subscription_data)
+                    subscription_form = SubscriptionForm(mutable_post_data)
+                    orcid_id = request.POST.get('orcidId')
+                    orcid_token = request.POST.get('orcidIdToken')
+                    
+                    data = form.save(commit=False)
+                    data.user = request.user
+                    data.orcid_auth_token = orcid_token
+                    data.orcid = orcid_id
+                    data.save()
 
                 # Mark current user as researcher
                 request.user.user_profile.is_researcher = True
@@ -190,71 +182,6 @@ def public_researcher_view(request, pk):
         return render(request, 'public.html', context)
     except:
         raise Http404()
-
-@login_required(login_url="login")
-def confirm_subscription_researcher(request, pk):
-    join_flag = False
-    researcher = get_object_or_404(Researcher, id=pk)
-    initial_data = {
-        "first_name": request.user._wrapped.first_name,
-        "last_name": request    .user._wrapped.last_name,
-        "email": request.user._wrapped.email,
-        "account_type": "researcher_account",
-        "organization_name": request.user._wrapped.first_name,
-    }
-    exclude_choices = {"member", "service_provider", "cc_only"}
-
-    modified_inquiry_type_choices = [
-        choice
-        for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-        if choice[0] not in exclude_choices
-        
-    ]
-    form = SubscriptionForm(request.POST or None, initial=initial_data)
-    form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-    form.fields["account_type"].widget.attrs.update({"class": "w-100 readonly-input"})
-    if request.user._wrapped.first_name:
-        form.fields["organization_name"].widget.attrs.update({"class": "readonly-input"})
-    form.fields["email"].widget.attrs.update({"class": "readonly-input"})
-    if request.method == "POST":
-        if validate_recaptcha(request) and form.is_valid():
-            account_type_key = form.cleaned_data["account_type"]
-            inquiry_type_key = form.cleaned_data["inquiry_type"]
-
-            account_type_display = dict(form.fields["account_type"].choices).get(
-                account_type_key, ""
-            )
-            inquiry_type_display = dict(form.fields["inquiry_type"].choices).get(
-                inquiry_type_key, ""
-            )
-            form.cleaned_data["account_type"] = account_type_display
-            form.cleaned_data["inquiry_type"] = inquiry_type_display
-            if form.cleaned_data["organization_name"] == '':
-                form.cleaned_data["organization_name"] = form.cleaned_data["first_name"]
-
-            first_name = form.cleaned_data["first_name"]
-            if not form.cleaned_data["last_name"]:
-                form.cleaned_data["last_name"] = first_name
-            try:
-                response = confirm_subscription(request, researcher, join_flag, form, 'researcher_account')
-                return response
-            except:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "An unexpected error has occurred here. Please contact support@localcontexts.org.",
-                )
-                return redirect("dashboard")
-    return render(
-        request,
-        "accounts/confirm-subscription.html",
-        {
-            "form": form,
-            "account": researcher,
-            "subscription_url": 'confirm-subscription-researcher',
-            "join_flag": join_flag,
-        },
-    )
 
 @login_required(login_url='login')
 def connect_orcid(request):

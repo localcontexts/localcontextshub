@@ -26,9 +26,11 @@ from .exceptions import UnsubscribedAccountException
 from .models import Notice
 from notifications.models import *
 
-from accounts.utils import get_users_name
+from accounts.forms import UserCreateProfileForm, SubscriptionForm
+
+from accounts.utils import get_users_name, confirm_subscription
 from notifications.utils import send_user_notification_member_invite_accept
-from helpers.emails import send_membership_email, send_subscription_fail_email
+from helpers.emails import send_membership_email, send_subscription_fail_email, send_hub_admins_account_creation_email
 from django.contrib.staticfiles import finders
 from django.shortcuts import get_object_or_404
 
@@ -40,6 +42,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 import traceback
 import re
+from django.http import HttpResponseForbidden
 
 class SalesforceAPIError(Exception):
     pass
@@ -674,3 +677,92 @@ def encrypt_api_key(key):
 def decrypt_api_key(key):
     api_key = force_str(urlsafe_base64_decode(key))
     return api_key
+
+def form_initiation(request,account_type=""):
+    subscription_form = SubscriptionForm()
+    if account_type == "institution_action":
+        fields_to_update = {
+            "first_name": request.user._wrapped.first_name,
+            "last_name": request.user._wrapped.last_name,
+        }
+        user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
+        exclude_choices = {"member", "service_provider"}
+        
+        modified_inquiry_type_choices = [
+            choice
+            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+            if choice[0] not in exclude_choices
+        ]
+        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+        for field, value in fields_to_update.items():
+            if value:
+                user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
+            
+        return  user_form,subscription_form
+    elif account_type == "researcher_action":
+        subscription_form = SubscriptionForm()
+        exclude_choices = {"member", "service_provider", "cc_only"}
+        modified_inquiry_type_choices = [
+            choice
+            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+            if choice[0] not in exclude_choices
+            
+        ]
+        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+        
+        return subscription_form
+
+def check_subscription(request, subscriber_type, id):
+    subscriber_field_mapping = {
+        'institution': 'institution_id',
+        'researcher': 'researcher_id',
+        'community': 'community_id'
+    }
+    
+    if subscriber_type not in subscriber_field_mapping:
+        raise ValueError("Invalid subscriber type provided.")
+    
+    subscriber_field = subscriber_field_mapping[subscriber_type]
+    
+    try:
+        subscription = Subscription.objects.get(**{subscriber_field: id})
+    except Subscription.DoesNotExist:
+        messages.add_message(request, messages.ERROR, 'The subscription process of your account is not completed yet. Please wait for the completion of subscription process.')
+        return HttpResponseForbidden('Forbidden: Subscription process isnt completed. ')
+
+    if subscription.project_count == 0:
+        messages.add_message(request, messages.ERROR, 'Your account has reached its Project limit. '
+                            'Please upgrade your subscription plan to create more Projects.')
+        return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')
+    
+def handle_confirmation_and_subscription(request, subscription_form, user):
+    first_name = subscription_form.cleaned_data["first_name"]
+    if not subscription_form.cleaned_data["last_name"]:
+        subscription_form.cleaned_data["last_name"] = first_name
+    try:
+        if isinstance(user, Researcher):
+            response = confirm_subscription(
+                request, user,
+                subscription_form, 'researcher_account'
+            )
+            return response
+        elif isinstance(user, Institution):
+            response = confirm_subscription(
+                request, user,
+                subscription_form, 'institution_account'
+            )
+            data = Institution.objects.get(
+                institution_name=user.institution_name
+            )
+            send_hub_admins_account_creation_email(
+                request, data
+            )
+            return response
+    except Exception:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "An unexpected error has occurred here."
+            " Please contact support@localcontexts.org.",
+        )
+        return redirect("dashboard")

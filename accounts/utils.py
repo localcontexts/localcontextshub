@@ -9,9 +9,7 @@ from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
-from accounts.models import Subscription
 from unidecode import unidecode
-from django.utils import timezone
 
 
 def get_users_name(user):
@@ -113,10 +111,7 @@ def institute_account_subscription(
                 messages.INFO,
                 "Your Account already exists on Hub. Please login.",
             )
-            return redirect(
-                "confirm-subscription-institution",
-                institution_id=institution.id,
-            )
+            return redirect("dashboard")
         elif account_exist and institution:
             next_url = reverse(
                 "public-institution", kwargs={"pk": institution.id}
@@ -173,7 +168,7 @@ def institute_account_subscription(
             return redirect("subscription-inquiry")
 
 
-def confirm_subscription(request, user, join_flag, form, account_type):
+def confirm_subscription(request, user, form, account_type):
     from helpers.utils import create_salesforce_account_or_lead
     if account_type == "institution_account":
         hub_id = str(user.id) + "_i"

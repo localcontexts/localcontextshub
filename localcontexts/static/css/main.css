@@ -1695,7 +1695,7 @@ i[data-tooltip]:hover:after {
 /* For Subscribed Icon */
 .subscribed-icon{
     color: #ef6c00;
-    margin: 14px 0 0 15px;
+    margin: 14px 0 0 8px;
 }
 .subscribed-icon-wrapper{
     display: flex
