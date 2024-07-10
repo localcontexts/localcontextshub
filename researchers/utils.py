@@ -29,9 +29,9 @@ def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid
             data.user = request.user
             data.orcid_auth_token = orcid_token
             data.orcid = orcid_id
+            data.save()
             if env != 'SANDBOX':
                 handle_confirmation_and_subscription(request, subscription_form, data, env)
-            data.save()
 
             # Mark current user as researcher
             request.user.user_profile.is_researcher = True
