@@ -7,7 +7,7 @@ class ConnectResearcherForm(forms.ModelForm):
         model = Researcher
         fields = ['primary_institution', 'description']
         widgets = {
-            'primary_institution': forms.TextInput(attrs={'class': 'w-100', "required": True}),
+            'primary_institution': forms.TextInput(attrs={'class': 'w-100',}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
         }
 
