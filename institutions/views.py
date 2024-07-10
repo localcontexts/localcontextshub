@@ -87,7 +87,7 @@ def create_institution(request):
             name = form.cleaned_data['institution_name']
 
             if Institution.objects.filter(institution_name=name).exists():
-                messages.add_message(request, messages.ERROR, 'This institution is already on the Hub..')
+                messages.add_message(request, messages.ERROR, 'This institution is already on the Hub.')
             else:
                 data = form.save(commit=False)
                 data.institution_creator = request.user
