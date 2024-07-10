@@ -43,9 +43,8 @@ from django.utils.encoding import force_bytes, force_str
 import traceback
 import re
 from django.http import HttpResponseForbidden
+from django.utils import timezone
 
-class SalesforceAPIError(Exception):
-    pass
 
 def check_member_role(user, organization):
     # Check for creator roles
@@ -638,7 +637,7 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
                 }
             template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
             send_subscription_fail_email(subject, template)
-            raise SalesforceAPIError("Failed to create lead in Salesforce.")
+            raise Exception(reason)
     except urllib.error.HTTPError as e:
         reason= "Unable to get token of access from Salesforce"
         subject= "Subscription failed"
@@ -655,7 +654,7 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
             }
         template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
         send_subscription_fail_email(subject, template)
-        raise SalesforceAPIError("Failed to retrieve Salesforce access token.")
+        raise Exception(reason)
 
         
 def validate_is_subscribed(
@@ -754,34 +753,43 @@ def check_subscription(request, subscriber_type, id):
                             'Please upgrade your subscription plan to create more Projects.')
         return HttpResponseForbidden('Forbidden: Project limit of account is reached. ')
     
-def handle_confirmation_and_subscription(request, subscription_form, user):
+def handle_confirmation_and_subscription(request, subscription_form, user, env):
     first_name = subscription_form.cleaned_data["first_name"]
     if not subscription_form.cleaned_data["last_name"]:
         subscription_form.cleaned_data["last_name"] = first_name
-    try:
+
+    if env == 'SANDBOX':
+        subscription_params = {
+            'users_count': -1,
+            'api_key_count': -1,
+            'project_count': -1,
+            'notification_count': -1,
+            'start_date': timezone.now(),
+            'end_date': None
+        }
         if isinstance(user, Researcher):
-            response = confirm_subscription(
-                request, user,
-                subscription_form, 'researcher_account'
-            )
-            return response
+            subscription_params['researcher'] = user
         elif isinstance(user, Institution):
-            response = confirm_subscription(
-                request, user,
-                subscription_form, 'institution_account'
-            )
-            data = Institution.objects.get(
-                institution_name=user.institution_name
-            )
-            send_hub_admins_account_creation_email(
-                request, data
-            )
-            return response
-    except Exception:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "An unexpected error has occurred here."
-            " Please contact support@localcontexts.org.",
+            subscription_params['institution'] = user
+        user.is_subscribed = True
+        user.save()
+        response = Subscription.objects.create(**subscription_params)
+        return response
+    elif isinstance(user, Researcher) and env != 'SANDBOX':
+        response = confirm_subscription(
+            request, user,
+            subscription_form, 'researcher_account'
         )
-        return redirect("dashboard")
+        return response
+    elif isinstance(user, Institution) and env != 'SANDBOX':
+        response = confirm_subscription(
+            request, user,
+            subscription_form, 'institution_account'
+        )
+        data = Institution.objects.get(
+            institution_name=user.institution_name
+        )
+        send_hub_admins_account_creation_email(
+            request, data
+        )
+        return response

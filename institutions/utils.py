@@ -3,28 +3,24 @@ from django.db.models import Q
 from django.contrib import messages
 from .models import Institution
 from accounts.models import Subscription, UserAffiliation
-from helpers.utils import change_member_role, SalesforceAPIError, handle_confirmation_and_subscription
-from helpers.emails import  send_hub_admins_account_creation_email
+from helpers.utils import change_member_role, handle_confirmation_and_subscription
 from institutions.models import Institution
 from helpers.models import HubActivity
 from django.db import transaction
-from django.utils import timezone
-from localcontexts.utils import dev_prod_or_local
 
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
 
-def handle_institution_creation(request, form, subscription_form ):
+def handle_institution_creation(request, form, subscription_form, env):
     try:
         with transaction.atomic():
             data = form.save(commit=False)
             data.institution_creator = request.user
             data.save()
-            response = handle_confirmation_and_subscription(request, subscription_form, data)
-            if not response:
-                raise SalesforceAPIError("Salesforce account or lead creation failed.")
+            if env != 'SANDBOX':
+                handle_confirmation_and_subscription(request, subscription_form, data, env)
             affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
             affiliation.institutions.add(data)
             affiliation.save()
@@ -35,12 +31,14 @@ def handle_institution_creation(request, form, subscription_form ):
                 institution_id=data.id,
                 action_account_type="institution",
             )
-    except SalesforceAPIError as e:
+    except Exception as e:
         messages.add_message(
             request,
             messages.ERROR,
-            "Something went wrong. Please Try again later."
+            "An unexpected error has occurred here."
+            " Please contact support@localcontexts.org.",
         )
+        return redirect('dashboard')
 
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.

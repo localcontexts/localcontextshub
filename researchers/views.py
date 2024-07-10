@@ -57,61 +57,28 @@ def connect_researcher(request):
     if not researcher:
         if request.method == "POST":
             if form.is_valid() and validate_recaptcha(request):
-                with transaction.atomic():
-                    mutable_post_data = request.POST.copy()
-                    subscription_data = {
-                    "first_name": request.user._wrapped.first_name,
-                    "last_name": request.user._wrapped.last_name,
-                    "email": request.user._wrapped.email,
-                    "account_type": "researcher_account",
-                    "organization_name": form.cleaned_data['primary_institution'],
-                    }
-                    mutable_post_data.update(subscription_data)
-                    subscription_form = SubscriptionForm(mutable_post_data)
-                    orcid_id = request.POST.get('orcidId')
-                    orcid_token = request.POST.get('orcidIdToken')
-                    
-                    data = form.save(commit=False)
-                    data.user = request.user
-                    data.orcid_auth_token = orcid_token
-                    data.orcid = orcid_id
-                    data.save()
-
-                # Mark current user as researcher
-                request.user.user_profile.is_researcher = True
-                request.user.user_profile.save()
-
-                # sends one email to the account creator
-                # and one to either site admin or support
-                send_researcher_email(request) 
-                send_hub_admins_account_creation_email(request, data)
-
-                # Add researcher to mailing list
-                if env == 'PROD':
-                    manage_researcher_mailing_list(request.user.email, True)                
-
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="New Researcher"
-                )
+                mutable_post_data = request.POST.copy()
+                subscription_data = {
+                "first_name": request.user._wrapped.first_name,
+                "last_name": request.user._wrapped.last_name,
+                "email": request.user._wrapped.email,
+                "account_type": "researcher_account",
+                "organization_name": form.cleaned_data['primary_institution'],
+                }
+                mutable_post_data.update(subscription_data)
+                subscription_form = SubscriptionForm(mutable_post_data)
+                orcid_id = request.POST.get('orcidId')
+                orcid_token = request.POST.get('orcidIdToken')
                 if subscription_form.is_valid():
-                    handle_confirmation_and_subscription(request, subscription_form, data, env)
+                    handle_researcher_creation(request, subscription_form, form, orcid_id, orcid_token, env)
                     return redirect('dashboard')
                 else:
-                    error_messages = []
-                    for field, errors in subscription_form.errors.items():
-                        for error in errors:
-                            error_messages.append(f"{field.capitalize()}: {error}")
-
-                    # Join error messages into a single string
-                    concatenated_errors = "\n".join(error_messages)
                     messages.add_message(
-                    request,
-                    messages.ERROR,
-                    concatenated_errors,
-                )
-                    return redirect('confirm-subscription-researcher', data.id)
+                        request,
+                        messages.ERROR,
+                        "Something went wrong. Please Try again later.",
+                    )
+                    return redirect('dashboard')
         context = {'form': form, 'env': env, 'subscription_form': subscription_form,}
         return render(request, 'researchers/connect-researcher.html', context)
     else:
