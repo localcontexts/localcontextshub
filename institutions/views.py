@@ -80,43 +80,38 @@ def preparation_step(request):
 @login_required(login_url='login')
 def create_institution(request):
     form = CreateInstitutionForm(request.POST or None)
+
     if request.method == 'POST':
         affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=request.user)
-
         if form.is_valid():
-            name = form.cleaned_data['institution_name']
+            data = form.save(commit=False)
+            data.institution_creator = request.user
+            environment = dev_prod_or_local(request.get_host())
 
-            if Institution.objects.filter(institution_name=name).exists():
-                messages.add_message(request, messages.ERROR, 'This institution is already on the Hub.')
-            else:
-                data = form.save(commit=False)
-                data.institution_creator = request.user
-                environment = dev_prod_or_local(request.get_host())
+            # If in test site, approve immediately
+            if environment == 'SANDBOX':
+                data.is_approved = True
 
-                # If in test site, approve immediately
-                if environment == 'SANDBOX':
-                    data.is_approved = True
-                    
-                data.save()
+            data.save()
 
-                # Add to user affiliations
-                affiliation.institutions.add(data)
+            # Add to user affiliations
+            affiliation.institutions.add(data)
 
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="New Institution",
-                    institution_id=data.id,
-                    action_account_type='institution'
-                )
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Institution",
+                institution_id=data.id,
+                action_account_type='institution'
+            )
 
-                send_hub_admins_account_creation_email(request, data)
-                send_institution_email(request, data)
+            send_hub_admins_account_creation_email(request, data)
+            send_institution_email(request, data)
 
-                messages.add_message(request, messages.INFO,
-                             'Your institution account has been created.')
-                return redirect('dashboard')
-    
+            messages.add_message(request, messages.INFO,
+                         'Your institution account has been created.')
+            return redirect('dashboard')
+
     return render(request, 'institutions/create-institution.html', {'form': form })
 
 @login_required(login_url='login')
