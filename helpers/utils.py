@@ -623,7 +623,7 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
                     "error_syntax": error_syntax,
                 }
             template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
-            send_subscription_fail_email(subject, template)
+            send_subscription_fail_email(request, subject, template)
             raise Exception(reason)
     except urllib.error.HTTPError as e:
         reason= "Unable to get token of access from Salesforce"
@@ -640,7 +640,7 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
                 "error_syntax": error_syntax,
             }
         template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
-        send_subscription_fail_email(subject, template)
+        send_subscription_fail_email(request, subject, template)
         raise Exception(reason)
 
         
