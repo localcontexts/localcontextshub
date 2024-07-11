@@ -62,7 +62,7 @@ def set_ror_id(institution):
     else:
         print('Error:', response.status_code)
 
-def add_members_to_institution(request, institution, member, current_role, new_role):
+def check_subscription_and_then_change_role(request, institution, member, current_role, new_role):
     try:
         subscription = Subscription.objects.get(institution=institution)
     except:

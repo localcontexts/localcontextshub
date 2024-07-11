@@ -464,7 +464,7 @@ def institution_members(request, pk):
             new_role = request.POST.get("new_role")
             user_id = request.POST.get("user_id")
             member = User.objects.get(id=user_id)
-            add_members_to_institution(request, institution, member, current_role, new_role)
+            check_subscription_and_then_change_role(request, institution, member, current_role, new_role)
             return redirect("institution-members", institution.id)
 
         elif "send_invite_btn" in request.POST:
