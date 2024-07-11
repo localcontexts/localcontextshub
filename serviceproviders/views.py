@@ -52,6 +52,7 @@ def preparation_step(request):
 def create_service_provider(request):
     form = CreateServiceProviderForm()
     user_form,subscription_form  = form_initiation(request, "service_provider_action")
+    env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
         form = CreateServiceProviderForm(request.POST)
@@ -69,7 +70,7 @@ def create_service_provider(request):
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
             if subscription_form.is_valid():
-                handle_service_provider_creation(request, form, subscription_form)
+                handle_service_provider_creation(request, form, subscription_form, env)
                 return redirect('dashboard')
             else:
                 messages.add_message(

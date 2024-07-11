@@ -698,6 +698,7 @@ def form_initiation(request,account_type=""):
                 user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
             
         return  user_form,subscription_form
+    
     elif account_type == "researcher_action":
         subscription_form = SubscriptionForm()
         exclude_choices = {"member", "service_provider", "cc_only"}
@@ -710,6 +711,7 @@ def form_initiation(request,account_type=""):
         subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
         
         return subscription_form
+    
     elif account_type == "service_provider_action":
         fields_to_update = {
             "first_name": request.user._wrapped.first_name,
@@ -734,7 +736,8 @@ def check_subscription(request, subscriber_type, id):
     subscriber_field_mapping = {
         'institution': 'institution_id',
         'researcher': 'researcher_id',
-        'community': 'community_id'
+        'community': 'community_id',
+        'service_provider': 'service_provider_id'
     }
     
     if subscriber_type not in subscriber_field_mapping:
@@ -769,18 +772,27 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         }
         if isinstance(user, Researcher):
             subscription_params['researcher'] = user
+            user.is_subscribed = True
+
         elif isinstance(user, Institution):
             subscription_params['institution'] = user
-        user.is_subscribed = True
+            user.is_subscribed = True
+
+        elif isinstance(user, ServiceProvider):
+            subscription_params['service_provider'] = user
+            user.is_certified = True
+
         user.save()
         response = Subscription.objects.create(**subscription_params)
         return response
+    
     elif isinstance(user, Researcher) and env != 'SANDBOX':
         response = confirm_subscription(
             request, user,
             subscription_form, 'researcher_account'
         )
         return response
+    
     elif isinstance(user, Institution) and env != 'SANDBOX':
         response = confirm_subscription(
             request, user,
@@ -792,4 +804,21 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         send_hub_admins_account_creation_email(
             request, data
         )
+        return response
+    
+    elif isinstance(user, ServiceProvider) and env != 'SANDBOX':
+        print("Start")
+        response = confirm_subscription(
+            request, user,
+            subscription_form, 'service_provider_account'
+        )
+        print("Response", response)
+        data = ServiceProvider.objects.get(
+            name=user.name
+        )
+        print("Data", data)
+        send_hub_admins_account_creation_email(
+            request, data
+        )
+        print("Email")
         return response

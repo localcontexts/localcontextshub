@@ -197,6 +197,13 @@ def send_hub_admins_account_creation_email(request, data):
                 { 'researcher': data }
             )
             return subject, template, None
+        elif isinstance(data, ServiceProvider):
+            subject = f'New Service Provider Account: {data.name}'
+            template = render_to_string(
+                'snippets/emails/internal/service-provider-application.html',
+                {'data': data}
+            )
+            return subject, template, None
         else:
             return None, None, None
 
