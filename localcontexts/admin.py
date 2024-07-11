@@ -481,7 +481,6 @@ class DateRangeFilter(admin.SimpleListFilter):
 
     def choices(self, changelist):
         choices = list(super().choices(changelist))
-        print(choices)
         choices[0]['display'] = _('last 30 Days')
         return [choices[2], choices[0], choices[1]]
 

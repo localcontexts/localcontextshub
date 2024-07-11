@@ -807,18 +807,14 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         return response
     
     elif isinstance(user, ServiceProvider) and env != 'SANDBOX':
-        print("Start")
         response = confirm_subscription(
             request, user,
             subscription_form, 'service_provider_account'
         )
-        print("Response", response)
         data = ServiceProvider.objects.get(
             name=user.name
         )
-        print("Data", data)
         send_hub_admins_account_creation_email(
             request, data
         )
-        print("Email")
         return response
