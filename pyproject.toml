@@ -7,7 +7,7 @@ omit = [
 ]
 
 [tool.yapfignore]
-column_limit=79
+column_limit=97
 ignore_patterns = [
     '*/apps.py',
     'localcontexts/settings.py',
