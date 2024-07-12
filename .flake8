@@ -1,5 +1,6 @@
 [flake8]
 max-line-length = 79
+
 exclude =
     */apps.py
     tests
@@ -7,5 +8,16 @@ exclude =
     __pycache__
     manage.py
     settings.py
+    conftest.py
     env
     .env
+    api/
+    bclabels/
+    communities/
+    helpers
+    institutions/
+    localcontexts/
+    projects/
+    tklabels/
+    researchers/
+    backups/
