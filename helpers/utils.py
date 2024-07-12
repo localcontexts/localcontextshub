@@ -444,7 +444,11 @@ def validate_recaptcha(request_object):
 
 
 def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Project']):
-    entity.share_boundary_publicly = post_data.get('share-boundary-publicly') == 'on'
+    share_boundary_publicly = post_data.get('share-boundary-publicly')
+
+    if share_boundary_publicly:
+        entity.share_boundary_publicly = share_boundary_publicly == 'on'
+
     raw_boundary_payload = post_data.get('boundary-payload')
 
     if raw_boundary_payload in ['', None]:
