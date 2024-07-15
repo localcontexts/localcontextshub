@@ -8,7 +8,9 @@ from tklabels.models import TKLabel
 from accounts.utils import get_users_name
 
 
-def send_simple_action_notification(sender, target_org, title, notification_type, reference_id):
+def send_simple_action_notification(
+    sender, target_org, title, notification_type, reference_id
+):
     target_type_mapping = {
         Community: 'community',
         Institution: 'institution',

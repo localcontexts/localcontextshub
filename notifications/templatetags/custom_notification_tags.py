@@ -12,16 +12,24 @@ register = template.Library()
 def unread_notifications_exist(account):
     if account is not None:
         if isinstance(account, User):
-            return UserNotification.objects.filter(to_user=account, viewed=False).exists()
+            return UserNotification.objects.filter(
+                to_user=account, viewed=False
+            ).exists()
 
         if isinstance(account, Researcher):
-            return ActionNotification.objects.filter(researcher=account, viewed=False).exists()
+            return ActionNotification.objects.filter(
+                researcher=account, viewed=False
+            ).exists()
 
         if isinstance(account, Institution):
-            return ActionNotification.objects.filter(institution=account, viewed=False).exists()
+            return ActionNotification.objects.filter(
+                institution=account, viewed=False
+            ).exists()
 
         if isinstance(account, Community):
-            return ActionNotification.objects.filter(community=account, viewed=False).exists()
+            return ActionNotification.objects.filter(
+                community=account, viewed=False
+            ).exists()
 
         return False
 

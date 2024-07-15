@@ -24,14 +24,28 @@ class UserNotification(models.Model):
     title = models.CharField(max_length=200, blank=True)
     message = models.TextField(blank=True)
     to_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, related_name="to_user", blank=True
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="to_user",
+        blank=True
     )
     from_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, related_name="from_user", blank=True
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="from_user",
+        blank=True
     )
-    notification_type = models.CharField(max_length=10, choices=TYPES, null=True, blank=True)
-    community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
+    notification_type = models.CharField(
+        max_length=10, choices=TYPES, null=True, blank=True
+    )
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, blank=True
+    )
+    institution = models.ForeignKey(
+        Institution, on_delete=models.CASCADE, null=True, blank=True
+    )
     role = models.CharField(max_length=8, choices=ROLES, null=True, blank=True)
     reference_id = models.CharField(max_length=20, null=True, blank=True)
     viewed = models.BooleanField(default=False, blank=True)
@@ -43,7 +57,9 @@ class UserNotification(models.Model):
     class Meta:
         verbose_name = 'User Notification'
         verbose_name_plural = 'User Notifications'
-        ordering = ('viewed', '-created')  # will display False first, then True
+        ordering = (
+            'viewed', '-created'
+        )  # will display False first, then True
 
 
 class ActionNotification(models.Model):
@@ -56,7 +72,9 @@ class ActionNotification(models.Model):
     )
 
     title = models.CharField(max_length=200, blank=True)
-    notification_type = models.CharField(max_length=20, choices=TYPES, null=True, blank=True)
+    notification_type = models.CharField(
+        max_length=20, choices=TYPES, null=True, blank=True
+    )
     sender = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -64,9 +82,15 @@ class ActionNotification(models.Model):
         related_name="notification_sender",
         blank=True
     )
-    community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
-    researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, null=True, blank=True)
+    community = models.ForeignKey(
+        Community, on_delete=models.CASCADE, null=True, blank=True
+    )
+    institution = models.ForeignKey(
+        Institution, on_delete=models.CASCADE, null=True, blank=True
+    )
+    researcher = models.ForeignKey(
+        Researcher, on_delete=models.CASCADE, null=True, blank=True
+    )
     reference_id = models.CharField(max_length=50, null=True, blank=True)
     viewed = models.BooleanField(default=False, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
