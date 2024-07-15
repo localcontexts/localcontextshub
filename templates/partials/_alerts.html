@@ -6,10 +6,10 @@
             font-size: 24px;
             line-height: 18px;
             float: left;
-            margin-left: -25px;
+            margin-left: -22px;
             color: #FFF;
-            padding-right: 0.5em;
-            margin-right: 0.5em;
+            margin-right: 16px;
+            margin-top: -5px;
         }
         #toast-container .toast{
             display: block;
@@ -26,6 +26,32 @@
         #toast-container> .fa-circle-exclamation , .toast  {
             background-color: #B91C1C !important;
         }
+        .toast-close-button {
+            margin-top: -20px !important;
+            margin-right: -8px !important;
+            font-weight: 100;
+            padding: 20px !important;
+        }
+        .toast-message {
+            height: 40px;
+
+            margin-top: -12px;
+            margin-right: 38px;
+            border-right: solid 1px;
+            border-right-color: rgba(255,255,255,.8);
+            max-height: 3.2em;
+            line-height: 1.6em;
+            font-size: 12px;
+
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        #toast-container>div {
+            padding: 15px 15px 15px 40px;
+        }
     </style>
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -38,8 +64,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     "preventDuplicates": false,
     "onclick": null,
     "showDuration": 300,
-    "hideDuration": 1000,
-    "timeOut": 100000,
+    "hideDuration": 500,
+    "timeOut": 10000,
     "extendedTimeOut": 1000,
     "showEasing": "swing",
     "hideEasing": "linear",
@@ -47,6 +73,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     "hideMethod": "fadeOut",
     "tapToDismiss": true,
     "closeOnHover": false,
+    "closeHtml": "<button><i class='fa fa-xmark'></i></button>",
+    escapeHtml: true,
     iconClasses: {
       error: 'fa fa-circle-exclamation',
       info: 'fa fa-circle-info',
