@@ -50,13 +50,15 @@ def send_action_notification_to_project_contribs(
 # MEMBER INVITES
 def send_account_member_invite(
     invite
-):  # Send notification when community or institution sends a member invite to a user
+):  # Send notification when community
+    # or institution sends a member invite to a user
     sender_name = get_users_name(invite.sender)
     entity = invite.community or invite.institution
     entity_type = 'community' if invite.community else 'institution'
 
     title = f"{sender_name} has invited you to join {entity}."
-    message = invite.message or f"You've been invited to join {entity} with the role of {invite.role}"
+    message = invite.message or f"You've been invited to join " \
+                                f"{entity} with the role of {invite.role}"
 
     UserNotification.objects.create(
         from_user=invite.sender,
@@ -72,7 +74,8 @@ def send_account_member_invite(
 
 def send_user_notification_member_invite_accept(
     member_invite
-):  # Send notification when user accepts a member invite from community or institution
+):  # Send notification when user accepts
+    # a member invite from community or institution
     sender_ = member_invite.sender
     receiver_ = member_invite.receiver
     receiver_name = get_users_name(receiver_)
@@ -81,7 +84,8 @@ def send_user_notification_member_invite_accept(
 
     # Lets user know they are now a member
     title = f"You are now a member of {entity}."
-    message = f"You now have access to {entity}'s Projects and {'Labels' if entity_type == 'community' else 'Notices' }."
+    message = f"You now have access to {entity}'s Projects and " \
+              f"{'Labels' if entity_type == 'community' else 'Notices' }."
     UserNotification.objects.create(
         to_user=receiver_,
         from_user=sender_,
