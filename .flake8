@@ -4,6 +4,7 @@ max-line-length = 79
 exclude =
     */apps.py
     tests
+    test
     migrations
     __pycache__
     manage.py
