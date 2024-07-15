@@ -1,8 +1,34 @@
 {% load static %}
 {% if messages %}
+    <style>
+        #toast-container > .toast:before {
+            position: relative;
+            font-size: 24px;
+            line-height: 18px;
+            float: left;
+            margin-left: -25px;
+            color: #FFF;
+            padding-right: 0.5em;
+            margin-right: 0.5em;
+        }
+        #toast-container .toast{
+            display: block;
+            width: 325px;
+            height: 64px;
+            padding-top: 25px;
+        }
+        #toast-container> .fa-circle-info , .toast {
+            background-color: #1D4ED8 !important;
+        }
+        #toast-container> .fa-check-circle , .toast {
+            background-color: #166534 !important;
+        }
+        #toast-container> .fa-circle-exclamation , .toast  {
+            background-color: #B91C1C !important;
+        }
+    </style>
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
-  // options for toastr alert
   toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -11,25 +37,32 @@ document.addEventListener("DOMContentLoaded", function(event) {
     "positionClass": "toast-bottom-right",
     "preventDuplicates": false,
     "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
+    "showDuration": 300,
+    "hideDuration": 1000,
+    "timeOut": 100000,
+    "extendedTimeOut": 1000,
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
+    "hideMethod": "fadeOut",
+    "tapToDismiss": true,
+    "closeOnHover": false,
+    iconClasses: {
+      error: 'fa fa-circle-exclamation',
+      info: 'fa fa-circle-info',
+      success: 'fa fa-check-circle',
+    },
   }
 
   {% for message in messages %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-      toastr["error"]("{{ message }}")
+      toastr.error("{{ message }}")
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-      toastr["info"]("{{ message }}")
+      toastr.info("{{ message }}")
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-      toastr["success"]("{{ message }}")
+      toastr.success("{{ message }}")
     {% endif %}
   {% endfor %}
 })
