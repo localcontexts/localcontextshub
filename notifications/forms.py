@@ -1,1 +1,1 @@
-from django import forms # noqa
+from django import forms  # noqa

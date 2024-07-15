@@ -48,9 +48,7 @@ def send_action_notification_to_project_contribs(
 
 
 # MEMBER INVITES
-def send_account_member_invite(
-    invite
-):  # Send notification when community
+def send_account_member_invite(invite):  # Send notification when community
     # or institution sends a member invite to a user
     sender_name = get_users_name(invite.sender)
     entity = invite.community or invite.institution
