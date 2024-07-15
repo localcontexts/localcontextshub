@@ -33,6 +33,7 @@
 .dashcard-img-container, .profile-img {
     width: 286px;
     height: 160.88px;
+    position: relative;
 }
 
 .profile-img, 
@@ -41,6 +42,20 @@
 .researcher-img-container, .researcher-img-container img {
     width: 190px;
     height: 190px;
+}
+
+.certified-overlay {
+    position: absolute;
+    width: inherit;
+    bottom:0;
+    height: 55px;
+}
+
+.certified-overlay img { 
+    margin-left: 5px;
+    margin-bottom: 5px;
+    position: absolute;
+    bottom: 0;
 }
 
 .dashcard-text-container { width: 70%;}

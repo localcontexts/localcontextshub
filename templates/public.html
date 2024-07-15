@@ -296,14 +296,18 @@
                     src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
                     alt="{{ service_provider.name }} image"
                 >
+                {% if service_provider and service_provider.is_certified %}
+                    <div class="certified-overlay">
+                        <img 
+                            src="{% static 'images/logos/sp-badge-orange.png' %}"
+                            width="157px"
+                            height="47px"
+                        >
+                    </div>
+                {% endif %}
             </div>
             <div class="flex-this column dashcard-text-container">
-                <div class="subscribed-icon-wrapper">
-                    <h3 class="dashcard-h3">{{ service_provider }}</h3>
-                    {% if service_provider and service_provider.is_certified %}
-                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Certified"></i>
-                    {% endif %}
-                </div>
+                <h3 class="dashcard-h3">{{ service_provider }}</h3>
                 <div>
                     <p class="dashcard-subheader">Service Provider</p>
                 </div>
