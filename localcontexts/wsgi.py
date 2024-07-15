@@ -20,4 +20,3 @@ from helpers.scheduler import start_scheduler
 
 # Call start_scheduler when the WSGI application is loaded
 start_scheduler()
-

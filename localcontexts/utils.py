@@ -1,5 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
-    
+
+
 def dev_prod_or_local(hostname):
     # use: dev_prod_or_local(request.get_host())
     hostnames = {
@@ -8,6 +9,7 @@ def dev_prod_or_local(hostname):
         'sandbox.localcontextshub.org': 'SANDBOX',
     }
     return hostnames.get(hostname, 'LOCAL')
+
 
 def get_site_url(request, path):
     # use: get_site_url(request, "/login") or get_site_url(request, "/register")
