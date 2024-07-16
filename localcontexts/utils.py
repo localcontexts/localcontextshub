@@ -12,7 +12,8 @@ def dev_prod_or_local(hostname):
 
 
 def get_site_url(request, path):
-    # use: get_site_url(request, "/login") or get_site_url(request, "/register")
+    # use: get_site_url(request, "/login")
+    # or get_site_url(request, "/register")
     current_site = get_current_site(request)
     domain = current_site.domain
     url = f'{request.scheme}://{domain}/{path}'
