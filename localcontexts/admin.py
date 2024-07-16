@@ -1,12 +1,14 @@
 import csv
-import itertools, calendar
+import itertools
+import calendar
 from datetime import datetime, timedelta, timezone
+from django.db import models
 from django.db.models.functions import Extract, Concat
 from django.db.models import Count, Q, Value, F, CharField, Case, When
 from django.contrib import admin
 from django.urls import path
 from django.utils.translation import gettext as _
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.apps import apps
 from django.template.response import TemplateResponse
@@ -20,14 +22,17 @@ from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
+
 from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
-from communities.models import Community, InviteMember, JoinRequest
-from helpers.models import *
+from communities.models import InviteMember, JoinRequest, Community
+from helpers.models import OpenToCollaborateNoticeURL, LabelVersion, LabelTranslation, ProjectStatus, Notice, \
+    LabelTranslationVersion, EntitiesNotified, NoticeDownloadTracker, CollectionsCareNoticePolicy, NoticeTranslation
 from institutions.models import Institution
+from projects.models import Project, ProjectCreator, ProjectContributors, ProjectPerson, ProjectActivity, ProjectNote, \
+    ProjectArchived
 from researchers.utils import is_user_researcher
 from notifications.models import UserNotification, ActionNotification
-from projects.models import *
 from researchers.models import Researcher
 from tklabels.models import TKLabel
 from accounts.models import InactiveUser
@@ -1287,7 +1292,7 @@ admin_site.register(TKLabels, TKLabelAdmin)
 admin_site.register(BCLabels, BCLabelAdmin)
 
 
-class HubActivity(HubActivity):
+class HubActivity('HubActivity'):
 
     class Meta:
         proxy = True
@@ -1634,10 +1639,6 @@ class NoticeDownloadTrackerAdmin(admin.ModelAdmin):
 class CollectionsCareNoticePolicyAdmin(admin.ModelAdmin):
     list_display = ('institution', 'added')
     search_fields = ('institution__institution_name', )
-
-
-class NoticeTranslationAdmin(admin.ModelAdmin):
-    list_display = ('notice', 'notice_type', 'language')
 
 
 class NoticeTranslationAdmin(admin.ModelAdmin):
