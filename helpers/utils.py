@@ -1,6 +1,8 @@
 import json
 import urllib
 import zipfile
+from typing import Union
+
 import requests
 from django.conf import settings
 from django.template.loader import get_template
@@ -11,7 +13,7 @@ from bclabels.models import BCLabel
 from helpers.models import LabelTranslation, LabelVersion, LabelTranslationVersion, HubActivity
 from xhtml2pdf import pisa
 
-from communities.models import Community, JoinRequest, InviteMember
+from communities.models import Community, JoinRequest, InviteMember, Boundary
 from institutions.models import Institution
 from researchers.models import Researcher
 from .models import Notice
@@ -440,3 +442,35 @@ def validate_recaptcha(request_object):
     response = urllib.request.urlopen(req)
     result = json.loads(response.read().decode())
     return result.get('success', False) and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE
+
+
+def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Project']):
+    share_boundary_publicly = post_data.get('share-boundary-publicly')
+
+    if share_boundary_publicly:
+        entity.share_boundary_publicly = share_boundary_publicly == 'on'
+
+    raw_boundary_payload = post_data.get('boundary-payload')
+
+    if raw_boundary_payload in ['', None]:
+        return
+
+    data = json.loads(raw_boundary_payload)
+    name = data.get('name')
+    source = data.get('source')
+    boundary_data = data.get('boundary')
+
+    if name:
+        entity.name_of_boundary = name
+
+    if source:
+        entity.source_of_boundary = source
+
+    boundary_coordinates = boundary_data if boundary_data else []
+    if entity.boundary:
+        # update boundary when it exists
+        entity.boundary.coordinates = boundary_coordinates
+    else:
+        # create boundary when it does not exist
+        entity.boundary = Boundary(coordinates=boundary_coordinates)
+    entity.boundary.save()

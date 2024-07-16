@@ -25,6 +25,7 @@ from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
 from helpers.models import *
 from institutions.models import Institution
+from projects.forms import ProjectModelForm
 from researchers.utils import is_user_researcher
 from notifications.models import UserNotification, ActionNotification
 from projects.models import *
@@ -1159,9 +1160,11 @@ admin_site.register(ActionNotification, ActionNotificationAdmin)
 
 # PROJECTS ADMIN
 class ProjectAdmin(admin.ModelAdmin):
+    form = ProjectModelForm
     list_display = ('title', 'project_creator', 'project_contact', 'project_contact_email', 'project_privacy', 'project_page', 'date_added', 'unique_id')
     readonly_fields = ('unique_id', 'project_page')
     search_fields = ('title', 'unique_id', 'project_creator__username', 'project_contact', 'project_contact_email',)
+
 
 class ProjectContributorsAdmin(admin.ModelAdmin):
     list_display = ('project',)
