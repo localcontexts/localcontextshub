@@ -26,10 +26,13 @@ from django.contrib.admin.widgets import AdminFileWidget
 from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
 from communities.models import InviteMember, JoinRequest, Community
-from helpers.models import OpenToCollaborateNoticeURL, LabelVersion, LabelTranslation, ProjectStatus, Notice, \
-    LabelTranslationVersion, EntitiesNotified, NoticeDownloadTracker, CollectionsCareNoticePolicy, NoticeTranslation
+from helpers.models import OpenToCollaborateNoticeURL, LabelVersion, \
+    LabelTranslation, ProjectStatus, Notice, \
+    LabelTranslationVersion, EntitiesNotified, NoticeDownloadTracker, \
+    CollectionsCareNoticePolicy, NoticeTranslation
 from institutions.models import Institution
-from projects.models import Project, ProjectCreator, ProjectContributors, ProjectPerson, ProjectActivity, ProjectNote, \
+from projects.models import Project, ProjectCreator, ProjectContributors, \
+    ProjectPerson, ProjectActivity, ProjectNote, \
     ProjectArchived
 from researchers.utils import is_user_researcher
 from notifications.models import UserNotification, ActionNotification
@@ -64,7 +67,7 @@ class MyAdminSite(admin.AdminSite):
         elif '_resetdate' in request.POST:
             try:
                 del request.session['date']
-            except:
+            except:  # noqa
                 pass
             return redirect('lc-admin:admin-dashboard')
 
@@ -123,17 +126,15 @@ def dashboardData(end_date):
     projects = Project.objects.filter(date_added__lte=end_date)
     otc = OpenToCollaborateNoticeURL.objects.filter(added__lte=end_date)
 
-    #Registered Users
-    users_total = recent_users_count = 0
+    # Registered Users
     users_total = users.count()
     recent_users_count = users.filter(
         date_joined__gte=end_date - timedelta(days=30)
     ).count()
 
     # Accounts by Country
-    # FIXME: profile country saved as initials instead of full name. profile left out for now
-    country_count = 0
-    # users_by_country = Profile.objects.filter(country__isnull = False).distinct('country').values_list('country', flat = True)
+    # FIXME: profile country saved as initials
+    #  instead of full name. profile left out for now
     institutions_by_country = institution.filter(
         country__isnull=False
     ).distinct('country').values_list('country', flat=True)
@@ -147,18 +148,12 @@ def dashboardData(end_date):
     country_count = len([*set(countries_list)])
 
     # Registered accounts
-    community_count = institution_count = researcher_count = 0
     community_count = community.count()
     institution_count = institution.count()
     researcher_count = researcher.count()
 
     # Notices
-    otc_count = 0
     otc_count = otc.count()
-
-    # Labels
-    bclabels_customized_count = bclabels_approved_count = bclabels_applied_count = 0
-    tklabels_customized_count = tklabels_approved_count = tklabels_applied_count = 0
 
     bclabels_status = bclabels.aggregate(
         customized=Count('is_approved', filter=Q(is_approved=False)),
@@ -191,9 +186,6 @@ def dashboardData(end_date):
     tklabels_customized_count = tklabels_status['customized']
     tklabels_approved_count = tklabels_status['approved']
     tklabels_applied_count = tklabels_status['applied']
-
-    # Projects
-    project_labels_count = project_inactive_count = project_notices_count = projects_total_count = 0
 
     project_status = projects.aggregate(
         has_notice=Count(
@@ -312,14 +304,14 @@ def dataCharts(end_date, chartData):
     new_project_counts = list(lineChartData['project_count'].values())
 
     # Colors
-    teal_rgb, teal_hex = 'rgba(0, 115, 133, 1)', '#007385'
-    light_teal_rgb, lighter_teal_rgb = 'rgba(43, 138, 153, 1)', 'rgba(85, 162, 174, 1)'
-    orange_rgb, orange_hex = 'rgba(239, 108, 0, 1)', '#EF6C00'
-    light_orange_rgb = 'rgba(242, 132, 43, 1)'
-    lighter_orange_rgb = 'rgba(244, 157, 85, 1)'
-    green_rgb, green_hex = 'rgba(16, 134, 112, 1)', '#108670'
-    blue_rgb, blue_hex = 'rgb(56, 119, 170)', '#3876aa'
-    grey_rgb, grey_hex = 'rgba(100, 116, 139, 1)', '#64748B'
+    teal_rgb, teal_hex = 'rgba(0, 115, 133, 1)', '#007385'  # noqa
+    light_teal_rgb, lighter_teal_rgb = 'rgba(43, 138, 153, 1)', 'rgba(85, 162, 174, 1)'  # noqa
+    orange_rgb, orange_hex = 'rgba(239, 108, 0, 1)', '#EF6C00'  # noqa
+    light_orange_rgb = 'rgba(242, 132, 43, 1)'  # noqa
+    lighter_orange_rgb = 'rgba(244, 157, 85, 1)'  # noqa
+    green_rgb, green_hex = 'rgba(16, 134, 112, 1)', '#108670'  # noqa
+    blue_rgb, blue_hex = 'rgb(56, 119, 170)', '#3876aa'  # noqa
+    grey_rgb, grey_hex = 'rgba(100, 116, 139, 1)', '#64748B'  # noqa
 
     # Pie Chart Data
     accountData = {
@@ -418,7 +410,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
                         institution_id__isnull=False
                     )
                 return qs
-            except:
+            except:  # noqa
                 return queryset.none()
 
         elif self.value() == "researcher":
@@ -432,7 +424,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
                         researcher_id__isnull=False
                     )
                 return qs
-            except:
+            except:  # noqa
                 return queryset.none()
 
         elif self.value() == "community":
@@ -444,7 +436,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
                 else:
                     qs = queryset.distinct().filter(community_id__isnull=False)
                 return qs
-            except:
+            except:  # noqa
                 return queryset.none()
 
 
@@ -461,12 +453,12 @@ class PrivacyTypeFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         privacy = self.value()
         try:
-            if privacy != None:
+            if privacy is not None:
                 qs = queryset.distinct().filter(project_privacy=privacy)
                 return qs
             else:
                 return queryset
-        except:
+        except:  # noqa
             return queryset.none()
 
 
@@ -499,7 +491,7 @@ class NoticeLabelFilter(admin.SimpleListFilter):
                 return qs
             else:
                 return queryset
-        except:
+        except:  # noqa
             return queryset.none()
 
 
@@ -565,7 +557,7 @@ class HubActivityTypeFilter(admin.SimpleListFilter):
                 return qs
             else:
                 return queryset
-        except:
+        except:  # noqa
             return queryset.none()
 
 
@@ -602,7 +594,7 @@ class DateRangeFilter(admin.SimpleListFilter):
                 return qs
             else:
                 return queryset
-        except:
+        except:  # noqa
             return queryset.none()
 
 
@@ -613,8 +605,10 @@ class AdminImageWidget(AdminFileWidget):
         if value and getattr(value, "url", None):
             image_url = value.url
             file_name = str(value)
-            output.append(u' <img style="width: 286px;height: 160.88px;object-fit: cover;" src="%s" alt="%s" width="200"/> %s ' % \
-                (image_url, file_name, _('')))
+            output.append(
+                u' <img style="width: 286px;height: 160.88px;'
+                u'object-fit: cover;" src="%s" alt="%s" width="200"/>'
+                u' %s ' % (image_url, file_name, _('')))
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
@@ -626,8 +620,10 @@ class AdminAudioWidget(AdminFileWidget):
         if value and getattr(value, "url", None):
             audio_url = value.url
             file_name = str(value)
-            output.append(u' <audio controls><source src="%s" type="audio/mpeg" alt="%s"> %s </audio>' % \
-                (audio_url, file_name, _('')))
+            output.append(u' <audio controls>'
+                          u'<source src="%s" type="audio/mpeg" alt="%s">'
+                          u' %s '
+                          u'</audio>' % (audio_url, file_name, _('')))
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
@@ -635,7 +631,6 @@ class AdminAudioWidget(AdminFileWidget):
 class ExportCsvMixin:
 
     def export_as_csv(self, request, queryset):
-
         meta = self.model._meta
         field_names = [field.name for field in meta.fields]
 
@@ -648,7 +643,7 @@ class ExportCsvMixin:
 
         writer.writerow(field_names)
         for obj in queryset:
-            row = writer.writerow(
+            writer.writerow(
                 [getattr(obj, field) for field in field_names]
             )
 
@@ -669,7 +664,8 @@ class Inactive(User):
 
 class InactiveAccountsAdmin(admin.ModelAdmin):
     model = Inactive
-    change_list_template = 'admin/change_lists/inactive_accounts_change_list.html'
+    change_list_template = 'admin/change_lists/' \
+                           'inactive_accounts_change_list.html'
 
     def has_add_permission(self, request):
         return False
@@ -1334,7 +1330,8 @@ class HubActivityAdmin(admin.ModelAdmin):
                 'community_name', flat=True
             ).get(id=obj.community_id)
             account_link = 'communities/community'
-        elif obj.action_account_type == 'researcher' or obj.action_type == 'New Researcher':
+        elif obj.action_account_type == 'researcher' or \
+                obj.action_type == 'New Researcher':
             if is_user_researcher(obj.action_user_id):
                 researcher = is_user_researcher(obj.action_user_id)
                 account_id = researcher.id
@@ -1358,47 +1355,73 @@ class HubActivityAdmin(admin.ModelAdmin):
 
         if obj.action_type == 'New Member Added':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> joined <a href="/admin/{}/{}/change/">{}</a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}'
+                '</a> joined <a href="/admin/{}/{}/change/">{}</a>',
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name
             )
 
         elif obj.action_type == 'New User':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> has joined the Hub',
+                '<a href="/admin/admin/userprofile/{}/change/">'
+                '{}</a> has joined the Hub',
                 obj.action_user_id, user_name
             )
 
         elif obj.action_type == 'New Researcher':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a <a href="/admin/{}/{}/change/">Researcher</a> account',
+                '<a href="/admin/admin/userprofile/{}/change/">'
+                '{}'
+                '</a> '
+                'has created a '
+                '<a href="/admin/{}/{}/change/">Researcher</a> account',
                 obj.action_user_id, user_name, account_link, account_id
             )
 
         elif obj.action_type == 'New Community':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> has created a Community account: <a href="/admin/{}/{}/change/">{}</a>',
+                '<a href="/admin/admin/userprofile/{}/change/">'
+                '{}'
+                '</a> '
+                'has created a Community account: '
+                '<a href="/admin/{}/{}/change/">{}</a>',
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name
             )
 
         elif obj.action_type == 'New Institution':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> has created an Institution account: <a href="/admin/{}/{}/change/">{}</a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> '
+                'has created an Institution account: '
+                '<a href="/admin/{}/{}/change/">{}</a>',
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name
             )
 
         elif obj.action_type == 'Project Edited':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) edited Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> '
+                '(<a href="/admin/{}/{}/change/">{}</a>) edited Project: '
+                '{} <a href="/admin/projects/project/{}/change/" '
+                'title="View Admin Page">'
+                '<i class="fa-solid fa-user-gear"></i></a> | '
+                '<a href="{}" target="_blank" title="View External Page">'
+                '<i class="fa-solid fa-arrow-up-right-from-square fa-xs">'
+                '</i></a>',
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
         elif obj.action_type == 'Project Created':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) created Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> '
+                '(<a href="/admin/{}/{}/change/">{}</a>) created Project: '
+                '{} <a href="/admin/projects/project/{}/change/" '
+                'title="View Admin Page"><i class="fa-solid fa-user-gear"'
+                '></i></a> | <a href="{}" target="_blank" '
+                'title="View External Page">'
+                '<i class="fa-solid fa-arrow-up-right-from-square fa-xs">'
+                '</i></a>',
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
@@ -1410,7 +1433,16 @@ class HubActivityAdmin(admin.ModelAdmin):
             ).get(id=obj.community_id)
             community_link = 'communities/community'
             action_message = format_html(
-                '<a href="/admin/{}/{}/change/">{}</a> was notified by <a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) of Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/{}/{}/change/">{}</a> '
+                'was notified by '
+                '<a href="/admin/admin/userprofile/{}/change/">'
+                '{}</a> '
+                '(<a href="/admin/{}/{}/change/">{}</a>) of Project: '
+                '{} <a href="/admin/projects/project/{}/change/" '
+                'title="View Admin Page"><i class="fa-solid fa-user-gear"></i>'
+                '</a> | <a href="{}" target="_blank" '
+                'title="View External Page"><i class="fa-solid '
+                'fa-arrow-up-right-from-square fa-xs"></i></a>',
                 community_link, community_id, community_name,
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
@@ -1418,21 +1450,21 @@ class HubActivityAdmin(admin.ModelAdmin):
 
         elif obj.action_type == 'Label(s) Applied':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
         elif obj.action_type == 'Disclosure Notice(s) Added':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
         elif obj.action_type == 'Engagement Notice Added':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
                 obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
