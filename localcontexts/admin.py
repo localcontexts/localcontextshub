@@ -15,6 +15,7 @@ from django.template.response import TemplateResponse
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 
+import helpers
 from accounts.models import Profile, UserAffiliation, SignUpInvitation
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from accounts.utils import get_users_name
@@ -1288,7 +1289,7 @@ admin_site.register(TKLabels, TKLabelAdmin)
 admin_site.register(BCLabels, BCLabelAdmin)
 
 
-class HubActivity('HubActivity'):
+class HubActivity(helpers.models.HubActivity):
 
     class Meta:
         proxy = True
