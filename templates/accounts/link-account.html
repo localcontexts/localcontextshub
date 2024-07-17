@@ -2,7 +2,7 @@
 {% load socialaccount %}
 {% block settings %}
 
-<div class="flex-this column w-80 margin-right-1">
+<div class="flex-this column w-80 mr-1p">
     <div>
         <h3>Linked Accounts</h3>
         <p>Manage, link or remove accounts connected to this account.</p>
@@ -13,7 +13,7 @@
             {% csrf_token %}
             <div class="flex-this">
                 <button type="button" class="w-50 white-btn flex-this align-center justify-center" onclick="showConfirmationAlert()">
-                    <img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt="">
+                    <img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt="">
                     <span class="margin-left-1 primary-black-text">Unlink With Google</span>
                     <i class="fa-solid fa-link-simple-slash margin-left-55"></i>
                 </button>
@@ -24,7 +24,7 @@
             {% csrf_token %}
             <div class="flex-this">
                 <button type="submit" class="w-50 white-btn flex-this align-center justify-center">
-                    <img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt="">
+                    <img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt="">
                     <span class="margin-left-1 primary-black-text">Link With Google</span>
                     <i class="fa-solid fa-link-simple margin-left-55"></i>
                 </button>
@@ -42,7 +42,7 @@
                     <p>You'll need to use your user name {{ request.user.username }} and password next time you login.</p>  
                 </div>
                 <div class="flex-this w-100 text-align-center">
-                    <div class="primary-btn white-btn margin-right-1" onclick="confirmUnlink()">Unlink</div>    
+                    <div class="primary-btn white-btn mr-1p" onclick="confirmUnlink()">Unlink</div>    
                     <div class="margin-left-1 primary-btn action-btn" onclick="cancelUnlink()">Cancel</div>
                 </div>
             </div>

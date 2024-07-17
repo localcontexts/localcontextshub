@@ -33,7 +33,7 @@
         {% endif %}
     </div>
 
-    <div class="margin-right-1 margin-left-1">
+    <div class="mr-1p margin-left-1">
         {% if project.project_notice.all %}
 
             {% for notice in project.project_notice.all %}
@@ -76,7 +76,7 @@
     </div>
 
     {% if project.bc_labels.all or project.tk_labels.all %}
-        <div class="margin-right-1 margin-left-1">
+        <div class="mr-1p margin-left-1">
             <div><p class="p-24 bold">Project Labels</p></div>
 
         {% if project.bc_labels.all %}
