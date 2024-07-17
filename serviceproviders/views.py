@@ -234,14 +234,13 @@ def service_provider_members(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
 
-    # Get list of users in this account, alphabetized by name
+    # Get list of users, NOT in this account, alphabetized by name
     members = list(chain(
         service_provider.editors.all().values_list('id', flat=True),
     ))
-    members.append(service_provider.account_creator.id) # include community creator
+    members.append(service_provider.account_creator.id) # include account creator
     users = User.objects.exclude(id__in=members).order_by('username')
 
-    # join_requests_count = JoinRequest.objects.filter(community=community).count()
     form = InviteMemberForm(request.POST or None, service_provider=service_provider)
 
     if request.method == "POST":

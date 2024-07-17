@@ -2,6 +2,7 @@ from .models import ActionNotification, UserNotification
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from helpers.models import HubActivity
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
@@ -12,6 +13,7 @@ def send_simple_action_notification(sender, target_org, title, notification_type
         Community: 'community',
         Institution: 'institution',
         Researcher: 'researcher',
+        ServiceProvider: 'service_provider',
     }
 
     target_type_key = target_type_mapping.get(type(target_org))

@@ -3,10 +3,12 @@
 {% unread_notifications_exist community as unread_exist_community %}
 {% unread_notifications_exist institution as unread_exist_institution %}
 {% unread_notifications_exist researcher as unread_exist_researcher %}
+{% unread_notifications_exist service_provider as unread_exist_service_provider %}
 {% return_notifications request.user as user_notifications %}
 {% return_notifications community as community_notifications %}
 {% return_notifications institution as institution_notifications %}
 {% return_notifications researcher as researcher_notifications %}
+{% return_notifications service_provider as service_provider_notifications %}
 
 
 <div class="dropdown margin-right-8" >
@@ -19,6 +21,7 @@
                     {% if unread_exist_user and 'dashboard' in request.path and scope == user %} no-margin fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_community %} no-margin fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_institution %} no-margin fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_service_provider %} no-margin fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_researcher and scope == researcher %} no-margin fa-solid fa-bell-on orange-text
                     {% elif unread_exist_researcher and scope == researcher.id %} no-margin fa-solid fa-bell-on orange-text
                     {% elif return_notifications %} no-margin fa-regular fa-bell 
@@ -37,6 +40,7 @@
                     {% if unread_exist_user and 'dashboard' in request.path and scope == user %} fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_community %} fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_institution %} fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_service_provider %} fa-solid fa-bell-on orange-text 
                     {% elif unread_exist_researcher and scope == researcher %} fa-solid fa-bell-on orange-text
                     {% elif unread_exist_researcher and scope == researcher.id %} fa-solid fa-bell-on orange-text
                     {% elif return_notifications %} fa-regular fa-bell 
@@ -191,6 +195,48 @@
                                     {% if n.notification_type == 'Labels' %} Labels {% endif %}
                                     {% if n.notification_type == 'Activity' %} Activity {% endif %}
                                     {% if n.notification_type == 'Projects' %} Projects {% endif %}
+                                    {% if n.notification_type == 'Connections' %} Connections {% endif %}
+                                    {% if n.notification_type == 'Members' %} Members {% endif %}
+                                </span></div>
+                                <div><span class="font-size-12 grey-text">{{ n.created }}</span></div>
+                            </div>
+                            <div><p class="darkteal-text font-size-14"> {{ n.title }}</p></div>    
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+
+        {% endif %}
+
+        {% if service_provider and scope == service_provider %}
+
+            {% if service_provider_notifications %}
+                {% for n in service_provider_notifications %}
+
+                    <div class="border-bottom-solid-teal">
+                        <a
+                            id="{{ service_provider.id }}_{{ n.id }}" 
+                            onclick="markAsRead(this); return true;"
+
+                            {% if n.notification_type == 'Members' %}
+                                {% if n.reference_id %}
+                                    href="{% url 'service-provider-member-intives' service_provider.id %}" 
+                                {% else %}
+                                    href="{% url 'service-provider-members' service_provider.id %}"
+                                {% endif %}
+                            {% endif %}
+                            {% if n.notification_type == 'Connections' %}
+                                href="{% url 'service-provider-connections' service_provider.id %}" 
+                            {% endif %}
+                        >
+
+                            <div class="flex-this space-between margin-top-1">
+                                <div>
+                                    <span id="notification-label-tag-{{ n.id }}" 
+                                        class="notification-type-tag white-text font-size-12 {% if n.viewed %} grey {% else %} orange-bg {% endif %}"
+                                    >
                                     {% if n.notification_type == 'Connections' %} Connections {% endif %}
                                     {% if n.notification_type == 'Members' %} Members {% endif %}
                                 </span></div>

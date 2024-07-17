@@ -57,6 +57,7 @@ class ActionNotification(models.Model):
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, null=True, blank=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, null=True, blank=True)
     reference_id = models.CharField(max_length=50, null=True, blank=True)
     viewed = models.BooleanField(default=False, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
