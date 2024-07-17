@@ -63,9 +63,9 @@
                     </small>
                     <div class="margin-top-16 margin-bottom-16">
                         <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
-                            <div class="auto-margin">
+                            <div class="m-auto">
                                 {% include 'bclabels/mini-labels.html' %}
-                                <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box auto-margin">{{ bclabel.name }}</p>
+                                <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
                             </div>
                         </div>
                     </div>                    
@@ -85,7 +85,7 @@
                     <div class="margin-top-16 margin-bottom-16">
                         <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                             {% include 'tklabels/mini-labels.html' %}
-                            <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box auto-margin">{{ tklabel.name }}</p>
+                            <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
                         </div>
                     </div>                    
                 </div>
@@ -100,7 +100,7 @@
                     <div class="margin-top-16 margin-bottom-16">
                         <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                             {% include 'bclabels/mini-labels.html' %}
-                            <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box auto-margin">{{ bclabel.name }}</p>
+                            <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
                         </div>
                     </div>                    
                 </div>
@@ -114,7 +114,7 @@
                 <div class="w-20 margin-top-16 margin-bottom-16">
                     <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                         {% include 'tklabels/mini-labels.html' %}
-                        <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box auto-margin">{{ tklabel.name }}</p>
+                        <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -259,7 +259,7 @@
 <!-- TK Label Card -->
 <div id="collapsed-tkcard" class="content-card-v2 content-card-space flex-this column">
 
-    <div id="tklabels-title-vertical" style="margin:auto 0;">
+    <div id="tklabels-title-vertical" class="m-auto mr-0 ml-0">
         <div class="flex-this space-between">
             <div class="ml-1p">
                 <h2>Traditional Knowledge (TK) Labels</h2>
@@ -622,7 +622,7 @@
 <!-- BC Label Card -->
 <div id="collapsed-card" class="content-card-v2 content-card-space flex-this column">
 
-    <div id="bclabels-title-vertical" style="margin:auto 0;">
+    <div id="bclabels-title-vertical" class="m-auto mr-0 ml-0">
         <div class="flex-this space-between">
             <div class="ml-1p">
                 <h2>Biocultural (BC) Labels</h2>
