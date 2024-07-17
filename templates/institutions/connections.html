@@ -44,8 +44,8 @@
             <div class="border-bottom-dash-teal">
                 <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof inst.institution_creator.get_full_name  inst.institution_creator.username %}
-                    <span class="bold margin-left-8">Account Contact Email</span> | {{ inst.institution_creator.email }}
-                    <span class="bold margin-left-8">Website</span> | {{ inst.website }} <br><br>
+                    <span class="bold ml-8">Account Contact Email</span> | {{ inst.institution_creator.email }}
+                    <span class="bold ml-8">Website</span> | {{ inst.website }} <br><br>
                 </p>                        
             </div>
 
@@ -158,7 +158,7 @@
             <div class="border-bottom-dash-teal">
                 <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof community.community_creator.get_full_name community.community_creator.get_full_name %}
-                    <span class="bold margin-left-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
+                    <span class="bold ml-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
                 </p>      
             </div>   
             

@@ -18,7 +18,7 @@
                 {% include 'snippets/notifications.html' with scope=institution %}
 
                 {% if request.user == institution.institution_creator or member_role == 'admin'%}
-                    <div class="margin-left-8">
+                    <div class="ml-8">
                         <a href="{% url 'update-institution' institution.id%}" class="darkteal-text primary-btn white-btn"> Settings <i class="fa fa-cog" aria-hidden="true"></i></a>
                     </div>
                 {% endif %}

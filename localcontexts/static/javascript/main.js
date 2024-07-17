@@ -1135,7 +1135,7 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name word-break">${item}</p></div>
-                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
+                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer ml-8">&times;</div>
                 </div>
                 <input type="hidden" value="${item.trim()}" name="project_urls">`
     
@@ -2196,7 +2196,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     ccNoticeDownloadBtn.addEventListener('click', function() {    
         let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
         ccNoticeDownloadBtn.setAttribute('disabled', true)
-        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader margin-left-8"></div>'
+        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader ml-8"></div>'
 
         // Re-enable the button after a certain timeout
         // re-enable it after a while, assuming an average download duration

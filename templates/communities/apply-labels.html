@@ -52,7 +52,7 @@
                 {% if project.tk_labels.all or project.bc_labels.all %}
                     {% if project.tk_labels.all %}
                         {% for tklabel in project.tk_labels.all %}
-                            <div class="margin-left-8">
+                            <div class="ml-8">
                                 {% include 'tklabels/tiny-labels.html' %}
                             </div>
                         {% endfor %}
@@ -60,7 +60,7 @@
 
                     {% if project.bc_labels.all %}
                         {% for bclabel in project.bc_labels.all %}
-                            <div class="margin-left-8">
+                            <div class="ml-8">
                                 {% include 'bclabels/tiny-labels.html' %}
                             </div>
                         {% endfor %}
@@ -71,13 +71,13 @@
                             {% for notice in project.project_notice.all %}
                                 {% if not notice.archived %}
                                     {% if notice.notice_type == 'biocultural' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                                        <div class="ml-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="62px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'traditional_knowledge' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                                        <div class="ml-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="62px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                                     {% endif %}
                                     {% if notice.notice_type == 'attribution_incomplete' %}
-                                        <div class="margin-left-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
+                                        <div class="ml-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="62px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -135,7 +135,7 @@
                                                 name="selected_bclabels"
                                                 {% if bclabel in project.bc_labels.all %} checked {% endif %}
                                                 >
-                                            <span class="margin-left-8">Select</span>
+                                            <span class="ml-8">Select</span>
                                         </div>       
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@
                                                     name="selected_tklabels"
                                                     {% if tklabel in project.tk_labels.all %} checked {% endif %}
                                                     >
-                                                <span class="margin-left-8">Select</span>
+                                                <span class="ml-8">Select</span>
                                             </div>       
                                         </div>
                                     </div>

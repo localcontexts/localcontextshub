@@ -4,7 +4,7 @@
     {% if request.user.is_authenticated %}
         <div class="back-to-projects">
             <a 
-                class="pointer mt-2p margin-left-8"
+                class="pointer mt-2p ml-8"
                 {% if community %}
                     href="{% url 'community-projects' community.id %}"
                 {% endif %}
@@ -424,7 +424,7 @@
                         {% if sub_projects %}
                             {% for field in sub_projects %}
                                 <div class="related-projects-div flex-this space-between">
-                                    <div class="w-80 margin-left-8">
+                                    <div class="w-80 ml-8">
                                         <a 
                                             class="darkteal-text underline-hover" 
                                             {% if community %}
@@ -476,11 +476,11 @@
                                         {% if researcher %}
                                             href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
                                         {% endif %}
-                                    > Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i></a>                            
+                                    > Create Related Project <i class="ml-8 fa-solid fa-square-plus"></i></a>                            
                                 </div>
 
                                 <div>
-                                    <a class="primary-btn green-btn" onclick="openModal('linkProjectsModal', 'closeLinkProjectsModal')">Connect Projects <i class="margin-left-8 fa-solid fa-link-simple"></i></a>
+                                    <a class="primary-btn green-btn" onclick="openModal('linkProjectsModal', 'closeLinkProjectsModal')">Connect Projects <i class="ml-8 fa-solid fa-link-simple"></i></a>
                                 </div>
                             </div>    
                         {% endif %}
@@ -491,7 +491,7 @@
                     {% if project.related_projects.all %}
                         {% for p in project.related_projects.all %}
                             <div class="related-projects-div flex-this space-between">
-                                <div class="w-80 margin-left-8">
+                                <div class="w-80 ml-8">
                                     <a 
                                         class="darkteal-text underline-hover" 
                                         {% if community %}
@@ -910,7 +910,7 @@
                                             {% csrf_token %}
                                             <button id="continueProjectDeletionBtn" class="primary-btn white-btn w-100" name="delete_project">Yes, delete this Project</button>    
                                         </form>
-                                        <div id="closeProjectDeletionModal" class="primary-btn action-btn margin-left-8">Cancel</div>
+                                        <div id="closeProjectDeletionModal" class="primary-btn action-btn ml-8">Cancel</div>
                                     </div>
                     
                                 </div>
