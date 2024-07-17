@@ -125,7 +125,7 @@
                                             </div>
                                             {% if account == community and not account == creator.community %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -142,7 +142,7 @@
                                             </div>
                                             {% if account == institution and not account == creator.institution %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -164,7 +164,7 @@
                                             </div>
                                             {% if account == researcher and not account == creator.researcher %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -218,7 +218,7 @@
                                     <i class="round-btn fa-regular fa-clone fa-rotate-90"></i>
                                 </p>
                             </div>  
-                            <div class="margin-left-16">
+                            <div class="ml-16">
                                 <p>
                                     <span class="bold">Local Contexts Project ID</span><br>
                                     <span id="projectIDToCopy">{{ project.unique_id }}</span>
@@ -232,7 +232,7 @@
                                     <i class="round-btn fa-regular fa-clone fa-rotate-90"></i>
                                 </p>
                             </div>  
-                            <div class="margin-left-16">
+                            <div class="ml-16">
                                 <p>
                                     <span class="bold">Project URL</span><br>
                                     <span id="projectURLToCopy">{{ project.project_page }}</span>
@@ -360,7 +360,7 @@
                                                 <div>
                                                     {% include 'bclabels/which-label.html' %} 
                                                 </div>
-                                                <div class="margin-left-16">
+                                                <div class="ml-16">
                                                     <p class="mt-0 bold">{{bclabel.name}} </p><br>
                                                 </div>
                                             </div>
@@ -385,7 +385,7 @@
                                                 <div>
                                                     {% include 'tklabels/which-label.html' %} 
                                                 </div>
-                                                <div class="margin-left-16">
+                                                <div class="ml-16">
                                                     <p class="mt-0 bold">{{ tklabel.name }} </p><br>
                                                 </div>
                                             </div>
@@ -609,7 +609,7 @@
     </div>
 
     <!-- ACTIONS  -->
-    <div class="margin-left-16">
+    <div class="ml-16">
         <div class="actions-card content-card-space flex-this column">
             <h3 class="mt-0">Actions</h3>
 
