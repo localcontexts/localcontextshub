@@ -149,7 +149,7 @@
                 <div class="public-page-labels flex-this w-100 wrap">
                     {% if bclabels %}
                         {% for bclabel in bclabels %}
-                            <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 margin-bottom-16">
                                 {% include 'bclabels/which-label.html' %}
                                 <span>{{ bclabel.name }}</span>
                             </div> 
@@ -158,7 +158,7 @@
 
                     {% if tklabels %}
                         {% for tklabel in tklabels %}
-                            <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 margin-bottom-16">
                                 {% include 'tklabels/which-label.html' %}
                                 <span>{{ tklabel.name }}</span>
                             </div> 
@@ -275,15 +275,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                        <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                        <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -396,15 +396,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>

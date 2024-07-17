@@ -17,7 +17,7 @@
             {% csrf_token %}
             <div>
                 <div class="flex-this w-100">
-                    <div class="w-30 margin-right-16">
+                    <div class="w-30 mr-16">
                         <label>Label name</label><br>
                         {{ form.name }}
                     </div>
@@ -37,8 +37,8 @@
                     <label>Label Audio File</label>
 
                     <div class="flex-this">
-                        {% if bclabel.audiofile %} <div class="margin-right-16"><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                        {% if tklabel.audiofile %} <div class="margin-right-16"><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
+                        {% if bclabel.audiofile %} <div class="mr-16"><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
+                        {% if tklabel.audiofile %} <div class="mr-16"><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
                         <div class="mr-8">
                             <div class="hide">{{ form.audiofile }}</div>
                             <button id="customLabelAudioFileUploadBtn" class="primary-btn green-btn">
@@ -81,7 +81,7 @@
                             {% for hidden in translation_form.hidden_fields %} {{ hidden }} {% endfor %}
 
                             <div class="flex-this w-100">
-                                <div class="w-30 margin-right-16">
+                                <div class="w-30 mr-16">
                                     <label>Customized title</label>
                                     {{ translation_form.translated_name }}
                                     <br>
