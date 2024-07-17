@@ -71,7 +71,7 @@
                         <!-- Settings -->
                         {% if request.user == institution.institution_creator or request.user in institution.get_admins %}
                             <div>
-                                <a href="{% url 'update-institution' institution.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="no-margin fa fa-cog" aria-hidden="true"></i></a>
+                                <a href="{% url 'update-institution' institution.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="m-0 fa fa-cog" aria-hidden="true"></i></a>
                             </div>
                         {% endif %}
                     </div>

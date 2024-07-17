@@ -12,17 +12,17 @@
 <div class="dropdown margin-right-8" >
 
     {% if 'dashboard' in request.path  and scope != user %}
-        <div class="no-margin">
+        <div class="m-0">
             <a id="notification-button-{{scope|cut:"'"}}" onclick="toggleNotifications('{{ scope|cut:"'" }}')" class="primary-btn white-btn dropbtn round-btn-small">
                 <i 
                 class="
-                    {% if unread_exist_user and 'dashboard' in request.path and scope == user %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_community %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_institution %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_researcher and scope == researcher %} no-margin fa-solid fa-bell-on orange-text
-                    {% elif unread_exist_researcher and scope == researcher.id %} no-margin fa-solid fa-bell-on orange-text
-                    {% elif return_notifications %} no-margin fa-regular fa-bell 
-                    {% else %} no-margin fa-regular fa-bell {% endif %} 
+                    {% if unread_exist_user and 'dashboard' in request.path and scope == user %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_community %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_institution %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_researcher and scope == researcher %} m-0 fa-solid fa-bell-on orange-text
+                    {% elif unread_exist_researcher and scope == researcher.id %} m-0 fa-solid fa-bell-on orange-text
+                    {% elif return_notifications %} m-0 fa-regular fa-bell 
+                    {% else %} m-0 fa-regular fa-bell {% endif %} 
                     " 
                 aria-hidden="true"
                 ></i>

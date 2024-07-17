@@ -57,7 +57,7 @@
                         {% if request.user == community.community_creator or request.user in community.get_admins %}
                             <div>
                                 <a href="{% url 'update-community' community.id %}" class="round-btn-small darkteal-text primary-btn white-btn">
-                                    <i class="no-margin fa fa-cog" aria-hidden="true"></i>
+                                    <i class="m-0 fa fa-cog" aria-hidden="true"></i>
                                 </a>
                             </div>
                         {% endif %}                        
