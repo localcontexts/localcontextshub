@@ -42,7 +42,7 @@
         </div>
         <div id="expand-div-{{ inst.institution_name }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof inst.institution_creator.get_full_name  inst.institution_creator.username %}
                     <span class="bold margin-left-8">Account Contact Email</span> | {{ inst.institution_creator.email }}
                     <span class="bold margin-left-8">Website</span> | {{ inst.website }} <br><br>
@@ -97,7 +97,7 @@
 
         <div id="expand-div-{{ researcher.id }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Contact Email</span> | {% if researcher.contact_email %} {{ researcher.contact_email }} {% else %} {{ researcher.user.email }} {% endif %} <br><br>
                 </p>   
             </div> 
@@ -156,7 +156,7 @@
         </div>
         <div id="expand-div-{{ community.community_name }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof community.community_creator.get_full_name community.community_creator.get_full_name %}
                     <span class="bold margin-left-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
                 </p>      

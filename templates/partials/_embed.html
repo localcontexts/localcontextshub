@@ -18,7 +18,7 @@
                     </a>
                 </div>
                 <div class="font-size-14 align-center flex-this margin-right-8 margin-left-8 column">
-                    <h1 class="orange-text no-bottom-margin">Oops!</h1>
+                    <h1 class="orange-text mb-0">Oops!</h1>
                     <p>We can't seem to find the page you are looking for.<br><strong>Error Code: 404 Not Found</strong></p>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                                 
                                 {% elif layout == "3" %}
                                     <div id="notice-text">
-                                        <h3 class="mt-0" style="margin-bottom: 0;">
+                                        <h3 class="mt-0 mb-0">
                                             {% if not lang or lang == 'en' %}
                                                 {% if notice.notice_type == 'traditional_knowledge' %}Traditional Knowledge Notice{% endif %}
                                                 {% if notice.notice_type == 'biocultural' %}Biocultural Notice{% endif %}
@@ -138,7 +138,7 @@
                                 </div>
                             {% elif layout == "3" %}
                                 <div id="notice-text">
-                                    <h3 class="mt-0" style="margin-bottom: 0;">Open to Collaborate
+                                    <h3 class="mt-0 mb-0">Open to Collaborate
                                     </h3>
                                     <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
                                     <p style="margin-top: 10px;margin-bottom: 10px;">
@@ -185,7 +185,7 @@
                                                     <h4>{{ tklabel.name }}</h4>
                                                 
                                                 {% elif layout == "3" %}
-                                                    <h3 class="mt-0" style="margin-bottom: 0;">{{ tklabel.name }}</h3>
+                                                    <h3 class="mt-0 mb-0">{{ tklabel.name }}</h3>
                                                     <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
                                                     <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
                                                 {% endif %}
@@ -216,7 +216,7 @@
                                                 <h4>{{ tklabel.name }}</h4>
                                             
                                             {% elif layout == "3" %}
-                                                <h3 class="mt-0" style="margin-bottom: 0;">{{ tklabel.name }}</h3>
+                                                <h3 class="mt-0  mb-0">{{ tklabel.name }}</h3>
                                                 <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.language }}</h4>
                                                 <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
                                             {% endif %}
@@ -248,7 +248,7 @@
                                                         <h4>{{ translation.translated_name }}</h4>
 
                                                     {% elif layout == "3" %}
-                                                        <h3 class="mt-0" style="margin-bottom: 0;">{{ translation.translated_name }}</h3>
+                                                        <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
                                                         <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
                                                         <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
                                                     {% endif %}
@@ -285,7 +285,7 @@
                                                     <h4>{{ bclabel.name }}</h4>
                                                 
                                                 {% elif layout == "3" %}
-                                                    <h3 class="mt-0" style="margin-bottom: 0;">{{ bclabel.name }}</h3>
+                                                    <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
                                                     <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
                                                     <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
                                                 {% endif %}
@@ -316,7 +316,7 @@
                                                 <h4>{{ bclabel.name }}</h4>
                                             
                                             {% elif layout == "3" %}
-                                                <h3 class="mt-0" style="margin-bottom: 0;">{{ bclabel.name }}</h3>
+                                                <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
                                                 <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.language }}</h4>
                                                 <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
                                             {% endif %}
@@ -348,7 +348,7 @@
                                                         <h4>{{ translation.translated_name }}</h4>
 
                                                     {% elif layout == "3" %}
-                                                        <h3 class="mt-0" style="margin-bottom: 0;">{{ translation.translated_name }}</h3>
+                                                        <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
                                                         <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
                                                         <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
                                                     {% endif %}

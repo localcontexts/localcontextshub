@@ -748,14 +748,14 @@
                                     <button class="copy-btn btn-in-input" data-target="projectPageUrlToCopy">Copy URL</button>
                                 </div>
 
-                                <label class="bold margin-top-8 no-bottom-margin block">Embed Project</label>
+                                <label class="bold margin-top-8 mb-0 block">Embed Project</label>
                                 <p class="font-size-14 mt-0 margin-bottom-8">Add this project's identifiers to your website by copying the code below.</p>
     
                                 <div class="text-input-to-copy">
                                     <input class="w-100 grey-chip" value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}" title="Local Contexts Project Identifiers" frameborder="0"></iframe>' type="text" data-url='{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}' title="Local Contexts Project Identifiers" id="embedToCopy" readonly>
                                     <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                                 </div>
-                                <p class="font-size-14 mt-1p no-bottom-margin">Embed Options</p>
+                                <p class="font-size-14 mt-1p mb-0">Embed Options</p>
                                 <div class="flex-this">
                                     <select id="embedLayoutOptions" name="layout" class="project-sort w-30 mt-1p mr-1p">
                                         <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
@@ -988,7 +988,7 @@
         {% if community or researcher or institution %}
             <div class="actions-card-notifified content-card-space flex-this column">
                 <div class="flex-this">
-                    <h3 class="mt-0 no-bottom-margin">Communities Notified</h3>
+                    <h3 class="mt-0 mb-0">Communities Notified</h3>
                     <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
                         <span class="tooltiptext">
                             <i class="bold">Seen</i><br> The community has acknowledged the Project but has not made a decision about applying Labels.<br>

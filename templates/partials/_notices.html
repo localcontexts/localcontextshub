@@ -548,7 +548,7 @@
                     <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
                 </div>
 
-                <label class="bold margin-top-8 no-bottom-margin block">Embed Open to Collaborate Notice</label>
+                <label class="bold margin-top-8 mb-0 block">Embed Open to Collaborate Notice</label>
                 <p class="font-size-14 mt-0 margin-bottom-8">Add this Notice to your website by copying the code below.</p>
 
                 <div class="text-input-to-copy">
@@ -556,7 +556,7 @@
                     value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}" title="Local Contexts Open to Collaborate" frameborder="0"></iframe>' data-url='{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}' title="Local Contexts Open to Collaborate" id="embedToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                 </div>
-                <p class="font-size-14 mt-1p no-bottom-margin">Embed Options</p>
+                <p class="font-size-14 mt-1p mb-0">Embed Options</p>
                 <div class="flex-this">
                     <select id="embedLayoutOptions" name="layout" class="project-sort w-30 mt-1p mr-1p">
                         <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
