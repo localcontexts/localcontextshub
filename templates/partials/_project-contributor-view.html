@@ -9,7 +9,7 @@
                 <i onclick="buttonPulse(this)" class="fa fa-copy round-btn"></i>
             </a>
         </div>
-        <div class="margin-left-1 margin-top-10">
+        <div class="ml-1p margin-top-10">
             <p class="no-top-margin">
                 <span class="bold">Local Contexts Unique Project ID</span><br>
                 <span id="uniqueIDToCopy">{{ project.unique_id }}</span><br>
@@ -24,7 +24,7 @@
                     <i onclick="buttonPulse(this)"  class="fa fa-copy round-btn"></i>
                 </a>
             </div>
-            <div class="margin-left-1 margin-top-10">
+            <div class="ml-1p margin-top-10">
                 <p class="no-top-margin">
                     <span class="bold">Providers ID</span><br>
                     <span id="providersIDToCopy">{{ project.providers_id }}</span><br>
@@ -33,7 +33,7 @@
         {% endif %}
     </div>
 
-    <div class="mr-1p margin-left-1">
+    <div class="mr-1p ml-1p">
         {% if project.project_notice.all %}
 
             {% for notice in project.project_notice.all %}
@@ -76,7 +76,7 @@
     </div>
 
     {% if project.bc_labels.all or project.tk_labels.all %}
-        <div class="mr-1p margin-left-1">
+        <div class="mr-1p ml-1p">
             <div><p class="p-24 bold">Project Labels</p></div>
 
         {% if project.bc_labels.all %}

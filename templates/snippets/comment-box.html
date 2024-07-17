@@ -4,7 +4,7 @@
             {% csrf_token %}
             <div class="flex-this row">
                 <div class="w-90"> {{ form.message }} </div>
-                <div class="margin-left-1"><button class="primary-btn action-btn" name="add-comment-btn">Send</button></div>
+                <div class="ml-1p"><button class="primary-btn action-btn" name="add-comment-btn">Send</button></div>
             </div>
             {% if form.errors %}
                 <div class="msg-red w-50"><small>{{ form.errors.as_text }}</small></div> 

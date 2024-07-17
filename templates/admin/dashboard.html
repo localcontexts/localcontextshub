@@ -25,7 +25,7 @@
     <div class="dashboard">
         <div class="w-100">
             <div class="dash-card flex-this space-between">
-                <h1 class="margin-left-1">Dashboard Data for {{date|date:"F d, Y, H:i e" }}</h1>
+                <h1 class="ml-1p">Dashboard Data for {{date|date:"F d, Y, H:i e" }}</h1>
                 <form id="dashboardDateFilter" class="flex-this align-center mr-1p" method="POST">
                     {% csrf_token %}
                     <input style="border:none;height:20px;" type="datetime-local" id="start" name="filter-date"
