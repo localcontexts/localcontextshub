@@ -38,7 +38,7 @@
         
         <div class="flex-this dash-btn-container flex-end">
             {% if 'update-profile' in request.path or 'manage' in request.path or 'change-password' in request.path or 'deactivate' in request.path or 'invitations' in request.path %}
-                <div class="margin-right-8"><a href="{% url 'dashboard' %}" class="primary-btn white-btn">Back to Profile</a></div>
+                <div class="mr-8"><a href="{% url 'dashboard' %}" class="primary-btn white-btn">Back to Profile</a></div>
             {% else %}
                 <!-- Notifications -->
                 {% include 'snippets/notifications.html' with scope=user %}

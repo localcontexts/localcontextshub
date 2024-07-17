@@ -25,7 +25,7 @@
         {% csrf_token %}
 
         <div class="flex-this space-between margin-bottom-16">
-            <div class="margin-right-8 w-100">
+            <div class="mr-8 w-100">
                 <label for="contact_name">
                     Contact name
                 </label>
@@ -47,9 +47,9 @@
         </div>
 
         <div class="margin-top-16 margin-bottom-16 flex-this w-100">
-            <div class="w-50 margin-right-8">
+            <div class="w-50 mr-8">
                 <div class="hide">{{ form.support_document }}</div>
-                <button id="customFileUploadBtn" class="primary-btn green-btn margin-right-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
+                <button id="customFileUploadBtn" class="primary-btn green-btn mr-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
                 {% if form.support_document.errors %}
                     <div class="msg-red w-100"><small>{{ form.support_document.errors.as_text }}</small></div> 
                 {% endif %}

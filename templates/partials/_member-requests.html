@@ -28,7 +28,7 @@
                 
                 {% if member_role == 'admin' %}
                     <div class="flex-this dash-btn-container flex-end">
-                        <div class="mt-0 margin-right-8">
+                        <div class="mt-0 mr-8">
                             <a 
                                 class="primary-btn white-btn" 
                                 {% if community %}
@@ -47,7 +47,7 @@
                     <div class="modal-defaults add-member-modal flex-this column w-100">
                     
                         <div class="flex-this flex-end close-modal-btn">
-                            <div id="closeModal{{join_request.id}}" class="margin-right-8 primary-btn white-btn">Close <i class="fa fa-times" aria-hidden="true"></i></div>
+                            <div id="closeModal{{join_request.id}}" class="mr-8 primary-btn white-btn">Close <i class="fa fa-times" aria-hidden="true"></i></div>
                         </div>
                         <div class="w-100">
                 
@@ -167,7 +167,7 @@
                 
                 {% if member_role == 'admin' %}
                     <div class="flex-this dash-btn-container flex-end">
-                        <div class="mt-0 margin-right-8">
+                        <div class="mt-0 mr-8">
                             <a class="primary-btn white-btn" href="{% url 'delete-member-invite' invite.id %}">Cancel Invite</a>
                         </div>
                     </div>  

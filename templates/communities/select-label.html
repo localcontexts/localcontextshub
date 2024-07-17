@@ -23,7 +23,7 @@
                 <div><p>You currently have {{ bclabels.count }} BC Labels and {{ tklabels.count }} TK Labels customized</p></div>   
                 <div class="flex-this flex-end">
                     {% if can_download %}
-                        <div class="margin-right-8">
+                        <div class="mr-8">
                             <a class="white-btn primary-btn" href="{% url 'labels-pdf' community.id %}" target="_blank" rel="noopener">View in PDF <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
                         </div>
                         <div>

@@ -15,7 +15,7 @@
                     href="{% url 'researcher-projects' researcher.id %}"
                 {% endif %}
             >
-                <i class="fa fa-arrow-left darkteal-text margin-right-8"></i><span class="primary-black-text">Back to Projects</span>
+                <i class="fa fa-arrow-left darkteal-text mr-8"></i><span class="primary-black-text">Back to Projects</span>
             </a>
         </div>
     {% endif %}
@@ -85,7 +85,7 @@
         <div>
             <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Project details</h2>
-                <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
             <div id="projectDetailsDiv" style="height: auto; overflow: hidden;">
                 <div class="flex-this">
@@ -294,7 +294,7 @@
             {% if notices %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="notices">Project Notices</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectNoticesDiv" style="height: auto; overflow: hidden;">
                     {% for notice in notices %}
@@ -335,7 +335,7 @@
             {% if project.has_bclabels or project.has_tklabels %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="labels">Project Labels</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectLabelsDiv" style="height: auto; overflow: hidden;">
 
@@ -414,7 +414,7 @@
             {% if not project.source_project_uuid %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>Sub Projects</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="subProjectsDiv" style="height: auto; overflow: hidden;">
 
@@ -451,7 +451,7 @@
 
             <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Related Projects</h2>
-                <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
             <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
 
@@ -464,7 +464,7 @@
                     {% if community or institution or researcher %}
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
                             <div class="flex-this">
-                                <div class="margin-right-8">
+                                <div class="mr-8">
                                     <a 
                                         class="primary-btn white-btn" 
                                         {% if community %}
@@ -510,7 +510,7 @@
                                 </div>
                                 {% if community or institution or researcher %}
                                     {% if member_role == 'admin' or member_role == 'editor' or researcher %}
-                                        <div class="margin-right-8">
+                                        <div class="mr-8">
                                             <a 
                                                 class="primary-black-text unlink-related-project-btn pointer"
                                                 onclick="openUnlinkProjectModal(`{{p.unique_id}}`)"
@@ -537,7 +537,7 @@
                                                     </div>
                                                     
                                                     <div class="flex-this">
-                                                        <div class="w-50 margin-right-8">
+                                                        <div class="w-50 mr-8">
                                                             <a 
                                                                 class="primary-btn action-btn center-text"
                                                                 {% if community %}
@@ -588,7 +588,7 @@
                             </span>
                         </div> 
                     </h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectActivityDiv" style="height: 0px; overflow: hidden;">
                     {% for activity in activities %}

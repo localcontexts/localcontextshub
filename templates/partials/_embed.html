@@ -10,14 +10,14 @@
     <body>
         {% if restricted %}
             <div class="flex-this w-100">
-                <div class="ml-8 margin-right-8 m-auto" style="display: inherit;">
+                <div class="ml-8 mr-8 m-auto" style="display: inherit;">
                     <a 
                         href="https://localcontexts.org" 
                         style="display: inline-flex;">
                         <img style="width:60px;" loading="lazy" src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" alt="404 Local Contexts round logo">
                     </a>
                 </div>
-                <div class="font-size-14 align-center flex-this margin-right-8 ml-8 column">
+                <div class="font-size-14 align-center flex-this mr-8 ml-8 column">
                     <h1 class="orange-text mb-0">Oops!</h1>
                     <p>We can't seem to find the page you are looking for.<br><strong>Error Code: 404 Not Found</strong></p>
                 </div>
@@ -368,7 +368,7 @@
 
             <!-- Logo and Page Link -->
             <div class="flex-this w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
-                <div class="ml-8 margin-right-8 m-auto" style="display: inherit;">
+                <div class="ml-8 mr-8 m-auto" style="display: inherit;">
                     <a 
                         href="https://localcontexts.org" 
                         style="display: inline-flex;">
@@ -379,7 +379,7 @@
                         >
                     </a>
                 </div>
-                <div class="font-size-14 align-center flex-this margin-right-8">
+                <div class="font-size-14 align-center flex-this mr-8">
                     <a 
                         class="darkteal-text underline-hover bold pointer" 
                         href="{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif project %}{{project.project_page}}{% endif %}" 
