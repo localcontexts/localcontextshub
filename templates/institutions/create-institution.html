@@ -15,7 +15,7 @@
     <form id="createInstitutionForm" action="" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div id="ror-input-container" class="margin-top-16">
+        <div id="ror-input-container" class="mt-16">
             <label for="institution_name">Institution Name</label>
             {{ form.institution_name }}
             <div id="suggestionsContainer"></div>
@@ -80,7 +80,7 @@
             you indicate below, to discuss which subscription tier is best for your organization.
         </p>
 
-        <div class="flex-this space-between margin-bottom-16">
+        <div class="flex-this space-between mb-16">
             <div class="mr-8 w-100">
                 <label for="contact_name">
                     Contact name

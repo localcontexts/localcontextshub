@@ -16,7 +16,7 @@
 
     {% if community %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold margin-bottom-16">
+            <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -82,14 +82,14 @@
                     {% endif %}
 
                 {% else %}
-                    <div class="loc bold margin-bottom-16">
+                    <div class="loc bold mb-16">
                         <small>
                             You are a member of this community
                         </small>
                     </div>
                 {% endif %}
             {% else %}
-                <div class="loc grey-text bold margin-bottom-16">
+                <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
                             Login
@@ -149,7 +149,7 @@
                 <div class="public-page-labels flex-this w-100 wrap">
                     {% if bclabels %}
                         {% for bclabel in bclabels %}
-                            <div class="condensed-labels center-text mr-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 mb-16">
                                 {% include 'bclabels/which-label.html' %}
                                 <span>{{ bclabel.name }}</span>
                             </div> 
@@ -158,7 +158,7 @@
 
                     {% if tklabels %}
                         {% for tklabel in tklabels %}
-                            <div class="condensed-labels center-text mr-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 mb-16">
                                 {% include 'tklabels/which-label.html' %}
                                 <span>{{ tklabel.name }}</span>
                             </div> 
@@ -171,7 +171,7 @@
 
     {% if institution %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold  margin-bottom-16">
+            <div class="loc grey-text bold  mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -235,14 +235,14 @@
                     {% endif %}
 
                 {% else %}
-                    <div class="loc bold margin-bottom-16">
+                    <div class="loc bold mb-16">
                         <small>
                             You are a member of this institution
                         </small>
                     </div>
                 {% endif %}
             {% else %}
-                <div class="loc grey-text bold margin-bottom-16">
+                <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
                             Login
@@ -311,7 +311,7 @@
 
     {% if researcher %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold margin-bottom-16">
+            <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry

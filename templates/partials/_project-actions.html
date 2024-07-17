@@ -307,7 +307,7 @@
                                 </p>
                             </div>
                             <div>
-                                <div class="margin-top-16">
+                                <div class="mt-16">
                                     {% if notice.notice_type == 'biocultural' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.">
                                     {% elif notice.notice_type == 'traditional_knowledge' %}
@@ -356,7 +356,7 @@
                                 {% for bclabel in labels.bc_labels %}
                                     <div class="flex-this border-bottom-not-last">
                                         <div>
-                                            <div class="flex-this margin-top-16">
+                                            <div class="flex-this mt-16">
                                                 <div>
                                                     {% include 'bclabels/which-label.html' %} 
                                                 </div>
@@ -381,7 +381,7 @@
                                 {% for tklabel in labels.tk_labels %}
                                     <div class="flex-this border-bottom-not-last">
                                         <div>
-                                            <div class="flex-this margin-top-16">
+                                            <div class="flex-this mt-16">
                                                 <div>
                                                     {% include 'tklabels/which-label.html' %} 
                                                 </div>
@@ -420,7 +420,7 @@
 
                     <div><p><strong>{{sub_projects.count}}</strong> Sub Projects </p></div>
 
-                    <div class="margin-bottom-16">
+                    <div class="mb-16">
                         {% if sub_projects %}
                             {% for field in sub_projects %}
                                 <div class="related-projects-div flex-this space-between">
@@ -455,7 +455,7 @@
             </div>
             <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
 
-                <div class="flex-this space-between center-text margin-top-16">
+                <div class="flex-this space-between center-text mt-16">
                     <div>
                         <p>
                             <strong>{{project.related_projects.count}}</strong> Related Projects connected
@@ -487,7 +487,7 @@
                     {% endif %}
                 </div>
 
-                <div class="margin-bottom-16">
+                <div class="mb-16">
                     {% if project.related_projects.all %}
                         {% for p in project.related_projects.all %}
                             <div class="related-projects-div flex-this space-between">
@@ -526,7 +526,7 @@
                                             <div class="modal-defaults project-unlink-modal flex-this column w-100">
                                                 <div class="w-100">
 
-                                                    <div class="flex-this space-between margin-bottom-16">
+                                                    <div class="flex-this space-between mb-16">
                                                         <div class="w-80">
                                                             <h2 class="primary-black-text mt-0">Remove Project Connection</h2>  
                                                             <p>Are you sure you want to remove this connection?</p>  
@@ -734,7 +734,7 @@
                         </div>
 
                         <div class="w-100 flex-this column">
-                            <div class="w-100 flex-this column margin-bottom-16">
+                            <div class="w-100 flex-this column mb-16">
                                 <label class="bold mt-8 mb-8 block">Local Contexts Project ID</label>
                                 <div class="text-input-to-copy">
                                     <input class="w-100 grey-chip" type="text" value="{{ project.unique_id }}" id="projectUUIDToCopy" readonly>
@@ -1064,7 +1064,7 @@
                             </select>                    
                         </div>
             
-                        <div class="flex-this margin-top-16 wrap">
+                        <div class="flex-this mt-16 wrap">
                             {% for community in communities %}
                                 <div id="selected-community-{{ community.id }}" class="hide mt-8">
                                     <div class="grey-chip flex-this row space-between">
@@ -1120,7 +1120,7 @@
                         </ul>
                     </div>
 
-                    <div class="margin-top-16 flex-this flex-end">
+                    <div class="mt-16 flex-this flex-end">
                         <button id="connectProjectsBtn" class="primary-btn disabled-btn" name="link_projects_btn" disabled>Connect Projects</button>
                     </div>
 

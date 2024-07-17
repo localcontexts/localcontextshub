@@ -21,7 +21,7 @@
 
         <div id="defaultPlaceholderUrl" data-url="{% static 'images/placeholders/community-place.jpg' %}"></div>
 
-        <div class="flex-this space-between margin-bottom-16">
+        <div class="flex-this space-between mb-16">
             <div class="w-50">
                 {% if community %}
                     <div id="imagePreviewContainer" class="img-preview__container__rectangle">
@@ -140,7 +140,7 @@
         <!-- Researcher account contact, disabled in sandbox -->
         {% if not env == "SANDBOX" %}
             <div><h3>Account Contact</h3></div>
-            <div class="w-100 margin-bottom-16">
+            <div class="w-100 mb-16">
                 <div>
                     <label for="contact_email"> Contact Email </label><br>
                     {{ update_form.contact_email }}
@@ -150,7 +150,7 @@
                     <div class="msg-red w-50"><small>{{ update_form.contact_email.errors.as_text }}</small></div>
                 {% endif %}
 
-                <div class="margin-top-16">
+                <div class="mt-16">
                     {{ update_form.contact_email_public.label }}
                     {{ update_form.contact_email_public }}
 
@@ -164,7 +164,7 @@
         <!-- Researcher: ORCiD -->
         <div>
             <div><h3>ORCiD</h3></div>
-            <div class="w-100 margin-bottom-16">
+            <div class="w-100 mb-16">
                 {% if researcher.orcid %}
                 <div class="flex-this space-between">
                     <div>
@@ -242,7 +242,7 @@
             <small>Providing your personal information is optional.
                 By providing it, you consent for it to be shown to other Hub users, see the <a href="https://localcontexts.org/privacy-policy/" class="default-a" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</small>
         </p>
-        <div class="margin-top-16 w-50">
+        <div class="mt-16 w-50">
             <button class="primary-btn action-btn mt-2p">Save changes <i class="fa fa-arrow-right"></i></button>
         </div>
     </div>

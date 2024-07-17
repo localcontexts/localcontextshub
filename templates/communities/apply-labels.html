@@ -35,7 +35,7 @@
             </div>
 
             {% if project.urls %}
-                <div class="margin-bottom-16">
+                <div class="mb-16">
                     <div><h3 class="mt-0">Project Links</h3></div>
                         <ul>
                             {% for url in project.urls %}
@@ -46,7 +46,7 @@
             {% endif %}
         </div>
 
-        <div class="w-40 flex-this column align-right margin-top-16">
+        <div class="w-40 flex-this column align-right mt-16">
 
             <div class="flex-this row mt-8 w-50 flex-end">
                 {% if project.tk_labels.all or project.bc_labels.all %}
@@ -126,7 +126,7 @@
                                             <span id="label-name-{{ bclabel.unique_id }}" class="grey-text">{{ bclabel.name }}</span>
                                         </div> 
 
-                                        <div class="notice-checkbox-container mb-8 m-auto margin-top-16">
+                                        <div class="notice-checkbox-container mb-8 m-auto mt-16">
                                             <input 
                                                 id="checked-label-{{ bclabel.unique_id }}" 
                                                 onclick="displayDefaultText(this)" 
@@ -160,7 +160,7 @@
                                                 <span id="label-name-{{ tklabel.unique_id }}" class="grey-text">{{ tklabel.name }}</span>
                                             </div> 
     
-                                            <div class="notice-checkbox-container mb-8 m-auto margin-top-16">
+                                            <div class="notice-checkbox-container mb-8 m-auto mt-16">
                                                 <input 
                                                     id="checked-label-{{ tklabel.unique_id }}" 
                                                     onclick="displayDefaultText(this)" 
@@ -186,7 +186,7 @@
                     {% for bclabel in bclabels %}
 
                         <div id="open-default-text-{{ bclabel.unique_id }}" style="height: 0; overflow: hidden;">
-                            <div class="flex-this border-top-grey margin-top-16">
+                            <div class="flex-this border-top-grey mt-16">
                                 <div class="small-label pad-top-1-5">
                                     {% include 'bclabels/which-label.html' %}
                                 </div>
@@ -209,7 +209,7 @@
                 {% if tklabels %}
                     {% for tklabel in tklabels %}
                         <div id="open-default-text-{{ tklabel.unique_id }}" style="height: 0; overflow: hidden;">
-                            <div class="flex-this border-top-grey margin-top-16">
+                            <div class="flex-this border-top-grey mt-16">
                                 <div class="small-label pad-top-1-5">
                                     {% include 'tklabels/which-label.html' %}
                                 </div>
@@ -228,10 +228,10 @@
                 {% endif %}
 
                 {% if notes %}
-                    <div class="border-top-grey margin-top-16">
+                    <div class="border-top-grey mt-16">
                         <h2>Community Notes</h2>
                         {% for note in notes %}
-                            <div class="margin-top-16 flex-this w-80 project-comment">
+                            <div class="mt-16 flex-this w-80 project-comment">
                                 <div class="project-comment-teal"></div>
                                 <div class="project-comment-text">
                                     <span class="bold">
@@ -246,7 +246,7 @@
                 {% endif %}
 
                 {% if bclabels or tklabels %}
-                    <div class="w-40 margin-top-16">
+                    <div class="w-40 mt-16">
                         {{ form.note.label }}
                         <div class="tooltip"><strong>i</strong>
                             <span class="tooltiptext">

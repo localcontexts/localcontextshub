@@ -61,7 +61,7 @@
                         {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
                         {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
                     </small>
-                    <div class="margin-top-16 margin-bottom-16">
+                    <div class="mt-16 mb-16">
                         <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                             <div class="m-auto">
                                 {% include 'bclabels/mini-labels.html' %}
@@ -82,7 +82,7 @@
                         {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
                         {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
                     </small>
-                    <div class="margin-top-16 margin-bottom-16">
+                    <div class="mt-16 mb-16">
                         <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                             {% include 'tklabels/mini-labels.html' %}
                             <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
@@ -97,7 +97,7 @@
         {% for bclabel in bclabels %}
             {% if bclabel.is_approved %}
                 <div class="w-20">
-                    <div class="margin-top-16 margin-bottom-16">
+                    <div class="mt-16 mb-16">
                         <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                             {% include 'bclabels/mini-labels.html' %}
                             <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
@@ -111,7 +111,7 @@
         <!-- APPROVED TKLABELS -->
         {% for tklabel in tklabels %}
             {% if tklabel.is_approved %}
-                <div class="w-20 margin-top-16 margin-bottom-16">
+                <div class="w-20 mt-16 mb-16">
                     <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
                         {% include 'tklabels/mini-labels.html' %}
                         <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
@@ -168,7 +168,7 @@
                         {% if bclabel.bclabel_note.all %}
                             <h4>A note was added to this Label:</h4>
                             {% for note in bclabel.bclabel_note.all %}
-                                <div class="margin-top-16 note-container">
+                                <div class="mt-16 note-container">
                                     <p> Member {% firstof note.sender.get_full_name note.sender.username %} wrote: <br>{{ note.note }}</p>
                                 </div>
                             {% endfor %}
@@ -228,7 +228,7 @@
                         {% if tklabel.tklabel_note.all %}
                             <h4>A note was added to this Label:</h4>
                             {% for note in tklabel.tklabel_note.all %}
-                                <div class="margin-top-16 note-container">
+                                <div class="mt-16 note-container">
                                     <p> Member {% firstof note.sender.get_full_name note.sender.username %} wrote: <br>{{ note.note }}</p>
                                 </div>
                             {% endfor %}
@@ -288,7 +288,7 @@
 
             <!-- PROVENANCE -->
             <div class="flex-this column w-100 border-top-solid-teal">
-                <div class="margin-bottom-16 w-50">
+                <div class="mb-16 w-50">
                     <h3 class="mb-0">Provenance Labels</h3>
                     <p>Provenance Labels identify the group or sub-group which is the primary cultural authority for the material, and/or recognizes other interests in the material.</p>
                 </div>
@@ -359,7 +359,7 @@
                         <!-- <div><button class="primary-btn green-btn primary-btn green-btn-default-size">Example</button></div> -->
                     </div>
 
-                    <div class="w-80 ml-1p margin-bottom-16">
+                    <div class="w-80 ml-1p mb-16">
                         <form method="POST" action="">
                             {% csrf_token %}
                             <div class="flex-this space-between">
@@ -396,7 +396,7 @@
             <!-- PROTOCOLS -->
             <div class="flex-this column w-100 border-top-solid-teal">
 
-                <div class="margin-bottom-16 w-50">
+                <div class="mb-16 w-50">
                     <h3>Protocol Labels</h3>
                     <p>Protocol Labels outline traditional protocols associated with access to this material and invite viewers to respect community protocols.</p>
                 </div>
@@ -485,7 +485,7 @@
                         <!-- <div><button class="primary-btn green-btn primary-btn green-btn-default-size">Example</button></div> -->
                     </div>
 
-                    <div class="w-80 ml-1p margin-bottom-16">
+                    <div class="w-80 ml-1p mb-16">
                         <form method="POST" action="">
                             {% csrf_token %}
                             <div class="flex-this space-between">
@@ -521,7 +521,7 @@
             <!-- PERMISSION -->
             <div class="flex-this column w-100 border-top-solid-teal">
 
-                <div class="margin-bottom-16 w-50">
+                <div class="mb-16 w-50">
                     <h3 class="mb-0">Permission Labels</h3>
                     <p>Permission Labels indicate what activities the community has approved as generally acceptable. Other uses require direct engagement with primary cultural authorities.</p>
                 </div>
@@ -581,7 +581,7 @@
                         <!-- <div><button class="primary-btn green-btn primary-btn green-btn-default-size">Example</button></div> -->
                     </div>
 
-                    <div class="w-80 ml-1p margin-bottom-16">
+                    <div class="w-80 ml-1p mb-16">
                         <form method="POST" action="">
                             {% csrf_token %}
                             <div class="flex-this space-between">
@@ -649,7 +649,7 @@
 
         <!-- PROVENANCE -->
         <div class="flex-this column border-top-solid-teal">
-            <div class="margin-bottom-16 w-50">
+            <div class="mb-16 w-50">
                 <h3 class="mb-0">Provenance Labels</h3>
                 <p>Provenance Labels identify the group or sub-group which is the primary cultural authority for the material, and/or recognizes other interests in the material.</p>
             </div>
@@ -729,7 +729,7 @@
 
         <!-- PROTOCOL -->
         <div class="flex-this column border-top-solid-teal">
-            <div class="margin-bottom-16 w-50">
+            <div class="mb-16 w-50">
                 <h3 class="mb-0">Protocol Labels</h3>
                 <p>Protocol Labels outline agreed protocols associated with access to this material.</p>
             </div>
@@ -798,7 +798,7 @@
 
         <!-- PERMISSION -->
         <div class="flex-this column border-top-solid-teal">
-            <div class="margin-bottom-16 w-50">
+            <div class="mb-16 w-50">
                 <h3 class="mb-0">Permission Labels</h3>
                 <p>Permission Labels indicate what activities the community has approved as generally acceptable. Other uses require direct engagement with primary cultural authorities. </p>
             </div>

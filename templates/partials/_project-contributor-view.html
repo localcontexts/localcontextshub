@@ -3,7 +3,7 @@
     <div class="flex-this column w-60"><div><p class="p-28 bold">{{ project.title }}</p></div></div>
     <div><p class="bold mt-0">{{ project.project_privacy }} Project</p></div>
 
-    <div class="flex-this margin-top-16">
+    <div class="flex-this mt-16">
         <div>
             <a onclick="copyToClipboard('uniqueIDToCopy')" class="primary-btn mt-2p copied-display">
                 <i onclick="buttonPulse(this)" class="fa fa-copy round-btn"></i>
@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <div class="flex-this margin-top-16">
+    <div class="flex-this mt-16">
         {% if project.providers_id %}
             <div>
                 <a onclick="copyToClipboard('providersIDToCopy')" class="primary-btn mt-2p copied-display">

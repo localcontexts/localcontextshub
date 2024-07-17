@@ -122,14 +122,14 @@
                 </span>
             </div>
             <div class="w-50 flex-this">
-                <div class="w-50 margin-bottom-16 mr-8">
+                <div class="w-50 mb-16 mr-8">
                     {{ form.project_type }}<br>
                     {% if form.project_type.errors %}
                         <div class="msg-red w-50"><small>{{ form.project_type.errors.as_text }}</small></div>
                     {% endif %}
                 </div>
 
-                <div id="otherTypeField" class="w-50 margin-bottom-16 hide">
+                <div id="otherTypeField" class="w-50 mb-16 hide">
                     {{ form.other_type }}<br>
                     {% if form.other_type.errors %}
                         <div class="msg-red w-50"><small>{{ form.other_type.errors.as_text }}</small></div>
@@ -175,7 +175,7 @@
                 </div>
                 <br>
 
-                <div class="flex-this mt-8 margin-bottom-16">
+                <div class="flex-this mt-8 mb-16">
                     <textarea id="projectLinksInput" class="w-100 block mr-8" rows="1"></textarea>
                     <div id="addProjectUrlBtn" class="add-square-btn pointer">
                         <span>+</span>
