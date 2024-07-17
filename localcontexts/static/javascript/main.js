@@ -1051,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             let parentDiv = document.getElementById('person-form-0');
             let clone = parentDiv.cloneNode(true);
             clone.id = 'person-form-' + ++count; // unique id
-            clone.classList.add('margin-top-8');
+            clone.classList.add('mt-8');
 
             // Name input has name='form-0-name' and id='id_form-0-name'
             // Email input has name='form-0-email' and id='id_form-0-email'

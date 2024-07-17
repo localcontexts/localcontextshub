@@ -12,7 +12,7 @@
         <form method="POST" action="" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="w-100 margin-top-8">
+            <div class="w-100 mt-8">
                 <div class="flex-this">
                     <div class="w-50">
                         <label for="first_name">First Name </label><br>
@@ -31,7 +31,7 @@
                 {% endif %}
             </div>
 
-            <div class="w-100 margin-top-8">
+            <div class="w-100 mt-8">
                 <label for="email">Email</label><br>
                 {{ user_form.email }}
                 {% if user_form.email.errors %}
@@ -39,7 +39,7 @@
                 {% endif %}
             </div>
 
-            <div class="w-100 margin-top-8">
+            <div class="w-100 mt-8">
                 <div class="flex-this">
                     <div class="w-50">
                         <label for="position">Position </label><br>                                           
@@ -60,7 +60,7 @@
             </div>
 
         <div class="w-100 flex-this">
-            <div class="w-50 margin-top-8">
+            <div class="w-50 mt-8">
                 <label for="preferred_language">Preferred Language</label><br>
                 {{ profile_form.preferred_language }}
                 {% if profile_form.preferred_language.errors %}
@@ -68,7 +68,7 @@
                 {% endif %}
             </div>
 
-            <div class="w-50 margin-top-8 margin-left-16">
+            <div class="w-50 mt-8 margin-left-16">
                 <label>Languages Spoken</label><br>
                 {{ profile_form.languages_spoken }}
                 {% if profile_form.languages_spoken.errors %}
@@ -78,7 +78,7 @@
         </div>
 
 
-            <div class="w-100 margin-top-8">
+            <div class="w-100 mt-8">
                 <div class="flex-this">
                     <div class="w-100">
                         <label for="city_town">City or Town </label><br>
@@ -98,7 +98,7 @@
 
             </div>
 
-            <div class="flex-this w-100 margin-top-8">
+            <div class="flex-this w-100 mt-8">
                 <div class="w-100">
                     <label for="country">Country </label><br>                                       
                     {{ profile_form.country }}

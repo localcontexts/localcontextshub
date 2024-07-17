@@ -541,14 +541,14 @@
 
         <div class="w-100 flex-this column">
             <div class="w-100 flex-this column margin-bottom-16">
-                <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Registry URL</label>
+                <label class="bold mt-8 margin-bottom-8 block">Local Contexts Registry URL</label>
 
                 <div class="text-input-to-copy">
                     <input class="w-100 grey-chip" type="text" value="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}" id="profilePageUrlToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
                 </div>
 
-                <label class="bold margin-top-8 mb-0 block">Embed Open to Collaborate Notice</label>
+                <label class="bold mt-8 mb-0 block">Embed Open to Collaborate Notice</label>
                 <p class="font-size-14 mt-0 margin-bottom-8">Add this Notice to your website by copying the code below.</p>
 
                 <div class="text-input-to-copy">
@@ -570,7 +570,7 @@
                 </div>
             </div>
 
-            <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+            <div class="border-bottom-grey mt-8 margin-bottom-8"></div>
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">

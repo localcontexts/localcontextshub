@@ -22,7 +22,7 @@
                                     <div><h3 class="dashcard-h3 darkteal-text">{{ invite.institution }}</h3></div>
  
                                     <div class="dashcard-btn-container">
-                                        <div class="margin-right-16 margin-top-8">
+                                        <div class="margin-right-16 mt-8">
                                             <a href="{% url 'delete-member-invitation' invite.id %}" class="default-a">Delete invite</a>
                                         </div>
                                         <div>
@@ -81,8 +81,8 @@
                                 <div class="flex-this space-between">
                                     <div><h3 class="dashcard-h3 darkteal-text">{{ invite.community }}</h3></div>
                                     <div class="dashcard-btn-container">
-                                        <div class="margin-right-16 margin-top-8">
-                                            <a href="{% url 'delete-member-invitation' invite.id %}" class="default-a margin-right-8 margin-top-8">Delete invite</a>
+                                        <div class="margin-right-16 mt-8">
+                                            <a href="{% url 'delete-member-invitation' invite.id %}" class="default-a margin-right-8 mt-8">Delete invite</a>
                                         </div>
                                         <div>
                                             <form method="POST" action="">

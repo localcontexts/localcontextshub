@@ -13,13 +13,13 @@
     <form action="" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div class="flex-this column margin-top-8">
+        <div class="flex-this column mt-8">
             <div>
                 <label class="pad-top-1-5">Name of the Community</label><br>
                 {{ form.community_name }}
             </div>
 
-            <div class="flex-this margin-top-8">
+            <div class="flex-this mt-8">
                 <div class="w-50 mr-1p">
                     <label class="pad-top-1-5">Community Entity</label>
                     <div class="tooltip"><strong>i</strong>
@@ -42,12 +42,12 @@
                 </div>
             </div>
         
-            <div class="country-container margin-top-8">
+            <div class="country-container mt-8">
                 <label class="pad-top-1-5" for="country">Country</label><br>
                 {{ form.country }}
             </div>
 
-            <div class="margin-top-8">
+            <div class="mt-8">
                 <label>Community Website</label>
                 {{ form.website }}
             </div>
@@ -75,7 +75,7 @@
                 {% include 'partials/_alerts.html' %}
             </div>
     
-            <div class="margin-top-8">
+            <div class="mt-8">
                 <button class="primary-btn action-btn mt-2p">Continue <i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
