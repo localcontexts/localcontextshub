@@ -56,7 +56,7 @@ class OpenToCollaborateNoticeURLForm(forms.ModelForm):
         model = OpenToCollaborateNoticeURL
         fields = ['name', 'url']
         widgets = { 
-            'name': forms.TextInput(attrs={'class': 'w-100 margin-bottom-8'}), 
+            'name': forms.TextInput(attrs={'class': 'w-100 mb-8'}), 
             'url': forms.TextInput(attrs={'class': 'w-100'}), 
         }
 

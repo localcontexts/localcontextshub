@@ -25,7 +25,7 @@
 
         {% else %}
             <div style="padding: 12px;padding-bottom: 0px;">
-                <div id="group" class="flex-this{% if align == 'right' %} flex-end {% else %} flex-start {% endif%}{% if layout == '2' %} column {% endif %}{% if layout == '3' %} wrap w-100 {% endif %}"{% if layout == '2' and align == 'right' %} style= "width: fit-content; margin-left: auto;" {% endif %}>
+                <div id="group" class="flex-this{% if align == 'right' %} flex-end {% else %} flex-start {% endif%}{% if layout == '2' %} column ml-auto {% endif %}{% if layout == '3' %} wrap w-100 {% endif %}"{% if layout == '2' and align == 'right' %} style= "width: fit-content;" {% endif %}>
                     <!-- Notices -->
                     {% if notices %}
                         {% for notice in notices %}
@@ -85,7 +85,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </h3>
-                                        <h4 class="mt-10" style="margin-bottom: 10px;">
+                                        <h4 class="mt-10 mb-10">
                                             {% if not lang or lang == 'en' %}
                                                 English
                                             {% else %}
@@ -96,7 +96,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </h4>
-                                        <p class="mt-10" style="margin-bottom: 10px;">
+                                        <p class="mt-10 mb-10">
                                             {% if not lang or lang == 'en' %}
                                                 {{ notice.default_text }}
                                             {% else %}
@@ -140,8 +140,8 @@
                                 <div id="notice-text">
                                     <h3 class="mt-0 mb-0">Open to Collaborate
                                     </h3>
-                                    <h4 class="mt-10" style="margin-bottom: 10px;">English</h4>
-                                    <p class="mt-10" style="margin-bottom: 10px;">
+                                    <h4 class="mt-10 mb-10">English</h4>
+                                    <p class="mt-10 mb-10">
                                         {% if institution %}
                                             {{ institution.institution_name }}
                                         {% elif researcher %}
@@ -186,8 +186,8 @@
                                                 
                                                 {% elif layout == "3" %}
                                                     <h3 class="mt-0 mb-0">{{ tklabel.name }}</h3>
-                                                    <h4 class="mt-10" style="margin-bottom: 10px;">English</h4>
-                                                    <p class="mt-10" style="margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                                    <h4 class="mt-10 mb-10">English</h4>
+                                                    <p class="mt-10 mb-10">{{ tklabel.label_text}}</p>
                                                 {% endif %}
                                             </div>
 
@@ -217,8 +217,8 @@
                                             
                                             {% elif layout == "3" %}
                                                 <h3 class="mt-0  mb-0">{{ tklabel.name }}</h3>
-                                                <h4 class="mt-10" style="margin-bottom: 10px;">{{ tklabel.language }}</h4>
-                                                <p class="mt-10" style="margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                                <h4 class="mt-10 mb-10">{{ tklabel.language }}</h4>
+                                                <p class="mt-10 mb-10">{{ tklabel.label_text}}</p>
                                             {% endif %}
                                         </div>
 
@@ -249,8 +249,8 @@
 
                                                     {% elif layout == "3" %}
                                                         <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
-                                                        <h4 class="mt-10" style="margin-bottom: 10px;">{{ translation.language }}</h4>
-                                                        <p class="mt-10" style="margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                        <h4 class="mt-10 mb-10">{{ translation.language }}</h4>
+                                                        <p class="mt-10 mb-10">{{ translation.translated_text }}</p>
                                                     {% endif %}
                                                 </div>
 
@@ -286,8 +286,8 @@
                                                 
                                                 {% elif layout == "3" %}
                                                     <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
-                                                    <h4 class="mt-10" style="margin-bottom: 10px;">English</h4>
-                                                    <p class="mt-10" style="margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                                    <h4 class="mt-10 mb-10">English</h4>
+                                                    <p class="mt-10 mb-10">{{ bclabel.label_text}}</p>
                                                 {% endif %}
                                             </div>
 
@@ -317,8 +317,8 @@
                                             
                                             {% elif layout == "3" %}
                                                 <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
-                                                <h4 class="mt-10" style="margin-bottom: 10px;">{{ bclabel.language }}</h4>
-                                                <p class="mt-10" style="margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                                <h4 class="mt-10 mb-10">{{ bclabel.language }}</h4>
+                                                <p class="mt-10 mb-10">{{ bclabel.label_text}}</p>
                                             {% endif %}
                                         </div>
 
@@ -349,8 +349,8 @@
 
                                                     {% elif layout == "3" %}
                                                         <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
-                                                        <h4 class="mt-10" style="margin-bottom: 10px;">{{ translation.language }}</h4>
-                                                        <p class="mt-10" style="margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                        <h4 class="mt-10 mb-10">{{ translation.language }}</h4>
+                                                        <p class="mt-10 mb-10">{{ translation.translated_text }}</p>
                                                     {% endif %}
                                                 </div>
 
