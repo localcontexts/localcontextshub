@@ -104,7 +104,7 @@
         <div>
             {% if researcher %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn margin-top-2" href="{% url 'researcher-create-project' researcher.id %}">
+                    <a class="primary-btn green-btn mt-2p" href="{% url 'researcher-create-project' researcher.id %}">
                         Create a Project     <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
@@ -113,7 +113,7 @@
             {% if institution %}
                 <div class="flex-this align-center">
                     {% if member_role == 'admin' or member_role == 'editor' %}
-                        <a class="primary-btn green-btn margin-top-2" href="{% url 'inst-create-project' institution.id %}">
+                        <a class="primary-btn green-btn mt-2p" href="{% url 'inst-create-project' institution.id %}">
                             Create a Project     <i class="fa fa-arrow-right"></i>
                         </a>
                     {% endif %}

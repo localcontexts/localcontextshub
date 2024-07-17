@@ -4,7 +4,7 @@
     {% if request.user.is_authenticated %}
         <div class="back-to-projects">
             <a 
-                class="pointer margin-top-2 margin-left-8"
+                class="pointer mt-2p margin-left-8"
                 {% if community %}
                     href="{% url 'community-projects' community.id %}"
                 {% endif %}
