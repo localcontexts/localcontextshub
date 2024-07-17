@@ -57,7 +57,7 @@
         {% for bclabel in bclabels %}
             {% if not bclabel.is_approved %}
                 <div class="w-20">
-                    <small class="center-text block bold darkteal-text margin-bottom-8">
+                    <small class="center-text block bold darkteal-text mb-8">
                         {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
                         {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
                     </small>
@@ -78,7 +78,7 @@
         {% for tklabel in tklabels %}
             {% if not tklabel.is_approved %}
                 <div class="w-20">
-                    <small class="center-text block bold darkteal-text margin-bottom-8">
+                    <small class="center-text block bold darkteal-text mb-8">
                         {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
                         {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
                     </small>
@@ -717,7 +717,7 @@
         
                             <div class="right-text">
                                 {% if member_role == 'admin' or member_role == 'editor' %}
-                                    <button id="btnBCProv" class="primary-btn action-btn mt-2p margin-bottom-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
+                                    <button id="btnBCProv" class="primary-btn action-btn mt-2p mb-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
                                 {% endif %}
                             </div>
                         </form>
@@ -787,7 +787,7 @@
         
                             <div class="right-text">
                                 {% if member_role == 'admin' or member_role == 'editor' %}
-                                    <button id="btnBCProt" class="primary-btn action-btn mt-2p margin-bottom-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
+                                    <button id="btnBCProt" class="primary-btn action-btn mt-2p mb-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
                                 {% endif %}
                             </div>
                         </form>
@@ -885,7 +885,7 @@
 
                             <div class="right-text">
                                 {% if member_role == 'admin' or member_role == 'editor' %}
-                                    <button id="btnBCPerms" class="primary-btn action-btn mt-2p margin-bottom-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
+                                    <button id="btnBCPerms" class="primary-btn action-btn mt-2p mb-8">Customize this Label <i class="fa fa-arrow-right"></i></button>
                                 {% endif %}
                             </div>
                         </form>

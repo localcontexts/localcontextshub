@@ -147,10 +147,10 @@
 
                 {% if bclabel.version or tklabel.version %}
                     {% if bclabel.version > 1 or tklabel.version > 1 %}
-                        <div class="flex-this flex-end margin-bottom-8">
+                        <div class="flex-this flex-end mb-8">
                             <small id="openLabelHistoryBtn" class="default-a block right-text">View Label History <i class="fa fa-angle-down" aria-hidden="true"></i></small>
                         </div>
-                        <div id="labelHistoryDiv" class="hide margin-bottom-8">
+                        <div id="labelHistoryDiv" class="hide mb-8">
                                 <p>
                                 {% if label_versions %}
                                     {% for version in label_versions %}

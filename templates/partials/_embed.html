@@ -29,7 +29,7 @@
                     <!-- Notices -->
                     {% if notices %}
                         {% for notice in notices %}
-                            <div id="notice" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                            <div id="notice" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                 <div id="notice-icon" style="padding-right: 12px;">
                                     <img 
                                         loading="lazy" 
@@ -116,7 +116,7 @@
                         {% endfor %}
 
                     {% elif otc_notices %}
-                        <div id="notice" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                        <div id="notice" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                             <div id="notice-icon" style="padding-left: 12px;padding-right: 12px;">
                                 <img 
                                     loading="lazy" 
@@ -164,7 +164,7 @@
                             {% for tklabel in labels.tk_labels %}
                                 {% if not lang or lang == 'en' %}
                                     {% if tklabel.language_tag == 'en' %}
-                                        <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
                                                 <img 
                                                     loading="lazy" 
@@ -195,7 +195,7 @@
                                     {% endif %}
 
                                 {% elif lang == tklabel.language_tag %}
-                                    <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                    <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
                                             <img 
                                                 loading="lazy" 
@@ -227,7 +227,7 @@
                                 {% else %}
                                     {% for translation in tklabel.tklabel_translation.all %}
                                         {% if lang == translation.language_tag %}
-                                            <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
                                                     <img 
                                                         loading="lazy" 
@@ -264,7 +264,7 @@
                             {% for bclabel in labels.bc_labels %}
                                 {% if not lang or lang == 'en' %}
                                     {% if bclabel.language_tag == 'en' %}
-                                        <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
                                                 <img 
                                                     loading="lazy" 
@@ -295,7 +295,7 @@
                                     {% endif %}
 
                                 {% elif lang == bclabel.language_tag %}
-                                    <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                    <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
                                             <img 
                                                 loading="lazy" 
@@ -327,7 +327,7 @@
                                 {% else %}
                                     {% for translation in bclabel.bclabel_translation.all %}
                                         {% if lang == translation.language_tag %}
-                                            <div id="label" class="mt-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label" class="mt-8 mb-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
                                                     <img 
                                                         loading="lazy" 

@@ -185,7 +185,7 @@
                 <ul id="projectLinksUl" class="ul-no-bullets ul-no-padding">
                     {% if urls %}
                         {% for url in urls %}
-                            <li id="{{ url }}" class="margin-bottom-8 show">
+                            <li id="{{ url }}" class="mb-8 show">
                                 <div class="grey-chip flex-this row space-between">
                                     <div><p class="center-name word-break">{{ url }}</p></div>
                                     <div id="btn-{{ url }}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
@@ -331,7 +331,7 @@
                 <br> 
 
                 {% for value, label in form.project_privacy.field.choices %}
-                    <div class="margin-bottom-8">
+                    <div class="mb-8">
                         <label for="privacy_{{ value }}">
                             <div class="flex-this">
                                 <div class="margin-right-16">

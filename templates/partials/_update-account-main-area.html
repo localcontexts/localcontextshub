@@ -69,7 +69,7 @@
         {% endif %}
     </div>
 
-    <div class="w-100 margin-bottom-8">
+    <div class="w-100 mb-8">
         {{ update_form.description.label }} <br>
         {{ update_form.description }}
         {% if update_form.description.errors %}
@@ -79,7 +79,7 @@
 
     <!-- Community entity -->
     {% if community %}
-        <div class="w-100 margin-bottom-8">
+        <div class="w-100 mb-8">
             <label> Community Entity </label><br>
             {{ update_form.community_entity }}
             {% if update_form.community_entity.errors %}
@@ -90,13 +90,13 @@
 
     <!-- Primary institution -->
     {% if researcher %}
-        <div class="margin-bottom-8">
+        <div class="mb-8">
             <label for="primary_institution"> Primary Institution </label><br>
             {{ update_form.primary_institution }}
         </div>
     {% endif %}
 
-    <div class="margin-bottom-8">
+    <div class="mb-8">
         {{ update_form.website.label }} <br>
         {{ update_form.website }}
     </div>
@@ -112,8 +112,8 @@
 
     <!-- Location -->
     {% if institution or community %}
-        <div class="w-100 margin-bottom-8">
-            <div class="w-100 margin-bottom-8">
+        <div class="w-100 mb-8">
+            <div class="w-100 mb-8">
                 {{ update_form.country.label }} <br>
                 {{ update_form.country }}
             </div>

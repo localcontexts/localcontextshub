@@ -1130,7 +1130,7 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
             if (isValidHttpUrl(item.trim())) {
                 const li = document.createElement('li')
                 li.id = item.trim()
-                li.classList.add('margin-bottom-8')
+                li.classList.add('mb-8')
                 li.classList.add('show')
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
