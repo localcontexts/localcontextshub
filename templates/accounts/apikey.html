@@ -3,13 +3,13 @@
 {% block settings %}
 <div class="flex-this column w-80 border-left mr-1p">
     <div class="flex-this space-between">
-        <div><h3 class="no-top-margin">API Key Manager</h3></div>
+        <div><h3 class="mt-0">API Key Manager</h3></div>
     </div>
 
     {% if has_key %}
         <div class="w-70 mb-2p">
-            <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.
-            <p class="no-top-margin">Your API key is listed below.</p>
+            <p class="mt-0">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.
+            <p class="mt-0">Your API key is listed below.</p>
         </div>
 
         <div class="w-100 margin-top-8">
@@ -49,7 +49,7 @@
             <div><h4 class="margin-top-16">Delete API Key</h4></div>
     
             <div class="w-70 mb-2p">
-                <p class="no-top-margin">You can only have one API key at a time. If you need to generate a new one, you must delete this one first. To delete your current key, click the button below.</p>
+                <p class="mt-0">You can only have one API key at a time. If you need to generate a new one, you must delete this one first. To delete your current key, click the button below.</p>
                     <button id="submitKeyDeletion" class="primary-btn white-btn" onclick="deleteKey()">Delete API Key</button>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 <div class="w-100">
         
                     <div>
-                        <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
+                        <h2 class="primary-black-text mt-0">Are you sure?</h2>  
                         <p>Are you sure you want to delete your API key? <br><br>
                             This cannot be undone and any projects connected to this key will be disconnected. <br></p>  
                     </div>
@@ -81,8 +81,8 @@
                 {% csrf_token %}
 
                 <div class="w-70 mb-2p">
-                    <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
-                    <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
+                    <p class="mt-0">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
+                    <p class="mt-0">You do not have an API key. Click the button below to generate one.</p>
                     <button type="submit" class="primary-btn action-btn mt-2p" name="generatebtn">Generate API Key <i class="fa fa-arrow-right"></i></button>
                 </div>
             </form>

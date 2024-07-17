@@ -3,7 +3,7 @@
 <script src="{% static 'javascript/orcid-widget.js' %}" type="text/javascript" defer></script>
 
 <div class="content-card content-card-space white-bg flex-this column">
-    <h2 class="no-top-margin">Account Settings</h2>
+    <h2 class="mt-0">Account Settings</h2>
 
     <div class="flex-this w-100">
 
@@ -12,7 +12,7 @@
                 <div class="flex-this side-nav-item {% if '/communities/update/' in request.path %} selected {% else %} grey-text {% endif %}">
                     <div class="w-20 margin-left-8 margin-top-8"><i class="fa-solid fa-circle-user fa-3x"></i></div>
                     <div class="w-80">
-                        <p class="no-top-margin">
+                        <p class="mt-0">
                             {% if community %}
                                 <strong>Community Account</strong><br>Image, description, location
                             {% endif %}

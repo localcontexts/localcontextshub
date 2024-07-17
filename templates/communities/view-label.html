@@ -21,7 +21,7 @@
 
             <div class="flex-this space-between">
                 <div>
-                    <h2 class="no-top-margin">
+                    <h2 class="mt-0">
                         {% if bclabel %} {{ bclabel.name }} {% endif %}
                         {% if tklabel %} {{ tklabel.name }} {% endif %}
                     </h2>                    
@@ -78,7 +78,7 @@
             </div>
 
             <div class="w-80">
-                <p class="no-top-margin no-bottom-margin">
+                <p class="mt-0 no-bottom-margin">
                     <span class="bold">Created by</span> - 
                     {% if bclabel %} {{ creator_name }} | {{ bclabel.community }} - {{ bclabel.created|date:'M Y'}} {% endif %}
                     {% if tklabel %} {{ creator_name }} | {{ tklabel.community }} - {{ tklabel.created|date:'M Y'}} {% endif %}
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     <div>
-                        <p class="no-top-margin no-bottom-margin">
+                        <p class="mt-0 no-bottom-margin">
                             {% if bclabel %} {{ bclabel.label_text }} {% endif %}
                             {% if tklabel %} {{ tklabel.label_text }} {% endif %}
                         </p>

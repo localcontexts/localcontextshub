@@ -3,7 +3,7 @@
 <div class="content-card-v2 content-card-space">
 
     <div class="w-70">
-        <h2 class="no-top-margin">TK and BC Labels</h2>
+        <h2 class="mt-0">TK and BC Labels</h2>
         <p>The TK and BC Labels are an initiative for Indigenous communities and local organizations. The Labels allow communities to express local and specific conditions for engaging and sharing traditional knowledge that are consistent with already existing community rules, governance and protocols for using, sharing and circulating knowledge and data. 
             <br><br>
             <strong>To start customizing Labels select from the options below.</strong>
@@ -16,7 +16,7 @@
 <div class="content-card-v2 content-card-space">
 
     <div class="w-100">
-        <h2 class="no-bottom-margin no-top-margin">Customized Labels</h2>
+        <h2 class="no-bottom-margin mt-0">Customized Labels</h2>
 
         {% if bclabels or tklabels %}
             <div class="flex-this space-between">
@@ -129,7 +129,7 @@
                 <div class="margin-right-16"><img src="{{bclabel.img_url}}" class="label-large pointer-event-none" alt="{{ bclabel.alt_text }}"></div>
                 <div class="w-90">
                     <div class="flex-this space-between">
-                        <div><h3 class="no-top-margin">{{ bclabel.name }}</h3></div>
+                        <div><h3 class="mt-0">{{ bclabel.name }}</h3></div>
 
                         <div class="flex-this flex-end">
                             {% if not bclabel.is_approved %}
@@ -159,7 +159,7 @@
                             <div><p class="bold">Label text</p></div>
                             <div><p>{{ bclabel.language }}</p></div>
                         </div>
-                        <div><p class="no-top-margin no-bottom-margin">{{ bclabel.label_text }} </p></div>
+                        <div><p class="mt-0 no-bottom-margin">{{ bclabel.label_text }} </p></div>
                     </div>
 
                     {% include 'partials/_label-translation.html' %}
@@ -189,7 +189,7 @@
                 </div>
                 <div class="w-90">
                     <div class="flex-this space-between">
-                        <div><h3 class="no-top-margin">{{ tklabel.name }}</h3></div>
+                        <div><h3 class="mt-0">{{ tklabel.name }}</h3></div>
 
                         <div class="flex-this flex-end">
                             {% if not tklabel.is_approved %}
@@ -219,7 +219,7 @@
                             <div><p class="bold">Label text</p></div>
                             <div><p>{{ tklabel.language }}</p></div>
                         </div>
-                        <div><p class="no-top-margin no-bottom-margin">{{ tklabel.label_text }} </p></div>
+                        <div><p class="mt-0 no-bottom-margin">{{ tklabel.label_text }} </p></div>
                     </div>
 
                     {% include 'partials/_label-translation.html' %}

@@ -6,12 +6,12 @@
 
         <div class="w-60 flex-this column">
             <div>
-                <h2 class="no-bottom-margin no-top-margin">Apply Labels</h2>
+                <h2 class="no-bottom-margin mt-0">Apply Labels</h2>
                 <p>Please choose from your customized Labels below. Select a Label to see description.</p>
             </div>
 
             <div>
-                <h2 class="no-bottom-margin no-top-margin">
+                <h2 class="no-bottom-margin mt-0">
                     <a href="{% url 'community-project-actions' community.id project.unique_id %}" class="darkteal-text underline-hover">
                         {{ project.title }}
                     </a>
@@ -36,7 +36,7 @@
 
             {% if project.urls %}
                 <div class="margin-bottom-16">
-                    <div><h3 class="no-top-margin">Project Links</h3></div>
+                    <div><h3 class="mt-0">Project Links</h3></div>
                         <ul>
                             {% for url in project.urls %}
                                 <li><a href="{{ url }}" class="darkteal-text underline-hover" target="_blank" rel="noopener">{{ url }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a></li>
@@ -96,8 +96,8 @@
 <div class="content-card-v2 content-card-space">
     <div class="flex-this column w-100">
 
-        <h2 class="no-top-margin">Select Customized Labels</h2>
-        <p class="no-top-margin w-70">
+        <h2 class="mt-0">Select Customized Labels</h2>
+        <p class="mt-0 w-70">
             {% if bclabels or tklabels %}
                 Your community can apply Labels to Projects, please choose from your customized Labels below.<br>
                 If you would like to customize more Labels, you can do so <a class="default-a" href="{% url 'select-label' community.id %}">here</a>.

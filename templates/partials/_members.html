@@ -1,7 +1,7 @@
 <div class="content-card-v2 content-card-space">
     <div class="border-bottom-solid-teal flex-this space-between">
         <div>
-            <h2 class="no-top-margin">Members</h2>
+            <h2 class="mt-0">Members</h2>
             <p>View all members and their associated responsibilities.</p>
         </div>
         <div class="flex-this">
@@ -62,14 +62,14 @@
         </div>
 
         <div class="w-70">
-            <h2 class="no-top-margin no-bottom-margin">
+            <h2 class="mt-0 no-bottom-margin">
                 {% firstof community.community_creator.get_full_name community.community_creator.username %}
             </h2>
             {% if community.community_creator.user_profile.position %}
-                <h3 class="no-top-margin">{{ community.community_creator.user_profile.position }}</h3>
+                <h3 class="mt-0">{{ community.community_creator.user_profile.position }}</h3>
             {% endif %}
 
-            <h4 class="no-top-margin"> {{community.community_creator.user_profile.get_location}}</h4>
+            <h4 class="mt-0"> {{community.community_creator.user_profile.get_location}}</h4>
 
             {% if community.community_creator.user_profile.languages_spoken %}
                 <div class="flex-this">
@@ -78,7 +78,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Languages</small>
-                        <p class="no-top-margin">{{ community.community_creator.user_profile.languages_spoken }}</p>
+                        <p class="mt-0">{{ community.community_creator.user_profile.languages_spoken }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -90,7 +90,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Affiliations</small>
-                        <p class="no-top-margin">{{ community.community_creator.user_profile.affiliation }}</p>
+                        <p class="mt-0">{{ community.community_creator.user_profile.affiliation }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -103,7 +103,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Email</small>
-                        <p class="no-top-margin">{{ community.community_creator.email }}</p>
+                        <p class="mt-0">{{ community.community_creator.email }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -135,14 +135,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof admin.get_full_name admin.username %}
                 </h2>
                 {% if admin.user_profile.position %}
-                    <h3 class="no-top-margin">{{ admin.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ admin.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ admin.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ admin.user_profile.get_location }} </h4>
 
                 {% if admin.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -151,7 +151,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ admin.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ admin.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -163,7 +163,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ admin.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ admin.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -175,7 +175,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ admin.email }}</p>
+                            <p class="mt-0">{{ admin.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -208,14 +208,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof editor.get_full_name editor.username %}
                 </h2>
                 {% if editor.user_profile.position %}
-                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ editor.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ editor.user_profile.get_location }} </h4>
 
                 {% if editor.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -224,7 +224,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ editor.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -236,7 +236,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ editor.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -248,7 +248,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ editor.email }}</p>
+                            <p class="mt-0">{{ editor.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -281,14 +281,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof viewer.get_full_name viewer.username %}
                 </h2>
                 {% if viewer.user_profile.position %}
-                    <h3 class="no-top-margin">{{ viewer.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ viewer.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ viewer.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ viewer.user_profile.get_location }} </h4>
 
                 {% if viewer.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -297,7 +297,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -309,7 +309,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -321,7 +321,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ viewer.email }}</p>
+                            <p class="mt-0">{{ viewer.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -341,14 +341,14 @@
         </div>
 
         <div class="w-70">
-            <h2 class="no-top-margin no-bottom-margin">
+            <h2 class="mt-0 no-bottom-margin">
                 {% firstof institution.institution_creator.get_full_name institution.institution_creator.username %}
             </h2>
             {% if institution.institution_creator.user_profile.position %}
-                <h3 class="no-top-margin">{{ institution.institution_creator.user_profile.position }}</h3>
+                <h3 class="mt-0">{{ institution.institution_creator.user_profile.position }}</h3>
             {% endif %}
 
-            <h4 class="no-top-margin"> {{ institution.institution_creator.user_profile.get_location }} </h4>
+            <h4 class="mt-0"> {{ institution.institution_creator.user_profile.get_location }} </h4>
 
             {% if institution.institution_creator.user_profile.languages_spoken %}
                 <div class="flex-this">
@@ -357,7 +357,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Languages</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.user_profile.languages_spoken }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.user_profile.languages_spoken }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -369,7 +369,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Affiliations</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.user_profile.affiliation }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.user_profile.affiliation }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -381,7 +381,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Email</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.email }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.email }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -413,14 +413,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof admin.get_full_name admin.username %}
                 </h2>
                 {% if admin.user_profile.position %}
-                    <h3 class="no-top-margin">{{ admin.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ admin.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ admin.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ admin.user_profile.get_location }} </h4>
 
                 {% if admin.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -429,7 +429,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ admin.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ admin.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -441,7 +441,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ admin.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ admin.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -453,7 +453,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ admin.email }}</p>
+                            <p class="mt-0">{{ admin.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -486,14 +486,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof editor.get_full_name editor.username %}
                 </h2>
                 {% if editor.user_profile.position %}
-                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ editor.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ editor.user_profile.get_location }} </h4>
 
                 {% if editor.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -502,7 +502,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ editor.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -514,7 +514,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ editor.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -526,7 +526,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ editor.email }}</p>
+                            <p class="mt-0">{{ editor.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -559,14 +559,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 no-bottom-margin">
                     {% firstof viewer.get_full_name viewer.username %}
                 </h2>
                 {% if viewer.user_profile.position %}
-                    <h3 class="no-top-margin">{{ viewer.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ viewer.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ viewer.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ viewer.user_profile.get_location }} </h4>
 
                 {% if viewer.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -575,7 +575,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -587,7 +587,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -599,7 +599,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ viewer.email }}</p>
+                            <p class="mt-0">{{ viewer.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -621,8 +621,8 @@
 
             <div class="flex-this space-between">
                 <div>
-                    <h2 class="no-top-margin">Add a new member</h2>
-                    <p class="no-top-margin">To invite a new member, please select a user and their proposed responsibility below</p>
+                    <h2 class="mt-0">Add a new member</h2>
+                    <p class="mt-0">To invite a new member, please select a user and their proposed responsibility below</p>
                 </div>
 
                 <div>
