@@ -7,7 +7,7 @@
     </div>
 
     {% if has_key %}
-        <div class="w-70 margin-bottom-2">
+        <div class="w-70 mb-2p">
             <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.
             <p class="no-top-margin">Your API key is listed below.</p>
         </div>
@@ -48,7 +48,7 @@
         <div class="flex-this column w-100 mr-1p">
             <div><h4 class="margin-top-16">Delete API Key</h4></div>
     
-            <div class="w-70 margin-bottom-2">
+            <div class="w-70 mb-2p">
                 <p class="no-top-margin">You can only have one API key at a time. If you need to generate a new one, you must delete this one first. To delete your current key, click the button below.</p>
                     <button id="submitKeyDeletion" class="primary-btn white-btn" onclick="deleteKey()">Delete API Key</button>
             </div>
@@ -80,7 +80,7 @@
             <form id="apiKeyGeneratorForm" method="POST">
                 {% csrf_token %}
 
-                <div class="w-70 margin-bottom-2">
+                <div class="w-70 mb-2p">
                     <p class="no-top-margin">Your API key enables access to the Local Contexts Hub data via the API and must be kept secret. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
                     <p class="no-top-margin">You do not have an API key. Click the button below to generate one.</p>
                     <button type="submit" class="primary-btn action-btn mt-2p" name="generatebtn">Generate API Key <i class="fa fa-arrow-right"></i></button>
