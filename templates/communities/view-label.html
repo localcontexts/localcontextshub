@@ -37,7 +37,7 @@
                             {% else %}
                                 {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% endif %}
@@ -60,7 +60,7 @@
                             {% else %}
                                 {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% endif %}

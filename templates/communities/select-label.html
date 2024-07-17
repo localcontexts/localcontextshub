@@ -136,17 +136,17 @@
                                 {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
 
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% else %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <button class="primary-btn disabled-btn" href="#" disabled>Waiting for approval</button>
                                     </div>
                                 {% endif %}
                             {% endif %}
 
-                            <div class="margin-top-1 margin-left-8">
+                            <div class="mt-1p margin-left-8">
                                 <a class="primary-btn action-btn block" href="{% url 'view-label' community.id bclabel.unique_id %}">View Label</a>
                             </div>
                         </div>
@@ -196,17 +196,17 @@
                                 {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
 
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% else %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <button class="primary-btn disabled-btn" href="#" disabled>Waiting for approval</button>
                                     </div>
                                 {% endif %}
                             {% endif %}
 
-                            <div class="margin-top-1 margin-left-8">
+                            <div class="mt-1p margin-left-8">
                                 <a class="primary-btn action-btn block" href="{% url 'view-label' community.id tklabel.unique_id %}">View Label</a>
                             </div>
                         </div>
@@ -334,7 +334,7 @@
             <!-- Provenance FORM -->
             <div id="tklabel-info-prov" class="border-top-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
 
                         <div id="tklabel-expanded-img-tka" class="tk-img-div hide">
                             <img loading="lazy" src="{% get_tklabel_img_url 'tka' %}" class="default-label-img pointer-event-none" alt="TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right.">
@@ -452,7 +452,7 @@
             <!-- Protocols FORM -->
             <div id="tklabel-info-prot" class="border-top-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
                         <div id="tklabel-expanded-img-tknv" class="tk-img-div hide">
                             <img loading="lazy" src="{% get_tklabel_img_url 'tknv' %}" class="default-label-img pointer-event-none" alt="TK Non-Verified Label icon. Black tag shape with a white checkmark and diagonal line through it in center.">
                         </div>
@@ -560,7 +560,7 @@
             <!-- Permissions FORM -->
             <div id="tklabel-info-perm" class="space-between margin-bottom-2 border-top-solid-teal border-bottom-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
                         <div id="tklabel-expanded-img-tko" class="tk-img-div hide">
                             <img loading="lazy" src="{% get_tklabel_img_url 'tko' %}" class="default-label-img pointer-event-none" alt="TK Outreach Label icon. Black tag shape with a white hand that has two dots stretching outward from each finger.">
                         </div>
@@ -674,7 +674,7 @@
             <!-- PROVENANCE FORM -->
             <div id="bclabel-info-prov" class="margin-bottom-2 border-top-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
         
                         <div id="bclabel-expanded-img-bcp" class="bc-img-div hide">
                             <img class="default-label-img pointer-event-none" loading="lazy" src="{% get_bclabel_img_url 'bcp' %}" alt="BC Provenance Label icon. Black tag shape with six perpendicular white lines of increasing width. On left side are three white dots.">
@@ -748,7 +748,7 @@
             <!-- PROTOCOLS FORM -->
             <div id="bclabel-info-prot" class="margin-bottom-2 border-top-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
         
                         <div id="bclabel-expanded-img-bccv" class="bc-img-div hide">
                             <img class="default-label-img pointer-event-none" loading="lazy" src="{% get_bclabel_img_url 'bccv' %}" alt="BC Consent Verified Label icon. Black tag shape with a white checkmark in center. On left side are three white dots.">
@@ -837,7 +837,7 @@
             <!-- PERMISSIONS FORM -->
             <div id="bclabel-info-perm" class="margin-bottom-2 border-top-solid-teal border-bottom-solid-teal hide">
                 <div class="flex-this">
-                    <div class="w-20 margin-right-1 margin-top-1" style="text-align: right;">
+                    <div class="w-20 margin-right-1 mt-1p" style="text-align: right;">
 
                         <div id="bclabel-expanded-img-bcr" class="bc-img-div hide">
                             <img class="default-label-img pointer-event-none" loading="lazy" src="{% get_bclabel_img_url 'bcr' %}" alt="BC Research Use Label icon. Black tag shape with four rectangles inside two concentric circles. On left side are three white dots.">

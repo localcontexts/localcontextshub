@@ -9,7 +9,7 @@ AddLabelTranslationFormSet = modelformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...', 'autocomplete': 'off'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
@@ -20,7 +20,7 @@ UpdateBCLabelTranslationFormSet = inlineformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
@@ -31,7 +31,7 @@ UpdateTKLabelTranslationFormSet = inlineformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
