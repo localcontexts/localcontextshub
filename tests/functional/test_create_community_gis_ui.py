@@ -1,3 +1,4 @@
+import time
 import urllib.parse
 
 import faker
@@ -43,15 +44,25 @@ class TestFeatures(UiFeatureHelper):
         self.py.get(".primary-btn").click()
 
     def select_specific_nld_territory(self, nld_terriroty: str):
+        time.sleep(5)   # wait for ajax call for NLD to load
         self.py.get(".input-field.search").type(nld_terriroty)
         self.py.get("#region-results .result-item").click()
 
     def select_share_boundary_publicly(self):
         self.py.get("#share-boundary-publicly").click()
 
+    def accept_cookies(self):
+        # this removes the accept-cookies overlay so other
+        # buttons below overlay can be clicked
+        self.py.get("[class~='cookie-btn']").click()
+
     def navigate_to_search_native_land_digital_database_page(self):
         create_community_url = urllib.parse.urljoin(self.live_server_url, self.create_community_path)
         self.py.visit(create_community_url)
+
+        # click accept cookies button
+        time.sleep(5)   # wait for accept banner to appear
+        self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
 
@@ -75,6 +86,7 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#community-boundary-continue-btn").click()
 
         # verify user is on the confirm community page
+        time.sleep(5)   # wait for ajax call to finish
         assert self.py.url().endswith(self.confirm_community_path)
 
         # verify community and boundary exists with the expected values
