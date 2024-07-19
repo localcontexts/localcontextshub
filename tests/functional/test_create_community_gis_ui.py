@@ -19,6 +19,7 @@ class TestFeatures(UiFeatureHelper):
         self.create_community_path = reverse('create-community')
         self.select_add_boundary_method_path = reverse('community-boundary')
         self.select_nld_add_boundary_method_path = reverse('add-community-boundary')
+        self.select_upload_boundary_file_method_path = reverse('upload-boundary-file')
         self.confirm_community_path = reverse('confirm-community')
 
     def fill_out_and_submit_account_creation_form(self):
@@ -118,3 +119,19 @@ class TestFeatures(UiFeatureHelper):
         assert created_community.source_of_boundary == 'https://native-land.ca/wp-json/nativeland' \
                                                        '/v1/api/index.php?maps=territories&name=panamakas'
         assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
+
+    def test_clicking_upload_shapefile_on_nld_page_navigates_to_upload_shapefile_page(self):
+        self.navigate_to_search_native_land_digital_database_page()
+
+        self.py.get("#navigate-to-option a").click()
+
+        # verify user is on the upload shapefile page
+        assert self.py.url().endswith(self.select_upload_boundary_file_method_path)
+
+    def test_clicking_skip_this_step_on_nld_page_navigates_to_confirm_page(self):
+        self.navigate_to_search_native_land_digital_database_page()
+
+        self.py.get("#skip-this-step a").click()
+
+        # verify user is on the upload shapefile page
+        assert self.py.url().endswith(self.confirm_community_path)
