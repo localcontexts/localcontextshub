@@ -3,22 +3,30 @@ import urllib.parse
 import faker
 import pytest
 from django.urls import reverse
-from faker import factory
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
+
+from communities.models import Community
 
 
 @pytest.mark.usefixtures("py")
 class TestFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
+        self.community_name = 'placeholder'
         self.fake = faker.Faker()
         self.create_community_path = reverse('create-community')
-        self.select_add_boundary_method = reverse('community-boundary')
+        self.select_add_boundary_method_path = reverse('community-boundary')
+        self.select_nld_add_boundary_method_path = reverse('add-community-boundary')
+        self.confirm_community_path = reverse('confirm-community')
 
     def fill_out_and_submit_account_creation_form(self):
+        # set the community name; we may use this name
+        # later to verify the community was created properly
+        self.community_name = self.fake.name()
+
         # fill out form
-        self.py.get("[name='community_name']").type(self.fake.name())
+        self.py.get("[name='community_name']").type(self.community_name)
         self.py.get("[name='community_entity']").type('a')
         self.py.get("[name='state_province_region']").type('a')
         self.py.get("[name='country']").type('Antartica')
@@ -27,18 +35,52 @@ class TestFeatures(UiFeatureHelper):
         # submit form
         self.py.get(".primary-btn").click()
 
-    def select_native_land
+    def select_native_land_method_and_submit(self):
+        # pick NLD add boundary radio button
+        self.py.get(f"[data-next='{self.select_nld_add_boundary_method_path}']").click()
 
-    def test_can_select_search_the_native_land_digital_database(self):
+        # submit form
+        self.py.get(".primary-btn").click()
+
+    def select_specific_nld_territory(self, nld_terriroty: str):
+        self.py.get(".input-field.search").type(nld_terriroty)
+        self.py.get("#region-results .result-item").click()
+
+    def select_share_boundary_publicly(self):
+        self.py.get("#share-boundary-publicly").click()
+
+    def navigate_to_search_native_land_digital_database_page(self):
         create_community_url = urllib.parse.urljoin(self.live_server_url, self.create_community_path)
         self.py.visit(create_community_url)
 
         self.fill_out_and_submit_account_creation_form()
 
         # verify user is on select add boundary method page
-        assert self.py.url().endswith(self.select_add_boundary_method)
+        assert self.py.url().endswith(self.select_add_boundary_method_path)
 
-        # assert webpage is the selection page
-        # click on
-        nld_add_community_boundary = reverse('a')
-        # self.py.get("[data-next='selectBoundary']").click()
+        self.select_native_land_method_and_submit()
+
+        # verify user is on select boundary by nld page
+        assert self.py.url().endswith(self.select_nld_add_boundary_method_path)
+
+    def test_select_native_land_digital_territory_and_share_publicly(self):
+        self.navigate_to_search_native_land_digital_database_page()
+        selected_territory = 'Panamakas'
+
+        # select an nld territory
+        self.select_specific_nld_territory(selected_territory)
+        self.select_share_boundary_publicly()
+
+        # navigate to next page
+        self.py.get("#community-boundary-continue-btn").click()
+
+        # verify user is on the confirm community page
+        assert self.py.url().endswith(self.confirm_community_path)
+
+        # verify community and boundary exists with the expected values
+        created_community = Community.objects.get(community_name=self.community_name)
+        assert created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be True'
+        assert created_community.name_of_boundary == selected_territory
+        assert created_community.source_of_boundary == 'https://native-land.ca/wp-json/nativeland' \
+                                                       '/v1/api/index.php?maps=territories&name=panamakas'
+        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
