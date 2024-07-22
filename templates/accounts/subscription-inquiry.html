@@ -3,6 +3,8 @@
 <script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
 <script type="text/javascript">
   var nonRorInstitutes = JSON.parse('{{ non_ror_institutes | safe }}')
+  var communities = JSON.parse('{{ communities | safe}}')
+
   grecaptcha.ready(function () {
     grecaptcha
       .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {

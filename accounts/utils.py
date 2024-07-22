@@ -172,17 +172,20 @@ def confirm_subscription(request, user, form, account_type):
     from helpers.utils import create_salesforce_account_or_lead
     if account_type == "institution_account":
         hub_id = str(user.id) + "_i"
+        isbusiness = True
     elif account_type == "researcher_account":
         hub_id = str(user.id) + "_r"
     elif account_type == "service_provider_account":
         hub_id = str(user.id) + "_sp"
+        isbusiness = True
     else:
         raise ValueError("Invalid account type")
 
     if create_salesforce_account_or_lead(
         request,
         hubId=hub_id,
-        data=form.cleaned_data
+        data=form.cleaned_data,
+        isbusiness=isbusiness
     ):
         messages.add_message(
             request,

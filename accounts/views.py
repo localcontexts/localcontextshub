@@ -959,6 +959,7 @@ def subscription_inquiry(request):
     non_ror_institutes = serializers.serialize(
         "json", Institution.objects.filter(is_ror=False)
     )
+    communities = serializers.serialize("json", Community.approved.all())
 
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():
@@ -1004,5 +1005,6 @@ def subscription_inquiry(request):
         {
             "form": form,
             "non_ror_institutes": non_ror_institutes,
+            "communities": communities,
         },
     )
