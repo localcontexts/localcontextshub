@@ -168,3 +168,11 @@ class TestFeatures(UiFeatureHelper):
 
         # verify user is on the select by nld page
         assert self.py.url().endswith(self.select_nld_add_boundary_method_path)
+
+    def test_clicking_skip_this_step_on_upload_shapefile_page_navigates_to_confirm_page(self):
+        self.navigate_to_upload_shapefile_page()
+
+        self.py.get("#skip-this-step a").click()
+
+        # verify user is on the upload shapefile page
+        assert self.py.url().endswith(self.confirm_community_path)
