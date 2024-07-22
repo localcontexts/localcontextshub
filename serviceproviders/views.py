@@ -23,7 +23,7 @@ from api.models import AccountAPIKey
 from accounts.models import UserAffiliation
 from .models import ServiceProvider
 
-from helpers.forms import OpenToCollaborateNoticeURLForm
+from helpers.forms import OpenToCollaborateNoticeURLForm, HubActivity
 from communities.forms import InviteMemberForm
 from accounts.forms import (
     ContactOrganizationForm,
@@ -187,13 +187,13 @@ def service_provider_notices(request, pk):
         data.service_provider = service_provider
         data.save()
         # Adds activity to Hub Activity
-        # HubActivity.objects.create(
-        #     action_user_id=request.user.id,
-        #     action_type="Engagement Notice Added",
-        #     project_id=data.id,
-        #     action_account_type="service_provider",
-        #     service_provider_id=service_provider.id,
-        # )
+        HubActivity.objects.create(
+            action_user_id=request.user.id,
+            action_type="Engagement Notice Added",
+            project_id=data.id,
+            action_account_type="service_provider",
+            service_provider_id=service_provider.id,
+        )
         return redirect("service-provider-notices", service_provider.id)
 
     context = {
@@ -261,7 +261,9 @@ def service_provider_members(request, pk):
                 selected_username = request.POST.get('userList')
                 username_to_check = ''
 
-                if ' ' in selected_username: #if username includes spaces means it has a first and last name (last name,first name)
+                # if username includes spaces means it has a first and last name 
+                # (last name,first name)
+                if ' ' in selected_username: 
                     x = selected_username.split(' ')
                     username_to_check = x[0]
                 else:
@@ -297,10 +299,12 @@ def service_provider_members(request, pk):
                         )
                         return redirect('service-provider-members', service_provider.id)
                     else:
+                        message = f"The user you are trying to add already has an invitation " \
+                                f"pending to join {service_provider.name}."
                         messages.add_message(
                             request, 
                             messages.INFO, 
-                            f'The user you are trying to add already has an invitation pending to join {service_provider.name}.'
+                            message
                         )
             else:
                 messages.add_message(request, messages.INFO, 'Something went wrong.')
@@ -426,13 +430,16 @@ def api_keys(request, pk):
                     )
                     prefix = key.split(".")[0]
                     encrypted_key = encrypt_api_key(key)
-                    AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                    AccountAPIKey.objects.filter(
+                        prefix=prefix).update(encrypted_key=encrypted_key)
                 
                 else:
+                    message = f"Your account is not confirmed. " \
+                                f"Your account must be confirmed to create an API Key."
                     messages.add_message(
                         request, 
                         messages.ERROR, 
-                        'Your account is not confirmed. Your account must be confirmed to create an API Key.'
+                        message
                     )
                     return redirect("service-provider-api-key", service_provider.id)
 

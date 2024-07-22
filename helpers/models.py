@@ -288,6 +288,7 @@ class HubActivity(models.Model):
         ('New Researcher', 'New Researcher'),
         ('New Community', 'New Community'),
         ('New Institution', 'New Institution'),
+        ('New Service Provider', 'New Service Provider'),
         ('Project Edited', 'Project Edited'),
         ('Project Created', 'Project Created'),
         ('Community Notified', 'Community Notified'),

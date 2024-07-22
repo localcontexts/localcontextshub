@@ -21,6 +21,7 @@ class ServiceProvider(models.Model):
     editors = models.ManyToManyField(User, blank=True, related_name="service_provider_editors")
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
+    show_connections = models.BooleanField(default=False)
 
     # Managers
     objects = models.Manager()
