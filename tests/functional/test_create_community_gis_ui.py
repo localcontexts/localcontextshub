@@ -160,3 +160,11 @@ class TestFeatures(UiFeatureHelper):
 
         # verify user is on the upload shapefile page
         assert self.py.url().endswith(self.confirm_community_path)
+
+    def test_clicking_select_by_nld_on_upload_shapefile_page_navigates_to_select_by_nld_page(self):
+        self.navigate_to_upload_shapefile_page()
+
+        self.py.get("#navigate-to-option a").click()
+
+        # verify user is on the select by nld page
+        assert self.py.url().endswith(self.select_nld_add_boundary_method_path)
