@@ -44,6 +44,13 @@ class TestFeatures(UiFeatureHelper):
         # submit form
         self.py.get(".primary-btn").click()
 
+    def select_upload_shapefile_and_submit(self):
+        # pick upload shapefile radio button
+        self.py.get(f"[data-next='{self.select_upload_boundary_file_method_path}']").click()
+
+        # submit form
+        self.py.get(".primary-btn").click()
+
     def select_specific_nld_territory(self, nld_terriroty: str):
         time.sleep(5)   # wait for ajax call for NLD to load
         self.py.get(".input-field.search").type(nld_terriroty)
@@ -74,6 +81,24 @@ class TestFeatures(UiFeatureHelper):
 
         # verify user is on select boundary by nld page
         assert self.py.url().endswith(self.select_nld_add_boundary_method_path)
+
+    def navigate_to_upload_shapefile_page(self):
+        create_community_url = urllib.parse.urljoin(self.live_server_url, self.create_community_path)
+        self.py.visit(create_community_url)
+
+        # click accept cookies button
+        time.sleep(5)   # wait for accept banner to appear
+        self.accept_cookies()
+
+        self.fill_out_and_submit_account_creation_form()
+
+        # verify user is on select add boundary method page
+        assert self.py.url().endswith(self.select_add_boundary_method_path)
+
+        self.select_upload_shapefile_and_submit()
+
+        # verify user is on select boundary by upload shapefile page
+        assert self.py.url().endswith(self.select_upload_boundary_file_method_path)
 
     def test_select_native_land_digital_territory_with_share_publicly(self):
         self.navigate_to_search_native_land_digital_database_page()
