@@ -155,11 +155,16 @@ class Subscription(models.Model):
     date_last_updated = models.DateTimeField(auto_now=True)
 
     def clean(self):
-        count = sum([bool(self.institution_id),
-                    bool(self.community_id), bool(self.researcher_id), bool(self.service_provider_id)])
+        count = sum([
+            bool(self.institution_id),
+            bool(self.community_id), 
+            bool(self.researcher_id), 
+            bool(self.service_provider_id)
+        ])
         if count != 1:
-            raise ValidationError("Exactly one of institution, "
-                                  "community, researcher, service provider should be present.")
+            errormsg= f"Exactly one of institution, community, " \
+                        f"researcher, service provider should be present."
+            raise ValidationError(errormsg)
 
         super().clean()
 

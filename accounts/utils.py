@@ -46,7 +46,7 @@ def manage_mailing_list(request, first_name, emailb64):
 
 
 def return_registry_accounts(
-    community_accounts, researcher_accounts, institution_accounts, 
+    community_accounts, researcher_accounts, institution_accounts,
     service_provider_accounts
 ):
     combined_accounts = []
@@ -71,7 +71,7 @@ def return_registry_accounts(
                     if isinstance(obj, ServiceProvider)
                     else (
                         unidecode(obj.user.first_name.lower().strip())
-                        if isinstance(obj, Researcher) 
+                        if isinstance(obj, Researcher)
                         and obj.user.first_name.strip()
                         else (
                             unidecode(obj.user.username.lower().strip())

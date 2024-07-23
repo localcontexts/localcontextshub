@@ -32,7 +32,10 @@ urlpatterns = [
         views.delete_otc_notice, 
         name="service-provider-delete-otc"
     ),
-    # path('embed/<str:pk>/', views.embed_otc_notice, name="embed-notice-service-provider"),
+    # path(
+    # 'embed/<str:pk>/', 
+    # views.embed_otc_notice, 
+    # name="embed-notice-service-provider"),
     
     # Connections
     path(

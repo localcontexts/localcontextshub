@@ -14,7 +14,9 @@ def handle_service_provider_creation(request, form, subscription_form, env):
             data.account_creator = request.user
             data.save()
             if env != 'SANDBOX':
-                handle_confirmation_and_subscription(request, subscription_form, data, env)
+                handle_confirmation_and_subscription(
+                    request, subscription_form, data, env
+                )
             affiliation = UserAffiliation.objects.prefetch_related(
                 "service_providers").get(user=request.user)
             affiliation.service_providers.add(data)
@@ -36,4 +38,5 @@ def handle_service_provider_creation(request, form, subscription_form, env):
         return redirect('dashboard')
 
 def get_service_provider(pk):
-    return ServiceProvider.objects.select_related('account_creator').get(id=pk)
+    return ServiceProvider.objects.select_related(
+        'account_creator').get(id=pk)

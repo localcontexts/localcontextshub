@@ -716,7 +716,10 @@ def registry(request, filtertype=None):
                     otc_service_provider_url__isnull=False
                 ).distinct()
                 cards = return_registry_accounts(
-                    None, researchers_with_otc, institutions_with_otc, service_providers_with_otc
+                    None, 
+                    researchers_with_otc, 
+                    institutions_with_otc, 
+                    service_providers_with_otc
                 )
             else:
                 cards = return_registry_accounts(c, r, i, sp)
@@ -730,7 +733,7 @@ def registry(request, filtertype=None):
             "researchers": r,
             "communities": c,
             "institutions": i,
-            "service_providers" : sp,
+            "service_providers": sp,
             "items": page,
             "filtertype": filtertype,
         }
