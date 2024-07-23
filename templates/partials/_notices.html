@@ -34,8 +34,8 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a class="primary-btn disabled-btn" title="{% if not institution.is_approved %}{{ not_approved_download_notice }}{% endif %}{% if is_sandbox %}{{download_notice_on_sandbox}}{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
-                        <a class="primary-btn disabled-btn" title="{% if not institution.is_approved %}{{not_approved_shared_notice}}{% endif %}{% if is_sandbox %}{{share_notice_on_sandbox}}{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if not institution.is_approved %}{{ not_approved_download_notice }}{% endif %}{% if is_sandbox %}{{ download_notice_on_sandbox }}{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if not institution.is_approved %}{{ not_approved_shared_notice }}{% endif %}{% if is_sandbox %}{{ share_notice_on_sandbox }}{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
                 </div>
             </div>
@@ -243,7 +243,7 @@
                                     {{ not_approved_download_notice }}
                                 {% endif %}
                                 {% if is_sandbox %}
-                                   {{download_notice_on_sandbox}}
+                                   {{ download_notice_on_sandbox }}
                                 {% endif %}
                             </span>
                         </div>
