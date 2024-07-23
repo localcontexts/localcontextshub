@@ -157,13 +157,13 @@ class Subscription(models.Model):
     def clean(self):
         count = sum([
             bool(self.institution_id),
-            bool(self.community_id), 
-            bool(self.researcher_id), 
+            bool(self.community_id),
+            bool(self.researcher_id),
             bool(self.service_provider_id)
         ])
         if count != 1:
-            errormsg= f"Exactly one of institution, community, " \
-                        f"researcher, service provider should be present."
+            errormsg = "Exactly one of institution, community, " \
+                "researcher, service provider should be present."
             raise ValidationError(errormsg)
 
         super().clean()

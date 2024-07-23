@@ -7,7 +7,7 @@ import os
 def service_provider_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
-    return os.path.join('users/service-provider-images', filename)  
+    return os.path.join('users/service-provider-images', filename)
 
 class ServiceProvider(models.Model):
     account_creator = models.ForeignKey(
@@ -36,16 +36,16 @@ class ServiceProvider(models.Model):
 
     def __str__(self):
         return str(self.name)
-    
+
     def get_member_count(self):
         admins = 1
         editors = self.editors.count()
         total_members = admins + editors + 1
         return total_members
-    
+
     def get_editors(self):
         return self.editors.all()
-    
+
     def is_user_in_institution(self, user):
         if user in self.editors.all() or user == self.account_creator:
             return True

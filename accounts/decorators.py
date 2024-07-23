@@ -43,8 +43,10 @@ def zero_account_user(view_func):
                 affiliation.service_providers.exists()
                 for affiliation in affiliations
             )
-            if (has_institutions or has_service_provider or 
-                is_user_researcher(user)):
+            if (
+                has_institutions or has_service_provider or
+                is_user_researcher(user)
+            ):
                 messages.add_message(
                     request,
                     messages.INFO,

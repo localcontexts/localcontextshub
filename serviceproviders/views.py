@@ -8,10 +8,10 @@ from .decorators import member_required
 from localcontexts.utils import dev_prod_or_local
 from helpers.utils import (
     InviteMember,
-    validate_recaptcha, 
-    check_member_role, 
+    validate_recaptcha,
+    check_member_role,
     encrypt_api_key,
-    form_initiation, 
+    form_initiation,
     change_member_role
 )
 from notifications.utils import UserNotification, send_account_member_invite
@@ -44,8 +44,8 @@ def preparation_step(request):
     else:
         service_provider = True
         return render(
-            request, 
-            "accounts/preparation.html", 
+            request,
+            "accounts/preparation.html",
             {"service_provider": service_provider}
         )
 
@@ -60,7 +60,7 @@ def create_service_provider(request):
 
     if request.method == "POST":
         form = CreateServiceProviderForm(request.POST)
-        if (form.is_valid() and user_form.is_valid() and 
+        if (form.is_valid() and user_form.is_valid() and
         validate_recaptcha(request)):
             mutable_post_data = request.POST.copy()
             subscription_data = {
@@ -70,7 +70,7 @@ def create_service_provider(request):
             "account_type": "service_provider_account",
             "organization_name": form.cleaned_data['name'],
             }
-            
+
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
             if subscription_form.is_valid():
@@ -132,8 +132,8 @@ def public_service_provider_view(request, pk):
                             service_provider,
                         )
                         messages.add_message(
-                            request, 
-                            messages.SUCCESS, 
+                            request,
+                            messages.SUCCESS,
                             "Message sent!"
                         )
                         return redirect(
@@ -147,7 +147,7 @@ def public_service_provider_view(request, pk):
                                 "Unable to send an empty message.",
                             )
                             return redirect(
-                                "public-service-provider", 
+                                "public-service-provider",
                                 service_provider.id
                             )
 
@@ -156,7 +156,7 @@ def public_service_provider_view(request, pk):
                         request, messages.ERROR, "Something went wrong."
                     )
                     return redirect(
-                        "public-service-provider", 
+                        "public-service-provider",
                         service_provider.id
                     )
 
@@ -178,7 +178,7 @@ def public_service_provider_view(request, pk):
         return render(request, "public.html", context)
     except:
         raise Http404()
-    
+
 # Notices
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
@@ -199,7 +199,7 @@ def service_provider_notices(request, pk):
         is_sandbox = False
         otc_download_perm = 1 if service_provider.is_certified else 0
         ccn_download_perm = 1 if service_provider.is_certified else 0
-    
+
     if request.method == "POST" and form.is_valid():
         data = form.save(commit=False)
         data.service_provider = service_provider
@@ -256,9 +256,9 @@ def service_provider_members(request, pk):
     members = list(chain(
         service_provider.editors.all().values_list('id', flat=True),
     ))
-    
+
     # include account creator
-    members.append(service_provider.account_creator.id) 
+    members.append(service_provider.account_creator.id)
     users = User.objects.exclude(id__in=members).order_by('username')
 
     form = InviteMemberForm(
@@ -287,28 +287,32 @@ def service_provider_members(request, pk):
 
                 '''if username includes spaces means it has a
                 first and last name (last name,first name)'''
-                if ' ' in selected_username: 
+                if ' ' in selected_username:
                     x = selected_username.split(' ')
                     username_to_check = x[0]
                 else:
                     username_to_check = selected_username
 
-                if not username_to_check in users.values_list('username', flat=True):
+                if not username_to_check in users.values_list(
+                    'username', flat=True
+                ):
+                    message = "Invalid user selection. " \
+                        "Please select user from the list."
                     messages.add_message(
-                        request, 
-                        messages.INFO, 
-                        'Invalid user selection. Please select user from the list.')
+                        request,
+                        messages.INFO,
+                        message)
                 else:
                     selected_user = User.objects.get(username=username_to_check)
 
                     # Check to see if an invite request aleady exists
                     invitation_exists = InviteMember.objects.filter(
-                        receiver=selected_user, 
+                        receiver=selected_user,
                         service_provider=service_provider
                     ).exists() # Check to see if invitation already exists
 
                     # If invitation request does not exist, save form
-                    if not invitation_exists: 
+                    if not invitation_exists:
                         data.receiver = selected_user
                         data.sender = request.user
                         data.status = 'sent'
@@ -323,12 +327,12 @@ def service_provider_members(request, pk):
                             request, data, service_provider
                         )
                         messages.add_message(
-                            request, 
-                            messages.INFO, 
+                            request,
+                            messages.INFO,
                             f'Invitation sent to {selected_user}!'
                         )
                         return redirect(
-                            'service-provider-members', 
+                            'service-provider-members',
                             service_provider.id
                         )
                     else:
@@ -336,14 +340,14 @@ def service_provider_members(request, pk):
                             f"has an invitation pending to join " \
                             f"{service_provider.name}."
                         messages.add_message(
-                            request, 
-                            messages.INFO, 
+                            request,
+                            messages.INFO,
                             message
                         )
             else:
                 messages.add_message(
-                    request, 
-                    messages.INFO, 
+                    request,
+                    messages.INFO,
                     'Something went wrong.'
                 )
 
@@ -389,10 +393,10 @@ def service_provider_remove_member(request, pk, member_id):
 
     title = f'You have been removed as a member from {service_provider.name}.'
     UserNotification.objects.create(
-        from_user=request.user, 
-        to_user=member, 
-        title=title, 
-        notification_type="Remove", 
+        from_user=request.user,
+        to_user=member,
+        title=title,
+        notification_type="Remove",
         service_provider=service_provider
     )
 
@@ -421,8 +425,8 @@ def update_service_provider(request, pk):
             if update_form.is_valid():
                 update_form.save()
                 messages.add_message(
-                    request, 
-                    messages.SUCCESS, 
+                    request,
+                    messages.SUCCESS,
                     "Settings updated!"
                 )
                 return redirect(
@@ -447,7 +451,7 @@ def api_keys(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
     remaining_api_key_count = 0
-    
+
     try:
         account_keys = AccountAPIKey.objects.filter(
             service_provider=service_provider
@@ -455,17 +459,17 @@ def api_keys(request, pk):
 
         if service_provider.is_certified and account_keys.count() == 0:
             remaining_api_key_count = 1
-                
+
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
-    
+
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
-                if (service_provider.is_certified and 
+                if (service_provider.is_certified and
                     remaining_api_key_count == 0):
                     messages.add_message(
-                        request, 
-                        messages.ERROR, 
+                        request,
+                        messages.ERROR,
                         'Your account has reached its API Key limit.'
                     )
                     return redirect(
@@ -483,13 +487,13 @@ def api_keys(request, pk):
                     encrypted_key = encrypt_api_key(key)
                     AccountAPIKey.objects.filter(
                         prefix=prefix).update(encrypted_key=encrypted_key)
-                
+
                 else:
-                    message = f"Your account is not confirmed. Your " \
-                        f"account must be confirmed to create an API Key."
+                    message = "Your account is not confirmed. Your " \
+                        "account must be confirmed to create an API Key."
                     messages.add_message(
-                        request, 
-                        messages.ERROR, 
+                        request,
+                        messages.ERROR,
                         message
                     )
                     return redirect(
@@ -499,7 +503,7 @@ def api_keys(request, pk):
                 return redirect(
                     "service-provider-api-key", service_provider.id
                 )
-            
+
             elif "delete_api_key" in request.POST:
                 prefix = request.POST['delete_api_key']
                 api_key = AccountAPIKey.objects.filter(prefix=prefix)
