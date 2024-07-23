@@ -1,9 +1,12 @@
+import os
 import time
 import urllib.parse
+from pathlib import Path
 
 import faker
 import pytest
 from django.urls import reverse
+from selenium.webdriver.common.alert import Alert
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
 
@@ -14,8 +17,13 @@ from communities.models import Community
 class TestFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
+        self.alert_dialog = Alert(self.py.webdriver)
         self.community_name = 'placeholder'
         self.fake = faker.Faker()
+        test_folder = Path(
+            os.path.realpath(__file__)
+        ).parents[1]
+        self.shapefile_folder = os.path.join(test_folder, 'fixtures', 'files', 'shapefiles')
         self.create_community_path = reverse('create-community')
         self.select_add_boundary_method_path = reverse('community-boundary')
         self.select_nld_add_boundary_method_path = reverse('add-community-boundary')
@@ -160,6 +168,42 @@ class TestFeatures(UiFeatureHelper):
 
         # verify user is on the upload shapefile page
         assert self.py.url().endswith(self.confirm_community_path)
+
+    def click_okay_on_alert_dialog(self):
+        self.alert_dialog.accept()
+
+    def test_select_shapefile_with_share_publicly(self):
+        self.navigate_to_upload_shapefile_page()
+        shapefile = os.path.join(self.shapefile_folder, 'shapefile-dr-janette-file.zip')
+        selected_territory = 'Kahurautao'
+
+        self.py.get("#shapefile-input").upload(shapefile)
+
+        # wait for alert dialog to open
+        time.sleep(4)
+        expected_alert_warning = "Warning:\nThere is more than 1 boundary present. Only the first will be used."
+        assert self.alert_dialog.text == expected_alert_warning
+
+        self.click_okay_on_alert_dialog()
+
+        # wait for alert dialog to close
+        time.sleep(4)
+        self.select_share_boundary_publicly()
+
+        # navigate to next page
+        self.py.get("#community-boundary-continue-btn").click()
+
+        # wait for ajax call
+        time.sleep(4)
+        # verify user is on the confirm community page
+        assert self.py.url().endswith(self.confirm_community_path)
+
+        # verify community and boundary exists with the expected values
+        created_community = Community.objects.get(community_name=self.community_name)
+        assert created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be True'
+        assert created_community.name_of_boundary == selected_territory
+        assert created_community.source_of_boundary == 'shape-file'
+        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
 
     def test_clicking_select_by_nld_on_upload_shapefile_page_navigates_to_select_by_nld_page(self):
         self.navigate_to_upload_shapefile_page()
