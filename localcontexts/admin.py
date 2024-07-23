@@ -1190,7 +1190,7 @@ class UserNotificationAdmin(admin.ModelAdmin):
     list_display = ('from_user', 'to_user', 'community', 'notification_type', 'title', 'reference_id', 'created')
 
 class ActionNotificationAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'community', 'institution', 'researcher', 'service_provider' 'notification_type', 'title', 'created')
+    list_display = ('sender', 'community', 'institution', 'researcher', 'service_provider', 'notification_type', 'title', 'created')
 
 admin_site.register(UserNotification, UserNotificationAdmin)
 admin_site.register(ActionNotification, ActionNotificationAdmin)
