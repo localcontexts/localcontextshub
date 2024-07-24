@@ -3,9 +3,21 @@ max-line-length = 97
 exclude =
     */apps.py
     tests
+    test
     migrations
     __pycache__
     manage.py
     settings.py
+    conftest.py
     env
     .env
+    api/
+    bclabels/
+    communities/
+    helpers
+    institutions/
+    localcontexts/
+    projects/
+    tklabels/
+    researchers/
+    backups/
