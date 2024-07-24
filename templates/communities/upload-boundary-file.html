@@ -192,7 +192,7 @@
                     id="community-boundary-continue-btn"
                     class="primary-btn action-btn disabled-btn"
                     href="{% url 'confirm-community' %}"
-                    onclick="setShareBoundary(); event.preventDefault()"
+                    onclick="updateBoundaryInformation(); event.preventDefault()"
                 >
                     Confirm location <i class="fa fa-arrow-right"></i>
                 </a>
@@ -291,8 +291,8 @@
             }
           )
 
-          // upload shapefile to session for community
-          await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
+        // upload shapefile to session for community
+        await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
         successMessage.classList.toggle('invisible')
         sharePublicly.classList.toggle('invisible')
         // show and label ui elements
@@ -313,10 +313,12 @@
         return false
     }
 
-    async function setShareBoundary() {
+    async function updateBoundaryInformation() {
+            // Updates the boundary name and shareBoundaryPublicly attributes
             try {
                 const payload = {
-                    share_boundary_publicly: document.getElementById("share-boundary-publicly").checked
+                    share_boundary_publicly: document.getElementById("share-boundary-publicly").checked,
+                    name: document.getElementById("selected-title").value
                 }
 
                 // do post call to set boundary in request
