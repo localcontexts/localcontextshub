@@ -268,7 +268,7 @@
                 boundaryCoordinates.map(row=>row.reverse())
 
                 const payload = {
-                    source: url,
+                    source: boundary.properties.description,
                     name: boundary.properties.Name,
                     boundary: boundaryCoordinates,
                     share_boundary_publicly: document.getElementById("share-boundary-publicly").checked
