@@ -155,7 +155,7 @@
 
             {% if community_id %}
             <div id="selected-title-wrapper">
-                <input id="selected-title">
+                <input id="selected-title" maxlength="60">
                 <a id="nld-link"
                    href="{% url 'community-boundary-view' community_id %}"
                    target="_blank">

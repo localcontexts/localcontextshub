@@ -36,6 +36,7 @@
         background: aliceblue;
         border-radius: 5px;
         user-select: none;
+        width: 100%;
     }
     .selected-title-ellipsis{
         width: 430px;
@@ -188,7 +189,7 @@
             </strong><br>
 
             <div class="selected-title-wrapper">
-                <div class="selected-title">Place Holder</div>
+                <input class="selected-title" maxlength="60">
                 <a class="view-boundary-link" target="_blank">
                     View Location &nbsp;
                     <i class="fa fa-arrow-up-right-from-square"></i>
@@ -441,7 +442,7 @@
 
         successMessage.classList.toggle('invisible')
         // show and label ui elements
-        self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
+        self.closest('.boundary-selection-unit').querySelector('.selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
         enableContinueButton()
 
@@ -462,6 +463,7 @@
         // do post call to set boundary in request
         showSpinner()
         BoundaryPayLoad.share_boundary_publicly = document.getElementById("share-boundary-publicly").checked
+        BoundaryPayLoad.name = document.getElementsByClassName("selected-title")[0].value
 
         const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
             method: 'POST',
