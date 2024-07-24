@@ -95,6 +95,7 @@
             background: aliceblue;
             border-radius: 5px;
             user-select: none;
+            width: 100%
         }
         #nld-link{
             right: 8px;
@@ -154,7 +155,7 @@
 
             {% if community_id %}
             <div id="selected-title-wrapper">
-                <div id="selected-title">Placeholder</div>
+                <input id="selected-title">
                 <a id="nld-link"
                    href="{% url 'community-boundary-view' community_id %}"
                    target="_blank">
@@ -295,7 +296,7 @@
         successMessage.classList.toggle('invisible')
         sharePublicly.classList.toggle('invisible')
         // show and label ui elements
-        document.querySelector('#selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
+        document.querySelector('#selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
         document.querySelector('#selected-location').classList.remove('invisible')
         enableContinueButton()
 
