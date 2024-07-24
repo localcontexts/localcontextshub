@@ -1,6 +1,5 @@
 [flake8]
-max-line-length = 79
-
+max-line-length = 97
 exclude =
     */apps.py
     tests

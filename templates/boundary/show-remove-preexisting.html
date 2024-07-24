@@ -1,0 +1,70 @@
+{% if entity.name_of_boundary %}
+<style>
+    .border-hr{
+        border: 1px solid #DDDDDD;
+    }
+    #preview-boundary-container{
+        display: flex;
+        justify-content: space-between;
+    }
+    #boundary-container-right{
+        display: flex;
+        flex-direction: row;
+    }
+    .center-boundary-container-item-vertically{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    #remove-boundary{
+        font-weight: bold;
+        color: #007385;
+        cursor: pointer;
+        margin-right: 30px;
+    }
+    #preview-boundary-container.hidden-element{
+        display: none;
+    }
+</style>
+
+<script>
+    async function resetBoundary(){
+       showSpinner()
+        // do post call to reset boundary in request
+        const response = await fetch("{{ boundary_reset_url }}", {
+            method: 'POST',
+            headers: {
+            'X-CSRFToken': '{{csrf_token}}'
+            }
+        })
+        if (response.status !== 204) {
+            alert('Error Resetting Boundary')
+        }
+        document.querySelector('#preview-boundary-container').classList.add('hidden-element')
+        hideSpinner()
+    }
+</script>
+<div id="preview-boundary-container">
+    <strong class="center-boundary-container-item-vertically">
+        {{ entity.name_of_boundary }} (territories)
+    </strong>
+
+    <div id="boundary-container-right">
+        <div id="remove-boundary" class="center-boundary-container-item-vertically"
+            onclick="resetBoundary(); event.preventDefault()">
+            Remove
+        </div>
+        <div class="center-boundary-container-item-vertically">
+        <a class="primary-btn green-btn margin-top-2"
+        href="{{ boundary_preview_url }}"
+        target="_blank">
+            View Location
+            <i class="fa fa-arrow-up-right-from-square"></i>
+        </a>
+        </div>
+    </div>
+
+</div>
+<hr class="border-hr">
+
+{% endif %}

@@ -6,7 +6,7 @@ from communities.models import Boundary
 
 
 class BoundaryWidget(Widget):
-    template_name = 'widget_forms/community/boundary_widget.html'
+    template_name = 'widget_forms/boundary_widget.html'
 
     def __init__(self, attrs=None):
         super().__init__(attrs)

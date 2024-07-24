@@ -1327,7 +1327,7 @@ function validateProjectDisableSubmitBtn() {
     // h/t: https://vyspiansky.github.io/2019/07/13/javascript-at-least-one-checkbox-must-be-selected/
 
     let form = document.querySelector('#createProjectForm')
-    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"])')
+    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"]):not(.no-auto-validate)')
 
     if (checkboxes.length == 0) {
         disableSubmitBtn()
