@@ -599,16 +599,13 @@
                                 class="block a-disabled"
                             {% else %}
                                 class="block"
-                            {% endif %}
-
-                            {% if community %}
-                                href="{% url 'edit-project' community.id project.unique_id %}"
-                            {% endif %}
-                            {% if institution %}
-                                href="{% url 'inst-edit-project' institution.id project.unique_id %}"
-                            {% endif %}
-                            {% if researcher %}
-                                href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
+                                {% if community %}
+                                    href="{% url 'edit-project' community.id project.unique_id %}"
+                                {% elif institution %}
+                                    href="{% url 'inst-edit-project' institution.id project.unique_id %}"
+                                {% elif researcher %}
+                                    href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
+                                {% endif %}
                             {% endif %}
                         >
                             <i class="fa-solid fa-pen-to-square"></i> Edit Project
