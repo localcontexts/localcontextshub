@@ -665,38 +665,30 @@ def decrypt_api_key(key):
     return api_key
 
 def form_initiation(request,account_type=""):
-    subscription_form = SubscriptionForm()
+    fields_to_update = {
+        "first_name": request.user._wrapped.first_name,
+        "last_name": request.user._wrapped.last_name,
+    }
+    user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
+
     if account_type == "institution_action":
-        fields_to_update = {
-            "first_name": request.user._wrapped.first_name,
-            "last_name": request.user._wrapped.last_name,
-        }
-        user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
         exclude_choices = {"member", "service_provider"}
-        
-        modified_inquiry_type_choices = [
-            choice
-            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-            if choice[0] not in exclude_choices
-        ]
-        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-        for field, value in fields_to_update.items():
-            if value:
-                user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
-            
-        return  user_form,subscription_form
     elif account_type == "researcher_action":
-        subscription_form = SubscriptionForm()
         exclude_choices = {"member", "service_provider", "cc_only"}
-        modified_inquiry_type_choices = [
-            choice
-            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
-            if choice[0] not in exclude_choices
-            
-        ]
-        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
-        
-        return subscription_form
+    else:
+        return None, None
+
+    subscription_form = SubscriptionForm()
+    subscription_form.fields["inquiry_type"].choices = [
+        choice for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+        if choice[0] not in exclude_choices
+    ]
+
+    for field, value in fields_to_update.items():
+        if value:
+            user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
+
+    return user_form, subscription_form
 
 def check_subscription(request, subscriber_type, id):
     subscriber_field_mapping = {
