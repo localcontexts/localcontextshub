@@ -2,7 +2,7 @@
 
 {% block settings %}
 
-<div class="flex-this column w-80   margin-right-1">
+<div class="flex-this column w-80   mr-1p">
     <div>
         <h3>Accounts</h3>
         <p>Manage the accounts you are a member of below.<br>
@@ -40,7 +40,7 @@
         {% include 'snippets/modals/leave-account-modal.html' %}
     {% endfor %}
 
-    <div class="w-20 margin-top-16">
+    <div class="w-20 mt-16">
         <a class="primary-btn white-btn" href="{% url 'select-account' %}">Create a new account</a>
     </div>
 

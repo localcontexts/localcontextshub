@@ -1,7 +1,7 @@
 {% load static %}{% load custom_project_tags %}
 
 <section>
-    <div class="margin-bottom-16">
+    <div class="mb-16">
         <p>
             Select which Local Contexts Notice(s) apply to this Project. To use the Open to Collaborate Notice, 
             <a 
@@ -17,7 +17,7 @@
     </div>
 
     <!-- NOTICE CHECKBOXES -->
-    <div class="flex-this w-40 space-between margin-left-16 margin-bottom-16">     
+    <div class="flex-this w-40 space-between ml-16 mb-16">     
         <div class="flex-this column center-text">
             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="73px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
             <div><p id="title-tk-notice" class="grey-text">Traditional<br> Knowledge Notice</p></div>
@@ -36,10 +36,10 @@
                         {% endfor %}
                     {% endif %}
                 > 
-            <span class="margin-left-8">Select</span></div>
+            <span class="ml-8">Select</span></div>
         </div>
 
-        <div class="flex-this column center-text margin-left-16">
+        <div class="flex-this column center-text ml-16">
             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="73px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
             <div><p id="title-bc-notice" class="grey-text">Biocultural<br> Notice</p></div>
             <div class="notice-checkbox-container">
@@ -58,10 +58,10 @@
                     {% endif %}
                 >
 
-            <span class="margin-left-8">Select</span></div>
+            <span class="ml-8">Select</span></div>
         </div>
 
-        <div class="flex-this column center-text margin-left-16 align-center">
+        <div class="flex-this column center-text ml-16 align-center">
             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="73px"></div>
             <div><p id="title-attr-notice" class="grey-text">Attribution Incomplete <br> Notice</p></div>
             <div class="notice-checkbox-container">
@@ -79,7 +79,7 @@
                         {% endfor %}
                     {% endif %}
                 >
-                <span class="margin-left-8">Select</span>
+                <span class="ml-8">Select</span>
             </div>
         </div>
 
@@ -97,7 +97,7 @@
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
                         <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                         <div class="w-80 pad-top-1">
-                            <h3 class="no-top-margin">{{ notice.name }}</h3>
+                            <h3 class="mt-0">{{ notice.name }}</h3>
                             <p>
                                 {{ notice.default_text }}
                                 <br> For more information about the TK Notices click <a href="https://localcontexts.org/notice/tk-notice/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.
@@ -187,7 +187,7 @@
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
                         <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                         <div class="w-80 pad-top-1">
-                            <h3 class="no-top-margin">{{ notice.name }}</h3>
+                            <h3 class="mt-0">{{ notice.name }}</h3>
                             <p>
                                 {{ notice.default_text }}
                                 <br> For more information about the BC Notices click <a href="https://localcontexts.org/notice/bc-notice/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.
@@ -277,7 +277,7 @@
                     <div class="flex-this border-top-solid-teal border-bottom-solid-teal">
                         <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                         <div class="w-80 pad-top-1">
-                            <h3 class="no-top-margin">{{ notice.name }}</h3>
+                            <h3 class="mt-0">{{ notice.name }}</h3>
                             <p>
                                 {{ notice.default_text }} <br>
                                 For more information about the Attribution Incomplete Notice click <a href="https://localcontexts.org/notice/attribution-incomplete/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.
@@ -375,7 +375,7 @@
                     <div class="w-15 pad-top-1"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     <div class="w-80 pad-top-1">
                         <div>
-                            <h3 class="no-top-margin">{{ notice.noticeName }}</h3>
+                            <h3 class="mt-0">{{ notice.noticeName }}</h3>
                             <p> 
                                 {{ notice.noticeDefaultText}} <br> 
                                 For more information about the TK Notices click <a href="https://localcontexts.org/notice/tk-notice/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.
@@ -452,7 +452,7 @@
                     <div class="w-15 pad-top-1"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     <div class="w-80 pad-top-1">
                         <div>
-                            <h3 class="no-top-margin">Biocultural Notice</h3>
+                            <h3 class="mt-0">Biocultural Notice</h3>
                             <p>{{ notice.noticeDefaultText }} <br> For more information about the BC Notices click <a href="https://localcontexts.org/notice/bc-notice/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.</p>
                         </div>
 
@@ -527,7 +527,7 @@
                     <div class="w-15 pad-top-1"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                     <div class="w-80 pad-top-1">
                         <div>
-                            <h3 class="no-top-margin">{{ notice.noticeName }}</h3>
+                            <h3 class="mt-0">{{ notice.noticeName }}</h3>
                             <p>
                                 {{ notice.noticeDefaultText }}
                                 For more information about the Attribution Incomplete Notice click <a href="https://localcontexts.org/notice/attribution-incomplete/" class="underline-hover" target="_blank" rel="noopener"><span class="darkteal-text">here</span></a>.
