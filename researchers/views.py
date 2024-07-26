@@ -50,25 +50,26 @@ def preparation_step(request):
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
-    subscription_form  = form_initiation(request, "researcher_action")
+    user_form, subscription_form  = form_initiation(request, "researcher_action")
     
     env = dev_prod_or_local(request.get_host())
     
     if not researcher:
         if request.method == "POST":
-            if form.is_valid() and validate_recaptcha(request):
+            if form.is_valid() and user_form.is_valid() and  validate_recaptcha(request):
                 mutable_post_data = request.POST.copy()
                 subscription_data = {
-                "first_name": request.user._wrapped.first_name,
-                "last_name": request.user._wrapped.last_name,
+                "first_name": user_form.cleaned_data['first_name'],
+                "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
                 "account_type": "researcher_account",
-                "organization_name": request.user._wrapped.first_name,
+                "organization_name": user_form.cleaned_data['first_name'],
                 }
                 mutable_post_data.update(subscription_data)
                 subscription_form = SubscriptionForm(mutable_post_data)
                 orcid_id = request.POST.get('orcidId')
                 orcid_token = request.POST.get('orcidIdToken')
+
                 if subscription_form.is_valid():
                     handle_researcher_creation(request, subscription_form, form, orcid_id, orcid_token, env)
                     return redirect('dashboard')
@@ -79,7 +80,7 @@ def connect_researcher(request):
                         "Something went wrong. Please Try again later.",
                     )
                     return redirect('dashboard')
-        context = {'form': form, 'env': env, 'subscription_form': subscription_form,}
+        context = {'form': form, 'env': env, 'subscription_form': subscription_form, 'user_form': user_form}
         return render(request, 'researchers/connect-researcher.html', context)
     else:
         return redirect('researcher-notices', researcher.id)
