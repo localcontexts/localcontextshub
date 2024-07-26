@@ -207,9 +207,13 @@ def researcher_notices(request, researcher):
     if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
         otc_download_perm = 0
+        download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
+        share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
         otc_download_perm = 1
+        download_notice_on_sandbox = None
+        share_notice_on_sandbox = None
 
     if request.method == 'POST':
         if form.is_valid():
@@ -232,6 +236,8 @@ def researcher_notices(request, researcher):
         'urls': urls,
         'otc_download_perm': otc_download_perm,
         'is_sandbox': is_sandbox,
+        'download_notice_on_sandbox': download_notice_on_sandbox,
+        'share_notice_on_sandbox': share_notice_on_sandbox,
     }
     return render(request, 'researchers/notices.html', context)
 

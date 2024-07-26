@@ -285,15 +285,25 @@ def institution_notices(request, pk):
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
     cc_policy_form = CollectionsCareNoticePolicyForm(request.POST or None, request.FILES)
     
+    if not institution.is_approved:
+        not_approved_download_notice = "Your institution account needs to be confirmed in order to download this Notice."
+        not_approved_shared_notice = "Your institution account needs to be confirmed in order to share this Notice."
+    else:
+        not_approved_download_notice = None
+        not_approved_shared_notice = None
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
         otc_download_perm = 0
         ccn_download_perm = 0
+        download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
+        share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
         otc_download_perm = 1 if institution.is_approved else 0
         ccn_download_perm = 1 if institution.is_approved else 0
+        download_notice_on_sandbox = None
+        share_notice_on_sandbox = None
 
     if request.method == 'POST':
         if 'add_policy' in request.POST:
@@ -325,6 +335,11 @@ def institution_notices(request, pk):
         'otc_download_perm': otc_download_perm,
         'ccn_download_perm': ccn_download_perm,
         'is_sandbox': is_sandbox,
+        'not_approved_download_notice': not_approved_download_notice,
+        'download_notice_on_sandbox': download_notice_on_sandbox,
+        'not_approved_shared_notice': not_approved_shared_notice,
+        'share_notice_on_sandbox': share_notice_on_sandbox,
+
     }
     return render(request, 'institutions/notices.html', context)
 
