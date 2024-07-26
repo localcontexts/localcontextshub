@@ -714,7 +714,7 @@ visibility: visible;
 
 /* Count cards on dashcards on profiles */
 .stats-card-container {
-    width: 35%; 
+    min-width: 275px; 
     margin: 10px;
 }
 
