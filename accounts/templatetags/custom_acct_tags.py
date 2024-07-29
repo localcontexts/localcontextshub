@@ -15,8 +15,7 @@ def all_projects_count(projects):
 
 @register.simple_tag
 def projects_with_labels_count(projects):
-    results = projects.filter(
-        Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)).distinct()
+    results = projects.filter(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)).distinct()
     return results.count()
 
 
@@ -52,23 +51,19 @@ def all_account_count():
 
 @register.simple_tag
 def otc_registry_count():
-    r = Researcher.objects.filter(
-        otc_researcher_url__isnull=False).distinct().count()
-    i = Institution.objects.filter(
-        otc_institution_url__isnull=False).distinct().count()
+    r = Researcher.objects.filter(otc_researcher_url__isnull=False).distinct().count()
+    i = Institution.objects.filter(otc_institution_url__isnull=False).distinct().count()
     return r + i
 
 
 @register.simple_tag
 def join_request_inst(institution, user):
-    return JoinRequest.objects.filter(institution=institution,
-                                      user_from=user).exists()
+    return JoinRequest.objects.filter(institution=institution, user_from=user).exists()
 
 
 @register.simple_tag
 def join_request_comm(community, user):
-    return JoinRequest.objects.filter(community=community,
-                                      user_from=user).exists()
+    return JoinRequest.objects.filter(community=community, user_from=user).exists()
 
 
 @register.simple_tag

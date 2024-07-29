@@ -53,11 +53,7 @@ class MyAdminSite(admin.AdminSite):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            path(
-                'dashboard/',
-                self.admin_view(self.dashboard_view),
-                name='admin-dashboard'
-            )
+            path('dashboard/', self.admin_view(self.dashboard_view), name='admin-dashboard')
         ]
         urls = my_urls + urls
         return urls
@@ -109,8 +105,7 @@ class MyAdminSite(admin.AdminSite):
 
         return TemplateResponse(
             request, self.app_index_template
-            or ['admin/%s/app_index.html' % app_label, 'admin/app_index.html'],
-            context
+            or ['admin/%s/app_index.html' % app_label, 'admin/app_index.html'], context
         )
 
 
@@ -130,9 +125,7 @@ def dashboardData(end_date):
 
     # Registered Users
     users_total = users.count()
-    recent_users_count = users.filter(
-        date_joined__gte=end_date - timedelta(days=30)
-    ).count()
+    recent_users_count = users.filter(date_joined__gte=end_date - timedelta(days=30)).count()
 
     # Accounts by Country
     # FIXME: profile country saved as initials
@@ -144,9 +137,7 @@ def dashboardData(end_date):
         country__isnull=False
     ).distinct('country').values_list('country', flat=True)
 
-    countries_list = list(
-        itertools.chain(institutions_by_country, communities_by_country)
-    )
+    countries_list = list(itertools.chain(institutions_by_country, communities_by_country))
     country_count = len([*set(countries_list)])
 
     # Registered accounts
@@ -160,8 +151,7 @@ def dashboardData(end_date):
     bclabels_status = bclabels.aggregate(
         customized=Count('is_approved', filter=Q(is_approved=False)),
         approved=Count(
-            'is_approved',
-            filter=(Q(is_approved=True) & Q(project_bclabels__isnull=True))
+            'is_approved', filter=(Q(is_approved=True) & Q(project_bclabels__isnull=True))
         ),
         applied=Count(
             'id',
@@ -176,8 +166,7 @@ def dashboardData(end_date):
     tklabels_status = tklabels.aggregate(
         customized=Count('is_approved', filter=Q(is_approved=False)),
         approved=Count(
-            'is_approved',
-            filter=(Q(is_approved=True) & Q(project_tklabels__isnull=True))
+            'is_approved', filter=(Q(is_approved=True) & Q(project_tklabels__isnull=True))
         ),
         applied=Count(
             'id',
@@ -190,9 +179,7 @@ def dashboardData(end_date):
     tklabels_applied_count = tklabels_status['applied']
 
     project_status = projects.aggregate(
-        has_notice=Count(
-            'id', filter=Q(project_notice__archived=False), distinct=True
-        ),
+        has_notice=Count('id', filter=Q(project_notice__archived=False), distinct=True),
         has_labels=Count(
             'id',
             filter=(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)),
@@ -201,10 +188,9 @@ def dashboardData(end_date):
         inactive=Count(
             'id',
             filter=(
-                (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True)) & (
-                    Q(project_notice__archived__isnull=True)
-                    | Q(project_notice__archived=True)
-                )
+                (Q(bc_labels__isnull=True) & Q(tk_labels__isnull=True)) &
+                (Q(project_notice__archived__isnull=True)
+                 | Q(project_notice__archived=True))
             ),
             distinct=True
         ),
@@ -217,14 +203,11 @@ def dashboardData(end_date):
 
     chartData = {
         'accountData': [community_count, institution_count, researcher_count],
-        'projectActivityData': [
-            otc_count, project_notices_count, project_labels_count,
-            project_inactive_count
-        ],
+        'projectActivityData':
+        [otc_count, project_notices_count, project_labels_count, project_inactive_count],
         'customizedLabelsData': [
-            tklabels_customized_count, tklabels_approved_count,
-            tklabels_applied_count, bclabels_customized_count,
-            bclabels_approved_count, bclabels_applied_count
+            tklabels_customized_count, tklabels_approved_count, tklabels_applied_count,
+            bclabels_customized_count, bclabels_approved_count, bclabels_applied_count
         ]
     }
 
@@ -259,47 +242,33 @@ def dataCharts(end_date, chartData):
         dateRange -= timedelta(days=calendar.monthrange(year, month)[1])
 
     lineChartMonths.reverse()
-    lineChartData['user_count'] = dict(
-        reversed(list(lineChartData['user_count'].items()))
-    )
-    lineChartData['project_count'] = dict(
-        reversed(list(lineChartData['project_count'].items()))
-    )
+    lineChartData['user_count'] = dict(reversed(list(lineChartData['user_count'].items())))
+    lineChartData['project_count'] = dict(reversed(list(lineChartData['project_count'].items())))
 
     # add user count based on month/year
     new_users = users.filter(
         date_joined__gte=(end_date - timedelta(days=365))
-    ).annotate(
-        month=Extract('date_joined', 'month'),
-        year=Extract('date_joined', 'year')
-    ).values('month', 'year').annotate(c=Count('pk')
-                                       ).values('month', 'year',
-                                                'c').order_by('year', 'month')
+    ).annotate(month=Extract('date_joined', 'month'),
+               year=Extract('date_joined', 'year')).values('month', 'year').annotate(
+                   c=Count('pk')
+               ).values('month', 'year', 'c').order_by('year', 'month')
 
     # add project count based on month/year
     new_projects = projects.filter(
         date_added__gte=(end_date - timedelta(days=365))
-    ).annotate(
-        month=Extract('date_added', 'month'),
-        year=Extract('date_added', 'year')
-    ).values('month', 'year').annotate(c=Count('pk')
-                                       ).values('month', 'year',
-                                                'c').order_by('year', 'month')
+    ).annotate(month=Extract('date_added', 'month'),
+               year=Extract('date_added', 'year')).values('month', 'year').annotate(
+                   c=Count('pk')
+               ).values('month', 'year', 'c').order_by('year', 'month')
 
     for user in new_users:
         user_month = user['month']
-        user_month_year = " ".join(
-            [calendar.month_name[user_month],
-             str(user['year'])]
-        )
+        user_month_year = " ".join([calendar.month_name[user_month], str(user['year'])])
         lineChartData['user_count'][user_month_year] = user['c']
 
     for project in new_projects:
         project_month = project['month']
-        project_month_year = " ".join(
-            [calendar.month_name[project_month],
-             str(project['year'])]
-        )
+        project_month_year = " ".join([calendar.month_name[project_month], str(project['year'])])
         lineChartData['project_count'][project_month_year] = project['c']
 
     new_users_counts = list(lineChartData['user_count'].values())
@@ -327,10 +296,7 @@ def dataCharts(end_date, chartData):
         ]
     }
     projectActivityData = {
-        'labels': [
-            'Engagement Notice', 'Disclosure Notice', 'Labels Applied',
-            'No Activity'
-        ],
+        'labels': ['Engagement Notice', 'Disclosure Notice', 'Labels Applied', 'No Activity'],
         'datasets': [
             {
                 'data': chartData['projectActivityData'],
@@ -340,17 +306,14 @@ def dataCharts(end_date, chartData):
         ]
     }
     customizedLabelsData = {
-        'labels': [
-            'Customized', 'Approved', 'Applied', 'Customized', 'Approved',
-            'Applied'
-        ],
+        'labels': ['Customized', 'Approved', 'Applied', 'Customized', 'Approved', 'Applied'],
         'datasets': [
             {
                 'data':
                 chartData['customizedLabelsData'],
                 'backgroundColor': [
-                    lighter_orange_rgb, light_orange_rgb, orange_rgb,
-                    lighter_teal_rgb, light_teal_rgb, teal_rgb
+                    lighter_orange_rgb, light_orange_rgb, orange_rgb, lighter_teal_rgb,
+                    light_teal_rgb, teal_rgb
                 ],
                 'hoverOffset':
                 4
@@ -408,9 +371,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
                         project_creator_project__institution_id__isnull=False
                     )
                 else:
-                    qs = queryset.distinct().filter(
-                        institution_id__isnull=False
-                    )
+                    qs = queryset.distinct().filter(institution_id__isnull=False)
                 return qs
             except:  # noqa
                 return queryset.none()
@@ -422,9 +383,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
                         project_creator_project__researcher_id__isnull=False
                     )
                 else:
-                    qs = queryset.distinct().filter(
-                        researcher_id__isnull=False
-                    )
+                    qs = queryset.distinct().filter(researcher_id__isnull=False)
                 return qs
             except:  # noqa
                 return queryset.none()
@@ -447,10 +406,7 @@ class PrivacyTypeFilter(admin.SimpleListFilter):
     parameter_name = 'privacy'
 
     def lookups(self, request, model_admin):
-        return [
-            ('Public', 'Public'), ('Contributor', 'Contributor'),
-            ('Private', 'Private')
-        ]
+        return [('Public', 'Public'), ('Contributor', 'Contributor'), ('Private', 'Private')]
 
     def queryset(self, request, queryset):
         privacy = self.value()
@@ -474,14 +430,11 @@ class NoticeLabelFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         try:
             if self.value() == 'notices':
-                qs = queryset.distinct().filter(
-                    Q(project_notice__archived=False)
-                )
+                qs = queryset.distinct().filter(Q(project_notice__archived=False))
                 return qs
             elif self.value() == 'labels':
-                qs = queryset.distinct().filter(
-                    Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)
-                )
+                qs = queryset.distinct(
+                ).filter(Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False))
                 return qs
             elif self.value() == 'none':
                 qs = queryset.distinct().filter(
@@ -540,22 +493,16 @@ class HubActivityTypeFilter(admin.SimpleListFilter):
                 qs = queryset.distinct().filter(action_type='Project Created')
                 return qs
             elif self.value() == 'Community Notified':
-                qs = queryset.distinct().filter(
-                    action_type='Community Notified'
-                )
+                qs = queryset.distinct().filter(action_type='Community Notified')
                 return qs
             elif self.value() == 'Label(s) Applied':
                 qs = queryset.distinct().filter(action_type='Label(s) Applied')
                 return qs
             elif self.value() == 'Disclosure Notice(s) Added':
-                qs = queryset.distinct().filter(
-                    action_type='Disclosure Notice(s) Added'
-                )
+                qs = queryset.distinct().filter(action_type='Disclosure Notice(s) Added')
                 return qs
             elif self.value() == 'Engagement Notice Added':
-                qs = queryset.distinct().filter(
-                    action_type='Engagement Notice Added'
-                )
+                qs = queryset.distinct().filter(action_type='Engagement Notice Added')
                 return qs
             else:
                 return queryset
@@ -583,15 +530,12 @@ class DateRangeFilter(admin.SimpleListFilter):
         try:
             if self.value() == 'last 30 Days' or self.value() is None:
                 qs = queryset.distinct().filter(
-                    date__gte=(
-                        datetime.now(tz=timezone.utc) - timedelta(days=30)
-                    )
+                    date__gte=(datetime.now(tz=timezone.utc) - timedelta(days=30))
                 )
                 return qs
             elif self.value() == 'last 60 Days':
                 qs = queryset.distinct().filter(
-                    date__gte=datetime.now(tz=timezone.utc) -
-                    timedelta(days=60)
+                    date__gte=datetime.now(tz=timezone.utc) - timedelta(days=60)
                 )
                 return qs
             else:
@@ -610,7 +554,8 @@ class AdminImageWidget(AdminFileWidget):
             output.append(
                 u' <img style="width: 286px;height: 160.88px;'
                 u'object-fit: cover;" src="%s" alt="%s" width="200"/>'
-                u' %s ' % (image_url, file_name, _('')))
+                u' %s ' % (image_url, file_name, _(''))
+            )
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
@@ -622,10 +567,12 @@ class AdminAudioWidget(AdminFileWidget):
         if value and getattr(value, "url", None):
             audio_url = value.url
             file_name = str(value)
-            output.append(u' <audio controls>'
-                          u'<source src="%s" type="audio/mpeg" alt="%s">'
-                          u' %s '
-                          u'</audio>' % (audio_url, file_name, _('')))
+            output.append(
+                u' <audio controls>'
+                u'<source src="%s" type="audio/mpeg" alt="%s">'
+                u' %s '
+                u'</audio>' % (audio_url, file_name, _(''))
+            )
         output.append(super(AdminFileWidget, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
 
@@ -645,9 +592,7 @@ class ExportCsvMixin:
 
         writer.writerow(field_names)
         for obj in queryset:
-            writer.writerow(
-                [getattr(obj, field) for field in field_names]
-            )
+            writer.writerow([getattr(obj, field) for field in field_names])
 
         return response
 
@@ -679,14 +624,10 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         return False
 
     def changelist_view(self, request, extra_context=None):
-        response = super().changelist_view(
-            request, extra_context=extra_context
-        )
+        response = super().changelist_view(request, extra_context=extra_context)
 
         inactive_users = User.objects.filter(
-            is_active=False,
-            date_joined__lte=datetime.now(tz=timezone.utc) -
-            timedelta(days=30)
+            is_active=False, date_joined__lte=datetime.now(tz=timezone.utc) - timedelta(days=30)
         ).annotate(
             days_count=datetime.now(tz=timezone.utc) - F('date_joined'),
             account_name=F('username'),
@@ -699,17 +640,13 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         inactive_researchers = Researcher.objects.exclude(
             id__in=researcher_created_projects
         ).filter(
-            date_connected__lte=datetime.now(tz=timezone.utc) -
-            timedelta(days=90)
+            date_connected__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
         ).annotate(
             days_count=datetime.now(tz=timezone.utc) - F('date_connected'),
             account_name=Case(
                 When(
                     ~Q(user__first_name="") & ~Q(user__last_name=""),
-                    then=Concat(
-                        F('user__first_name'), Value(' '),
-                        F('user__last_name')
-                    )
+                    then=Concat(F('user__first_name'), Value(' '), F('user__last_name'))
                 ),
                 default=F('user__username')
             ),
@@ -717,8 +654,7 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         ).values('id', 'account_name', 'days_count', 'account_type')
 
         inactive_institutions = Institution.objects.filter(
-            is_approved=False,
-            created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
+            is_approved=False, created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
         ).annotate(
             days_count=datetime.now(tz=timezone.utc) - F('created'),
             account_name=F('institution_name'),
@@ -726,8 +662,7 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         ).values('id', 'account_name', 'days_count', 'account_type')
 
         inactive_communities = Community.objects.filter(
-            is_approved=False,
-            created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
+            is_approved=False, created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
         ).annotate(
             days_count=datetime.now(tz=timezone.utc) - F('created'),
             account_name=F('community_name'),
@@ -738,8 +673,8 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         results = sorted(
             list(
                 itertools.chain(
-                    inactive_users, inactive_institutions,
-                    inactive_researchers, inactive_communities
+                    inactive_users, inactive_institutions, inactive_researchers,
+                    inactive_communities
                 )
             ),
             key=lambda k: k['days_count']
@@ -779,8 +714,7 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
     def view(self, obj):
         project_url = obj.url
         return format_html(
-            '<a href="{}" target="_blank" title="View External Link">View</a>',
-            project_url
+            '<a href="{}" target="_blank" title="View External Link">View</a>', project_url
         )
 
     view.short_description = "URL"
@@ -796,14 +730,12 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
             account_name = get_users_name(obj.researcher.user)
 
         return format_html(
-            '<a href="/admin/{}/{}/change/">{} </a>', account_url, account_id,
-            account_name
+            '<a href="/admin/{}/{}/change/">{} </a>', account_url, account_id, account_name
         )
 
     def datetime(self, obj):
-        added_date = obj.added.strftime('%m/%d/%Y %I:%M %p (%Z)'
-                                        ).replace('AM',
-                                                  'am').replace('PM', 'pm')
+        added_date = obj.added.strftime('%m/%d/%Y %I:%M %p (%Z)').replace('AM', 'am'
+                                                                          ).replace('PM', 'pm')
         return added_date
 
     datetime.short_description = "Date/Time"
@@ -826,9 +758,9 @@ class ProfileInline(admin.StackedInline):
     readonly_fields = ('api_key', )
     formfield_overrides = {models.ImageField: {'widget': AdminImageWidget}}
     fields = (
-        'profile_pic', ('city_town', 'state_province_region', 'country'),
-        'position', 'affiliation', ('preferred_language', 'languages_spoken'),
-        'is_researcher', 'onboarding_on', 'api_key'
+        'profile_pic', ('city_town', 'state_province_region', 'country'), 'position',
+        'affiliation', ('preferred_language',
+                        'languages_spoken'), 'is_researcher', 'onboarding_on', 'api_key'
     )
 
 
@@ -848,17 +780,13 @@ class UserProfileAdmin(UserAdmin, ExportCsvMixin):
         (None, {
             'fields': ('username', 'password')
         }),
-        (
-            _('Personal info'), {
-                'fields': (('first_name', 'last_name'), 'email')
-            }
-        ),
+        (_('Personal info'), {
+            'fields': (('first_name', 'last_name'), 'email')
+        }),
         (
             _('Permissions'), {
-                'fields': (
-                    ('is_active', 'is_staff', 'is_superuser'), 'groups',
-                    'user_permissions'
-                ),
+                'fields':
+                (('is_active', 'is_staff', 'is_superuser'), 'groups', 'user_permissions'),
             }
         ),
         (_('Important dates'), {
@@ -866,12 +794,10 @@ class UserProfileAdmin(UserAdmin, ExportCsvMixin):
         }),
     )
     add_fieldsets = (
-        (
-            None, {
-                'classes': ('wide', ),
-                'fields': ('username', 'password1', 'password2'),
-            }
-        ),
+        (None, {
+            'classes': ('wide', ),
+            'fields': ('username', 'password1', 'password2'),
+        }),
     )
 
     def profile_name(self, obj):
@@ -879,9 +805,8 @@ class UserProfileAdmin(UserAdmin, ExportCsvMixin):
         return name
 
     def joined(self, obj):
-        date_joined = obj.date_joined.strftime(
-            '%m/%d/%Y %I:%M %p (%Z)'
-        ).replace('AM', 'am').replace('PM', 'pm')
+        date_joined = obj.date_joined.strftime('%m/%d/%Y %I:%M %p (%Z)'
+                                               ).replace('AM', 'am').replace('PM', 'pm')
         return date_joined
 
     joined.admin_order_field = "date_joined"
@@ -913,9 +838,7 @@ class LabelDetailsAdmin(admin.ModelAdmin):
         return False
 
     def changelist_view(self, request, extra_context=None):
-        response = super().changelist_view(
-            request, extra_context=extra_context
-        )
+        response = super().changelist_view(request, extra_context=extra_context)
 
         label_details = {
             'tkattribution': {
@@ -1071,12 +994,10 @@ class LabelDetailsAdmin(admin.ModelAdmin):
         }
 
         tk_labels = TKLabel.objects.values('label_type').annotate(
-            label_count=Count('label_type'),
-            label_name=Concat(Value('tk'), F('label_type'))
+            label_count=Count('label_type'), label_name=Concat(Value('tk'), F('label_type'))
         ).values('label_name', 'label_count').order_by('label_name')
         bc_labels = BCLabel.objects.values('label_type').annotate(
-            label_count=Count('label_type'),
-            label_name=Concat(Value('bc'), F('label_type'))
+            label_count=Count('label_type'), label_name=Concat(Value('bc'), F('label_type'))
         ).values('label_name', 'label_count').order_by('label_name')
 
         for label in tk_labels:
@@ -1087,10 +1008,7 @@ class LabelDetailsAdmin(admin.ModelAdmin):
             label_details[label['label_name']]['class'] = 'bc'
 
         # Create custom pagination context
-        pagination_context = {
-            'results': label_details,
-            'result_count': len(label_details)
-        }
+        pagination_context = {'results': label_details, 'result_count': len(label_details)}
 
         response.context_data.update(**pagination_context)
 
@@ -1118,12 +1036,11 @@ class BCLabels(BCLabel):
 class LabelVersionInline(admin.StackedInline):
     model = LabelVersion
     readonly_fields = (
-        'version', 'version_text', 'created_by', 'approved_by', 'created',
-        'translation_versions'
+        'version', 'version_text', 'created_by', 'approved_by', 'created', 'translation_versions'
     )
     fields = (
-        'version', 'created_by', 'version_text', 'is_approved', 'approved_by',
-        'created', 'translation_versions'
+        'version', 'created_by', 'version_text', 'is_approved', 'approved_by', 'created',
+        'translation_versions'
     )
     extra = 0
     max_num = 0
@@ -1131,36 +1048,27 @@ class LabelVersionInline(admin.StackedInline):
     classes = ['collapse']
 
     def translation_versions(self, obj):
-        translation_versions = obj.label_version_translation.filter(
-            version_instance=obj.id
-        ).count()
+        translation_versions = obj.label_version_translation.filter(version_instance=obj.id
+                                                                    ).count()
         return translation_versions
 
     translation_versions.short_description = 'Translation versions'
 
     def get_queryset(self, request):
         if isinstance(self.parent_obj, TKLabels):
-            response = super(LabelVersionInline,
-                             self).get_queryset(request).filter(
-                                 tklabel=self.parent_obj.id
-                             ).select_related(
-                                 'created_by', 'approved_by', 'tklabel'
-                             )
+            response = super(LabelVersionInline, self).get_queryset(request).filter(
+                tklabel=self.parent_obj.id
+            ).select_related('created_by', 'approved_by', 'tklabel')
         elif isinstance(self.parent_obj, BCLabels):
-            response = super(LabelVersionInline,
-                             self).get_queryset(request).filter(
-                                 bclabel=self.parent_obj.id
-                             ).select_related(
-                                 'created_by', 'approved_by', 'bclabel'
-                             )
+            response = super(LabelVersionInline, self).get_queryset(request).filter(
+                bclabel=self.parent_obj.id
+            ).select_related('created_by', 'approved_by', 'bclabel')
         return response
 
 
 class LabelTranslationInline(admin.StackedInline):
     model = LabelTranslation
-    fields = (
-        'translated_name', ('language', 'language_tag'), 'translated_text'
-    )
+    fields = ('translated_name', ('language', 'language_tag'), 'translated_text')
     extra = 0
     show_change_link = True
     classes = ['collapse']
@@ -1168,26 +1076,19 @@ class LabelTranslationInline(admin.StackedInline):
     def get_queryset(self, request):
         if isinstance(self.parent_obj, TKLabels):
             response = super(LabelTranslationInline,
-                             self).get_queryset(request).filter(
-                                 tklabel=self.parent_obj.id
-                             ).select_related('tklabel')
+                             self).get_queryset(request).filter(tklabel=self.parent_obj.id
+                                                                ).select_related('tklabel')
         elif isinstance(self.parent_obj, BCLabels):
             response = super(LabelTranslationInline,
-                             self).get_queryset(request).filter(
-                                 bclabel=self.parent_obj.id
-                             ).select_related('bclabel')
+                             self).get_queryset(request).filter(bclabel=self.parent_obj.id
+                                                                ).select_related('bclabel')
         return response
 
 
 class TKLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
     model = TKLabels
-    list_display = (
-        'name', 'community', 'created_by', 'language', 'is_approved', 'created'
-    )
-    search_fields = (
-        'name', 'community__community_name', 'created_by__username',
-        'label_type'
-    )
+    list_display = ('name', 'community', 'created_by', 'language', 'is_approved', 'created')
+    search_fields = ('name', 'community__community_name', 'created_by__username', 'label_type')
     list_filter = ['is_approved']
     list_per_page = 15
     ordering = ['-created']
@@ -1198,9 +1099,7 @@ class TKLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
         'created',
         'version',
     )
-    raw_id_fields = (
-        'created_by', 'community', 'approved_by', 'last_edited_by'
-    )
+    raw_id_fields = ('created_by', 'community', 'approved_by', 'last_edited_by')
     formfield_overrides = {models.FileField: {'widget': AdminAudioWidget}}
 
     def has_module_permission(self, request):
@@ -1222,10 +1121,9 @@ class TKLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def get_fields(self, request, obj=None):
         fields = [
-            'created_by', 'label_type', 'community', 'name',
-            ('language', 'language_tag'), 'label_text', 'audiofile', 'img_url',
-            'svg_url', 'is_approved', 'approved_by', 'last_edited_by',
-            'unique_id', 'created'
+            'created_by', 'label_type', 'community', 'name', ('language', 'language_tag'),
+            'label_text', 'audiofile', 'img_url', 'svg_url', 'is_approved', 'approved_by',
+            'last_edited_by', 'unique_id', 'created'
         ]
         if obj.version:
             fields.append('version')
@@ -1234,13 +1132,8 @@ class TKLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
 
 class BCLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
     model = BCLabels
-    list_display = (
-        'name', 'community', 'created_by', 'language', 'is_approved', 'created'
-    )
-    search_fields = (
-        'name', 'community__community_name', 'created_by__username',
-        'label_type'
-    )
+    list_display = ('name', 'community', 'created_by', 'language', 'is_approved', 'created')
+    search_fields = ('name', 'community__community_name', 'created_by__username', 'label_type')
     list_filter = ['is_approved']
     list_per_page = 15
     ordering = ['-created']
@@ -1251,9 +1144,7 @@ class BCLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
         'created',
         'version',
     )
-    raw_id_fields = (
-        'created_by', 'community', 'approved_by', 'last_edited_by'
-    )
+    raw_id_fields = ('created_by', 'community', 'approved_by', 'last_edited_by')
     formfield_overrides = {models.FileField: {'widget': AdminAudioWidget}}
 
     def has_module_permission(self, request):
@@ -1275,10 +1166,9 @@ class BCLabelAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def get_fields(self, request, obj=None):
         fields = [
-            'created_by', 'label_type', 'community', 'name',
-            ('language', 'language_tag'), 'label_text', 'audiofile', 'img_url',
-            'svg_url', 'is_approved', 'approved_by', 'last_edited_by',
-            'unique_id', 'created'
+            'created_by', 'label_type', 'community', 'name', ('language', 'language_tag'),
+            'label_text', 'audiofile', 'img_url', 'svg_url', 'is_approved', 'approved_by',
+            'last_edited_by', 'unique_id', 'created'
         ]
         if obj.version:
             fields.append('version')
@@ -1322,15 +1212,13 @@ class HubActivityAdmin(admin.ModelAdmin):
 
         if obj.action_account_type == 'institution':
             account_id = obj.institution_id
-            account_name = Institution.objects.values_list(
-                'institution_name', flat=True
-            ).get(id=obj.institution_id)
+            account_name = Institution.objects.values_list('institution_name',
+                                                           flat=True).get(id=obj.institution_id)
             account_link = 'institutions/institution'
         elif obj.action_account_type == 'community':
             account_id = obj.community_id
-            account_name = Community.objects.values_list(
-                'community_name', flat=True
-            ).get(id=obj.community_id)
+            account_name = Community.objects.values_list('community_name',
+                                                         flat=True).get(id=obj.community_id)
             account_link = 'communities/community'
         elif obj.action_account_type == 'researcher' or \
                 obj.action_type == 'New Researcher':
@@ -1343,31 +1231,27 @@ class HubActivityAdmin(admin.ModelAdmin):
                 pass
 
         if obj.project_id and obj.action_type != 'Engagement Notice Added':
-            project = Project.objects.values_list('title', 'project_page').get(
-                id=obj.project_id
-            )
+            project = Project.objects.values_list('title', 'project_page').get(id=obj.project_id)
             project_name = project[0]
             project_url = project[1]
         elif obj.project_id and obj.action_type == 'Engagement Notice Added':
-            project = OpenToCollaborateNoticeURL.objects.values_list(
-                'name', 'url'
-            ).get(id=obj.project_id)
+            project = OpenToCollaborateNoticeURL.objects.values_list('name', 'url').get(
+                id=obj.project_id
+            )
             project_name = project[0]
             project_url = project[1]
 
         if obj.action_type == 'New Member Added':
             action_message = format_html(
                 '<a href="/admin/admin/userprofile/{}/change/">{}'
-                '</a> joined <a href="/admin/{}/{}/change/">{}</a>',
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name
+                '</a> joined <a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id,
+                user_name, account_link, account_id, account_name
             )
 
         elif obj.action_type == 'New User':
             action_message = format_html(
                 '<a href="/admin/admin/userprofile/{}/change/">'
-                '{}</a> has joined the Hub',
-                obj.action_user_id, user_name
+                '{}</a> has joined the Hub', obj.action_user_id, user_name
             )
 
         elif obj.action_type == 'New Researcher':
@@ -1376,8 +1260,8 @@ class HubActivityAdmin(admin.ModelAdmin):
                 '{}'
                 '</a> '
                 'has created a '
-                '<a href="/admin/{}/{}/change/">Researcher</a> account',
-                obj.action_user_id, user_name, account_link, account_id
+                '<a href="/admin/{}/{}/change/">Researcher</a> account', obj.action_user_id,
+                user_name, account_link, account_id
             )
 
         elif obj.action_type == 'New Community':
@@ -1386,18 +1270,16 @@ class HubActivityAdmin(admin.ModelAdmin):
                 '{}'
                 '</a> '
                 'has created a Community account: '
-                '<a href="/admin/{}/{}/change/">{}</a>',
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name
+                '<a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name,
+                account_link, account_id, account_name
             )
 
         elif obj.action_type == 'New Institution':
             action_message = format_html(
                 '<a href="/admin/admin/userprofile/{}/change/">{}</a> '
                 'has created an Institution account: '
-                '<a href="/admin/{}/{}/change/">{}</a>',
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name
+                '<a href="/admin/{}/{}/change/">{}</a>', obj.action_user_id, user_name,
+                account_link, account_id, account_name
             )
 
         elif obj.action_type == 'Project Edited':
@@ -1409,8 +1291,7 @@ class HubActivityAdmin(admin.ModelAdmin):
                 '<i class="fa-solid fa-user-gear"></i></a> | '
                 '<a href="{}" target="_blank" title="View External Page">'
                 '<i class="fa-solid fa-arrow-up-right-from-square fa-xs">'
-                '</i></a>',
-                obj.action_user_id, user_name, account_link, account_id,
+                '</i></a>', obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
@@ -1423,16 +1304,14 @@ class HubActivityAdmin(admin.ModelAdmin):
                 '></i></a> | <a href="{}" target="_blank" '
                 'title="View External Page">'
                 '<i class="fa-solid fa-arrow-up-right-from-square fa-xs">'
-                '</i></a>',
-                obj.action_user_id, user_name, account_link, account_id,
+                '</i></a>', obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
         elif obj.action_type == 'Community Notified':
             community_id = obj.community_id
-            community_name = Community.objects.values_list(
-                'community_name', flat=True
-            ).get(id=obj.community_id)
+            community_name = Community.objects.values_list('community_name',
+                                                           flat=True).get(id=obj.community_id)
             community_link = 'communities/community'
             action_message = format_html(
                 '<a href="/admin/{}/{}/change/">{}</a> '
@@ -1444,31 +1323,48 @@ class HubActivityAdmin(admin.ModelAdmin):
                 'title="View Admin Page"><i class="fa-solid fa-user-gear"></i>'
                 '</a> | <a href="{}" target="_blank" '
                 'title="View External Page"><i class="fa-solid '
-                'fa-arrow-up-right-from-square fa-xs"></i></a>',
-                community_link, community_id, community_name,
-                obj.action_user_id, user_name, account_link, account_id,
+                'fa-arrow-up-right-from-square fa-xs"></i></a>', community_link, community_id,
+                community_name, obj.action_user_id, user_name, account_link, account_id,
                 account_name, project_name, obj.project_id, project_url
             )
 
         elif obj.action_type == 'Label(s) Applied':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name, project_name, obj.project_id, project_url
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Labels to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',  # noqa
+                obj.action_user_id,
+                user_name,
+                account_link,
+                account_id,
+                account_name,
+                project_name,
+                obj.project_id,
+                project_url
             )
 
         elif obj.action_type == 'Disclosure Notice(s) Added':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name, project_name, obj.project_id, project_url
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',  # noqa
+                obj.action_user_id,
+                user_name,
+                account_link,
+                account_id,
+                account_name,
+                project_name,
+                obj.project_id,
+                project_url
             )
 
         elif obj.action_type == 'Engagement Notice Added':
             action_message = format_html(
-                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', # noqa
-                obj.action_user_id, user_name, account_link, account_id,
-                account_name, project_name, obj.project_id, project_url
+                '<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>',  # noqa
+                obj.action_user_id,
+                user_name,
+                account_link,
+                account_id,
+                account_name,
+                project_name,
+                obj.project_id,
+                project_url
             )
 
         return action_message
@@ -1482,8 +1378,8 @@ admin_site.register(HubActivity, HubActivityAdmin)
 # ACCOUNTS ADMIN
 class UserAdminCustom(UserAdmin):
     list_display = (
-        'username', 'email', 'first_name', 'last_name', 'is_staff',
-        'is_superuser', 'is_active', 'last_login', 'date_joined'
+        'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_active',
+        'last_login', 'date_joined'
     )
     search_fields = (
         'username',
@@ -1552,8 +1448,8 @@ admin_site.register(BCLabel, BCLabelAdmin)
 class CommunityAdmin(admin.ModelAdmin):
     form = CommunityModelForm
     list_display = (
-        'community_name', 'community_creator', 'contact_name', 'contact_email',
-        'is_approved', 'created', 'country'
+        'community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved',
+        'created', 'country'
     )
     search_fields = (
         'community_name',
@@ -1563,10 +1459,7 @@ class CommunityAdmin(admin.ModelAdmin):
 
 
 class JoinRequestAdmin(admin.ModelAdmin):
-    list_display = (
-        'community', 'institution', 'user_from', 'user_to', 'status',
-        'date_sent'
-    )
+    list_display = ('community', 'institution', 'user_from', 'user_to', 'status', 'date_sent')
     search_fields = (
         'community__community_name',
         'institution__institution_name',
@@ -1576,8 +1469,7 @@ class JoinRequestAdmin(admin.ModelAdmin):
 
 class InviteMemberAdmin(admin.ModelAdmin):
     list_display = (
-        'community', 'institution', 'sender', 'receiver', 'role', 'status',
-        'created'
+        'community', 'institution', 'sender', 'receiver', 'role', 'status', 'created'
     )
     search_fields = (
         'community__community_name',
@@ -1594,10 +1486,7 @@ admin_site.register(JoinRequest, JoinRequestAdmin)
 
 # HELPERS ADMIN
 class NoticeAdmin(admin.ModelAdmin):
-    list_display = (
-        'project', 'notice_type', 'researcher', 'institution', 'created',
-        'archived'
-    )
+    list_display = ('project', 'notice_type', 'researcher', 'institution', 'created', 'archived')
     search_fields = (
         'project__title', 'notice_type', 'researcher__user__username',
         'institution__institution_name'
@@ -1607,8 +1496,7 @@ class NoticeAdmin(admin.ModelAdmin):
 class OpenToCollaborateNoticeURLAdmin(admin.ModelAdmin):
     list_display = ('institution', 'researcher', 'name', 'url', 'added')
     search_fields = (
-        'institution__institution_name', 'researcher__user__username', 'name',
-        'url'
+        'institution__institution_name', 'researcher__user__username', 'name', 'url'
     )
 
 
@@ -1640,9 +1528,7 @@ class LabelVersionAdmin(admin.ModelAdmin):
 
 
 class LabelTranslationVersionAdmin(admin.ModelAdmin):
-    list_display = (
-        'version_instance', 'translated_name', 'language', 'created'
-    )
+    list_display = ('version_instance', 'translated_name', 'language', 'created')
     readonly_fields = (
         'version_instance',
         'translated_name',
@@ -1664,9 +1550,8 @@ class NoticeDownloadTrackerAdmin(admin.ModelAdmin):
         'open_to_collaborate_notice', 'date_downloaded'
     )
     search_fields = (
-        'institution__institution_name', 'researcher__user',
-        'researcher__user__first_name', 'researcher__user__last_name', 'user',
-        'user__first_name', 'user__last_name'
+        'institution__institution_name', 'researcher__user', 'researcher__user__first_name',
+        'researcher__user__last_name', 'user', 'user__first_name', 'user__last_name'
     )
 
 
@@ -1685,21 +1570,17 @@ admin_site.register(LabelVersion, LabelVersionAdmin)
 admin_site.register(LabelTranslationVersion, LabelTranslationVersionAdmin)
 admin_site.register(LabelTranslation, LabelTranslationAdmin)
 admin_site.register(EntitiesNotified, EntitiesNotifiedAdmin)
-admin_site.register(
-    OpenToCollaborateNoticeURL, OpenToCollaborateNoticeURLAdmin
-)
+admin_site.register(OpenToCollaborateNoticeURL, OpenToCollaborateNoticeURLAdmin)
 admin_site.register(NoticeDownloadTracker, NoticeDownloadTrackerAdmin)
-admin_site.register(
-    CollectionsCareNoticePolicy, CollectionsCareNoticePolicyAdmin
-)
+admin_site.register(CollectionsCareNoticePolicy, CollectionsCareNoticePolicyAdmin)
 admin_site.register(NoticeTranslation, NoticeTranslationAdmin)
 
 
 # INSTITUTIONS ADMIN
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = (
-        'institution_name', 'institution_creator', 'contact_name',
-        'contact_email', 'is_approved', 'is_ror', 'created', 'country'
+        'institution_name', 'institution_creator', 'contact_name', 'contact_email',
+        'is_approved', 'is_ror', 'created', 'country'
     )
     search_fields = (
         'institution_name',
@@ -1715,15 +1596,15 @@ admin_site.register(Institution, InstitutionAdmin)
 # NOTIFICAITONS ADMIN
 class UserNotificationAdmin(admin.ModelAdmin):
     list_display = (
-        'from_user', 'to_user', 'community', 'notification_type', 'title',
-        'reference_id', 'created'
+        'from_user', 'to_user', 'community', 'notification_type', 'title', 'reference_id',
+        'created'
     )
 
 
 class ActionNotificationAdmin(admin.ModelAdmin):
     list_display = (
-        'sender', 'community', 'institution', 'researcher',
-        'notification_type', 'title', 'created'
+        'sender', 'community', 'institution', 'researcher', 'notification_type', 'title',
+        'created'
     )
 
 
@@ -1748,7 +1629,6 @@ class ProjectAdmin(admin.ModelAdmin):
     )
 
 
-
 class ProjectContributorsAdmin(admin.ModelAdmin):
     list_display = ('project', )
     search_fields = ('project__title', )
@@ -1771,8 +1651,7 @@ class ProjectActivityAdmin(admin.ModelAdmin):
 
 class ProjectArchivedAdmin(admin.ModelAdmin):
     list_display = (
-        'project_uuid', 'archived', 'community_id', 'institution_id',
-        'researcher_id'
+        'project_uuid', 'archived', 'community_id', 'institution_id', 'researcher_id'
     )
 
 
@@ -1791,13 +1670,9 @@ admin_site.register(ProjectNote, ProjectNoteAdmin)
 
 # RESEARCHERS ADMIN
 class ResearcherAdmin(admin.ModelAdmin):
-    list_display = (
-        'user', 'contact_email', 'orcid', 'primary_institution',
-        'date_connected'
-    )
+    list_display = ('user', 'contact_email', 'orcid', 'primary_institution', 'date_connected')
     search_fields = (
-        'contact_email', 'user__username', 'orcid', 'primary_institution',
-        'date_connected'
+        'contact_email', 'user__username', 'orcid', 'primary_institution', 'date_connected'
     )
     readonly_fields = ('orcid_auth_token', )
 
@@ -1808,22 +1683,15 @@ admin_site.register(Researcher, ResearcherAdmin)
 # TKLABELS ADMIN
 class TKLabelAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'community', 'created_by', 'language_tag', 'language',
-        'is_approved', 'created'
+        'name', 'community', 'created_by', 'language_tag', 'language', 'is_approved', 'created'
     )
     readonly_fields = (
         'unique_id',
         'created',
         'version',
     )
-    search_fields = (
-        'name', 'community__community_name', 'created_by__username',
-        'label_type'
-    )
-    search_fields = (
-        'name', 'community__community_name', 'created_by__username',
-        'label_type'
-    )
+    search_fields = ('name', 'community__community_name', 'created_by__username', 'label_type')
+    search_fields = ('name', 'community__community_name', 'created_by__username', 'label_type')
 
 
 admin_site.register(TKLabel, TKLabelAdmin)
