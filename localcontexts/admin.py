@@ -32,6 +32,7 @@ from helpers.models import OpenToCollaborateNoticeURL, LabelVersion, \
     LabelTranslationVersion, EntitiesNotified, NoticeDownloadTracker, \
     CollectionsCareNoticePolicy, NoticeTranslation
 from institutions.models import Institution
+from projects.forms import ProjectModelForm
 from projects.models import Project, ProjectCreator, ProjectContributors, \
     ProjectPerson, ProjectActivity, ProjectNote, \
     ProjectArchived
