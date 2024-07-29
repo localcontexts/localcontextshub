@@ -1732,6 +1732,7 @@ admin_site.register(ActionNotification, ActionNotificationAdmin)
 
 # PROJECTS ADMIN
 class ProjectAdmin(admin.ModelAdmin):
+    form = ProjectModelForm
     list_display = (
         'title', 'project_creator', 'project_contact', 'project_contact_email',
         'project_privacy', 'project_page', 'date_added', 'unique_id'
@@ -1744,6 +1745,7 @@ class ProjectAdmin(admin.ModelAdmin):
         'project_contact',
         'project_contact_email',
     )
+
 
 
 class ProjectContributorsAdmin(admin.ModelAdmin):

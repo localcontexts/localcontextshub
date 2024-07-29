@@ -6,20 +6,20 @@
 {% for tran_form in add_translation_formset %}
 {% for hidden in tran_form.hidden_fields %}{{ hidden }}{% endfor %}
 
-    <div id="translation-form-container" class="flex-this column margin-top-16">
-        <div class="margin-top-16">
-            <h3 class="no-bottom-margin">Add Label Translations</h3>
+    <div id="translation-form-container" class="flex-this column mt-16">
+        <div class="mt-16">
+            <h3 class="mb-0">Add Label Translations</h3>
             <p class="w-80">Here you can add any additional translations of your Label, this is an optional step.</p>
         </div>
 
         <div class="add-translation-form">
             <div class="flex-this w-100">
-                <div class="w-30 margin-right-16"><label>Translated title</label><br>{{ tran_form.translated_name }}</div>
+                <div class="w-30 mr-16"><label>Translated title</label><br>{{ tran_form.translated_name }}</div>
                 <div class="w-30">
 
                     <div class="flex-this">
                         <label class='block'>Translated Language <small>(select from dropdown)</small></label>
-                        <div class="tooltip" style="margin-top: 5px; margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip mt-5 ml-5"><strong>i</strong>
                             <span class="tooltiptext">
                                 Select the language for this Label. English, Māori, French, and Spanish translations of the Label name and template text will be loaded if selected. Can't find the language you are looking for?<br>
                                 Please contact us: support@localcontexts.org
@@ -29,12 +29,12 @@
 
                     <div class="autocomplete flex-this align-center" style="display:flex;">
                         {{ tran_form.language }}
-                        <button name="clear-language-btn" class="primary-btn white-btn margin-left-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
+                        <button name="clear-language-btn" class="primary-btn white-btn ml-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
                     </div>
                 </div>
             </div>
 
-            <div class="w-80 margin-top-8"><label>Translated text</label><br>  <div id="id_form-0-language_support" class="msg-red w-50 font-size-14" style="display: none"></div>{{ tran_form.translated_text }}</div>
+            <div class="w-80 mt-8"><label>Translated text</label><br>  <div id="id_form-0-language_support" class="msg-red w-50 font-size-14" style="display: none"></div>{{ tran_form.translated_text }}</div>
         </div>
 
         <div id="lastDiv" class="flex-this flex-end w-80"><button id="add-translation-btn" class="primary-btn green-btn"><i class="fa fa-plus" aria-hidden="true"></i> Add Translation</button></div>

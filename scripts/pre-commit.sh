@@ -2,7 +2,7 @@
 
 echo 'FORMATTING PYTHON FILES'
 # this makes eligible files PEP8 compliant automatically
-yapf --recursive -i accounts
+yapf --recursive -i accounts notifications
 echo 'FORMATTING PYTHON FILES: COMPLETED'
 
 echo '------------------------------------------------------------'

@@ -2,7 +2,7 @@
 
 <div class="content-card-v2 content-card-space">
     <div class="w-70">
-        <h2 class="no-top-margin">Edit Label</h2>
+        <h2 class="mt-0">Edit Label</h2>
         <p>Each time edits are made to a Label that has been approved, it will need to go through the approval process by another Admin or Editor of the community.
             If this Label has been applied to an existing Project, it will remain applied while it is being approved but it will not be applicable to new Projects.
         </p>
@@ -17,7 +17,7 @@
             {% csrf_token %}
             <div>
                 <div class="flex-this w-100">
-                    <div class="w-30 margin-right-16">
+                    <div class="w-30 mr-16">
                         <label>Label name</label><br>
                         {{ form.name }}
                     </div>
@@ -25,21 +25,21 @@
                         <label class="block">Language <small>(select from dropdown)</small></label>
                         <div class="autocomplete flex-this align-center" style="display:flex;">
                             {{ form.language }}
-                            <button name="clear-language-btn" class="primary-btn white-btn margin-left-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
+                            <button name="clear-language-btn" class="primary-btn white-btn ml-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
                         </div>
                     </div>                    
                 </div>
 
-                <div class="w-80 margin-top-8">
+                <div class="w-80 mt-8">
                     <label for="label_text">Label text</label>
                     {{ form.label_text }}<br>
 
                     <label>Label Audio File</label>
 
                     <div class="flex-this">
-                        {% if bclabel.audiofile %} <div class="margin-right-16"><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                        {% if tklabel.audiofile %} <div class="margin-right-16"><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
-                        <div class="margin-right-8">
+                        {% if bclabel.audiofile %} <div class="mr-16"><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
+                        {% if tklabel.audiofile %} <div class="mr-16"><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
+                        <div class="mr-8">
                             <div class="hide">{{ form.audiofile }}</div>
                             <button id="customLabelAudioFileUploadBtn" class="primary-btn green-btn">
                                 {% if bclabel.audiofile or tklabel.audiofile %}
@@ -81,7 +81,7 @@
                             {% for hidden in translation_form.hidden_fields %} {{ hidden }} {% endfor %}
 
                             <div class="flex-this w-100">
-                                <div class="w-30 margin-right-16">
+                                <div class="w-30 mr-16">
                                     <label>Customized title</label>
                                     {{ translation_form.translated_name }}
                                     <br>
@@ -90,12 +90,12 @@
                                     <label class="block">Translated Language <small>(select from dropdown)</small></label>
                                     <div class="autocomplete flex-this align-center" style="display:flex;">
                                         {{ translation_form.language }}
-                                        <button name="clear-language-btn" class="primary-btn white-btn margin-left-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
+                                        <button name="clear-language-btn" class="primary-btn white-btn ml-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="w-80 margin-top-8"><label>Translated text</label><br>{{ translation_form.translated_text }}</div>    
+                            <div class="w-80 mt-8"><label>Translated text</label><br>{{ translation_form.translated_text }}</div>    
                         </div>
                     {% endfor %}   
                 {% endif %}
@@ -104,9 +104,9 @@
             <!-- Add new translations -->
             {% include 'partials/_add-translation.html' %}
 
-            <div class="text-align-right margin-bottom-8 margin-top-1 flex-this align-center">
+            <div class="text-align-right mb-8 mt-1p flex-this align-center">
                 <button id="saveLabelBtn" class="primary-btn action-btn ">Save Label</button>
-                <small id="language-error" class="red-text margin-left-1 hide">Please clear or select a language from the dropdown list.</small>
+                <small id="language-error" class="red-text ml-1p hide">Please clear or select a language from the dropdown list.</small>
             </div>
         </form>
     

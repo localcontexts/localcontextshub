@@ -9,20 +9,20 @@
 {% return_notifications researcher as researcher_notifications %}
 
 
-<div class="dropdown margin-right-8" >
+<div class="dropdown mr-8" >
 
     {% if 'dashboard' in request.path  and scope != user %}
-        <div class="no-margin">
+        <div class="m-0">
             <a id="notification-button-{{scope|cut:"'"}}" onclick="toggleNotifications('{{ scope|cut:"'" }}')" class="primary-btn white-btn dropbtn round-btn-small">
                 <i 
                 class="
-                    {% if unread_exist_user and 'dashboard' in request.path and scope == user %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_community %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_institution %} no-margin fa-solid fa-bell-on orange-text 
-                    {% elif unread_exist_researcher and scope == researcher %} no-margin fa-solid fa-bell-on orange-text
-                    {% elif unread_exist_researcher and scope == researcher.id %} no-margin fa-solid fa-bell-on orange-text
-                    {% elif return_notifications %} no-margin fa-regular fa-bell 
-                    {% else %} no-margin fa-regular fa-bell {% endif %} 
+                    {% if unread_exist_user and 'dashboard' in request.path and scope == user %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_community %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_institution %} m-0 fa-solid fa-bell-on orange-text 
+                    {% elif unread_exist_researcher and scope == researcher %} m-0 fa-solid fa-bell-on orange-text
+                    {% elif unread_exist_researcher and scope == researcher.id %} m-0 fa-solid fa-bell-on orange-text
+                    {% elif return_notifications %} m-0 fa-regular fa-bell 
+                    {% else %} m-0 fa-regular fa-bell {% endif %} 
                     " 
                 aria-hidden="true"
                 ></i>
@@ -66,7 +66,7 @@
                                 href="{% url 'read' n.id %}"
                             {% endif %}
                         >
-                            <div class="flex-this space-between margin-top-1">
+                            <div class="flex-this space-between mt-1p">
                                 <div>
                                     <span 
                                         id="notification-label-tag-{{ n.id }}" 
@@ -82,7 +82,7 @@
                         </a>                        
                     </div>
 
-                    <div class="margin-left-8">
+                    <div class="ml-8">
                         <a href="{% url 'delete-user-notification' n.id %}">
                             <i class="fa-regular fa-xmark fa-lg darkteal-text"></i>
                         </a>
@@ -129,7 +129,7 @@
                             {% endif %}
                         >
                         
-                            <div class="flex-this space-between margin-top-1">
+                            <div class="flex-this space-between mt-1p">
                                 <div>
                                     <span id="notification-label-tag-{{ n.id }}" 
                                         class="notification-type-tag white-text font-size-12 {% if n.viewed %} grey {% else %} orange-bg {% endif %}"
@@ -182,7 +182,7 @@
                             {% endif %}
                         >
 
-                            <div class="flex-this space-between margin-top-1">
+                            <div class="flex-this space-between mt-1p">
                                 <div>
                                     <span id="notification-label-tag-{{ n.id }}" 
                                         class="notification-type-tag white-text font-size-12 {% if n.viewed %} grey {% else %} orange-bg {% endif %}"
@@ -227,7 +227,7 @@
                             {% endif %}
                         >
 
-                            <div class="flex-this space-between margin-top-1">
+                            <div class="flex-this space-between mt-1p">
                                 <div>
                                     <span id="notification-label-tag-{{ n.id }}" 
                                         class="notification-type-tag white-text font-size-12 {% if n.viewed %} grey {% else %} orange-bg {% endif %}"

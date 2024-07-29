@@ -1051,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             let parentDiv = document.getElementById('person-form-0');
             let clone = parentDiv.cloneNode(true);
             clone.id = 'person-form-' + ++count; // unique id
-            clone.classList.add('margin-top-8');
+            clone.classList.add('mt-8');
 
             // Name input has name='form-0-name' and id='id_form-0-name'
             // Email input has name='form-0-email' and id='id_form-0-email'
@@ -1130,12 +1130,12 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
             if (isValidHttpUrl(item.trim())) {
                 const li = document.createElement('li')
                 li.id = item.trim()
-                li.classList.add('margin-bottom-8')
+                li.classList.add('mb-8')
                 li.classList.add('show')
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name word-break">${item}</p></div>
-                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
+                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer ml-8">&times;</div>
                 </div>
                 <input type="hidden" value="${item.trim()}" name="project_urls">`
     
@@ -1327,7 +1327,7 @@ function validateProjectDisableSubmitBtn() {
     // h/t: https://vyspiansky.github.io/2019/07/13/javascript-at-least-one-checkbox-must-be-selected/
 
     let form = document.querySelector('#createProjectForm')
-    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"])')
+    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"]):not(.no-auto-validate)')
 
     if (checkboxes.length == 0) {
         disableSubmitBtn()
@@ -2196,7 +2196,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     ccNoticeDownloadBtn.addEventListener('click', function() {    
         let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
         ccNoticeDownloadBtn.setAttribute('disabled', true)
-        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader margin-left-8"></div>'
+        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader ml-8"></div>'
 
         // Re-enable the button after a certain timeout
         // re-enable it after a while, assuming an average download duration
