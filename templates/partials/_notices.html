@@ -1,7 +1,7 @@
 {% load static %}
 <div class="content-card content-card-space white-bg">
-    <h2 class="no-top-margin">Notices</h2>
-    <p class="no-top-margin w-70">
+    <h2 class="mt-0">Notices</h2>
+    <p class="mt-0 w-75">
         Institutions and researchers can only generate Notices. Applying Notices allows institutions and researchers to engage, acknowledge, and make visible Indigenous interests in collections, information, and data. Notices are a precursor for communities to add their Labels to a project if they choose. <br><br>
         We recommend beginning with the Open to Collaborate Notice, which you can download from this page without creating a Project. To apply the disclosure Notices, you will create a Project to describe the context.
     </p>
@@ -10,10 +10,10 @@
 <div class="content-card content-card-space white-bg">
 
     <div class="flex-this space-between">
-        <div><h2 class="no-top-margin">Engagement Notice</h2></div>
+        <div><h2 class="mt-0">Engagement Notice</h2></div>
 
         <div class="flex-this flex-end">
-            <div class="margin-right-16 circle-dropdown">
+            <div class="mr-16 circle-dropdown">
                 <i class="pointer fa-solid fa-circle-ellipsis fa-3x"></i>
                 <div class="circle-dropdown-content">
                     <a id="addURLBtn" class="primary-btn">Add Link <i class="fa-regular fa-link-simple"></i></a>
@@ -46,8 +46,8 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to download this Notice.{% endif %}{% endif %}{% if is_sandbox %}Download of Notices is not available on the sandbox site.{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
-                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}Your institution account needs to be subscribed in order to share this Notice.{% endif %}{% endif %}{% if is_sandbox %}Sharing of Notices is not available on the sandbox site.{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}{{ not_approved_download_notice }}{% endif %}{% endif %}{% if is_sandbox %}{{ download_notice_on_sandbox }}{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
+                        <a class="primary-btn disabled-btn" title="{% if institution %}{% if not institution.is_subscribed %}{{ not_approved_shared_notice }}{% endif %}{% endif %}{% if is_sandbox %}{{ share_notice_on_sandbox }}{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
                 </div>
             </div>
@@ -57,11 +57,11 @@
 
     <div class="flex-this">
         <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="119px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
-        <div class="flex-this column margin-left-16">
+        <div class="flex-this column ml-16">
             <div class="w-90">
-                <h3 class="no-top-margin">Open to Collaborate</h3>
+                <h3 class="mt-0">Open to Collaborate</h3>
 
-                <p class="no-top-margin">                    
+                <p class="mt-0">                    
                     <span class="bold">Why Use this Notice?</span><br>
                     The Engagement Notice, the Open to Collaborate Notice, indicates that a researcher or an institution is committed to developing new modes of collaboration, engagement, and partnership over Indigenous collections and data that have colonial and/or problematic histories or unclear provenance. This Notice indicates a commitment to change and to develop new processes for the care and stewardship of past and future heritage collections. We recommend beginning with the Open to Collaborate Notice.               
                 </p>
@@ -83,7 +83,7 @@
                     {% if urls %}
                         <ul>
                             {% for url in urls %}
-                                <li class="margin-bottom-8">
+                                <li class="mb-8">
                                     <div class="flex-this w-70 space-between">
                                         <a class="default-a block" href="{{ url.0 }}" target="_blank" rel="noopener">{{ url.1 }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
                                         {% if researcher %}
@@ -111,13 +111,13 @@
 <div class="content-card content-card-space white-bg">
     <div class="flex-this space-between">
         <div>
-            <h2 class="no-top-margin">Disclosure Notices</h2>
+            <h2 class="mt-0">Disclosure Notices</h2>
         </div>
         <div>
             {% if researcher %}
                 <div class="flex-this align-center">
                     <div class="btn-with-helptext">
-                        <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                        <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext{% else %} primary-btn green-btn mt-2p {% endif %}" 
                             href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0){% endif %}">
                             Create a Project <i class="fa fa-arrow-right"></i>
                         </a>
@@ -138,7 +138,7 @@
                 <div class="flex-this align-center">
                     {% if member_role == 'admin' or member_role == 'editor' %}
                         <div class="btn-with-helptext">
-                            <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                            <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext{% else %} primary-btn green-btn mt-2p {% endif %}" 
                                 href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
                                 Create a Project <i class="fa fa-arrow-right"></i>
                             </a>
@@ -186,15 +186,15 @@
         </div>
     </div>
 
-    <div class="w-80 auto-margin">
+    <div class="w-80 m-auto">
 
         <div id="openDiv-disclosureTK" class="disclosure-notice__expanded-container hide">
             <div class="flex-this">
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-                <div class="flex-this column margin-left-16">
+                <div class="flex-this column ml-16">
                     <div class="w-90">
-                        <h2 class="no-top-margin">Traditional Knowledge Notice</h2>
-                        <p class="no-top-margin">
+                        <h2 class="mt-0">Traditional Knowledge Notice</h2>
+                        <p class="mt-0">
                             <span class="bold">Why Use this Notice?</span><br>
                             This Notice should be used to recognize that place-based knowledge carries accompanying cultural rights and responsibilities and that appropriate permissions may need to be sought for future use of this material.
                         </p>        
@@ -213,10 +213,10 @@
         <div id="openDiv-disclosureBC" class="disclosure-notice__expanded-container hide">
             <div class="flex-this">
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
-                <div class="flex-this column margin-left-16">
+                <div class="flex-this column ml-16">
                     <div class="w-90">
-                        <h2 class="no-top-margin">Biocultural Notice</h2>
-                        <p class="no-top-margin">
+                        <h2 class="mt-0">Biocultural Notice</h2>
+                        <p class="mt-0">
                             <span class="bold">Why Use this Notice?</span><br>
                             The BC Notice should be used to recognize the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity and genetic resources associated with their traditional lands, waters, and territories. It acknowledges the importance of cultural protocols and recognizes that appropriate permissions may need to be sought for future use of this material or data.
                         </p>        
@@ -235,10 +235,10 @@
         <div id="openDiv-disclosureAI" class="disclosure-notice__expanded-container hide">
             <div class="flex-this">
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
-                <div class="flex-this column margin-left-16">
+                <div class="flex-this column ml-16">
                     <div class="w-90">
-                        <h2 class="no-top-margin">Attribution Incomplete Notice</h2>
-                        <p class="no-top-margin">
+                        <h2 class="mt-0">Attribution Incomplete Notice</h2>
+                        <p class="mt-0">
                             <span class="bold">Why Use this Notice?</span><br>
                             The Attribution Incomplete Notice is attached to a collection or at an item level where there is incomplete, inaccurate, or missing attribution. This Notice indicates to the public that the record and/or metadata is incomplete. Visibly identifying missing attribution within collections is the first step towards correcting existing attribution to include: contributors, collaborators, other authors and/or communities of origin.
                         </p>        
@@ -261,10 +261,10 @@
 {% if institution %}
     <div class="content-card content-card-space white-bg">
         <div class="flex-this space-between">
-            <div><h2 class="no-top-margin">Collections Care Notices</h2></div>
+            <div><h2 class="mt-0">Collections Care Notices</h2></div>
             <div class="flex-this flex-end">
                 
-                <div class="margin-right-16"><a id="openCCNoticeModal" class="primary-btn action-btn">Add Policy <i class="fa-solid fa-circle-plus"></i></a></div>
+                <div class="mr-16"><a id="openCCNoticeModal" class="primary-btn action-btn">Add Policy <i class="fa-solid fa-circle-plus"></i></a></div>
 
                 <div>
                     {% if ccn_download_perm == 1 and institution.is_subscribed %}
@@ -277,11 +277,11 @@
                             <span class="btn-help-text">
                                 {% if institution %}
                                     {% if not institution.is_subscribed %}
-                                        Your institution account needs to be subscribed in order to download this Notice.
+                                        {{ not_approved_download_notice }}
                                     {% endif %}
                                 {% endif %}
                                 {% if is_sandbox %}
-                                    Download of Notices is not available on the sandbox site.
+                                   {{ download_notice_on_sandbox }}
                                 {% endif %}
                             </span>
                         </div>
@@ -292,7 +292,7 @@
         </div>
         <div class="flex-this">
             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-overall-notice.png' %}" width="119px" alt="Overall Collections Care Notice icon. White square with top right corner folded. Inside is a circle outline made of different sized dots around “LC”."></div>
-            <div class="flex-this column margin-left-16">
+            <div class="flex-this column ml-16">
                 <div class="w-80">
                     <p>
                         <span class="bold">Why use these Notices?</span><br>
@@ -357,7 +357,7 @@
                     <div id="openDiv-authorization" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-authorization.png' %}" width="119px" alt="Authorization Collections Care Notice icon. White square with top right corner folded. Inside are three black lines from the left edge curving up to cradle a black circle and one black line from bottom right edge curving up."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Authorization</h2></div>
+                            <div><h2 class="mt-0">Authorization</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -373,7 +373,7 @@
                     <div id="openDiv-belonging" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-belonging.png' %}" width="119px" alt="Belonging Collections Care Notice icon. White square with top right corner folded. Inside are three black circles in descending size from top to bottom, each with two lines like arms extending down to touch the figure below."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Belonging</h2></div>
+                            <div><h2 class="mt-0">Belonging</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -388,7 +388,7 @@
                     <div id="openDiv-caring" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-caring.png' %}" width="119px" alt="Caring Collections Care Notice icon. White square with top right corner folded. Inside are two wave-like curved lines extending from the edge toward the center which curve around a black circle."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Caring</h2></div>
+                            <div><h2 class="mt-0">Caring</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -403,7 +403,7 @@
                     <div id="openDiv-gender-aware" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-gender-aware.png' %}" width="119px" alt="Gender Aware Collections Care Notice icon. White square with top right corner folded. Inside are three circles in a diagonal. One has white shading, one has black shading, one has striped shading."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Gender Aware</h2></div>
+                            <div><h2 class="mt-0">Gender Aware</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -418,7 +418,7 @@
                     <div id="openDiv-leave-undisturbed" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-leave-undisturbed.png' %}" width="119px" alt="Leave Undisturbed Collections Care Notice icon. White square with top right corner folded. Circle outline made of two black lines that radiate from a central black circle at center and curve to form the outline."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Leave Undisturbed</h2></div>
+                            <div><h2 class="mt-0">Leave Undisturbed</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -433,7 +433,7 @@
                     <div id="openDiv-safety" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-safety.png' %}" width="119px" alt="Safety Collections Care Notice icon. White square with top right corner folded. Inside is a circle made of three black curved lines surrounding a black circle."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Safety</h2></div>
+                            <div><h2 class="mt-0">Safety</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -448,7 +448,7 @@
                     <div id="openDiv-viewing" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-viewing.png' %}" width="119px" alt="Viewing Collections Care Notice icon. White square with top right corner folded. Insides are two horizontal curved black lines surrounding a small black circle."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Viewing</h2></div>
+                            <div><h2 class="mt-0">Viewing</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -464,7 +464,7 @@
                     <div id="openDiv-withholding" class="flex-this cc-notice__expanded-container hide">
                         <div class="cc-notice__expanded-img"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-withholding.png' %}" width="119px" alt="Withholding Collections Care Notice icon. White square with top right corner folded. Inside are two curved black lines from the bottom edge surrounding a small black circle."></div>
                         <div class="cc-notice__expanded-text">
-                            <div><h2 class="no-top-margin">Withholding</h2></div>
+                            <div><h2 class="mt-0">Withholding</h2></div>
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
@@ -490,7 +490,7 @@
                     {% csrf_token %}
     
                     <div class="flex-this space-between">
-                        <div><h2 class="primary-black-text no-top-margin">Add Collections Care Notice Policy</h2></div>
+                        <div><h2 class="primary-black-text mt-0">Add Collections Care Notice Policy</h2></div>
                         <div>
                             <div id="closeCCNoticeModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
                         </div>            
@@ -516,7 +516,7 @@
                         <label>Website URL</label><br>
                         {{ cc_policy_form.url }}
                     </div>
-                    <div class="flex-this flex-end w-100 margin-top-16">
+                    <div class="flex-this flex-end w-100 mt-16">
                         <button class="primary-btn action-btn" name="add_policy">Add policy </button>    
                     </div>
                 </form>
@@ -532,7 +532,7 @@
                 {% csrf_token %}
 
                 <div class="flex-this space-between">
-                    <div><h2 class="primary-black-text no-top-margin">Add Open to Collaborate Notice Link</h2></div>
+                    <div><h2 class="primary-black-text mt-0">Add Open to Collaborate Notice Link</h2></div>
                     <div>
                         <div id="closeAddURLModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
                     </div>            
@@ -555,7 +555,7 @@
                     <br>
                     {{ form.url }}
                 </div>
-                <div class="flex-this flex-end w-100 margin-top-16">
+                <div class="flex-this flex-end w-100 mt-16">
                     <button class="primary-btn action-btn">Add Link</button>    
                 </div>
             </form>
@@ -568,7 +568,7 @@
 
         <div class="flex-this space-between">
             <div class="w-80">
-                <h2 class="primary-black-text no-top-margin">Share Open to Collaborate Notice</h2>  
+                <h2 class="primary-black-text mt-0">Share Open to Collaborate Notice</h2>  
             </div>
             <div>
                 <div id="closeshareOTCNoticeModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
@@ -576,53 +576,53 @@
         </div>
 
         <div class="w-100 flex-this column">
-            <div class="w-100 flex-this column margin-bottom-16">
-                <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Registry URL</label>
+            <div class="w-100 flex-this column mb-16">
+                <label class="bold mt-8 mb-8 block">Local Contexts Registry URL</label>
 
                 <div class="text-input-to-copy">
                     <input class="w-100 grey-chip" type="text" value="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}" id="profilePageUrlToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="profilePageUrlToCopy">Copy URL</button>
                 </div>
 
-                <label class="bold margin-top-8 no-bottom-margin block">Embed Open to Collaborate Notice</label>
-                <p class="font-size-14 no-top-margin margin-bottom-8">Add this Notice to your website by copying the code below.</p>
+                <label class="bold mt-8 mb-0 block">Embed Open to Collaborate Notice</label>
+                <p class="font-size-14 mt-0 mb-8">Add this Notice to your website by copying the code below.</p>
 
                 <div class="text-input-to-copy">
                     <input class="w-100 grey-chip" type="text" 
                     value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}" title="Local Contexts Open to Collaborate" frameborder="0"></iframe>' data-url='{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}' title="Local Contexts Open to Collaborate" id="embedToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                 </div>
-                <p class="font-size-14 margin-top-1 no-bottom-margin">Embed Options</p>
+                <p class="font-size-14 mt-1p mb-0">Embed Options</p>
                 <div class="flex-this">
-                    <select id="embedLayoutOptions" name="layout" class="project-sort w-30 margin-top-1 margin-right-1">
+                    <select id="embedLayoutOptions" name="layout" class="project-sort w-30 mt-1p mr-1p">
                         <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
                         <option class="darkteal-text pointer" value="2">Icon and Title</option>
                         <option class="darkteal-text pointer" value="3">Icon, Title and Text</option>
                     </select>
-                    <select id="embedAlignOptions" name="align" class="project-sort w-30 margin-top-1 margin-right-1">
+                    <select id="embedAlignOptions" name="align" class="project-sort w-30 mt-1p mr-1p">
                         <option class="darkteal-text pointer" value="left" selected>Left Align</option>
                         <option class="darkteal-text pointer" value="right">Right Align</option>
                     </select>
                 </div>
             </div>
 
-            <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+            <div class="border-bottom-grey mt-8 mb-8"></div>
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
-                    <i class="socials-btn fa-solid fa-envelope" style="margin-right: 10px;" title="Share via Email"></i>
+                    <i class="socials-btn fa-solid fa-envelope mr-10" title="Share via Email"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-whatsapp" style="margin-right: 10px;" title="Share via WhatsApp"></i>
+                    <i class="socials-btn fa-brands fa-whatsapp mr-10" title="Share via WhatsApp"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-facebook-f" style="margin-right: 10px;" title="Share on Facebook"></i>
+                    <i class="socials-btn fa-brands fa-facebook-f mr-10" title="Share on Facebook"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-twitter" style="margin-right: 10px;" title="Share on Twitter"></i>
+                    <i class="socials-btn fa-brands fa-twitter mr-10" title="Share on Twitter"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-linkedin" style="margin-right: 10px;" title="Share on LinkedIn"></i>
+                    <i class="socials-btn fa-brands fa-linkedin mr-10" title="Share on LinkedIn"></i>
                 </div>
             </div>
         </div>

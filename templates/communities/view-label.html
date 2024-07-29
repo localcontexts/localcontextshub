@@ -1,7 +1,7 @@
 {% extends 'account-base.html' %} {% block title %} View Label {% endblock %}{% load static %} {% load custom_tags %} {% block community_content %}
 
 <section class="content-card-v2 content-card-space">
-    <div class="margin-bottom-16">
+    <div class="mb-16">
         <small class="bold">
             <a class="darkteal-text"href="{% url 'select-label' community.id %}">Labels</a> 
             <span class="grey-text"> >> View Label</span>
@@ -21,7 +21,7 @@
 
             <div class="flex-this space-between">
                 <div>
-                    <h2 class="no-top-margin">
+                    <h2 class="mt-0">
                         {% if bclabel %} {{ bclabel.name }} {% endif %}
                         {% if tklabel %} {{ tklabel.name }} {% endif %}
                     </h2>                    
@@ -37,7 +37,7 @@
                             {% else %}
                                 {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% endif %}
@@ -60,7 +60,7 @@
                             {% else %}
                                 {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
                                 {% if user_can_approve %}
-                                    <div class="margin-top-1">
+                                    <div class="mt-1p">
                                         <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
                                     </div>
                                 {% endif %}
@@ -78,7 +78,7 @@
             </div>
 
             <div class="w-80">
-                <p class="no-top-margin no-bottom-margin">
+                <p class="mt-0 mb-0">
                     <span class="bold">Created by</span> - 
                     {% if bclabel %} {{ creator_name }} | {{ bclabel.community }} - {{ bclabel.created|date:'M Y'}} {% endif %}
                     {% if tklabel %} {{ creator_name }} | {{ tklabel.community }} - {{ tklabel.created|date:'M Y'}} {% endif %}
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     <div>
-                        <p class="no-top-margin no-bottom-margin">
+                        <p class="mt-0 mb-0">
                             {% if bclabel %} {{ bclabel.label_text }} {% endif %}
                             {% if tklabel %} {{ tklabel.label_text }} {% endif %}
                         </p>
@@ -147,10 +147,10 @@
 
                 {% if bclabel.version or tklabel.version %}
                     {% if bclabel.version > 1 or tklabel.version > 1 %}
-                        <div class="flex-this flex-end margin-bottom-8">
+                        <div class="flex-this flex-end mb-8">
                             <small id="openLabelHistoryBtn" class="default-a block right-text">View Label History <i class="fa fa-angle-down" aria-hidden="true"></i></small>
                         </div>
-                        <div id="labelHistoryDiv" class="hide margin-bottom-8">
+                        <div id="labelHistoryDiv" class="hide mb-8">
                                 <p>
                                 {% if label_versions %}
                                     {% for version in label_versions %}
@@ -158,12 +158,12 @@
                                         {% else %}
                                             <h3 class="bold"><i>Version {{ version.version }}: Created {{ version.created|date:'M Y'}}</i></h3>
                                             <i>
-                                                <span class="bold block margin-bottom-16">Label text</span>
+                                                <span class="bold block mb-16">Label text</span>
                                                 {{ version.version_text }}
 
                                                 {% if version.label_version_translation.all %}
                                                     {% for translated_version in version.label_version_translation.all %}
-                                                        <span class="bold block margin-bottom-16 margin-top-16">{{ translated_version.language }}</span>
+                                                        <span class="bold block mb-16 mt-16">{{ translated_version.language }}</span>
                                                         {{ translated_version.translated_text }}
                                                     {% endfor %}
                                                 {% endif %}
@@ -180,13 +180,13 @@
         </div>
     </div>
 
-    <div class="margin-left-16">
+    <div class="ml-16">
         <h3>Explore your other customized Labels</h3>
 
         <div class="flex-this w-100 wrap">
             {% if bclabels %}
                 {% for bclabel in bclabels %}
-                    <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                    <div class="condensed-labels center-text mr-16 mb-16">
                         <a class="primary-black-text" href="{% url 'view-label' community.id bclabel.unique_id %}">
                             {% include 'bclabels/mini-labels.html' %}
                             <small class="bold">{{ bclabel.name }}</small>
@@ -197,7 +197,7 @@
 
             {% if tklabels %}
                 {% for tklabel in tklabels %}
-                    <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                    <div class="condensed-labels center-text mr-16 mb-16">
                         <a class="primary-black-text" href="{% url 'view-label' community.id tklabel.unique_id %}">
                             {% include 'tklabels/mini-labels.html' %}
                             <small class="bold">{{ tklabel.name }}</small>

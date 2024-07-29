@@ -2,7 +2,7 @@
     <div class="content-card-v2 content-card-space">
 
         <div class="w-70">
-            <h2 class="no-top-margin">Connections</h2>
+            <h2 class="mt-0">Connections</h2>
             <p>
                 Connections are established when Labels are applied to a Project.
                 {% if community %}
@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="dashcard-btn-container">
-                    <div class="margin-right-8">
+                    <div class="mr-8">
                         <a class="primary-btn action-btn" href="{% url 'public-institution' institution.id %}">View public page</a>
                     </div>
                     <div>
@@ -55,10 +55,10 @@
 
             <div id="expand-div-{{ institution.institution_name }}" class="hide">
                 <div class="border-bottom-dash-teal">
-                    <p class="no-bottom-margin">
+                    <p class="mb-0">
                         <span class="bold">Account Contact Name</span> | {% firstof institution.institution_creator.get_full_name  institution.institution_creator.username %}
-                        <span class="bold margin-left-8">Account Contact Email</span> | {{ institution.institution_creator.email }}
-                        <span class="bold margin-left-8">Website</span> | {{ institution.website }} <br><br>
+                        <span class="bold ml-8">Account Contact Email</span> | {{ institution.institution_creator.email }}
+                        <span class="bold ml-8">Website</span> | {{ institution.website }} <br><br>
                     </p>                        
                 </div>
 
@@ -107,7 +107,7 @@
                     <div><p class="dashcard-description description-sm">{% if res.description %}{{ res.description }} {% else %} No description provided. {% endif %}</p></div>
                 </div>
                 <div class="dashcard-btn-container">
-                    <div class="margin-right-8">
+                    <div class="mr-8">
                         <a class="primary-btn action-btn" href="{% url 'public-researcher' res.id %}">View public page</a>
                     </div>
                     <div>
@@ -118,7 +118,7 @@
 
             <div id="expand-div-{{ res.id }}" class="hide">
                 <div class="border-bottom-dash-teal">
-                    <p class="no-bottom-margin">
+                    <p class="mb-0">
                         <span class="bold">Contact Email</span> | {% if res.contact_email %} {{ res.contact_email }} {% else %} {{ res.user.email }} {% endif %} <br><br>
                     </p>   
                 </div> 
@@ -172,7 +172,7 @@
                 </div>
 
                 <div class="dashcard-btn-container">
-                    <div class="margin-right-8">
+                    <div class="mr-8">
                         <a class="primary-btn action-btn" href="{% url 'public-community' community.id %}">View public page</a>
                     </div>
                     <div>
@@ -184,9 +184,9 @@
             </div>
             <div id="expand-div-{{ community.community_name }}" class="hide">
                 <div class="border-bottom-dash-teal">
-                    <p class="no-bottom-margin">
+                    <p class="mb-0">
                         <span class="bold">Account Contact Name</span> | {% firstof community.community_creator.get_full_name community.community_creator.get_full_name %}
-                        <span class="bold margin-left-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
+                        <span class="bold ml-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
                     </p>      
                 </div>   
                 

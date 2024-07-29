@@ -15,12 +15,12 @@
     <script src="{% static 'javascript/orcid-widget.js' %}" type="text/javascript" defer></script>
 
     <div class="flex-this column w-90">
-        <div class="margin-bottom-1 flex-this space-between">
+        <div class="mb-1p flex-this space-between">
             <h2>Researcher Account</h2>  
-            <div class="margin-top-16">Or <a class="default-a" href="{% url 'select-account' %}">choose another account</a></div>
+            <div class="mt-16">Or <a class="default-a" href="{% url 'select-account' %}">choose another account</a></div>
         </div>
         <div>
-            <p class="no-top-margin no-bottom-margin">A researcher is a person who carries out academic or scientific research independently or in an institution, such as archive, library, museum, historical society, gallery, data repository, or university.</p>
+            <p class="mt-0 mb-0">A researcher is a person who carries out academic or scientific research independently or in an institution, such as archive, library, museum, historical society, gallery, data repository, or university.</p>
         </div>
 
         <form action="{% url 'connect-researcher' %}" method="POST" class="flex-this column w-100" id="createResearcher">
@@ -55,8 +55,8 @@
                 {% endif %}            
             </div>
 
-        <div class="flex-this w-100 space-between margin-top-2">
-            <div class='w-50 margin-right-1'>
+        <div class="flex-this w-100 space-between mt-2p">
+            <div class='w-50 mr-1p'>
                 <label for="primary_institution">Primary Institution</label>
                 <div class="tooltip"><strong>i</strong>
                     <span class="tooltiptext">If you are associated with an institution, please list your primary institution.</span>
@@ -66,7 +66,7 @@
                     <div class="msg-red w-80"><small>{{ form.primary_institution.errors.as_text }}</small></div> 
                 {% endif %}
             </div>
-            <div class="w-50 margin-left-1">
+            <div class="w-50 ml-1p">
                 <label for="inquiry_type">Inquiry type<span class="orange-text required-label" title="">*</span></label>
                 <div class="tooltip"><strong>i</strong>
                     <span class="tooltiptext left-tooltip">An institution inquiry type allows you to select the desired role for the subscription process.</span>
@@ -75,6 +75,14 @@
                 {{ subscription_form.inquiry_type }}
             </div>
 
+        </div>
+        <div class="flex-this w-100 space-between mt-2p">
+            <div class='w-100 mr-1p'>
+                <div class="mb-8">
+                    <label>Researcher Website</label>
+                    {{ form.website }}
+                </div>
+            </div>
         </div>
 
             <div class="w-100">
@@ -103,8 +111,8 @@
                 name="g-recaptcha-response"
                 id="g-recaptcha-response"
                 />
-                <div class="margin-top-8">
-                    <button id="submitResearcher" class="primary-btn action-btn margin-top-2">Get Started <i class="fa fa-arrow-right"></i></button>
+                <div class="mt-8">
+                    <button id="submitResearcher" class="primary-btn action-btn mt-2p">Get Started <i class="fa fa-arrow-right"></i></button>
                 </div>
             </div>
 

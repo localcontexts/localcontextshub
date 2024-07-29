@@ -9,6 +9,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
+from projects.models import Project
 from .downloads import download_otc_notice, download_cc_notices
 import requests
 from .models import NoticeDownloadTracker
@@ -123,3 +124,20 @@ def boundary_view(request):
         message = 'Invalid Boundary Format'
         print(f'{message}: {e}')
         raise Exception(message)
+
+
+@xframe_options_sameorigin
+def project_boundary_view(request, project_id):
+    project = Project.objects.filter(id=project_id).first()
+    if not project:
+        message = 'Project Does Not Exist'
+        raise Http404(message)
+
+    boundary = []
+    if project.boundary:
+        boundary = project.boundary.get_coordinates(as_tuple=False)
+
+    context = {
+        'boundary': boundary
+    }
+    return render(request, 'boundary/boundary-view.html', context)

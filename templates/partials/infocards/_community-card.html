@@ -1,32 +1,34 @@
 {% load static %}
 <div class="dashcard">
 
-    <div class="flex-this">
+    <div class="flex-this space-between">
 
-        <div class="dashcard-img-container">
-            <img loading="lazy" 
-                class="profile-img" 
-                src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}" 
-                alt="{{ community.community_name }} image"
-            >
-        </div>
-        <div class="flex-this column dashcard-text-container">
-            <div class="subscribed-icon-wrapper">
+        <div class="flex-this">
+            <div class="dashcard-img-container">
+                <img loading="lazy" 
+                    class="profile-img" 
+                    src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}" 
+                    alt="{{ community.community_name }} image"
+                >
+            </div>
+            <div class="flex-this column dashcard-text-container">
+                <div class="subscribed-icon-wrapper">
                 <h3 class="dashcard-h3 darkteal-text">{{ community }}</h3>
                 {% if community and community.is_approved %}
                     <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
                 {% endif %}
             </div>
-            <div>
-                <p class="dashcard-subheader">
-                    Community | Members: {% if community.get_member_count < 10 %}0{{ community.get_member_count }}{% else %}{{ community.get_member_count }}{% endif %} | 
-                    Location: {{ community.get_location }}
-                </p>
-            </div>
-            <div><p class="dashcard-description description-sm">
-                    {% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}
-            </p></div>
-        </div>           
+                <div>
+                    <p class="dashcard-subheader">
+                        Community | Members: {% if community.get_member_count < 10 %}0{{ community.get_member_count }}{% else %}{{ community.get_member_count }}{% endif %} | 
+                        Location: {{ community.get_location }}
+                    </p>
+                </div>
+                <div><p class="dashcard-description description-sm">
+                        {% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}
+                </p></div>
+            </div>  
+        </div>
 
         <div class="dashcard-btn-container">
             <div class="flex-this gap-half">
@@ -39,8 +41,9 @@
                     </div> 
                 {% endif %}
 
-                <div>                 
-                    {% if '/dashboard/' in request.path %}
+                {% if '/dashboard/' in request.path %}
+                    <div>                 
+
                         {% if approved_label %}
                             {% if request.user in community.get_collaborator or request.user == community.community_creator %}
                                 <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
@@ -48,21 +51,16 @@
                         {% else %}
                             <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
                         {% endif %} 
-                    {% endif %}
-                    
-                    {% if request.user in  community.get_viewers and approved_label %}
-                        <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
-                    {% endif %}
-                </div>
-                {% if '/dashboard/' in request.path %}
-                    <div class="margin-left-8 flex-this gap-half">
+                    </div>
+
+                    <div class="ml-8 flex-this gap-half">
                         <!-- Notification -->
                         {% include 'snippets/notifications.html' with scope=community %}
                         <!-- Settings -->
                         {% if request.user == community.community_creator or request.user in community.get_admins %}
                             <div>
                                 <a href="{% url 'update-community' community.id %}" class="round-btn-small darkteal-text primary-btn white-btn">
-                                    <i class="no-margin fa fa-cog" aria-hidden="true"></i>
+                                    <i class="m-0 fa fa-cog" aria-hidden="true"></i>
                                 </a>
                             </div>
                         {% endif %}                        

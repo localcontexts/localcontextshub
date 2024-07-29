@@ -11,8 +11,8 @@
         {% endfor %}
         {% if not f.instance.pk %}
             <div class="flex-this">
-                <div id="person-form-0" class="flex-this row margin-right-16 margin-bottom-8">
-                    <div class="margin-right-1">
+                <div id="person-form-0" class="flex-this row mr-16 mb-8">
+                    <div class="mr-1p">
                         <label>{{ f.name.label }}</label>
                         <div class="tooltip"><strong>?</strong>
                             <span class="tooltiptext">
@@ -23,7 +23,7 @@
                         {{ f.name }}
                     </div>
                     
-                    <div class="margin-right-16">
+                    <div class="mr-16">
                         <label>{{ f.email.label }}</label><br>
                         {{ f.email }}
                     </div>
@@ -38,9 +38,9 @@
 
     {% endfor %}
 
-    {% if formset.errors %}
-        {% for error in formset.errors %}
+    {% for error in formset.errors %}
+        {% if error %}
             <div class="msg-red w-50"><small>{{ error.as_text }}</small></div> 
-        {% endfor %}
-    {% endif %}
+        {% endif %}
+    {% endfor %}
 </div>

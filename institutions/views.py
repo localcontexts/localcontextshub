@@ -380,15 +380,25 @@ def institution_notices(request, pk):
     except Subscription.DoesNotExist:
         subscription = None
 
+    if not institution.is_subscribed:
+        not_approved_download_notice = "Your institution account needs to be confirmed in order to download this Notice."
+        not_approved_shared_notice = "Your institution account needs to be confirmed in order to share this Notice."
+    else:
+        not_approved_download_notice = None
+        not_approved_shared_notice = None
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
         is_sandbox = True
         otc_download_perm = 0
         ccn_download_perm = 0
+        download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
+        share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
         otc_download_perm = 1 if institution.is_subscribed else 0
         ccn_download_perm = 1 if institution.is_subscribed else 0
+        download_notice_on_sandbox = None
+        share_notice_on_sandbox = None
 
     if request.method == "POST":
         if "add_policy" in request.POST:
@@ -420,6 +430,10 @@ def institution_notices(request, pk):
         "otc_download_perm": otc_download_perm,
         "ccn_download_perm": ccn_download_perm,
         "is_sandbox": is_sandbox,
+        'not_approved_download_notice': not_approved_download_notice,
+        'download_notice_on_sandbox': download_notice_on_sandbox,
+        'not_approved_shared_notice': not_approved_shared_notice,
+        'share_notice_on_sandbox': share_notice_on_sandbox,
         "subscription": subscription,
     }
     return render(request, "institutions/notices.html", context)
@@ -886,6 +900,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
 
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             if subscription.project_count > 0:
                 subscription.project_count -= 1
                 subscription.save()
@@ -1015,6 +1034,12 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist("project_urls")
             data.urls = project_links
+
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             editor_name = get_users_name(request.user)

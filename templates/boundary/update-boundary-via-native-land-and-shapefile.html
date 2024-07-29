@@ -175,7 +175,7 @@
                         Browse files
                     </div>
                     <input
-                        type="file" class="shapefile-input" name="shapefile" style="display: none"
+                        type="file" class="shapefile-input" style="display: none"
                         onchange="uploadShapeFileData(this)"
                         accept=".zip"
                     >
@@ -205,13 +205,13 @@
         <div class="message">File upload successful</div>
     </div>
     <div id="share-boundary-publicly-wrapper">
-        <input type="checkbox" id="share-boundary-publicly"
+        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly" class="no-auto-validate"
                onchange="enableContinueButton()"
-               {% if community.share_boundary_publicly %}checked{% endif %}>
+               {% if entity.share_boundary_publicly %}checked{% endif %}>
         <label for="share-boundary-publicly">Share Boundary Publicly</label>
     </div>
     <div class="save-cancel-container w-90 flex-this flex-start">
-        <div>
+        <div class="{% if create_mode %}invisible{% endif %}">
             <a
                 id="community-boundary-continue-btn"
                 class="primary-btn action-btn disabled-btn margin-right-8"
@@ -221,13 +221,15 @@
             </a>
         </div>
         <div>
-            <a id="cancel-btn" class="primary-btn white-btn disabled-btn" onclick="cancelChange(this)">Cancel</a>
+            <a id="cancel-btn" class="primary-btn white-btn disabled-btn" onclick="cancelChange(this)">Clear Boundary</a>
         </div>
         <i class="fa fa-spinner fa-spin fa-2x spinner"></i>
     </div>
+    <input type="text" id="boundary-data" name="boundary-payload" class="invisible" />
 </span>
 <script>
     let BoundaryPayLoad = {}
+    let InitialShareBoundaryPublicly = {% if entity.share_boundary_publicly %}true{% else %}false{% endif %}
 
     fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
 
@@ -268,6 +270,18 @@
     function clearNLInput(selectionUnit) {
        selectionUnit.querySelector('.input-field.search').value = ''
     }
+    function clearShapeFileInput(selectionUnit) {
+       selectionUnit.querySelector('.input-field.select-file-input').value = ''
+    }
+    function selectInitialShareBoundaryPublicly() {
+
+      if (InitialShareBoundaryPublicly) {
+        document.getElementById("share-boundary-publicly").checked = true
+      } else {
+        document.getElementById("share-boundary-publicly").checked = false
+      }
+
+    }
     function hideSearchDropDown() {
        document.querySelector('.region-results').innerHTML = ''
     }
@@ -288,6 +302,7 @@
         document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
         disableCancelButton()
     }
+
     function showSpinner(){
         document.querySelector('.save-cancel-container .spinner').classList.add('shown')
     }
@@ -295,6 +310,12 @@
         document.querySelector('.save-cancel-container .spinner').classList.remove('shown')
     }
 
+    function setBoundaryPayloadForInputElement() {
+      /*
+      This is useful when submitting the boundary via a form
+      * */
+      document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
+    }
     async function getNativeLandBoundary(selectionUnit, slug) {
         /*
         * This code attempts to get the actual boundary data from Native Land.
@@ -325,7 +346,9 @@
                 name: boundary.properties.Name,
                 boundary: boundaryCoordinates
             }
+            setBoundaryPayloadForInputElement()
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
+            clearShapeFileInput(selectionUnit)
 
         } catch (error) {
             console.error('Error Fetching boundary:', error)
@@ -436,7 +459,7 @@
             name: fileName,
             boundary: distinctBoundaryReordered
         }
-
+        setBoundaryPayloadForInputElement()
         setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
 
         successMessage.classList.toggle('invisible')
@@ -444,6 +467,8 @@
         self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
         enableContinueButton()
+
+        clearNLInput(selectionUnit)
 
       } catch (e) {
         raiseError(selectionUnit, 'File not accepted. Please upload another file')
@@ -459,11 +484,13 @@
     }
 
     async function setBoundary(self) {
+
         // do post call to set boundary in request
         showSpinner()
         BoundaryPayLoad.share_boundary_publicly = document.getElementById("share-boundary-publicly").checked
 
-        const response = await fetch("{% url 'update-community-boundary-data' community.id %}", {
+        const url = "{{ set_boundary_url }}"
+        const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(BoundaryPayLoad),
             headers: {
@@ -491,12 +518,9 @@
       // hide selected location
       selectionUnit.querySelector('.selected-location').classList.add('invisible')
 
-      // hide selected Native Land location
-      selectionUnit.querySelector('.community-boundary-search .input-field.search').value = ''
-
-      // hide uploaded file name
-      selectionUnit.querySelector('.community-boundary-upload .input-field.select-file-input').value = ''
-
+      clearNLInput(selectionUnit)
+      clearShapeFileInput(selectionUnit)
+      selectInitialShareBoundaryPublicly()
       disableContinueButton()
     }
 </script>
