@@ -10,26 +10,26 @@
     <body>
         {% if restricted %}
             <div class="flex-this w-100">
-                <div class="margin-left-8 margin-right-8 auto-margin" style="display: inherit;">
+                <div class="ml-8 mr-8 m-auto" style="display: inherit;">
                     <a 
                         href="https://localcontexts.org" 
                         style="display: inline-flex;">
                         <img style="width:60px;" loading="lazy" src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" alt="404 Local Contexts round logo">
                     </a>
                 </div>
-                <div class="font-size-14 align-center flex-this margin-right-8 margin-left-8 column">
-                    <h1 class="orange-text no-bottom-margin">Oops!</h1>
+                <div class="font-size-14 align-center flex-this mr-8 ml-8 column">
+                    <h1 class="orange-text mb-0">Oops!</h1>
                     <p>We can't seem to find the page you are looking for.<br><strong>Error Code: 404 Not Found</strong></p>
                 </div>
             </div>
 
         {% else %}
             <div style="padding: 12px;padding-bottom: 0px;">
-                <div id="group" class="flex-this{% if align == 'right' %} flex-end {% else %} flex-start {% endif%}{% if layout == '2' %} column {% endif %}{% if layout == '3' %} wrap w-100 {% endif %}"{% if layout == '2' and align == 'right' %} style= "width: fit-content; margin-left: auto;" {% endif %}>
+                <div id="group" class="flex-this{% if align == 'right' %} flex-end {% else %} flex-start {% endif%}{% if layout == '2' %} column ml-auto {% endif %}{% if layout == '3' %} wrap w-100 {% endif %}"{% if layout == '2' and align == 'right' %} style= "width: fit-content;" {% endif %}>
                     <!-- Notices -->
                     {% if notices %}
                         {% for notice in notices %}
-                            <div id="notice" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                            <div id="notice" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                 <div id="notice-icon" style="padding-right: 12px;">
                                     <img 
                                         loading="lazy" 
@@ -72,7 +72,7 @@
                                 
                                 {% elif layout == "3" %}
                                     <div id="notice-text">
-                                        <h3 style="margin-top: 0;margin-bottom: 0;">
+                                        <h3 class="mt-0 mb-0">
                                             {% if not lang or lang == 'en' %}
                                                 {% if notice.notice_type == 'traditional_knowledge' %}Traditional Knowledge Notice{% endif %}
                                                 {% if notice.notice_type == 'biocultural' %}Biocultural Notice{% endif %}
@@ -85,7 +85,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </h3>
-                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">
+                                        <h4 class="mt-10 mb-10">
                                             {% if not lang or lang == 'en' %}
                                                 English
                                             {% else %}
@@ -96,7 +96,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </h4>
-                                        <p style="margin-top: 10px;margin-bottom: 10px;">
+                                        <p class="mt-10 mb-10">
                                             {% if not lang or lang == 'en' %}
                                                 {{ notice.default_text }}
                                             {% else %}
@@ -116,7 +116,7 @@
                         {% endfor %}
 
                     {% elif otc_notices %}
-                        <div id="notice" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                        <div id="notice" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                             <div id="notice-icon" style="padding-left: 12px;padding-right: 12px;">
                                 <img 
                                     loading="lazy" 
@@ -138,10 +138,10 @@
                                 </div>
                             {% elif layout == "3" %}
                                 <div id="notice-text">
-                                    <h3 style="margin-top: 0;margin-bottom: 0;">Open to Collaborate
+                                    <h3 class="mt-0 mb-0">Open to Collaborate
                                     </h3>
-                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
-                                    <p style="margin-top: 10px;margin-bottom: 10px;">
+                                    <h4 class="mt-10 mb-10">English</h4>
+                                    <p class="mt-10 mb-10">
                                         {% if institution %}
                                             {{ institution.institution_name }}
                                         {% elif researcher %}
@@ -164,7 +164,7 @@
                             {% for tklabel in labels.tk_labels %}
                                 {% if not lang or lang == 'en' %}
                                     {% if tklabel.language_tag == 'en' %}
-                                        <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
                                                 <img 
                                                     loading="lazy" 
@@ -185,9 +185,9 @@
                                                     <h4>{{ tklabel.name }}</h4>
                                                 
                                                 {% elif layout == "3" %}
-                                                    <h3 style="margin-top: 0;margin-bottom: 0;">{{ tklabel.name }}</h3>
-                                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
-                                                    <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                                    <h3 class="mt-0 mb-0">{{ tklabel.name }}</h3>
+                                                    <h4 class="mt-10 mb-10">English</h4>
+                                                    <p class="mt-10 mb-10">{{ tklabel.label_text}}</p>
                                                 {% endif %}
                                             </div>
 
@@ -195,7 +195,7 @@
                                     {% endif %}
 
                                 {% elif lang == tklabel.language_tag %}
-                                    <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                    <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
                                             <img 
                                                 loading="lazy" 
@@ -216,9 +216,9 @@
                                                 <h4>{{ tklabel.name }}</h4>
                                             
                                             {% elif layout == "3" %}
-                                                <h3 style="margin-top: 0;margin-bottom: 0;">{{ tklabel.name }}</h3>
-                                                <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.language }}</h4>
-                                                <p style="margin-top: 10px;margin-bottom: 10px;">{{ tklabel.label_text}}</p>
+                                                <h3 class="mt-0  mb-0">{{ tklabel.name }}</h3>
+                                                <h4 class="mt-10 mb-10">{{ tklabel.language }}</h4>
+                                                <p class="mt-10 mb-10">{{ tklabel.label_text}}</p>
                                             {% endif %}
                                         </div>
 
@@ -227,7 +227,7 @@
                                 {% else %}
                                     {% for translation in tklabel.tklabel_translation.all %}
                                         {% if lang == translation.language_tag %}
-                                            <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
                                                     <img 
                                                         loading="lazy" 
@@ -248,9 +248,9 @@
                                                         <h4>{{ translation.translated_name }}</h4>
 
                                                     {% elif layout == "3" %}
-                                                        <h3 style="margin-top: 0;margin-bottom: 0;">{{ translation.translated_name }}</h3>
-                                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
-                                                        <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                        <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
+                                                        <h4 class="mt-10 mb-10">{{ translation.language }}</h4>
+                                                        <p class="mt-10 mb-10">{{ translation.translated_text }}</p>
                                                     {% endif %}
                                                 </div>
 
@@ -264,7 +264,7 @@
                             {% for bclabel in labels.bc_labels %}
                                 {% if not lang or lang == 'en' %}
                                     {% if bclabel.language_tag == 'en' %}
-                                        <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                        <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
                                                 <img 
                                                     loading="lazy" 
@@ -285,9 +285,9 @@
                                                     <h4>{{ bclabel.name }}</h4>
                                                 
                                                 {% elif layout == "3" %}
-                                                    <h3 style="margin-top: 0;margin-bottom: 0;">{{ bclabel.name }}</h3>
-                                                    <h4 style="margin-top: 10px;margin-bottom: 10px;">English</h4>
-                                                    <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                                    <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
+                                                    <h4 class="mt-10 mb-10">English</h4>
+                                                    <p class="mt-10 mb-10">{{ bclabel.label_text}}</p>
                                                 {% endif %}
                                             </div>
 
@@ -295,7 +295,7 @@
                                     {% endif %}
 
                                 {% elif lang == bclabel.language_tag %}
-                                    <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                    <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
                                             <img 
                                                 loading="lazy" 
@@ -316,9 +316,9 @@
                                                 <h4>{{ bclabel.name }}</h4>
                                             
                                             {% elif layout == "3" %}
-                                                <h3 style="margin-top: 0;margin-bottom: 0;">{{ bclabel.name }}</h3>
-                                                <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.language }}</h4>
-                                                <p style="margin-top: 10px;margin-bottom: 10px;">{{ bclabel.label_text}}</p>
+                                                <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
+                                                <h4 class="mt-10 mb-10">{{ bclabel.language }}</h4>
+                                                <p class="mt-10 mb-10">{{ bclabel.label_text}}</p>
                                             {% endif %}
                                         </div>
 
@@ -327,7 +327,7 @@
                                 {% else %}
                                     {% for translation in bclabel.bclabel_translation.all %}
                                         {% if lang == translation.language_tag %}
-                                            <div id="label" class="margin-top-8 margin-bottom-8 margin-left-8 margin-right-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
+                                            <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
                                                     <img 
                                                         loading="lazy" 
@@ -348,9 +348,9 @@
                                                         <h4>{{ translation.translated_name }}</h4>
 
                                                     {% elif layout == "3" %}
-                                                        <h3 style="margin-top: 0;margin-bottom: 0;">{{ translation.translated_name }}</h3>
-                                                        <h4 style="margin-top: 10px;margin-bottom: 10px;">{{ translation.language }}</h4>
-                                                        <p style="margin-top: 10px;margin-bottom: 10px;">{{ translation.translated_text }}</p>
+                                                        <h3 class="mt-0 mb-0">{{ translation.translated_name }}</h3>
+                                                        <h4 class="mt-10 mb-10">{{ translation.language }}</h4>
+                                                        <p class="mt-10 mb-10">{{ translation.translated_text }}</p>
                                                     {% endif %}
                                                 </div>
 
@@ -368,7 +368,7 @@
 
             <!-- Logo and Page Link -->
             <div class="flex-this w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
-                <div class="margin-left-8 margin-right-8 auto-margin" style="display: inherit;">
+                <div class="ml-8 mr-8 m-auto" style="display: inherit;">
                     <a 
                         href="https://localcontexts.org" 
                         style="display: inline-flex;">
@@ -379,7 +379,7 @@
                         >
                     </a>
                 </div>
-                <div class="font-size-14 align-center flex-this margin-right-8">
+                <div class="font-size-14 align-center flex-this mr-8">
                     <a 
                         class="darkteal-text underline-hover bold pointer" 
                         href="{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif project %}{{project.project_page}}{% endif %}" 

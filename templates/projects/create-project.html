@@ -1,5 +1,9 @@
 {% load static %} {% block content %}
-
+        <style>
+            #share-boundary-publicly-wrapper{
+                display: none;
+            }
+        </style>
         <div class="content-card-v2 content-card-space">
             <div>
                 <small class="bold">
@@ -24,12 +28,12 @@
                 </small>
             </div>
             {% if '/edit-project/' in request.path %}
-                <h2 class="no-bottom-margin">Edit a Local Contexts Project</h2>
+                <h2 class="mb-0">Edit a Local Contexts Project</h2>
                 <p class="w-90">
                     A project describes the context where a Notice or Label is being applied. Project creators can edit a Local Contexts Project. Project contributors will receive a notification that the Project has been edited.
                 </p>
             {% else %}
-                <h2 class="no-bottom-margin">Create a Local Contexts Project</h2>
+                <h2 class="mb-0">Create a Local Contexts Project</h2>
                 <p class="w-90">
                     {% if researcher or institution %}
                         The first step for institutions and researchers to generate Notices is to create a Project within the Local Contexts Hub. 
@@ -118,14 +122,14 @@
                 </span>
             </div>
             <div class="w-50 flex-this">
-                <div class="w-50 margin-bottom-16 margin-right-8">
+                <div class="w-50 mb-16 mr-8">
                     {{ form.project_type }}<br>
                     {% if form.project_type.errors %}
                         <div class="msg-red w-50"><small>{{ form.project_type.errors.as_text }}</small></div>
                     {% endif %}
                 </div>
 
-                <div id="otherTypeField" class="w-50 margin-bottom-16 hide">
+                <div id="otherTypeField" class="w-50 mb-16 hide">
                     {{ form.other_type }}<br>
                     {% if form.other_type.errors %}
                         <div class="msg-red w-50"><small>{{ form.other_type.errors.as_text }}</small></div>
@@ -171,8 +175,8 @@
                 </div>
                 <br>
 
-                <div class="flex-this margin-top-8 margin-bottom-16">
-                    <textarea id="projectLinksInput" class="w-100 block margin-right-8" rows="1"></textarea>
+                <div class="flex-this mt-8 mb-16">
+                    <textarea id="projectLinksInput" class="w-100 block mr-8" rows="1"></textarea>
                     <div id="addProjectUrlBtn" class="add-square-btn pointer">
                         <span>+</span>
                     </div>
@@ -181,10 +185,10 @@
                 <ul id="projectLinksUl" class="ul-no-bullets ul-no-padding">
                     {% if urls %}
                         {% for url in urls %}
-                            <li id="{{ url }}" class="margin-bottom-8 show">
+                            <li id="{{ url }}" class="mb-8 show">
                                 <div class="grey-chip flex-this row space-between">
                                     <div><p class="center-name word-break">{{ url }}</p></div>
-                                    <div id="btn-{{ url }}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
+                                    <div id="btn-{{ url }}" class="removeProjectUrlBtn pointer ml-8">&times;</div>
                                 </div>
                                 <input type="hidden" value="{{ url }}" name="project_urls">                        
                             </li>
@@ -286,11 +290,23 @@
             </div>
         </div>
 
+        <!-- Project Boundary -->
+        <div class="content-card-v2 content-card-space">
+            <h3>Project Boundary</h3>
+
+            <div class="mb-1p mt-1p w-80">
+                {% with entity=project %}
+                    {% include 'boundary/show-remove-preexisting.html' %}
+                    {% include 'boundary/update-boundary-via-native-land-and-shapefile.html' with create_mode=True %}
+                {%  endwith %}
+            </div>
+        </div>
+
         <!-- Project Visibility/Privacy -->
         <div class="content-card-v2 content-card-space">
             <h3>Visibility</h3>
 
-            <div class="margin-bottom-1 margin-top-1 w-80">
+            <div class="mb-1p mt-1p w-80">
                 {{ form.project_privacy.label }}* 
                 <div class="tooltip"><strong>?</strong>
                     <span class="tooltiptext">
@@ -315,10 +331,10 @@
                 <br> 
 
                 {% for value, label in form.project_privacy.field.choices %}
-                    <div class="margin-bottom-8">
+                    <div class="mb-8">
                         <label for="privacy_{{ value }}">
                             <div class="flex-this">
-                                <div class="margin-right-16">
+                                <div class="mr-16">
                                     <input 
                                         id="privacy_{{ value }}"
                                         type="radio" 
@@ -340,7 +356,7 @@
                 {% endif %}
             </div>
 
-            <button id="submitProjectBtn" class="primary-btn action-btn margin-top-2">Save Project</button>
+            <button id="submitProjectBtn" class="primary-btn action-btn mt-2p">Save Project</button>
         </div>
     </form>
 

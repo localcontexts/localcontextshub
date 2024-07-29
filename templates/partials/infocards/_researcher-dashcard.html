@@ -19,7 +19,7 @@
                 <div class="flex-this w-30 flex-end">
                     {% include 'snippets/notifications.html' with scope=researcher %}
 
-                    <div class="margin-left-8"><a href="{% url 'update-researcher' researcher.id %}" class="darkteal-text primary-btn white-btn">Settings <i class="fa fa-cog" aria-hidden="true"></i></a></div>
+                    <div class="ml-8"><a href="{% url 'update-researcher' researcher.id %}" class="darkteal-text primary-btn white-btn">Settings <i class="fa fa-cog" aria-hidden="true"></i></a></div>
                 </div>
             {% endif %}
             
@@ -87,20 +87,20 @@
                 </div>
             </div>
             <!-- Count cards -->
-            <div class="flex-this column stats-card-container bold no-right-margin">
+            <div class="flex-this column stats-card-container bold mr-0">
 
                 <!-- Count of Labels applied to researcher projects -->
                 {% get_labels_count researcher as total_labels %}
                 <div class="stats-card flex-this flex-start">
                     <div><p>{% if total_labels < 10 %} 0{{ total_labels }} {% else %} {{ total_labels }} {% endif %}</p></div>
-                    <div class="margin-left-16"><span>Labels</span></div>
+                    <div class="ml-16"><span>Labels</span></div>
                 </div>
 
                 <!-- Count of notices placed by researcher -->
                 {% get_notices_count researcher as total_notices %}
                 <div class="stats-card flex-this flex-start">
                     <div><p>{% if total_notices < 10 %} 0{{ total_notices }} {% else %} {{ total_notices }} {% endif %}</p></div>
-                    <div class="margin-left-16"><span>Notices</span></div>
+                    <div class="ml-16"><span>Notices</span></div>
                 </div>
     
                 <div class="stats-card flex-this flex-start">
@@ -110,7 +110,7 @@
                             {% if connect_count < 10 %}0{{ connect_count }}{% else %}{{ connect_count }}{% endif %}
                         </p>
                     </div>
-                    <div class="margin-left-16">
+                    <div class="ml-16">
                         <span>Connections</span>
                     </div>
                 </div>

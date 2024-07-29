@@ -3,13 +3,13 @@
     <div class="flex-this column w-100">
         <div class="flex-this space-between">
             <div>
-                <h2 class="margin-bottom-2">
+                <h2 class="mb-2p">
                     {% if community %}Community {% endif %}
                     {% if institution %}Institution {% endif %}
                     Account
                 </h2>
             </div>
-            <div class="margin-top-16">Or <a class="default-a" href="{% url 'select-account' %}">choose another account</a></div>
+            <div class="mt-16">Or <a class="default-a" href="{% url 'select-account' %}">choose another account</a></div>
         </div>
         <p class="w-90">
             Search the registry of {% if community %} communities {% endif %}{% if institution %} institutions {% endif %} that have accounts on the Local Contexts Hub. 
@@ -51,7 +51,7 @@
         {% endif %}
      </div>
 
-     <div class="flex-this space-between margin-top-1">
+     <div class="flex-this space-between mt-1p">
          <div>
              <a 
                 class="default-a" 
@@ -67,8 +67,8 @@
             </a>
         </div>
         <div class="flex-this">
-            <div class="margin-right-16 flex-this align-center"><small class="block"><a href="{% url 'dashboard' %}" class="default-a">Skip this for now</a></small></div>
-            <div><button id="openJoinRequestModalBtn" class="primary-btn action-btn margin-top-2 ">Next <i class="fa fa-arrow-right"></i></button></div>
+            <div class="mr-16 flex-this align-center"><small class="block"><a href="{% url 'dashboard' %}" class="default-a">Skip this for now</a></small></div>
+            <div><button id="openJoinRequestModalBtn" class="primary-btn action-btn mt-2p ">Next <i class="fa fa-arrow-right"></i></button></div>
         </div>
      </div>
 
@@ -82,8 +82,8 @@
 
         <div class="flex-this space-between">
             <div class="flex-this">
-                <h2 class="primary-black-text no-top-margin">Request to join</h2>
-                <div class="tooltip" style="margin-top: 7px; margin-left: 5px;"><strong>i</strong>
+                <h2 class="primary-black-text mt-0">Request to join</h2>
+                <div class="tooltip ml-5" style="margin-top: 7px;"><strong>i</strong>
                     <span class="tooltiptext">
                         <strong>You should request to join community and institution accounts you are already affiliated with. </strong> <br><br>
                         If you wish to collaborate with a community or institution you are not affiliated with, you will connect with them through Projects. You do not need to join their account.
@@ -97,7 +97,7 @@
 
         <div class="w-100">
             <div>
-                <p class="no-top-margin">Every account has various responsibilities within the community.<br>
+                <p class="mt-0">Every account has various responsibilities within the community.<br>
                     <strong>Administrator:</strong> responsible for adding, editing and removing members<br>
                     <strong>Editor:</strong> responsible for customizing Labels and Projects<br>
                     <strong>Viewer:</strong> can view activity happening on the hub
@@ -109,7 +109,7 @@
                 <input id="hidden-target-input" type="hidden" value="" name="organization_name">
 
                 <div class="flex-this column w-100">
-                    <div class="margin-top-8">
+                    <div class="mt-8">
                         <label>Requested Responsibility</label><br>
                         {{ form.role }}
                         {% if form.role.errors %}
@@ -117,7 +117,7 @@
                         {% endif %}
                     </div>
                     
-                    <div class="margin-top-8">
+                    <div class="mt-8">
                         <label>Send a message with this request</label><br>
                         {{ form.message }}
                         {% if form.message.errors %}
@@ -127,11 +127,11 @@
                 </div>
 
                 <div class="flex-this space-between w-100">
-                    <p class="w-70 no-top-margin">
+                    <p class="w-70 mt-0">
                         <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
                     </p>
                     <div>
-                        <button class="primary-btn action-btn margin-top-2">Send request</button>
+                        <button class="primary-btn action-btn mt-2p">Send request</button>
                     </div>                    
                 </div>
 
