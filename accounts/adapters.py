@@ -1,6 +1,6 @@
+from allauth.account import signals
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.account import signals
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect

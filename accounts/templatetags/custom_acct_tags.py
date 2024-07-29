@@ -1,9 +1,10 @@
 from django import template
+from django.db.models import Q
+
+from accounts.utils import get_users_name
 from communities.models import Community, JoinRequest
 from institutions.models import Institution
-from accounts.utils import get_users_name
 from researchers.models import Researcher
-from django.db.models import Q
 
 register = template.Library()
 

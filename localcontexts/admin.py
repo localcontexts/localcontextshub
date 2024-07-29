@@ -1,46 +1,47 @@
+import calendar
 import csv
 import itertools
-import calendar
 from datetime import datetime, timedelta, timezone
-from django.db import models
-from django.db.models.functions import Extract, Concat
-from django.db.models import Count, Q, Value, F, CharField, Case, When
-from django.contrib import admin
-from django.urls import path
-from django.utils.translation import gettext as _
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+
 from django.apps import apps
-from django.template.response import TemplateResponse
+from django.contrib import admin
+from django.contrib.admin.widgets import AdminFileWidget
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
+from django.db import models
+from django.db.models import Case, CharField, Count, F, Q, Value, When
+from django.db.models.functions import Concat, Extract
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
+from django.template.response import TemplateResponse
+from django.urls import path
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
+from django_apscheduler.models import DjangoJob, DjangoJobExecution
+from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
 
 import helpers
-from accounts.models import Profile, UserAffiliation, SignUpInvitation
-from django_apscheduler.models import DjangoJob, DjangoJobExecution
+from accounts.models import (InactiveUser, Profile, SignUpInvitation, UserAffiliation)
 from accounts.utils import get_users_name
-from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
-from django.contrib.auth.models import Group, User
-from django.contrib.admin.widgets import AdminFileWidget
-
 from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
-from communities.models import InviteMember, JoinRequest, Community
-from helpers.models import OpenToCollaborateNoticeURL, LabelVersion, \
-    LabelTranslation, ProjectStatus, Notice, \
-    LabelTranslationVersion, EntitiesNotified, NoticeDownloadTracker, \
-    CollectionsCareNoticePolicy, NoticeTranslation
+from communities.models import Community, InviteMember, JoinRequest
+from helpers.models import (
+    CollectionsCareNoticePolicy, EntitiesNotified, LabelTranslation, LabelTranslationVersion,
+    LabelVersion, Notice, NoticeDownloadTracker, NoticeTranslation, OpenToCollaborateNoticeURL,
+    ProjectStatus
+)
 from institutions.models import Institution
+from notifications.models import ActionNotification, UserNotification
 from projects.forms import ProjectModelForm
-from projects.models import Project, ProjectCreator, ProjectContributors, \
-    ProjectPerson, ProjectActivity, ProjectNote, \
-    ProjectArchived
-from researchers.utils import is_user_researcher
-from notifications.models import UserNotification, ActionNotification
+from projects.models import (
+    Project, ProjectActivity, ProjectArchived, ProjectContributors, ProjectCreator, ProjectNote,
+    ProjectPerson
+)
 from researchers.models import Researcher
+from researchers.utils import is_user_researcher
 from tklabels.models import TKLabel
-from accounts.models import InactiveUser
 
 
 # ADMIN HOMEPAGE

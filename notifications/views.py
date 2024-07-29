@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from notifications.models import UserNotification, ActionNotification
+from notifications.models import ActionNotification, UserNotification
 
 
 @login_required(login_url='login')

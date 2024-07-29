@@ -1,11 +1,10 @@
-from django.utils.http import url_has_allowed_host_and_scheme
-
 from django.conf import settings
+from django.utils.http import url_has_allowed_host_and_scheme
+from unidecode import unidecode
 
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
-from unidecode import unidecode
 
 
 def get_users_name(user):

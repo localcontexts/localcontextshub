@@ -1,8 +1,9 @@
 from django import template
-from notifications.models import UserNotification, ActionNotification
 from django.contrib.auth.models import User
+
 from communities.models import Community
 from institutions.models import Institution
+from notifications.models import ActionNotification, UserNotification
 from researchers.models import Researcher
 
 register = template.Library()

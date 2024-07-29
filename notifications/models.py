@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher

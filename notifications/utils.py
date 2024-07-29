@@ -1,11 +1,12 @@
-from .models import ActionNotification, UserNotification
+from accounts.utils import get_users_name
+from bclabels.models import BCLabel
 from communities.models import Community
+from helpers.models import HubActivity
 from institutions.models import Institution
 from researchers.models import Researcher
-from helpers.models import HubActivity
-from bclabels.models import BCLabel
 from tklabels.models import TKLabel
-from accounts.utils import get_users_name
+
+from .models import ActionNotification, UserNotification
 
 
 def send_simple_action_notification(sender, target_org, title, notification_type, reference_id):
