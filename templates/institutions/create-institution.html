@@ -19,17 +19,10 @@
             <label for="institution_name">Institution Name</label>
             {{ form.institution_name }}
             <div id="suggestionsContainer"></div>
-            <div class="w-100 margin-top-1">
-                {% if form.errors %}
-                    {% for field_name, errors in form.errors.items %}
-                        <div class="red-text">
-                            {% for error in errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
+
+            {% if form.institution_name.errors %}
+                <div class="msg-red w-50"><small>{{ form.institution_name.errors.as_text }}</small></div>
+            {% endif %}
         </div>
         <div>
             <p class="blue-highlight">These institutions come from <a class="default-a" href="https://ror.org/" target="_blank" rel="noopener">ROR <i class="fa-regular fa-arrow-up-right-from-square fa-2xs"></i></a>. If your institution is not listed here, <a href="{% url 'create-custom-institution' %}" class="default-a">fill out this form</a>.</p>
@@ -56,6 +49,9 @@
         <div class="margin-top-8">
             <label>Institution Website</label>
             {{ form.website }}
+            {% if form.website.errors %}
+                <div class="msg-red w-50"><small>{{ form.website.errors.as_text }}</small></div>
+            {% endif %}
         </div>
 
         <div class="w-100">
@@ -67,6 +63,10 @@
 
                 <br>
                 {{ form.description }}
+
+                {% if form.description.errors %}
+                    <div class="msg-red w-50"><small>{{ form.description.errors.as_text }}</small></div>
+                {% endif %}
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
