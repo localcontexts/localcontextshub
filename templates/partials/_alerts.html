@@ -36,7 +36,6 @@
             padding: 20px !important;
         }
         .toast-message {
-            display:block !important;
             height: 40px;
             padding-right: 8px;
             margin-top: -12px;
@@ -53,14 +52,17 @@
             line-clamp: 2;
             -webkit-box-orient: vertical;
         }
-        .toast-message::first-letter {
-            text-transform: uppercase;
-        }
         #toast-container>div {
             padding: 15px 15px 15px 40px;
         }
     </style>
 <script>
+function capitalizeFirstLetter(string) {
+    if(!string){
+      return string
+    }
+    return string[0].toUpperCase() + string.slice(1);
+}
 document.addEventListener("DOMContentLoaded", function(event) {
   toastr.options = {
     "closeButton": true,
@@ -91,13 +93,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   {% for message in messages %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-      toastr.error("{{ message }}")
+      toastr.error(
+        capitalizeFirstLetter("{{ message }}")
+      )
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-      toastr.info("{{ message }}")
+      toastr.info(
+        capitalizeFirstLetter("{{ message }}")
+      )
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-      toastr.success("{{ message }}")
+      toastr.success(
+        capitalizeFirstLetter("{{ message }}")
+      )
     {% endif %}
   {% endfor %}
 })
