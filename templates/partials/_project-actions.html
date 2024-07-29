@@ -599,16 +599,13 @@
                                 class="block a-disabled"
                             {% else %}
                                 class="block"
-                            {% endif %}
-
-                            {% if community %}
-                                href="{% url 'edit-project' community.id project.unique_id %}"
-                            {% endif %}
-                            {% if institution %}
-                                href="{% url 'inst-edit-project' institution.id project.unique_id %}"
-                            {% endif %}
-                            {% if researcher %}
-                                href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
+                                {% if community %}
+                                    href="{% url 'edit-project' community.id project.unique_id %}"
+                                {% elif institution %}
+                                    href="{% url 'inst-edit-project' institution.id project.unique_id %}"
+                                {% elif researcher %}
+                                    href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
+                                {% endif %}
                             {% endif %}
                         >
                             <i class="fa-solid fa-pen-to-square"></i> Edit Project
@@ -623,21 +620,19 @@
                     {% endif %}
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
-                            <a 
-                                class="block 
-                                    {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %} 
-                                        a-disabled
-                                    {% endif %}"
-                                {% if community %}
-                                    href="{% url 'community-create-project' community.id project.unique_id %}"
+                            <a
+                                {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
+                                    class="block a-disabled"
+                                {% else %}
+                                    class="block"
+                                    {% if community %}
+                                        href="{% url 'community-create-project' community.id project.unique_id %}"
+                                    {% elif institution %}
+                                        href="{% url 'inst-create-project' institution.id project.unique_id %}"
+                                    {% elif researcher %}
+                                        href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
+                                    {% endif %}
                                 {% endif %}
-                                {% if institution %}
-                                    href="{% url 'inst-create-project' institution.id project.unique_id %}"
-                                {% endif %}
-                                {% if researcher %}
-                                    href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
-                                {% endif %}
-
                             >
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
                                 {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
