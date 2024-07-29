@@ -36,6 +36,7 @@
             padding: 20px !important;
         }
         .toast-message {
+            display:block !important;
             height: 40px;
             padding-right: 8px;
             margin-top: -12px;
@@ -51,6 +52,9 @@
             -webkit-line-clamp: 2;
             line-clamp: 2;
             -webkit-box-orient: vertical;
+        }
+        .toast-message::first-letter {
+            text-transform: uppercase;
         }
         #toast-container>div {
             padding: 15px 15px 15px 40px;
