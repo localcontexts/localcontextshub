@@ -17,7 +17,6 @@
         #toast-container .toast{
             display: block;
             width: 380px;
-            height: 64px;
             padding-top: 25px;
         }
         #toast-container> .fa-circle-info , .toast {
@@ -36,20 +35,20 @@
             padding: 20px !important;
         }
         .toast-message {
-            height: 40px;
             padding-right: 8px;
             margin-top: -12px;
             margin-right: 38px;
             border-right: solid 1px;
             border-right-color: rgba(255,255,255,.8);
-            max-height: 3.2em;
+            min-height: 64px;
+            max-height: 8em;
             line-height: 1.6em;
             font-size: 12px;
 
             overflow: hidden;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
+            -webkit-line-clamp: 5;
+            line-clamp: 5;
             -webkit-box-orient: vertical;
         }
         #toast-container>div {
