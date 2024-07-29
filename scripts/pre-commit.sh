@@ -2,6 +2,7 @@
 
 echo 'FORMATTING PYTHON FILES'
 # this makes eligible files PEP8 compliant automatically
+isort accounts notifications localcontexts
 yapf --recursive -i accounts notifications localcontexts
 echo 'FORMATTING PYTHON FILES: COMPLETED'
 
