@@ -1,26 +1,29 @@
 {% load static %}
 <div class="dashcard">
-    <div class="flex-this">
-        <div class="dashcard-img-container">
-            <img loading="lazy" 
-                class="profile-img" 
-                src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
-                alt="{{ institution.institution_name }} image"
-            >
-        </div>
-        <div class="flex-this column dashcard-text-container">
-            <div><h3 class="dashcard-h3 darkteal-text">
-                {{ institution }}
-            </h3></div>
-            <div>
-                <p class="dashcard-subheader">
-                    Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | 
-                    Location: {{ institution.get_location }}
-                </p>
+    <div class="flex-this space-between">
+        
+        <div class="flex-this">
+            <div class="dashcard-img-container">
+                <img loading="lazy" 
+                    class="profile-img" 
+                    src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
+                    alt="{{ institution.institution_name }} image"
+                >
             </div>
-            <div><p class="dashcard-description description-sm">
-                {% if institution.description %}{{ institution.description }} {% else %} No description provided. {% endif %}
-            </p></div>
+            <div class="flex-this column dashcard-text-container">
+                <div><h3 class="dashcard-h3 darkteal-text">
+                    {{ institution }}
+                </h3></div>
+                <div>
+                    <p class="dashcard-subheader">
+                        Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | 
+                        Location: {{ institution.get_location }}
+                    </p>
+                </div>
+                <div><p class="dashcard-description description-sm">
+                    {% if institution.description %}{{ institution.description }} {% else %} No description provided. {% endif %}
+                </p></div>
+            </div>            
         </div>
 
         <div class="dashcard-btn-container">
@@ -42,8 +45,8 @@
                     </div>
                 {% endif %}
 
-                <div>
-                    {% if '/dashboard/' in request.path %}
+                {% if '/dashboard/' in request.path %}
+                    <div>
                         {% if institution_projects %}
                             {% if request.user in institution.get_distinct_creators  %}
                                 <a 
@@ -62,9 +65,8 @@
                                 href="{% url 'institution-notices' institution.id %}"
                             >View account</a>
                         {% endif %}
-                    {% endif %}
-                </div>
-                {% if '/dashboard/' in request.path %}
+                    </div>
+
                     <div class="ml-8 flex-this gap-half">
                         <!-- Notification -->
                         {% include 'snippets/notifications.html' with scope=institution %}
@@ -75,7 +77,9 @@
                             </div>
                         {% endif %}
                     </div>
+
                 {% endif %}
+
             </div>
 
         </div>
