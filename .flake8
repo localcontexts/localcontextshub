@@ -16,8 +16,10 @@ exclude =
     communities/
     helpers
     institutions/
+    notifications/
     localcontexts/
     projects/
     tklabels/
     researchers/
     backups/
+    

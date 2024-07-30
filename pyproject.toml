@@ -14,3 +14,12 @@ ignore_patterns = [
     'tests/*',
     'manage.py'
 ]
+
+[tool.isort]
+skip_glob = [
+    '*/apps.py',
+    'localcontexts/settings.py',
+    '*/migrations/*',
+    'tests/*',
+    'manage.py'
+]
