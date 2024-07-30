@@ -1024,7 +1024,7 @@ class HubActivityAdmin(admin.ModelAdmin):
             action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) applied Notices to Project: {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
 
         elif obj.action_type == 'Engagement Notice Added':
-            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/projects/project/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
+            action_message = format_html('<a href="/admin/admin/userprofile/{}/change/">{}</a> (<a href="/admin/{}/{}/change/">{}</a>) added an OTC Notice for {} <a href="/admin/admin/otclinks/{}/change/" title="View Admin Page"><i class="fa-solid fa-user-gear"></i></a> | <a href="{}" target="_blank" title="View External Page"><i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>', obj.action_user_id, user_name, account_link, account_id, account_name, project_name, obj.project_id, project_url)
 
         return action_message
         
