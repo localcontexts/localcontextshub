@@ -264,10 +264,11 @@
                                     <span class="italic" style="font-size: 20px">
                                         <a
                                            href="{{project.source_of_boundary}}"
-                                           class="default-a" target="_blank" rel="noopener">
+                                           class="default-a" target="_blank" rel="noopener"
+                                           style="font-weight: unset; display: block; margin-bottom: 8px;">
                                             {{ project.name_of_boundary }}
                                             <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
-                                        </a><br><br>
+                                        </a>
                                     </span>
                                 {% endif %}
                                 <iframe src="{% url 'project-boundary-view' project.id %}" data-testid="project-boundary-iframe"
