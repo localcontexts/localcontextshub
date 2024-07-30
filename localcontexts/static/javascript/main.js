@@ -42,27 +42,37 @@ if (window.location.href.includes('sandbox.localcontextshub')) {
     }
 }
 
-if (window.location.href.includes('create-community') || window.location.href.includes('create-institution') || window.location.href.includes('connect-researcher') ) {
-    let textArea = document.getElementById('id_description')
-    let characterCounter = document.getElementById('charCount')
-    const maxNumOfChars = 200
+document.addEventListener('DOMContentLoaded', () => {
+    const initializeCharacterCounter = (textAreaId, counterId, maxChars) => {
+        let textArea = document.getElementById(textAreaId);
+        let characterCounter = document.getElementById(counterId);
 
-    const countCharacters = () => {
-        let numOfEnteredChars = textArea.value.length
-        let counter = maxNumOfChars - numOfEnteredChars
-        characterCounter.textContent = counter + '/200'
+        const countCharacters = () => {
+            let numOfEnteredChars = textArea.value.length;
+            let counter = maxChars - numOfEnteredChars;
+            characterCounter.textContent = counter + '/' + maxChars;
 
-        if (counter < 0) {
-            characterCounter.style.color = 'red'
-        } else if (counter < 50) {
-            characterCounter.style.color = '#EF6C00'
-        } else {
-            characterCounter.style.color = 'black'
-        }
+            if (counter < 0) {
+                characterCounter.style.color = 'red';
+            } else if (counter < 50) {
+                characterCounter.style.color = '#EF6C00';
+            } else {
+                characterCounter.style.color = 'black';
+            }
+        };
+
+        countCharacters();
+        textArea.addEventListener('input', countCharacters);
+    };
+
+    const url = window.location.href;
+    const createPages = ['create-community', 'create-institution', 'connect-researcher'];
+    const updatePages = ['communities/update', 'institutions/update', 'researchers/update'];
+
+    if (createPages.some(page => url.includes(page)) || updatePages.some(page => url.includes(page))) {
+        initializeCharacterCounter('id_description', 'charCount', 200);
     }
-
-    textArea.addEventListener('input', countCharacters)
-}
+});
 
 // Get languages from the IANA directory
 function fetchLanguages() {
