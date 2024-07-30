@@ -56,12 +56,6 @@
         }
     </style>
 <script>
-function capitalizeFirstLetter(string) {
-    if(!string){
-      return string
-    }
-    return string[0].toUpperCase() + string.slice(1);
-}
 document.addEventListener("DOMContentLoaded", function(event) {
   toastr.options = {
     "closeButton": true,
@@ -92,19 +86,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   {% for message in messages %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-      toastr.error(
-        capitalizeFirstLetter("{{ message }}")
-      )
+      toastr.error("{{ message }}")
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-      toastr.info(
-        capitalizeFirstLetter("{{ message }}")
-      )
+      toastr.info("{{ message }}")
     {% endif %}
     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-      toastr.success(
-        capitalizeFirstLetter("{{ message }}")
-      )
+      toastr.success("{{ message }}")
     {% endif %}
   {% endfor %}
 })
