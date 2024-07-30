@@ -1,8 +1,8 @@
 # Captcha validation imports
 import urllib
-
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.views import ConnectionsView, SignupView
+
 # For emails
 from django.conf import settings
 from django.contrib import auth, messages
@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (PasswordChangeForm, PasswordResetView, SetPasswordForm)
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import serializers
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
@@ -23,40 +24,14 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from maintenance_mode.decorators import force_maintenance_mode_off
-
-from allauth.socialaccount.views import SignupView, ConnectionsView
-from allauth.socialaccount.models import SocialAccount
-from django.core import serializers
-
 from unidecode import unidecode
 
-from communities.models import Community, InviteMember
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
     send_invite_user_email, send_welcome_email, unsubscribe_from_mailing_list
 )
-from helpers.models import HubActivity
-from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
-from institutions.models import Institution
-from localcontexts.utils import dev_prod_or_local
-from projects.models import Project
-from researchers.models import Researcher
-from .decorators import unauthenticated_user, zero_account_user
 
-from communities.models import InviteMember, Community
-from helpers.models import HubActivity
-from projects.models import Project
-
-from researchers.utils import is_user_researcher
-from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
-
-from helpers.emails import (
-    send_activation_email, generate_token, resend_activation_email,
-    send_welcome_email, send_email_verification, send_invite_user_email,
-    add_to_newsletter_mailing_list, get_newsletter_member_info, unsubscribe_from_mailing_list,
-)
-from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from .forms import (
     RegistrationForm, ResendEmailActivationForm, CustomPasswordResetForm, UserCreateProfileForm,
     ProfileCreationForm, UserUpdateForm, ProfileUpdateForm, SignUpInvitationForm,
@@ -67,14 +42,18 @@ from .utils import (
     get_next_path, get_users_name, return_registry_accounts, manage_mailing_list,
     institute_account_subscription,
 )
+from localcontexts.utils import dev_prod_or_local
+from researchers.utils import is_user_researcher
+from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
 
-from .decorators import unauthenticated_user
-from .forms import (
-    CustomPasswordResetForm, ProfileCreationForm, ProfileUpdateForm, RegistrationForm,
-    ResendEmailActivationForm, SignUpInvitationForm, UserCreateProfileForm, UserUpdateForm
-)
-from .models import Profile, SignUpInvitation, UserAffiliation
-from .utils import (get_next_path, get_users_name, manage_mailing_list, return_registry_accounts)
+from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
+from helpers.models import HubActivity
+from projects.models import Project
+from communities.models import InviteMember, Community
+from institutions.models import Institution
+from researchers.models import Researcher
+
+from .decorators import unauthenticated_user, zero_account_user
 
 
 @unauthenticated_user
