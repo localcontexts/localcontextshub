@@ -1,19 +1,19 @@
 from django import forms
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from .models import Profile, SignUpInvitation
-from helpers.emails import send_password_reset_email
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import gettext_lazy as _
+
+from helpers.emails import send_password_reset_email
+
+from .models import Profile, SignUpInvitation
 
 
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True,
-                             max_length=150,
-                             help_text='Required')
+    email = forms.EmailField(required=True, max_length=150, help_text='Required')
 
     class Meta:
         model = User
@@ -68,10 +68,7 @@ class ProfileCreationForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = [
-            'position', 'affiliation', 'city_town', 'state_province_region',
-            'country'
-        ]
+        fields = ['position', 'affiliation', 'city_town', 'state_province_region', 'country']
         widgets = {
             'position': forms.TextInput(attrs={'style': 'width: 100%;'}),
             'affiliation': forms.TextInput(attrs={'class': 'w-100'}),
@@ -85,8 +82,8 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = [
-            'position', 'affiliation', 'preferred_language',
-            'languages_spoken', 'city_town', 'state_province_region', 'country'
+            'position', 'affiliation', 'preferred_language', 'languages_spoken', 'city_town',
+            'state_province_region', 'country'
         ]
         widgets = {
             'position': forms.TextInput(attrs={'class': 'w-100'}),
@@ -105,7 +102,8 @@ class ResendEmailActivationForm(forms.Form):
         widget=forms.EmailInput(attrs={
             'class': 'w-100',
             'placeholder': 'email@domain.com'
-        }))
+        })
+    )
 
 
 class SignUpInvitationForm(forms.ModelForm):
@@ -123,36 +121,43 @@ class SignUpInvitationForm(forms.ModelForm):
 
 
 class ContactOrganizationForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'w-100',
-        'autocomplete': 'off',
-    }))
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'w-100',
+            'autocomplete': 'off',
+        })
+    )
     email = forms.EmailField(
         label=_('Email Address'),
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'w-100',
             'placeholder': 'email@domain.com'
-        }))
-    message = forms.CharField(widget=forms.Textarea(attrs={
-        "rows": 4,
-        "cols": 65,
-        'class': 'w-100'
-    }))
+        })
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            "rows": 4,
+            "cols": 65,
+            'class': 'w-100'
+        })
+    )
 
 
 class CustomPasswordResetForm(PasswordResetForm):
 
-    def save(self,
-             domain_override=None,
-             subject_template_name='registration/password_reset_subject.txt',
-             email_template_name=None,
-             use_https=False,
-             token_generator=default_token_generator,
-             from_email=None,
-             request=None,
-             html_email_template_name=None,
-             extra_email_context=None):
+    def save(
+        self,
+        domain_override=None,
+        subject_template_name='registration/password_reset_subject.txt',
+        email_template_name=None,
+        use_https=False,
+        token_generator=default_token_generator,
+        from_email=None,
+        request=None,
+        html_email_template_name=None,
+        extra_email_context=None
+    ):
         """
         Generate a one-use only link for resetting password and send it to the
         user.
