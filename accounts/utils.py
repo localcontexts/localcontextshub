@@ -1,14 +1,13 @@
+from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
-from django.conf import settings
+from unidecode import unidecode
 from django.contrib import messages
 
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
-from unidecode import unidecode
 
 
 def get_users_name(user):
@@ -44,9 +43,7 @@ def manage_mailing_list(request, first_name, emailb64):
     return variables
 
 
-def return_registry_accounts(
-    community_accounts, researcher_accounts, institution_accounts
-):
+def return_registry_accounts(community_accounts, researcher_accounts, institution_accounts):
     combined_accounts = []
 
     if community_accounts is not None:
@@ -59,22 +56,11 @@ def return_registry_accounts(
         combined_accounts,
         key=lambda obj: (
             unidecode(obj.community_name.lower().strip())
-            if isinstance(obj, Community)
-            else (
-                unidecode(obj.institution_name.lower().strip())
-                if isinstance(obj, Institution)
-                else (
-                    unidecode(obj.user.first_name.lower().strip())
-                    if isinstance(obj, Researcher)
-                    and obj.user.first_name.strip()
-                    else (
-                        unidecode(obj.user.username.lower().strip())
-                        if isinstance(obj, Researcher)
-                        else ""
-                    )
-                )
-            )
-        ),
+            if isinstance(obj, Community) else unidecode(obj.institution_name.lower().strip())
+            if isinstance(obj, Institution) else unidecode(obj.user.first_name.lower().strip())
+            if isinstance(obj, Researcher) and obj.user.first_name.strip() else
+            unidecode(obj.user.username.lower().strip()) if isinstance(obj, Researcher) else ''
+        )
     )
 
     return cards
@@ -84,9 +70,7 @@ def get_next_path(request, default_path: str):
     next_path = request.POST.get("next")
 
     # validate next_path exists and is not an open redirect
-    if next_path and url_has_allowed_host_and_scheme(
-        next_path, settings.ALLOWED_HOSTS
-    ):
+    if next_path and url_has_allowed_host_and_scheme(next_path, settings.ALLOWED_HOSTS):
         return next_path
 
     return default_path

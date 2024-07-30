@@ -5,7 +5,8 @@ from maintenance_mode.backends import AbstractStateBackend
 
 
 class GCSDefaultStorageBackend(AbstractStateBackend):
-    """Effectively a copy of the `DefaultStorageBackend` with Gcloud-related content tweaks."""
+    """Effectively a copy of the `DefaultStorageBackend`
+    with Gcloud-related content tweaks."""
 
     def get_value(self) -> bool:
         """Retrieves the maintenance mode value using `default_storage`."""
@@ -24,9 +25,10 @@ class GCSDefaultStorageBackend(AbstractStateBackend):
     def set_value(self, value: bool):
         """Sets the maintenance mode value using `default_storage`.
 
-        Assuming we're using Gcloud as the default storage, encodes the maintenance mode value
-        as `bytes` in order to ensure better compatibility with Gcloud APIs (they operate over
-        `bytes` rather than `str`).
+        Assuming we're using Gcloud as the default storage,
+        encodes the maintenance mode value as `bytes` in
+        order to ensure better compatibility with Gcloud APIs
+        (they operate over `bytes` rather than `str`).
         """
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
         if default_storage.exists(filename):

@@ -121,11 +121,11 @@ def create_institution(request):
         if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": user_form.cleaned_data['first_name'],
-            "last_name": user_form.cleaned_data['last_name'],
-            "email": request.user._wrapped.email,
-            "account_type": "institution_account",
-            "organization_name": form.cleaned_data['institution_name'],
+                "first_name": user_form.cleaned_data['first_name'],
+                "last_name": user_form.cleaned_data['last_name'],
+                "email": request.user._wrapped.email,
+                "account_type": "institution_account",
+                "organization_name": form.cleaned_data['institution_name'],
             }
             
             mutable_post_data.update(subscription_data)
@@ -136,18 +136,12 @@ def create_institution(request):
                 return redirect('dashboard')
             else:
                 messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "Something went wrong. Please Try again later.",
+                    request, messages.ERROR, "Something went wrong. Please Try again later.",
                 )
                 return redirect('dashboard')
     return render(
-        request, 
-        "institutions/create-institution.html", 
-        {
-            "form": form, 
-            "subscription_form": subscription_form, 
-            "user_form": user_form,
+        request, "institutions/create-institution.html", {
+            "form": form, "subscription_form": subscription_form, "user_form": user_form,
         }
     )
 
