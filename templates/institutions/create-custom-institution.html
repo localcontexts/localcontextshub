@@ -14,11 +14,11 @@
 
 <div class="flex-this column account-registration-container">
     <div class="flex-this space-between">
-        <div><h2 class="no-top-margin margin-bottom-8">Institution Account</h2></div>
+        <div><h2 class="mt-0 mb-8">Institution Account</h2></div>
         <div>Or <a class="default-a" href="{% url 'connect-institution' %}">request to join an existing institution</a>  </div>
     </div>
 
-    <p class="no-bottom-margin no-top-margin">
+    <p class="mb-0 mt-0">
         The institution details provided below will default to a public display in the Local Contexts Registry.
         Providing your details will give consent to publicly being listed on the Registry.
         Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
@@ -28,8 +28,8 @@
     <form action="" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div class="w-100 flex-this margin-top-16">
-            <div class="w-50 margin-right-1">
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
                 <label class="pad-top-1-5" >First Name</label><br>
                 {{ user_form.first_name }}
             </div>
@@ -40,10 +40,10 @@
             </div>
         </div>
 
-        <div class="margin-top-8 w-100">
+        <div class="mt-8 w-100">
             <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ noror_form.institution_name }}
-            <div class="w-100 margin-top-1">
+            <div class="w-100 mt-1p">
                 {% if noror_form.errors %}
                     {% for field_name, errors in noror_form.errors.items %}
                         <div class="red-text">
@@ -66,7 +66,7 @@
         </div>
 
         <div class="w-100 flex-this">
-            <div class="w-50 margin-right-1">
+            <div class="w-50 mr-1p">
                 <label class="pad-top-1-5" for="city_town">Town or City</label><br>
                 {{ noror_form.city_town }}
             </div>
@@ -82,8 +82,8 @@
             </div>
         </div>
 
-        <div class="margin-top-8 w-100 flex-this">
-            <div class="w-50 margin-right-1">
+        <div class="mt-8 w-100 flex-this">
+            <div class="w-50 mr-1p">
                 <label class="pad-top-1-5" for="country">Country</label><br>
                 {{ noror_form.country }}
             </div>
@@ -111,7 +111,7 @@
         </div>
 
         <div class="w-100 flex-this">
-            <div class="w-50 margin-right-1">
+            <div class="w-50 mr-1p">
                 <label class="pad-top-1-5">Contact name<span class="orange-text required-label" title="">*</span></label><br>
                 {{ noror_form.contact_name }}
             </div>
@@ -129,8 +129,8 @@
             name="g-recaptcha-response"
             id="g-recaptcha-response"
             />
-            <div class="margin-top-8">
-                <button class="primary-btn action-btn margin-top-2" name="create-institution-btn">Continue <i class="fa fa-arrow-right"></i></button>
+            <div class="mt-8">
+                <button class="primary-btn action-btn mt-2p" name="create-institution-btn">Continue <i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
 

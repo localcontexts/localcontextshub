@@ -82,6 +82,10 @@
             padding-top: 12px;
 
         }
+        #can-change-in-settings-indication{
+            width: 75%;
+            font-style: italic;
+        }
         #share-boundary-publicly-wrapper input{
             transform: scale(2);
         }
@@ -108,7 +112,7 @@
         }
     </style>
     <div class="w-90" id="define-community-body">
-        <h2 class="no-top-margin">Upload Shapefile</h2>
+        <h2 class="mt-0">Upload Shapefile</h2>
         <p id="define-community-top-text">
             Add your community boundary by uploading a shapefile.
             A shapefile is a vector data file format commonly used for geospatial analysis.
@@ -174,6 +178,9 @@
             <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
             <label for="share-boundary-publicly">Share Boundary Publicly</label>
         </div>
+        <p id="can-change-in-settings-indication">
+            Your boundary and its visibility can be updated or removed in your account's settings.
+        </p>
     </div>
 
     <div class="flex-this w-90" id="buttonRow">
@@ -189,7 +196,7 @@
                     Confirm location <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
-            <div class="margin-right-8" id="skip-this-step">
+            <div class="mr-8" id="skip-this-step">
                 <a class="primary-btn white-btn" href="{% url 'confirm-community' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>

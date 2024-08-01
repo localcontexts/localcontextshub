@@ -2,7 +2,7 @@
 
 <div class="content-card-v2 content-card-space">
     <div class="w-70">
-        <h2 class="no-top-margin">Customize a Label</h2>
+        <h2 class="mt-0">Customize a Label</h2>
         <p>Now that you have selected a Label to customize this Label will now sit in this bucket where you can store all of the Labels your account customizes. The Label is currently faded to indicate there is still some work to do to customize and make this Label your own. </p>
         <strong>How this process works:</strong>
         <ol>
@@ -15,11 +15,11 @@
 </div>
 
 <div class="content-card-v2 content-card-space">
-    <h3 class="no-top-margin">Step 1. Select a Label to customize</h3>
-    <div class="margin-bottom-16 margin-top-16 w-100 about-this-label">    
-        <div class="flex-this margin-left-16 margin-right-16 pointer-event-none">
+    <h3 class="mt-0">Step 1. Select a Label to customize</h3>
+    <div class="mb-16 mt-16 w-100 about-this-label">    
+        <div class="flex-this ml-16 mr-16 pointer-event-none">
 
-            <div id="target-img-div" class="margin-top-16">
+            <div id="target-img-div" class="mt-16">
                 <img
                     loading="lazy"
                     {% if label_code == 'bcr' %}
@@ -196,7 +196,7 @@
                 >
             </div>
 
-            <div class="margin-left-16 w-70">
+            <div class="ml-16 w-70">
                 <p id="labelNamePTag" class="bold"></p>
                 <small class="bold">Why Use This Label?</small>
                 <p id="whyUseText"></p>
@@ -212,13 +212,13 @@
         <form id="saveLabelForm" method="POST" action="" enctype="multipart/form-data">
             {% csrf_token %}
             <div>
-                <h3 class="no-top-margin no-bottom-margin">Step 2. Customize Label</h3>
+                <h3 class="mt-0 mb-0">Step 2. Customize Label</h3>
                 <p class="w-80">You can edit the Label template text, and add a local name that reflects your community alongside the Label name.</p>
             </div>
             <div>
                 <input id="input-label-name" type="hidden" value="" name="input-label-name">
 
-                <div class="w-30 margin-bottom-16">
+                <div class="w-30 mb-16">
                     <label>Label name</label>
                     {{ form.name }}
                 </div>
@@ -227,10 +227,10 @@
                     <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div> 
                 {% endif %}
 
-                <div class="w-30 margin-bottom-16">
+                <div class="w-30 mb-16">
                     <div class="flex-this">
                         <label class='block'>Label Language <small>(select from dropdown)</small></label>
-                        <div class="tooltip" style="margin-top: 5px; margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip mt-5 ml-5"><strong>i</strong>
                             <span class="tooltiptext">
                                 Select the language for this Label. English,<br> Māori, French, and Spanish translations <br>of the Label name and template text will be <br>loaded if selected. Can't find the language <br>you are looking for? <br> Please contact us: support@localcontexts.org
                             </span>
@@ -239,7 +239,7 @@
 
                     <div class="autocomplete flex-this align-center" style="display:flex;">
                         {{ form.language }}
-                        <button name="clear-language-btn" class="primary-btn white-btn margin-left-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
+                        <button name="clear-language-btn" class="primary-btn white-btn ml-16 hide" style="min-height:40px;">Clear<i class="fa-regular fa-eraser"></i></button>
                     </div>
                     
                 </div>
@@ -250,7 +250,7 @@
 
                 <div class="w-80">
                     <label for="label_text">Label text</label>
-                    <div class="tooltip" style="margin-left: 5px;"><strong>i</strong>
+                    <div class="tooltip ml-5"><strong>i</strong>
                         <span class="tooltiptext">
                             Providing personal information is optional. By providing it, you consent for it to be shown to other Hub users and wherever this Label is applied. 
                             <a href="https://localcontexts.org/privacy-policy/" class="white-text underline-hover" target="_blank" rel="noopener">Privacy Policy <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
@@ -267,7 +267,7 @@
                 <label>Label Audio File</label>
 
                 <div class="flex-this">
-                    <div class="margin-right-8">
+                    <div class="mr-8">
                         <div class="hide">{{ form.audiofile }}</div>
                         <button id="customLabelAudioFileUploadBtn" class="primary-btn green-btn">Upload audio file <i class="fa-solid fa-upload"></i></button>
                     </div>   
@@ -284,9 +284,9 @@
             <!-- Add translation -->
             {% include 'partials/_add-translation.html' %}
 
-            <div class="text-align-right margin-bottom-16 margin-top-2 flex-this align-center">
+            <div class="text-align-right mb-16 mt-2p flex-this align-center">
                 <button id="saveLabelBtn" name="save_label_btn" class="primary-btn action-btn">Save Label</button> 
-                <small id="language-error" class="red-text margin-left-1 hide">Please clear or select a language from the dropdown list.</small>
+                <small id="language-error" class="red-text ml-1p hide">Please clear or select a language from the dropdown list.</small>
             </div>
         </form>
     </div>

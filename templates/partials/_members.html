@@ -1,7 +1,7 @@
 <div class="content-card-v2 content-card-space">
     <div class="border-bottom-solid-teal flex-this space-between">
         <div>
-            <h2 class="no-top-margin">Members</h2>
+            <h2 class="mt-0">Members</h2>
             <p>View all members and their associated responsibilities.</p>
         </div>
         <div class="flex-this">
@@ -18,7 +18,7 @@
                 </a>                
             </div>
             {% if member_role == 'admin' %}
-                <div class="margin-left-8">
+                <div class="ml-8">
                     <a class="primary-btn green-btn" onclick="openMemberModal()">Add a new member <i class="fa fa-user-plus" aria-hidden="true"></i></a>
                 </div>
             {% endif %}
@@ -27,11 +27,11 @@
     <div>
         <h3>What responsibilities are there in the Local Contexts Hub?</h3>
 
-        <div class="flex-this margin-bottom-8">
+        <div class="flex-this mb-8">
             <div class="member-roles"><span class="bold">Administrator</span> | </div>
             <div><span>An administrator can accept new members, change member responsibilities, and remove members. They also have the abilities of an editor.</span></div>
         </div>
-        <div class="flex-this margin-bottom-8">
+        <div class="flex-this mb-8">
             <div class="member-roles"><span class="bold">Editor</span> | </div>
             <div><span>
                 {% if community %}
@@ -42,7 +42,7 @@
                 {% endif %}
             </span></div>
         </div>
-        <div class="flex-this margin-bottom-8">
+        <div class="flex-this mb-8">
             <div class="member-roles"><span class="bold">Viewer</span> | </div>
             <div><span>Viewers can see the activity happening in the account but cannot change or edit anything.</span></div>
         </div>
@@ -56,20 +56,20 @@
 {% if community %}
     <section class="dash-driver flex-this column">
         <div class="flex-this space-between">
-            <div class="margin-bottom-16">
+            <div class="mb-16">
                 <small class="bold">Role - Main Admininstrator</small>
             </div>
         </div>
 
         <div class="w-70">
-            <h2 class="no-top-margin no-bottom-margin">
+            <h2 class="mt-0 mb-0">
                 {% firstof community.community_creator.get_full_name community.community_creator.username %}
             </h2>
             {% if community.community_creator.user_profile.position %}
-                <h3 class="no-top-margin">{{ community.community_creator.user_profile.position }}</h3>
+                <h3 class="mt-0">{{ community.community_creator.user_profile.position }}</h3>
             {% endif %}
 
-            <h4 class="no-top-margin"> {{community.community_creator.user_profile.get_location}}</h4>
+            <h4 class="mt-0"> {{community.community_creator.user_profile.get_location}}</h4>
 
             {% if community.community_creator.user_profile.languages_spoken %}
                 <div class="flex-this">
@@ -78,7 +78,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Languages</small>
-                        <p class="no-top-margin">{{ community.community_creator.user_profile.languages_spoken }}</p>
+                        <p class="mt-0">{{ community.community_creator.user_profile.languages_spoken }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -90,7 +90,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Affiliations</small>
-                        <p class="no-top-margin">{{ community.community_creator.user_profile.affiliation }}</p>
+                        <p class="mt-0">{{ community.community_creator.user_profile.affiliation }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -103,7 +103,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Email</small>
-                        <p class="no-top-margin">{{ community.community_creator.email }}</p>
+                        <p class="mt-0">{{ community.community_creator.email }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -121,7 +121,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{admin.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -135,14 +135,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof admin.get_full_name admin.username %}
                 </h2>
                 {% if admin.user_profile.position %}
-                    <h3 class="no-top-margin">{{ admin.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ admin.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ admin.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ admin.user_profile.get_location }} </h4>
 
                 {% if admin.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -151,7 +151,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ admin.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ admin.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -163,7 +163,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ admin.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ admin.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -175,7 +175,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ admin.email }}</p>
+                            <p class="mt-0">{{ admin.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -194,7 +194,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{editor.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -208,14 +208,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof editor.get_full_name editor.username %}
                 </h2>
                 {% if editor.user_profile.position %}
-                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ editor.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ editor.user_profile.get_location }} </h4>
 
                 {% if editor.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -224,7 +224,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ editor.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -236,7 +236,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ editor.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -248,7 +248,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ editor.email }}</p>
+                            <p class="mt-0">{{ editor.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -267,7 +267,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{viewer.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -281,14 +281,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof viewer.get_full_name viewer.username %}
                 </h2>
                 {% if viewer.user_profile.position %}
-                    <h3 class="no-top-margin">{{ viewer.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ viewer.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ viewer.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ viewer.user_profile.get_location }} </h4>
 
                 {% if viewer.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -297,7 +297,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -309,7 +309,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -321,7 +321,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ viewer.email }}</p>
+                            <p class="mt-0">{{ viewer.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -335,20 +335,20 @@
 {% if institution %}
     <section class="dash-driver flex-this column">
         <div class="flex-this space-between">
-            <div class="margin-bottom-16">
+            <div class="mb-16">
                 <small class="bold">Role - Main Admininstrator</small>
             </div>
         </div>
 
         <div class="w-70">
-            <h2 class="no-top-margin no-bottom-margin">
+            <h2 class="mt-0 mb-0">
                 {% firstof institution.institution_creator.get_full_name institution.institution_creator.username %}
             </h2>
             {% if institution.institution_creator.user_profile.position %}
-                <h3 class="no-top-margin">{{ institution.institution_creator.user_profile.position }}</h3>
+                <h3 class="mt-0">{{ institution.institution_creator.user_profile.position }}</h3>
             {% endif %}
 
-            <h4 class="no-top-margin"> {{ institution.institution_creator.user_profile.get_location }} </h4>
+            <h4 class="mt-0"> {{ institution.institution_creator.user_profile.get_location }} </h4>
 
             {% if institution.institution_creator.user_profile.languages_spoken %}
                 <div class="flex-this">
@@ -357,7 +357,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Languages</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.user_profile.languages_spoken }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.user_profile.languages_spoken }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -369,7 +369,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Affiliations</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.user_profile.affiliation }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.user_profile.affiliation }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -381,7 +381,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Email</small>
-                        <p class="no-top-margin">{{ institution.institution_creator.email }}</p>
+                        <p class="mt-0">{{ institution.institution_creator.email }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -399,7 +399,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{admin.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -413,14 +413,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof admin.get_full_name admin.username %}
                 </h2>
                 {% if admin.user_profile.position %}
-                    <h3 class="no-top-margin">{{ admin.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ admin.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ admin.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ admin.user_profile.get_location }} </h4>
 
                 {% if admin.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -429,7 +429,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ admin.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ admin.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -441,7 +441,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ admin.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ admin.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -453,7 +453,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ admin.email }}</p>
+                            <p class="mt-0">{{ admin.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -472,7 +472,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{editor.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -486,14 +486,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof editor.get_full_name editor.username %}
                 </h2>
                 {% if editor.user_profile.position %}
-                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ editor.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ editor.user_profile.get_location }} </h4>
 
                 {% if editor.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -502,7 +502,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ editor.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -514,7 +514,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ editor.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -526,7 +526,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ editor.email }}</p>
+                            <p class="mt-0">{{ editor.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -545,7 +545,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{viewer.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                         <div>
@@ -559,14 +559,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof viewer.get_full_name viewer.username %}
                 </h2>
                 {% if viewer.user_profile.position %}
-                    <h3 class="no-top-margin">{{ viewer.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ viewer.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ viewer.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ viewer.user_profile.get_location }} </h4>
 
                 {% if viewer.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -575,7 +575,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -587,7 +587,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ viewer.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ viewer.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -599,7 +599,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ viewer.email }}</p>
+                            <p class="mt-0">{{ viewer.email }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -621,13 +621,13 @@
 
             <div class="flex-this space-between">
                 <div>
-                    <h2 class="no-top-margin">Add a new member</h2>
+                    <h2 class="mt-0">Add a new member</h2>
                     {% if institution.is_subscribed %}
-                    <p class="margin-bottom-2">
-                        The remaining count of your user's is <strong>{% if subscription.users_count == -1 %}Unlimited{% else %}{{subscription.users_count}}{% endif %}</strong>.
-                    </p> 
+                        <p class="mb-2p">
+                            The remaining count of your user's is <strong>{% if subscription.users_count == -1 %}Unlimited{% else %}{{subscription.users_count}}{% endif %}</strong>.
+                        </p>
                     {% endif %}
-                    <p class="no-top-margin">To invite a new member, please select a user and their proposed responsibility below</p>
+                    <p class="mt-0">To invite a new member, please select a user and their proposed responsibility below</p>
                 </div>
 
                 <div>
@@ -663,20 +663,20 @@
                                     </datalist>
 
                                 </div>
-                                <div class="margin-top-8">
+                                <div class="mt-8">
                                     <label>Proposed Responsibility</label><br>
                                     {{ form.role }}
                                 </div>
                             </div>
 
-                            <div class="margin-top-8">
+                            <div class="mt-8">
                                 <label>Optional Message</label><br>
                                 {{ form.message }}
                             </div>
                         </div>
 
-                        <div class="flex-this w-100 margin-bottom-16">
-                            <div class="w-50 margin-top-2">
+                        <div class="flex-this w-100 mb-16">
+                            <div class="w-50 mt-2p">
                                 <button
                                     id="sendMemberInviteBtn"
                                     class="primary-btn action-btn"
@@ -685,7 +685,7 @@
                                 >Send Invitation </button>
                             </div>
 
-                            <div class="w-50 margin-top-2 right-text">
+                            <div class="w-50 mt-2p right-text">
                                 {% if not env == "SANDBOX" %}
                                     <small>Looking for someone who isn't on this list? <br>
                                         <a onclick="openInviteUserModalView()" class="darkteal-text pointer">
@@ -717,10 +717,10 @@
 
                     <div class="flex-this row">
                         <div class="flex-this row w-50 flex-start">
-                            <button onclick="openAddModalView()" type="button" class="primary-btn white-btn margin-top-2">Back</button>
+                            <button onclick="openAddModalView()" type="button" class="primary-btn white-btn mt-2p">Back</button>
                         </div>
                         <div class="flex-this row w-50 flex-end">
-                            <button type="submit" class="primary-btn action-btn margin-top-2">Send Invitation</button>
+                            <button type="submit" class="primary-btn action-btn mt-2p">Send Invitation</button>
                         </div>
                     </div>
                 </form>
