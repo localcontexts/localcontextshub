@@ -45,8 +45,10 @@ def manage_mailing_list(request, first_name, emailb64):
 
 
 def return_registry_accounts(
-        community_accounts, researcher_accounts, institution_accounts, service_provider_accounts
-    ):
+            community_accounts, researcher_accounts, institution_accounts,
+            service_provider_accounts
+        ):
+
     combined_accounts = []
 
     if community_accounts is not None:
