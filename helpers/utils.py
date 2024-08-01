@@ -21,6 +21,7 @@ from xhtml2pdf import pisa
 from communities.models import Community, JoinRequest, InviteMember, Boundary
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from .exceptions import UnsubscribedAccountException
 from .models import Notice
 from notifications.models import *
@@ -54,14 +55,20 @@ def check_member_role(user, organization):
         and user == organization.institution_creator
     ):
         return "admin"
+    if isinstance(organization, ServiceProvider) and user == organization.account_creator:
+        return "admin"
 
     # Check for admin/editor/viewer roles
-    if organization.admins.filter(id=user.id).exists():
-        return "admin"
-    elif organization.editors.filter(id=user.id).exists():
-        return "editor"
-    elif organization.viewers.filter(id=user.id).exists():
-        return "viewer"
+    if isinstance(organization, ServiceProvider):
+        if organization.editors.filter(id=user.id).exists():
+            return "editor"
+    else:
+        if organization.admins.filter(id=user.id).exists():
+            return "admin"
+        elif organization.editors.filter(id=user.id).exists():
+            return "editor"
+        elif organization.viewers.filter(id=user.id).exists():
+            return "viewer"
 
     return False
 
@@ -83,13 +90,17 @@ def change_member_role(org, member, current_role, new_role):
 
 
 def add_user_to_role(account, role, user):
-    role_map = {
-        "admin": account.admins,
-        "editor": account.editors,
-        "viewer": account.viewers,
-    }
-    role_map[role].add(user)
-    account.save()
+    if isinstance(account, ServiceProvider) and role == "editor":
+        account.editors.add(user)
+        account.save()
+    else:
+        role_map = {
+            "admin": account.admins,
+            "editor": account.editors,
+            "viewer": account.viewers,
+        }
+        role_map[role].add(user)
+        account.save()
 
 
     
@@ -116,7 +127,7 @@ def accept_member_invite(request, invite_id):
     affiliation = get_object_or_404(UserAffiliation, user=invite.receiver)
 
     # Which organization, add to user affiliation
-    account = invite.community or invite.institution
+    account = invite.community or invite.institution or invite.service_provider
     if invite.institution and not request_possible(request, account, invite.role):
         return redirect("member-invitations")
     
@@ -124,6 +135,8 @@ def accept_member_invite(request, invite_id):
         affiliation.communities.add(account)
     if invite.institution:
         affiliation.institutions.add(account)
+    if invite.service_provider:
+        affiliation.service_providers.add(account)
 
     affiliation.save()
 
@@ -673,13 +686,13 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
 
         
 def validate_is_subscribed(
-        account: Union[Researcher, Institution],
+        account: Union[Researcher, Institution, ServiceProvider],
         bypass_validation: bool = False
 ):
     if bypass_validation:
         return
 
-    if account.is_subscribed:
+    if account.is_subscribed or account.is_certified:
         return
     message = 'Account Is Not Subscribed'
     raise UnsubscribedAccountException(message)
@@ -713,6 +726,7 @@ def form_initiation(request,account_type=""):
                 user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
             
         return  user_form,subscription_form
+    
     elif account_type == "researcher_action":
         subscription_form = SubscriptionForm()
         exclude_choices = {"member", "service_provider", "cc_only"}
@@ -725,12 +739,33 @@ def form_initiation(request,account_type=""):
         subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
         
         return subscription_form
+    
+    elif account_type == "service_provider_action":
+        fields_to_update = {
+            "first_name": request.user._wrapped.first_name,
+            "last_name": request.user._wrapped.last_name,
+        }
+        user_form = UserCreateProfileForm(request.POST or None, initial=fields_to_update)
+        exclude_choices = {"member", "cc_only"}
+        
+        modified_inquiry_type_choices = [
+            choice
+            for choice in SubscriptionForm.INQUIRY_TYPE_CHOICES
+            if choice[0] not in exclude_choices
+        ]
+        subscription_form.fields["inquiry_type"].choices = modified_inquiry_type_choices
+        for field, value in fields_to_update.items():
+            if value:
+                user_form.fields[field].widget.attrs.update({"class": "w-100 readonly-input"})
+            
+        return  user_form,subscription_form
 
 def check_subscription(request, subscriber_type, id):
     subscriber_field_mapping = {
         'institution': 'institution_id',
         'researcher': 'researcher_id',
-        'community': 'community_id'
+        'community': 'community_id',
+        'service_provider': 'service_provider_id'
     }
     
     if subscriber_type not in subscriber_field_mapping:
@@ -765,18 +800,27 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         }
         if isinstance(user, Researcher):
             subscription_params['researcher'] = user
+            user.is_subscribed = True
+
         elif isinstance(user, Institution):
             subscription_params['institution'] = user
-        user.is_subscribed = True
+            user.is_subscribed = True
+
+        elif isinstance(user, ServiceProvider):
+            subscription_params['service_provider'] = user
+            user.is_certified = True
+
         user.save()
         response = Subscription.objects.create(**subscription_params)
         return response
+    
     elif isinstance(user, Researcher) and env != 'SANDBOX':
         response = confirm_subscription(
             request, user,
             subscription_form, 'researcher_account'
         )
         return response
+    
     elif isinstance(user, Institution) and env != 'SANDBOX':
         response = confirm_subscription(
             request, user,
@@ -784,6 +828,19 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         )
         data = Institution.objects.get(
             institution_name=user.institution_name
+        )
+        send_hub_admins_account_creation_email(
+            request, data
+        )
+        return response
+    
+    elif isinstance(user, ServiceProvider) and env != 'SANDBOX':
+        response = confirm_subscription(
+            request, user,
+            subscription_form, 'service_provider_account'
+        )
+        data = ServiceProvider.objects.get(
+            name=user.name
         )
         send_hub_admins_account_creation_email(
             request, data

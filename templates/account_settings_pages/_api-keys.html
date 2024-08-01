@@ -10,9 +10,11 @@
 <div class="flex-this">
     <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> 
         {% if institution and institution.is_subscribed %}
-            {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
+            {% if remaining_api_key_count == -1 %}Unlimited{% else %}{{ remaining_api_key_count }}{% endif %}
         {% elif researcher and researcher.is_subscribed %}
-            {% if subscription_api_key_count == -1 %}Unlimited{% else %}{{ subscription_api_key_count }}{% endif %}
+            {% if remaining_api_key_count == -1 %}Unlimited{% else %}{{ remaining_api_key_count }}{% endif %}
+        {% elif service_provider and service_provider.is_certified %}
+            {% if remaining_api_key_count == 1 %}{{ remaining_api_key_count }}{% else %}{{ remaining_api_key_count }}{% endif %}
         {% elif community and community.is_approved %}Unlimited
         {% else %}0
         {% endif %}
@@ -42,7 +44,7 @@
 {% endif %}
 
 <div class="flex-this mt-2p">
-    {% if institution.is_subscribed or researcher.is_subscribed or community.is_approved and subscription_api_key_count != 0 %}
+    {% if institution.is_subscribed or researcher.is_subscribed or community.is_approved or service_provider.is_certified and remaining_api_key_count != 0 %}
         <div>
             <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
         </div>
@@ -50,10 +52,16 @@
         <div class="btn-with-helptext">
             <button id="generateAPIKeybtn" class="primary-btn mt-2p disabled-btn" disabled>Generate API Key</button>
             <span class="btn-help-text" style="left: 5px;right: 0px;">
-                {% if institution and not institution.is_subscribed %}The subscription process for your institution is not completed yet.
-                {% elif researcher and not researcher.is_subscribed %}The subscription process for your account is not completed yet.
-                {% elif community and not community.is_approved %}The confirmation process for your account is not completed yet.
-                {% elif institution.is_subscribed or researcher.is_subscribed and subscription_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
+                {% if institution and not institution.is_subscribed %}
+                    The subscription process for your institution is not completed yet.
+                {% elif researcher and not researcher.is_subscribed %}
+                    The subscription process for your account is not completed yet.
+                {% elif service_provider and not service_provider.is_certified %}
+                    The certification process for your account is not completed yet.
+                {% elif community and not community.is_approved %}
+                    The confirmation process for your account is not completed yet.
+                {% elif institution.is_subscribed or researcher.is_subscribed and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
+                {% elif service_provider.is_certified and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete your existing key to generate a new one or contact support for assistance.
                 {% endif %}
             </span>
         </div>

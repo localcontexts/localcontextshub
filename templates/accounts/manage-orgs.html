@@ -2,7 +2,7 @@
 
 {% block settings %}
 
-<div class="flex-this column w-80   mr-1p">
+<div class="flex-this column w-80 mr-1p">
     <div>
         <h3>Accounts</h3>
         <p>Manage the accounts you are a member of below.<br>
@@ -36,6 +36,14 @@
             {% else %}
                 <small class="block">You're the creator of this account</small>
             {% endif %}
+        </div>
+        {% include 'snippets/modals/leave-account-modal.html' %}
+    {% endfor %}
+
+    {% for service_provider in affiliations.service_providers.all %}
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+            <div class="w-70"><h3>{{ service_provider.name }} | Service Provider</h3></div>
+            <small class="block">You're the creator of this account</small>
         </div>
         {% include 'snippets/modals/leave-account-modal.html' %}
     {% endfor %}

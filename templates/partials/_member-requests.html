@@ -9,11 +9,16 @@
                 {% if institution %}
                     href="{% url 'institution-members' institution.id %}"
                 {% endif %}
+                {% if service_provider %}
+                    href="{% url 'service-provider-members' service_provider.id %}"
+                {% endif %}
             >Members</a> 
-            <span class="grey-text"> >> Member Requests</span>
+            <span class="grey-text"> >> Member {% if not service_provider %}Requests{% elif service_provider %}Invites{% endif %}</span>
         </small>
     </div>
-    <div><h2 class="mt-0">Member Requests</h2></div>
+    <div>
+        <h2 class="mt-0">Member {% if not service_provider %}Requests{% elif service_provider %}Invites{% endif %}</h2>
+    </div>
 
     {% include 'partials/_alerts.html' %}
 </div>

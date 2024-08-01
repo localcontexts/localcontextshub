@@ -1,6 +1,7 @@
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from django.contrib.auth.models import User
 from helpers.models import LabelNote
 from notifications.models import ActionNotification
@@ -197,6 +198,13 @@ def send_hub_admins_account_creation_email(request, data):
                 { 'researcher': data }
             )
             return subject, template, None
+        elif isinstance(data, ServiceProvider):
+            subject = f'New Service Provider Account: {data.name}'
+            template = render_to_string(
+                'snippets/emails/internal/service-provider-application.html',
+                {'data': data}
+            )
+            return subject, template, None
         else:
             return None, None, None
 
@@ -369,6 +377,8 @@ def send_contact_email(request, to_email, from_name, from_email, message, accoun
             account_name = account.community_name
         if isinstance(account, Researcher):
             account_name = 'your researcher account'
+        if isinstance(account, ServiceProvider):
+            account_name = account.name
 
         data = { "from_name": from_name, "message": message, "account_name": account_name }
 
@@ -398,6 +408,8 @@ def send_member_invite_email(request, data, account):
             org_name = account.institution_name
         if isinstance(account, Community):
             org_name = account.community_name
+        if isinstance(account, ServiceProvider):
+            org_name = account.name
         
         if data.role == 'admin':
             role = 'Administrator'
@@ -522,7 +534,7 @@ def send_email_label_approved(request, label, note_id):
         }
         send_mailgun_template_email(label.created_by.email, subject, 'label_approved', data)
 
-# You are now a member of institution/community email
+# You are now a member of institution/community/service provider email
 def send_membership_email(request, account, receiver, role):
     environment = dev_prod_or_local(request.get_host())
 
@@ -540,6 +552,7 @@ def send_membership_email(request, account, receiver, role):
 
         community = False
         institution = False
+        service_provider = False
 
         if isinstance(account, Community):
             subject = f'You are now a member of {account.community_name}'
@@ -549,13 +562,18 @@ def send_membership_email(request, account, receiver, role):
             subject = f'You are now a member of {account.institution_name}'
             account_name = account.institution_name
             institution = True
+        if isinstance(account, ServiceProvider):
+            subject = f'You are now a member of {account.name}'
+            account_name = account.name
+            service_provider = True
 
         data = {
             'role_str': role_str,
             'account_name': account_name,
             'login_url': login_url,
             'community': community,
-            'institution': institution
+            'institution': institution,
+            'service_provider': service_provider
         }
         send_mailgun_template_email(receiver.email, subject, 'member_info', data)
 

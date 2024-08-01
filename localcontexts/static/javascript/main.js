@@ -1615,7 +1615,7 @@ if (window.location.href.includes('api-key')) {
 }
 
 // REGISTRY FILTERING AND JOIN REQUESTS / CONTACT MODAL
-if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') ) {
+if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') || window.location.href.includes('service-providers/view/') ) {
 
     // Join request modal and form
     const openRequestToJoinModalBtn = document.getElementById('openRequestToJoinModalBtn') 
@@ -2135,8 +2135,8 @@ if (window.location.href.includes('create-institution') && !window.location.href
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
 }
 
-if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/')) {
-    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn')
+if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/') || window.location.href.includes('/service-providers/update/')) {
+    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn') || document.getElementById('serviceProviderImgUploadBtn')
     const customImageUploadBtn = document.getElementById('altImageUploadBtn')
     const imagePreviewContainer = document.getElementById('imagePreviewContainer')
 
@@ -2293,7 +2293,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
 
  }
 
- if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/')) {
+ if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/') || window.location.href.includes('service-providers/members/')) {
 
     // Add member modal
     function openAddModalView() {

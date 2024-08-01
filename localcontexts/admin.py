@@ -55,7 +55,9 @@ from helpers.models import (
     ProjectStatus
 )
 from institutions.models import Institution
-from notifications.models import ActionNotification, UserNotification
+from researchers.utils import is_user_researcher
+from serviceproviders.models import ServiceProvider
+from notifications.models import UserNotification, ActionNotification
 from projects.forms import ProjectModelForm
 from projects.models import (
     Project, ProjectActivity, ProjectArchived, ProjectContributors, ProjectCreator, ProjectNote,
@@ -383,7 +385,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return [
             ('institution', 'Institution'), ('researcher', 'Researcher'),
-            ('community', 'Community')
+            ('community', 'Community'), ('service_provider', 'Service Provider')
         ]
 
     def queryset(self, request, queryset):
@@ -423,6 +425,19 @@ class AccountTypeFilter(admin.SimpleListFilter):
             except:  # noqa
                 return queryset.none()
 
+        elif self.value() == "service_provider":
+            try:
+                qs = queryset.distinct().filter(service_provider_id__isnull=False)
+                return qs
+            except:
+                return queryset.none()
+
+        elif self.value() == "service_provider":
+            try:
+                qs = queryset.distinct().filter(service_provider_id__isnull=False)
+                return qs
+            except:
+                return queryset.none()
 
 class PrivacyTypeFilter(admin.SimpleListFilter):
     title = 'Privacy Type'
@@ -539,7 +554,6 @@ class DateRangeFilter(admin.SimpleListFilter):
 
     def choices(self, changelist):
         choices = list(super().choices(changelist))
-        print(choices)
         choices[0]['display'] = _('last 30 Days')
         return [choices[2], choices[0], choices[1]]
 
@@ -728,7 +742,8 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ('name', 'view', 'added_by', 'datetime')
     search_fields = (
         'institution__institution_name', 'researcher__user__username',
-        'researcher__user__first_name', 'researcher__user__last_name', 'name'
+        'researcher__user__first_name', 'researcher__user__last_name', 'name',
+        'service_provider__name'
     )
     ordering = ('-added', )
     list_filter = (AccountTypeFilter, )
@@ -747,10 +762,14 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
             account_id = obj.institution_id
             account_url = 'institutions/institution'
             account_name = obj.institution.institution_name
-        else:
+        elif obj.researcher_id:
             account_id = obj.researcher_id
             account_url = 'researchers/researcher'
             account_name = get_users_name(obj.researcher.user)
+        elif obj.service_provider_id:
+            account_id = obj.service_provider_id
+            account_url = 'serviceproviders/serviceprovider'
+            account_name = obj.service_provider.name
 
         return format_html(
             '<a href="/admin/{}/{}/change/">{} </a>', account_url, account_id, account_name
@@ -1620,7 +1639,7 @@ admin_site.register(NoticeTranslation, NoticeTranslationAdmin)
 # INSTITUTIONS ADMIN
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = (
-        'institution_name', 'institution_creator', 'contact_name', 'contact_email', 
+        'institution_name', 'institution_creator', 'contact_name', 'contact_email',
         'is_subscribed', 'is_ror', 'created', 'country'
     )
     search_fields = (
@@ -1641,7 +1660,7 @@ class UserNotificationAdmin(admin.ModelAdmin):
 class ActionNotificationAdmin(admin.ModelAdmin):
     list_display = (
         'sender', 'community', 'institution', 'researcher', 'notification_type', 'title',
-        'created'
+         'service_provider', 'created'
     )
 
 
@@ -1755,3 +1774,12 @@ class InactiveUserAdmin(admin.ModelAdmin):
 
 
 admin_site.register(InactiveUser, InactiveUserAdmin)
+
+# SERVICE PROVIDER ADMIN
+class ServiceProviderAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'account_creator', 'contact_name', 'contact_email', 'is_certified', 'created',
+    )
+    search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
+
+admin_site.register(ServiceProvider, ServiceProviderAdmin)

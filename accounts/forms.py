@@ -201,6 +201,7 @@ class SubscriptionForm(forms.Form):
         ("institution_account", "Institution Account"),
         ("community_account", "Community Account"),
         ("researcher_account", "Researcher Account"),
+        ("service_provider_account", "Service Provider Account"),
     )
     INQUIRY_TYPE_CHOICES = (
         ("", "Please select inquiry type..."),

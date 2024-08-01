@@ -18,7 +18,7 @@
 
     <section class="flex-this column">
 
-        {% if not researcher and not user_communities and not user_institutions %}
+        {% if not researcher and not user_communities and not user_institutions and not user_service_providers %}
             <div class="set-height-empty-dash"></div>
         {% endif %}
 
@@ -35,6 +35,12 @@
         {% if user_institutions %}
             {% for institution in user_institutions %}
                 {% include 'partials/infocards/_institution-card.html' with institution_projects=institution.institution_projects %}
+            {% endfor %}
+        {% endif %}
+
+        {% if user_service_providers %}
+            {% for service_provider in user_service_providers %}
+                {% include 'partials/infocards/_service-provider-card.html' %}
             {% endfor %}
         {% endif %}
 

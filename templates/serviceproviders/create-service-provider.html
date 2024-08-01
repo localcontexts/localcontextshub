@@ -1,0 +1,113 @@
+{% extends 'register-base.html' %} {% block title %} Create Service Provider {% endblock %}{% load static %} {% block card %}
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+</script>
+
+<div class="flex-this column account-registration-container">
+    <div class="flex-this space-between">
+        <div><h2 class="mt-0 mb-8">Service Provider Account</h2></div>
+    </div>
+
+    <p class="mb-0 mt-0">
+        The service provider details provided below will default to a public display in the Local Contexts Registry.
+        Providing your details will give consent to publicly being listed on the Registry.
+        Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+    </p>
+
+
+    <form action="" method="POST" class="flex-this column w-100">
+        {% csrf_token %}
+
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name</label><br>
+                {{ user_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
+
+        <div class="mt-8 w-100">
+            <label for="name">Service Provider Name<span class="orange-text required-label" title="">*</span></label>
+            {{ form.name }}
+            <div class="w-100 mt-1p">
+                {% if form.errors %}
+                    {% for field_name, errors in form.errors.items %}
+                        <div class="red-text">
+                            <strong>{{ field_name }}</strong>:
+                            {% for error in errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% include 'partials/_alerts.html' %}
+            </div>
+        </div>
+
+        <div class="mt-8 w-100 flex-this">
+            <div class="w-100">
+                <label for="inquiry_type">Inquiry type<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext left-tooltip">A service provider inquiry type allows you to select the desired role for the subscription process.</span>
+                </div>
+                <br>
+                {{ subscription_form.inquiry_type }}
+            </div>
+        </div>
+
+        <div class="w-100">
+            <div class="pad-top-1-5">
+                <label for="description">Service Provider Description<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">A service provider description allows you to share key public information about your organization with other users on the Hub.</span>
+                </div>
+
+                <br>
+                {{ form.description }}
+            </div>
+            <small id="charCount" class="block text-align-right">200/200</small>
+        </div>
+
+        <div class="w-100 flex-this">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_email }}
+            </div>
+        </div>
+
+        <div class="flex-this flex-end">
+            
+            <input
+            type="hidden"
+            name="g-recaptcha-response"
+            id="g-recaptcha-response"
+            />
+            <div class="mt-8">
+                <button class="primary-btn action-btn mt-2p" name="create-service-provider-btn">Continue <i class="fa fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

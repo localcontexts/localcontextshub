@@ -8,6 +8,7 @@ from tklabels.models import TKLabel
 from communities.models import Community
 from researchers.models import Researcher
 from institutions.models import Institution
+from serviceproviders.models import ServiceProvider
 
 class Notice(models.Model):
     TYPES = (
@@ -100,6 +101,7 @@ class NoticeTranslation(models.Model):
 class OpenToCollaborateNoticeURL(models.Model):
     institution = models.ForeignKey(Institution, null=True, on_delete=models.CASCADE, blank=True, db_index=True, related_name="otc_institution_url")
     researcher = models.ForeignKey(Researcher, null=True, on_delete=models.CASCADE, blank=True, db_index=True, related_name="otc_researcher_url")
+    service_provider = models.ForeignKey(ServiceProvider, null=True, on_delete=models.CASCADE, blank=True, db_index=True, related_name="otc_service_provider_url")
     name = models.CharField('Name of Website', max_length=250, null=True, blank=True)
     url = models.URLField('Link', null=True, unique=True)
     added = models.DateTimeField(auto_now_add=True, null=True)
@@ -108,7 +110,7 @@ class OpenToCollaborateNoticeURL(models.Model):
         return str(self.name)
     
     class Meta:
-        indexes = [models.Index(fields=['institution', 'researcher'])]
+        indexes = [models.Index(fields=['institution', 'researcher', 'service_provider'])]
         verbose_name = 'Open To Collaborate Notice URL'
         verbose_name_plural = 'Open To Collaborate Notice URLs'
 
@@ -253,6 +255,7 @@ class LabelTranslationVersion(models.Model):
 class NoticeDownloadTracker(models.Model):
     institution = models.ForeignKey(Institution, null=True, on_delete=models.CASCADE, blank=True, db_index=True)
     researcher = models.ForeignKey(Researcher, null=True, on_delete=models.CASCADE, blank=True, db_index=True)
+    service_provider = models.ForeignKey(ServiceProvider, null=True, on_delete=models.CASCADE, blank=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="download_user", blank=True)
     collections_care_notices = models.BooleanField(default=False, null=True)
     open_to_collaborate_notice = models.BooleanField(default=False, null=True)
@@ -285,6 +288,7 @@ class HubActivity(models.Model):
         ('New Researcher', 'New Researcher'),
         ('New Community', 'New Community'),
         ('New Institution', 'New Institution'),
+        ('New Service Provider', 'New Service Provider'),
         ('Project Edited', 'Project Edited'),
         ('Project Created', 'Project Created'),
         ('Community Notified', 'Community Notified'),
@@ -297,6 +301,7 @@ class HubActivity(models.Model):
     action_account_type = models.CharField(max_length=250, null=True, blank=True)
     community_id = models.IntegerField(null=True, blank=True)
     institution_id = models.IntegerField(null=True, blank=True)
+    service_provider_id = models.IntegerField(null=True, blank=True)
     project_id = models.IntegerField(null=True, blank=True)
     action_type = models.CharField(max_length=30, null=True, choices=TYPES)
     date = models.DateTimeField(auto_now_add=True, null=True)

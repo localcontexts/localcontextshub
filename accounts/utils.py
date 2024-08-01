@@ -8,6 +8,7 @@ from django.contrib import messages
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 
 def get_users_name(user):
@@ -43,7 +44,11 @@ def manage_mailing_list(request, first_name, emailb64):
     return variables
 
 
-def return_registry_accounts(community_accounts, researcher_accounts, institution_accounts):
+def return_registry_accounts(
+            community_accounts, researcher_accounts, institution_accounts,
+            service_provider_accounts
+        ):
+
     combined_accounts = []
 
     if community_accounts is not None:
@@ -51,15 +56,20 @@ def return_registry_accounts(community_accounts, researcher_accounts, institutio
 
     combined_accounts.extend(researcher_accounts)
     combined_accounts.extend(institution_accounts)
+    combined_accounts.extend(service_provider_accounts)
 
     cards = sorted(
         combined_accounts,
         key=lambda obj: (
-            unidecode(obj.community_name.lower().strip())
-            if isinstance(obj, Community) else unidecode(obj.institution_name.lower().strip())
-            if isinstance(obj, Institution) else unidecode(obj.user.first_name.lower().strip())
-            if isinstance(obj, Researcher) and obj.user.first_name.strip() else
-            unidecode(obj.user.username.lower().strip()) if isinstance(obj, Researcher) else ''
+            unidecode(obj.community_name.lower().strip()) if isinstance(obj, Community) else
+            unidecode(obj.institution_name.lower().strip()) if isinstance(obj, Institution) else
+            unidecode(obj.name.lower().strip()) if isinstance(obj, ServiceProvider) else
+            (
+                unidecode(obj.user.first_name.lower().strip())
+                if isinstance(obj, Researcher) and obj.user.first_name.strip() else
+                unidecode(obj.user.username.lower().strip()) if isinstance(obj, Researcher)
+                else ''
+            )
         )
     )
 
@@ -152,7 +162,9 @@ def confirm_subscription(request, user, form, account_type):
         isbusiness = True
     elif account_type == "researcher_account":
         hub_id = str(user.id) + "_r"
-        isbusiness = False
+    elif account_type == "service_provider_account":
+        hub_id = str(user.id) + "_sp"
+        isbusiness = True
     else:
         raise ValueError("Invalid account type")
 

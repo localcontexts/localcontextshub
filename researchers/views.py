@@ -207,28 +207,28 @@ def update_researcher(request, researcher):
 def researcher_notices(request, researcher):
     notify_restricted_message = False
     create_restricted_message = False
+
     try:
-        subscription = Subscription.objects.get(researcher=researcher.id)
+        if researcher.is_subscribed:
+            subscription = Subscription.objects.get(researcher=researcher.id)
+            not_approved_download_notice = None
+            not_approved_shared_notice = None
     except Subscription.DoesNotExist:
         subscription = None
+        not_approved_download_notice = "Your researcher account needs to be confirmed in order to download this Notice."
+        not_approved_shared_notice = "Your researcher account needs to be confirmed in order to share this Notice."
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
-    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
-        is_sandbox = True
-        otc_download_perm = 0
-    else:
-        is_sandbox = False
-        otc_download_perm = 1
-    if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+    if dev_prod_or_local(request.get_host()) == "SANDBOX":
         is_sandbox = True
         otc_download_perm = 0
         download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
         share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
-        otc_download_perm = 1
+        otc_download_perm = 1 if researcher.is_subscribed else 0
         download_notice_on_sandbox = None
         share_notice_on_sandbox = None
 
@@ -255,7 +255,9 @@ def researcher_notices(request, researcher):
         'notify_restricted_message': notify_restricted_message,
         'create_restricted_message': create_restricted_message,
         'is_sandbox': is_sandbox,
+        'not_approved_download_notice': not_approved_download_notice,
         'download_notice_on_sandbox': download_notice_on_sandbox,
+        'not_approved_shared_notice': not_approved_shared_notice,
         'share_notice_on_sandbox': share_notice_on_sandbox,
         'subscription': subscription,
     }
@@ -838,12 +840,12 @@ def embed_otc_notice(request, pk):
 @get_researcher(pk_arg_name='pk')
 @transaction.atomic
 def api_keys(request, researcher, related=None):
-    subscription_api_key_count = 0
+    remaining_api_key_count = 0
     
     try:
         if researcher.is_subscribed:
                 subscription = Subscription.objects.get(researcher=researcher)
-                subscription_api_key_count = subscription.api_key_count
+                remaining_api_key_count = subscription.api_key_count
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
@@ -897,7 +899,7 @@ def api_keys(request, researcher, related=None):
             "researcher" : researcher,
             "form" : form,
             "account_keys" : account_keys,
-            "subscription_api_key_count" : subscription_api_key_count
+            "remaining_api_key_count" : remaining_api_key_count
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except:

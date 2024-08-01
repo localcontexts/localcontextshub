@@ -369,17 +369,17 @@ def institution_notices(request, pk):
     cc_policy_form = CollectionsCareNoticePolicyForm(
         request.POST or None, request.FILES
     )
+
     try:
-        subscription = Subscription.objects.get(institution=institution)
+        if institution.is_subscribed:
+            subscription = Subscription.objects.get(institution=institution)
+            not_approved_download_notice = None
+            not_approved_shared_notice = None
     except Subscription.DoesNotExist:
         subscription = None
-
-    if not institution.is_subscribed:
         not_approved_download_notice = "Your institution account needs to be confirmed in order to download this Notice."
         not_approved_shared_notice = "Your institution account needs to be confirmed in order to share this Notice."
-    else:
-        not_approved_download_notice = None
-        not_approved_shared_notice = None
+
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
         is_sandbox = True
@@ -1460,12 +1460,12 @@ def embed_otc_notice(request, pk):
 def api_keys(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
-    subscription_api_key_count = 0
+    remaining_api_key_count = 0
     
     try:
         if institution.is_subscribed:
             subscription = Subscription.objects.get(institution=institution)
-            subscription_api_key_count = subscription.api_key_count
+            remaining_api_key_count = subscription.api_key_count
                 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
@@ -1473,7 +1473,7 @@ def api_keys(request, pk):
     
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
-                if institution.is_subscribed and subscription.api_key_count == 0:
+                if institution.is_subscribed and remaining_api_key_count == 0:
                     messages.add_message(request, messages.ERROR, 'Your institution has reached its API Key limit. '
                                         'Please upgrade your subscription plan to create more API Keys.')
                     return redirect("institution-api-key", institution.id)
@@ -1519,7 +1519,7 @@ def api_keys(request, pk):
             "form" : form,
             "account_keys" : account_keys,
             "member_role" : member_role,
-            "subscription_api_key_count" : subscription_api_key_count
+            "remaining_api_key_count" : remaining_api_key_count,
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except:

@@ -31,6 +31,7 @@ def zero_account_user(view_func):
             affiliations = (
                 user.user_affiliations.prefetch_related(
                     "institutions",
+                    "service_providers",
                 )
                 .all()
             )
@@ -38,7 +39,14 @@ def zero_account_user(view_func):
                 affiliation.institutions.exists()
                 for affiliation in affiliations
             )
-            if has_institutions or is_user_researcher(user):
+            has_service_provider = any(
+                affiliation.service_providers.exists()
+                for affiliation in affiliations
+            )
+            if (
+                has_institutions or has_service_provider or
+                is_user_researcher(user)
+            ):
                 messages.add_message(
                     request,
                     messages.INFO,

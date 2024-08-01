@@ -4,6 +4,7 @@ from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from institutions.models import Institution
+from serviceproviders.models import ServiceProvider
 import uuid
 from itertools import chain
 import os
@@ -142,6 +143,7 @@ class InviteMember(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='community_invitation', null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name='institution_invitation', null=True, blank=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name='service_provider_invitation', null=True, blank=True)
     role = models.CharField(max_length=8, choices=ROLES, null=True)
     message = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='sent', blank=True)
@@ -152,7 +154,7 @@ class InviteMember(models.Model):
         return f"{self.sender}-{self.receiver}-{self.status}"
 
     class Meta:
-        indexes = [models.Index(fields=['sender', 'receiver', 'community', 'institution'])]
+        indexes = [models.Index(fields=['sender', 'receiver', 'community', 'institution', 'service_provider'])]
         verbose_name = 'Member Invitation'
         verbose_name_plural = 'Member Invitations'
         ordering = ('-created',)

@@ -23,7 +23,6 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
-from maintenance_mode.decorators import force_maintenance_mode_off
 from unidecode import unidecode
 
 from helpers.emails import (
@@ -52,8 +51,10 @@ from projects.models import Project
 from communities.models import InviteMember, Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 from .decorators import unauthenticated_user, zero_account_user
+from maintenance_mode.decorators import force_maintenance_mode_off
 
 
 @unauthenticated_user
@@ -259,13 +260,14 @@ def dashboard(request):
     researcher = is_user_researcher(user)
 
     affiliation = user.user_affiliations.prefetch_related(
-        'communities', 'institutions', 'communities__admins', 'communities__editors',
-        'communities__viewers', 'institutions__admins', 'institutions__editors',
-        'institutions__viewers'
+        'communities', 'institutions', 'service_providers', 'communities__admins',
+        'communities__editors', 'communities__viewers', 'institutions__admins',
+        'institutions__editors', 'institutions__viewers'
     ).all().first()
 
     user_communities = affiliation.communities.all()
     user_institutions = affiliation.institutions.all()
+    user_service_providers = affiliation.service_providers.all()
     unsubscribed_institute = Institution.objects.filter(
         institution_creator=user
     ).first()
@@ -278,6 +280,7 @@ def dashboard(request):
         "profile": profile,
         "user_communities": user_communities,
         "user_institutions": user_institutions,
+        "user_service_providers": user_service_providers,
         "researcher": researcher,
         "unsubscribed_institute": unsubscribed_institute,
     }
@@ -417,8 +420,8 @@ def deactivate_user(request):
 def manage_organizations(request):
     profile = Profile.objects.select_related("user").get(user=request.user)
     affiliations = UserAffiliation.objects.prefetch_related(
-        'communities', 'institutions', 'communities__community_creator',
-        'institutions__institution_creator'
+        'communities', 'institutions', 'service_providers', 'communities__community_creator',
+        'institutions__institution_creator', 'service_providers__account_creator',
     ).get(user=request.user)
     researcher = Researcher.objects.none()
     users_name = get_users_name(request.user)
@@ -542,6 +545,7 @@ def registry(request, filtertype=None):
             'admins', 'editors', 'viewers'
         ).all().order_by('institution_name')
         r = Researcher.objects.select_related('user').all().order_by('user__username')
+        sp = (ServiceProvider.objects.select_related("account_creator").all().order_by("name"))
 
         if ("q" in request.GET) and (filtertype is not None):
             q = request.GET.get("q")
@@ -555,13 +559,14 @@ def registry(request, filtertype=None):
             # showing results that match with or without accents
             c = c.filter(community_name__unaccent__icontains=q)
             i = i.filter(institution_name__unaccent__icontains=q)
+            sp = sp.filter(name__unaccent__icontains=q)
             r = r.filter(
                 Q(user__username__unaccent__icontains=q)
                 | Q(user__first_name__unaccent__icontains=q)
                 | Q(user__last_name__unaccent__icontains=q)
             )
 
-            cards = return_registry_accounts(c, r, i)
+            cards = return_registry_accounts(c, r, i, sp)
 
             p = Paginator(cards, 5)
 
@@ -570,16 +575,23 @@ def registry(request, filtertype=None):
                 cards = c
             elif filtertype == "institutions":
                 cards = i
+            elif filtertype == "service_providers":
+                cards = sp
             elif filtertype == "researchers":
                 cards = r
             elif filtertype == 'otc':
                 researchers_with_otc = r.filter(otc_researcher_url__isnull=False).distinct()
                 institutions_with_otc = i.filter(otc_institution_url__isnull=False).distinct()
+                service_providers_with_otc = sp.filter(
+                    otc_service_provider_url__isnull=False).distinct()
                 cards = return_registry_accounts(
-                    None, researchers_with_otc, institutions_with_otc
+                    None,
+                    researchers_with_otc,
+                    institutions_with_otc,
+                    service_providers_with_otc
                 )
             else:
-                cards = return_registry_accounts(c, r, i)
+                cards = return_registry_accounts(c, r, i, sp)
 
             p = Paginator(cards, 5)
 
@@ -590,6 +602,7 @@ def registry(request, filtertype=None):
             "researchers": r,
             "communities": c,
             "institutions": i,
+            "service_providers": sp,
             "items": page,
             "filtertype": filtertype,
         }

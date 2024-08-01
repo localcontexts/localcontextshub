@@ -15,6 +15,11 @@
         {% include 'partials/_subnav.html' %}
     {% endif %}
 
+    {% if service_provider %}
+        {% include 'partials/infocards/_service-provider-dashcard.html' %}
+        {% include 'partials/_subnav.html' %}
+    {% endif %}
+
     <div
     class="content-card-v2 content-card-space flex-this column settings-height"
     >
@@ -23,7 +28,7 @@
     <div class="flex-this w-100 mb-2p">
 
         <div class="side-nav-container">
-            <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}">
+            <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'update-service-provider' service_provider.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if '/update/' in request.path %} selected {% else %} grey-text {% endif %}">
                     <div class="w-20 ml-8 mt-8"><i class="fa-solid fa-circle-user fa-3x"></i></div>
                     <div class="w-80">
@@ -36,6 +41,9 @@
                             {% endif %}
                             {% if researcher %}
                                 <strong>Researcher Account</strong><br>Contact email, primary institution, description
+                            {% endif %}
+                            {% if service_provider %}
+                                <strong>Service Provider Account</strong><br>Image, description
                             {% endif %}
                         </p>
                     </div>
@@ -55,7 +63,7 @@
                 </a>
             {% endif %}
 
-            <a href="{% if community %}{% url 'community-api-key' community.id %}{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}">
+            <a href="{% if community %}{% url 'community-api-key' community.id %}{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}{% if service_provider %}{% url 'service-provider-api-key' service_provider.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
                     <div class="w-20 mr-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
                     <div class="w-80">
