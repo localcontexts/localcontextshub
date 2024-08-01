@@ -36,7 +36,7 @@
                         >
                     </div>
 
-                    <div class="margin-top-8">
+                    <div class="mt-8">
                         <label>New role</label><br>
                         <select name="new_role" class="w-100">
                             <option selected="true" disabled>-------------</option>
@@ -47,11 +47,11 @@
                     </div>
                 </div>
 
-                <div class="flex-this flex-end w-100 text-align-center margin-top-16">
-                    <button id="continueRoleChangeBtn" class="primary-btn white-btn margin-right-1" name="change_member_role_btn">Update member role</button>    
+                <div class="flex-this flex-end w-100 text-align-center mt-16">
+                    <button id="continueRoleChangeBtn" class="primary-btn white-btn mr-1p" name="change_member_role_btn">Update member role</button>    
                     <div 
                         id="closeRoleChangeModal_{% if admin %}{{ admin.id }}{% endif %}{% if editor %}{{ editor.id }}{% endif %}{% if viewer %}{{ viewer.id }}{% endif %}" 
-                        class="margin-left-1 primary-btn action-btn"
+                        class="ml-1p primary-btn action-btn"
                     >Cancel</div>
                 </div>
             </form>

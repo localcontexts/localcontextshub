@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import include, path, re_path
+
 from helpers.views import restricted_view
+
 from .admin import admin_site
 
 admin.site.site_header = 'Local Contexts Hub administration'
@@ -34,9 +36,7 @@ urlpatterns = [
     path('helpers/', include('helpers.urls')),
     path('api/', include('api.urls')),
     path('restricted/403/', restricted_view, name="restricted"),
-
     path('notifications/', include('notifications.urls')),
-
     re_path(r'^maintenance-mode/', include('maintenance_mode.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

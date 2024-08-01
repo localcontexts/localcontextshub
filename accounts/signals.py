@@ -1,10 +1,12 @@
 import pprint
 
-from django.db.models.signals import post_save, post_delete, pre_delete
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
+
 from helpers.logging import get_log_data
-from .models import Profile, UserAffiliation, InactiveUser
+
+from .models import InactiveUser, Profile, UserAffiliation
 
 
 # When a user is saved, send this signal

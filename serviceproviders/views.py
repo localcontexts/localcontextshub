@@ -190,15 +190,24 @@ def service_provider_notices(request, pk):
     ).values_list("url", "name", "id")
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
+    if service_provider.is_certified:
+        not_approved_download_notice = None
+        not_approved_shared_notice = None
+    else:
+        not_approved_download_notice = "Your service provider account needs to be subscribed in order to download this Notice."
+        not_approved_shared_notice = "Your service provider account needs to be subscribed in order to share this Notice."
+
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
         is_sandbox = True
         otc_download_perm = 0
-        ccn_download_perm = 0
+        download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
+        share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
         otc_download_perm = 1 if service_provider.is_certified else 0
-        ccn_download_perm = 1 if service_provider.is_certified else 0
+        download_notice_on_sandbox = None
+        share_notice_on_sandbox = None
 
     if request.method == "POST" and form.is_valid():
         data = form.save(commit=False)
@@ -220,7 +229,10 @@ def service_provider_notices(request, pk):
         "form": form,
         "urls": urls,
         "otc_download_perm": otc_download_perm,
-        "ccn_download_perm": ccn_download_perm,
+        'not_approved_download_notice': not_approved_download_notice,
+        'download_notice_on_sandbox': download_notice_on_sandbox,
+        'not_approved_shared_notice': not_approved_shared_notice,
+        'share_notice_on_sandbox': share_notice_on_sandbox,
         "is_sandbox": is_sandbox,
     }
     return render(request, "serviceproviders/notices.html", context)

@@ -2,9 +2,9 @@
 
 {% load socialaccount %}
 {% block card %}
-    <div class="flex-this space-between margin-bottom-8 w-90">
+    <div class="flex-this space-between mb-8 w-90">
         <div>
-            <h2 class="margin-bottom-2">Welcome back!</h2>
+            <h2 class="mb-2p">Welcome back!</h2>
         </div>
         <div><p>Not signed up yet? <a href="{% url 'register' %}" class="default-a">Register</a></p></div>
     </div>
@@ -15,7 +15,7 @@
             {% csrf_token %}
             <div>
                 <label>Username</label>
-                <div class="tooltip" style="margin-top: 15px; margin-left: 5px;"><strong>i</strong>
+                <div class="tooltip mt-15 ml-5"><strong>i</strong>
                     <span class="tooltiptext">Log-in with the username you created during the registration process, not your email</span>
                 </div>
                 <input type="username" name="username" required>
@@ -27,10 +27,10 @@
             <div>
                 <a href="{% url 'reset_password'%}" class="default-a">Forgot your password?</a>
             </div> 
-            <div class="flex-this column margin-top-2">
+            <div class="flex-this column mt-2p">
                 <div class="w-100"> 
 
-                    <div class="flex-this justify-center"> <button class="primary-btn action-btn margin-top-2 w-100 signin-btn">Sign in</button></div>
+                    <div class="flex-this justify-center"> <button class="primary-btn action-btn mt-2p w-100 signin-btn">Sign in</button></div>
                 </div>
                 <div class="flex-this justify-center align-center gap-1">
                     <div class="horizental-line"> </div>
@@ -38,7 +38,7 @@
                 <div class="horizental-line"> </div>
                 </div>
                 <div class="flex-this">
-                    <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Sign in With Google</span></a>
+                    <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt=""><span class="ml-1p primary-black-text">Sign in With Google</span></a>
                 </div>
             </div>
             <input type="hidden" name="next" value="{% if request.POST.next %}{{ request.POST.next }}{% else %}{{ request.GET.next }}{% endif %}"/>
@@ -49,7 +49,7 @@
         {% if not envi == "SANDBOX" %}
             <div class="flex-this column w-100 test-hub-div">
                 <div>
-                    <p class="no-top-margin">Interested in exploring the Local Contexts hub before registering? Explore our sandbox website where you can play around our tools.</p>
+                    <p class="mt-0">Interested in exploring the Local Contexts hub before registering? Explore our sandbox website where you can play around our tools.</p>
                 </div>
                 <div>
                     <a class="primary-btn green-btn block" href="https://sandbox.localcontextshub.org" target="_blank" rel="noopener">Explore Sandbox</a></div>

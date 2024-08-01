@@ -64,6 +64,7 @@
     font-size: 14px;
     align-items: center;
     max-height: 650px;
+    overflow-x: hidden; /* Disable vertical scrolling */
 }
 
 /* Progress Container */

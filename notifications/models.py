@@ -1,9 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
+
 
 class UserNotification(models.Model):
     TYPES = (
@@ -23,8 +25,12 @@ class UserNotification(models.Model):
 
     title = models.CharField(max_length=200, blank=True)
     message = models.TextField(blank=True)
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="to_user", blank=True)
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="from_user", blank=True)
+    to_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, related_name="to_user", blank=True
+    )
+    from_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, related_name="from_user", blank=True
+    )
     notification_type = models.CharField(max_length=10, choices=TYPES, null=True, blank=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
@@ -40,7 +46,8 @@ class UserNotification(models.Model):
     class Meta:
         verbose_name = 'User Notification'
         verbose_name_plural = 'User Notifications'
-        ordering = ('viewed', '-created') # will display False first, then True
+        ordering = ('viewed', '-created')  # will display False first, then True
+
 
 class ActionNotification(models.Model):
     TYPES = (
@@ -53,7 +60,13 @@ class ActionNotification(models.Model):
 
     title = models.CharField(max_length=200, blank=True)
     notification_type = models.CharField(max_length=20, choices=TYPES, null=True, blank=True)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="notification_sender", blank=True)
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="notification_sender",
+        blank=True
+    )
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, null=True, blank=True)
@@ -69,6 +82,3 @@ class ActionNotification(models.Model):
         verbose_name = 'Action Notification'
         verbose_name_plural = 'Action Notifications'
         ordering = ('viewed', '-created')
-
-
-

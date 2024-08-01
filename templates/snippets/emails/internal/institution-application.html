@@ -37,6 +37,10 @@
         <td>{{ data.description }}</td>
     </tr>
     <tr>
+        <th>Website:</th>
+        <td>{% if data.website %} {{ data.website }} {% else %} None provided {% endif %}</td>
+    </tr>
+    <tr>
         <th>ROR ID:</th>
         <td>
             {% if data.is_ror %}
