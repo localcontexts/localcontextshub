@@ -63,7 +63,7 @@ def connect_researcher(request):
                 "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
                 "account_type": "researcher_account",
-                "organization_name": user_form.cleaned_data['first_name'],
+                "organization_name": get_users_name(request.user),
                 }
                 mutable_post_data.update(subscription_data)
                 subscription_form = SubscriptionForm(mutable_post_data)
