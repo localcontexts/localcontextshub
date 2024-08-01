@@ -23,25 +23,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
-from maintenance_mode.decorators import force_maintenance_mode_off
 from unidecode import unidecode
-
-from institutions.models import Institution
-from localcontexts.utils import dev_prod_or_local
-from researchers.models import Researcher
-from .decorators import unauthenticated_user, zero_account_user
-from serviceproviders.models import ServiceProvider
-
-from communities.models import InviteMember, Community
-from helpers.models import HubActivity
-from projects.models import Project
-
-from researchers.utils import is_user_researcher
-from helpers.utils import (
-    accept_member_invite,
-    validate_email,
-    validate_recaptcha
-)
 
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
@@ -69,8 +51,10 @@ from projects.models import Project
 from communities.models import InviteMember, Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 from .decorators import unauthenticated_user, zero_account_user
+from maintenance_mode.decorators import force_maintenance_mode_off
 
 
 @unauthenticated_user
@@ -276,9 +260,9 @@ def dashboard(request):
     researcher = is_user_researcher(user)
 
     affiliation = user.user_affiliations.prefetch_related(
-        'communities', 'institutions', 'service_providers', 'communities__admins', 'communities__editors',
-        'communities__viewers', 'institutions__admins', 'institutions__editors',
-        'institutions__viewers'
+        'communities', 'institutions', 'service_providers', 'communities__admins',
+        'communities__editors', 'communities__viewers', 'institutions__admins',
+        'institutions__editors', 'institutions__viewers'
     ).all().first()
 
     user_communities = affiliation.communities.all()
