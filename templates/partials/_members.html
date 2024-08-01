@@ -56,7 +56,7 @@
             </span></div>
         </div>
         {% if not service_provider %}
-            <div class="flex-this margin-bottom-8">
+            <div class="flex-this mb-8">
                 <div class="member-roles"><span class="bold">Viewer</span> | </div>
                 <div><span>Viewers can see the activity happening in the account but cannot change or edit anything.</span></div>
             </div>
@@ -628,20 +628,20 @@
 {% if service_provider %}
     <section class="dash-driver flex-this column">
         <div class="flex-this space-between">
-            <div class="margin-bottom-16">
+            <div class="mr-16">
                 <small class="bold">Role - Main Admininstrator</small>
             </div>
         </div>
 
         <div class="w-70">
-            <h2 class="no-top-margin no-bottom-margin">
+            <h2 class="mt-0 mb-0">
                 {% firstof service_provider.account_creator.get_full_name service_provider.account_creator.username %}
             </h2>
             {% if service_provider.account_creator.user_profile.position %}
-                <h3 class="no-top-margin">{{ service_provider.account_creator.user_profile.position }}</h3>
+                <h3 class="mt-0">{{ service_provider.account_creator.user_profile.position }}</h3>
             {% endif %}
 
-            <h4 class="no-top-margin"> {{ service_provider.account_creator.user_profile.get_location }} </h4>
+            <h4 class="mt-0"> {{ service_provider.account_creator.user_profile.get_location }} </h4>
 
             {% if service_provider.account_creator.user_profile.languages_spoken %}
                 <div class="flex-this">
@@ -650,7 +650,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Languages</small>
-                        <p class="no-top-margin">{{ service_provider.account_creator.user_profile.languages_spoken }}</p>
+                        <p class="mt-0">{{ service_provider.account_creator.user_profile.languages_spoken }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -662,7 +662,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Affiliations</small>
-                        <p class="no-top-margin">{{ service_provider.account_creator.user_profile.affiliation }}</p>
+                        <p class="mt-0">{{ service_provider.account_creator.user_profile.affiliation }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -674,7 +674,7 @@
                     </div>
                     <div>
                         <small class="orange-text">Email</small>
-                        <p class="no-top-margin">{{ service_provider.account_creator.email }}</p>
+                        <p class="mt-0">{{ service_provider.account_creator.email }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -692,7 +692,7 @@
 
                 {% if member_role == 'admin' %}
                     <div class="flex-this">
-                        <div class="margin-right-16 margin-top-8">
+                        <div class="mr-16 mt-8">
                             <a id="removeMemberBtn_{{editor.id}}" class="block removeMemberBtn"><small class="darkteal-text bold pointer underline-hover">Remove member</small></a>
                         </div>
                     </div>
@@ -702,14 +702,14 @@
             </div>
 
             <div class="w-70">
-                <h2 class="no-top-margin no-bottom-margin">
+                <h2 class="mt-0 mb-0">
                     {% firstof editor.get_full_name editor.username %}
                 </h2>
                 {% if editor.user_profile.position %}
-                    <h3 class="no-top-margin">{{ editor.user_profile.position }}</h3>
+                    <h3 class="mt-0">{{ editor.user_profile.position }}</h3>
                 {% endif %}
 
-                <h4 class="no-top-margin"> {{ editor.user_profile.get_location }} </h4>
+                <h4 class="mt-0"> {{ editor.user_profile.get_location }} </h4>
 
                 {% if editor.user_profile.languages_spoken %}
                     <div class="flex-this">
@@ -718,7 +718,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Languages</small>
-                            <p class="no-top-margin">{{ editor.user_profile.languages_spoken }}</p>
+                            <p class="mt-0">{{ editor.user_profile.languages_spoken }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -730,7 +730,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Affiliations</small>
-                            <p class="no-top-margin">{{ editor.user_profile.affiliation }}</p>
+                            <p class="mt-0">{{ editor.user_profile.affiliation }}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -742,7 +742,7 @@
                         </div>
                         <div>
                             <small class="orange-text">Email</small>
-                            <p class="no-top-margin">{{ editor.email }}</p>
+                            <p class="mt-0">{{ editor.email }}</p>
                         </div>
                     </div>
                 {% endif %}

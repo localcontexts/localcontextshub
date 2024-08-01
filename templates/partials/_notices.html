@@ -165,7 +165,7 @@
                     <div class="flex-this align-center">
                         {% if member_role == 'admin' or member_role == 'editor' %}
                             <div class="btn-with-helptext">
-                                <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn margin-top-2 helptext{% else %} primary-btn green-btn margin-top-2 {% endif %}" 
+                                <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext{% else %} primary-btn green-btn mt-2p {% endif %}" 
                                     href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
                                     Create a Project <i class="fa fa-arrow-right"></i>
                                 </a>
@@ -236,15 +236,15 @@
             </div>
         </div>
 
-        <div class="w-80 auto-margin">
+        <div class="w-80 m-auto">
 
             <div id="openDiv-disclosureTK" class="disclosure-notice__expanded-container hide">
                 <div class="flex-this">
                     <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-                    <div class="flex-this column margin-left-16">
+                    <div class="flex-this column ml-16">
                         <div class="w-90">
-                            <h2 class="no-top-margin">Traditional Knowledge Notice</h2>
-                            <p class="no-top-margin">
+                            <h2 class="mt-0">Traditional Knowledge Notice</h2>
+                            <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 This Notice should be used to recognize that place-based knowledge carries accompanying cultural rights and responsibilities and that appropriate permissions may need to be sought for future use of this material.
                             </p>        
@@ -263,10 +263,10 @@
             <div id="openDiv-disclosureBC" class="disclosure-notice__expanded-container hide">
                 <div class="flex-this">
                     <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
-                    <div class="flex-this column margin-left-16">
+                    <div class="flex-this column ml-16">
                         <div class="w-90">
-                            <h2 class="no-top-margin">Biocultural Notice</h2>
-                            <p class="no-top-margin">
+                            <h2 class="mt-0">Biocultural Notice</h2>
+                            <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 The BC Notice should be used to recognize the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity and genetic resources associated with their traditional lands, waters, and territories. It acknowledges the importance of cultural protocols and recognizes that appropriate permissions may need to be sought for future use of this material or data.
                             </p>        
@@ -285,10 +285,10 @@
             <div id="openDiv-disclosureAI" class="disclosure-notice__expanded-container hide">
                 <div class="flex-this">
                     <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
-                    <div class="flex-this column margin-left-16">
+                    <div class="flex-this column ml-16">
                         <div class="w-90">
-                            <h2 class="no-top-margin">Attribution Incomplete Notice</h2>
-                            <p class="no-top-margin">
+                            <h2 class="mt-0">Attribution Incomplete Notice</h2>
+                            <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 The Attribution Incomplete Notice is attached to a collection or at an item level where there is incomplete, inaccurate, or missing attribution. This Notice indicates to the public that the record and/or metadata is incomplete. Visibly identifying missing attribution within collections is the first step towards correcting existing attribution to include: contributors, collaborators, other authors and/or communities of origin.
                             </p>        
@@ -661,19 +661,19 @@
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-solid fa-envelope" style="margin-right: 10px;" title="Share via Email"></i>
+                    <i class="socials-btn fa-solid fa-envelope" style="mr-10" title="Share via Email"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-whatsapp" style="margin-right: 10px;" title="Share via WhatsApp"></i>
+                    <i class="socials-btn fa-brands fa-whatsapp" style="mr-10" title="Share via WhatsApp"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-facebook-f" style="margin-right: 10px;" title="Share on Facebook"></i>
+                    <i class="socials-btn fa-brands fa-facebook-f" style="mr-10" title="Share on Facebook"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-twitter" style="margin-right: 10px;" title="Share on Twitter"></i>
+                    <i class="socials-btn fa-brands fa-twitter" style="mr-10" title="Share on Twitter"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-linkedin" style="margin-right: 10px;" title="Share on LinkedIn"></i>
+                    <i class="socials-btn fa-brands fa-linkedin" style="mr-10" title="Share on LinkedIn"></i>
                 </div>
             </div>
         </div>

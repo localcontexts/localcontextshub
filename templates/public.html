@@ -265,7 +265,7 @@
 
     {% if service_provider %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold  margin-bottom-16">
+            <div class="loc grey-text bold  mr-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -277,7 +277,7 @@
             {% if request.user.is_authenticated %}
                 {% if not service_provider.account_creator == request.user %}
                     <div class="dashcard-btn-container">
-                        <div class="margin-left-16">
+                        <div class="ml-16">
                             {% if env == "SANDBOX" %}
                                 <div class="btn-with-helptext">
                                     <a class="primary-btn disabled-btn">Contact Us</a>
@@ -293,7 +293,7 @@
                 {% endif %}
 
             {% else %}
-                <div class="loc grey-text bold margin-bottom-16">
+                <div class="loc grey-text bold mr-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
                             Login</a> to contact
@@ -333,7 +333,7 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
+                        <div class="mr-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
@@ -572,7 +572,7 @@
                     <div class="w-100">
                         <div class="flex-this space-between">
                             <div class="w-70">
-                                <h2 class="primary-black-text no-top-margin no-bottom-margin">Contact form</h2>
+                                <h2 class="primary-black-text mt-0 mb-0">Contact form</h2>
                             </div>
                             <div>
                                 <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
