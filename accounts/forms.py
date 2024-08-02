@@ -63,7 +63,9 @@ class UserUpdateForm(forms.ModelForm):
         fields = ["email", "first_name", "last_name"]
         widgets = {
             "email": forms.EmailInput(attrs={"class": "w-100"}),
-            "first_name": forms.TextInput(attrs={"class": "w-100"}),
+            "first_name": forms.TextInput(
+                attrs={"class": "w-100", "required": True}
+            ),
             "last_name": forms.TextInput(attrs={"class": "w-100"}),
         }
 
