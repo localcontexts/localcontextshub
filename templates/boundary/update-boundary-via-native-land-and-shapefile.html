@@ -390,6 +390,7 @@
         }
 
         selectionUnit.querySelector('.selected-title').value = `${title} (territories)`
+        selectionUnit.querySelector('.selected-title').disabled = true
 
         // set selected data for selection
         selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
@@ -471,6 +472,7 @@
         // show and label ui elements
         self.closest('.boundary-selection-unit').querySelector('.selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
+        selectionUnit.querySelector('.selected-title').disabled = false
         enableContinueButton()
 
         clearNLInput(selectionUnit)
