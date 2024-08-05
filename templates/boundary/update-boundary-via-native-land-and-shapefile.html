@@ -36,6 +36,7 @@
         background: aliceblue;
         border-radius: 5px;
         user-select: none;
+        width: 100%;
     }
     .selected-title-ellipsis{
         width: 430px;
@@ -188,7 +189,7 @@
             </strong><br>
 
             <div class="selected-title-wrapper">
-                <div class="selected-title">Place Holder</div>
+                <input class="selected-title" maxlength="60" onchange="updateName(this)">
                 <a class="view-boundary-link" target="_blank">
                     View Location &nbsp;
                     <i class="fa fa-arrow-up-right-from-square"></i>
@@ -316,6 +317,10 @@
       * */
       document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
     }
+    function updateName(self) {
+      BoundaryPayLoad.name = self.value
+      setBoundaryPayloadForInputElement()
+    }
     async function getNativeLandBoundary(selectionUnit, slug) {
         /*
         * This code attempts to get the actual boundary data from Native Land.
@@ -384,7 +389,7 @@
           return
         }
 
-        selectionUnit.querySelector('.selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
+        selectionUnit.querySelector('.selected-title').value = `${title} (territories)`
 
         // set selected data for selection
         selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
@@ -464,7 +469,7 @@
 
         successMessage.classList.toggle('invisible')
         // show and label ui elements
-        self.closest('.boundary-selection-unit').querySelector('.selected-title').innerText = geoJsonData.fileName || 'Uploaded Shapefile'
+        self.closest('.boundary-selection-unit').querySelector('.selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
         self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
         enableContinueButton()
 
