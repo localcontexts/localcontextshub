@@ -57,6 +57,13 @@
         }
         document.querySelector('#preview-container-wrapper').classList.add('hidden-element')
     }
+
+    function shapeFileChange(self) {
+      // set the input element sent to backend when saved
+      document.querySelector('.selected-title').value = self.value
+
+      enableContinueButton()
+    }
 </script>
 <div class="flex-this space-between">
     <div><h2 class="no-top-margin">Community Boundary</h2></div>
@@ -77,7 +84,9 @@
 
             <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
                 <div style="display: flex">
-                    <input class='name_of_boundary' value="{{ community.name_of_boundary }}">
+                    <input class='name_of_boundary' value="{{ community.name_of_boundary }}" onchange="shapeFileChange(this)"
+                    {% if 'native-land.ca' in community.source_of_boundary %}disabled{% endif %}
+                    >
                     <div style="margin: auto 0px">
                         <div style="width: 100px">(territories)</div>
                     </div>
