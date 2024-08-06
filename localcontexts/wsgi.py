@@ -12,9 +12,9 @@ import os
 from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'localcontexts.settings')
 # Import your start_scheduler function
-# from helpers.scheduler import start_scheduler
 
 application = get_wsgi_application()
 
 # Call start_scheduler when the WSGI application is loaded
-# start_scheduler()
+from helpers.scheduler import start_scheduler
+start_scheduler()
