@@ -25,6 +25,18 @@
     #preview-boundary-container.hidden-element{
         display: none;
     }
+    .name_of_boundary {
+        field-sizing: content;
+        padding: 12px;
+        font-weight: bold;
+        font-size: 16px;
+        max-height: 40px;
+        min-height: 40px;
+        background-color: #fff;
+        border: 1px solid #1f293700;
+        border-radius: 4px;
+        max-width: 560px;
+    }
 </style>
 
 <script>
@@ -45,9 +57,17 @@
     }
 </script>
 <div id="preview-boundary-container">
-    <strong class="center-boundary-container-item-vertically">
-        {{ entity.name_of_boundary }} (territories)
-    </strong>
+
+    <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
+        <div style="display: flex">
+            <input class='name_of_boundary' value="{{ entity.name_of_boundary }}" onchange="shapeFileChange(this)"
+            {% if 'native-land.ca' in entity.source_of_boundary %}disabled{% endif %}
+            >
+            <div style="margin: auto 0px">
+                <div style="width: 100px">(territories)</div>
+            </div>
+        </div>
+    </div>
 
     <div id="boundary-container-right">
         <div id="remove-boundary" class="center-boundary-container-item-vertically"
