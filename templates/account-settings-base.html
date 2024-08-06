@@ -25,12 +25,12 @@
     >
     <h2 class="mt-0">Account Settings</h2>
 
-    <div class="flex-this w-100 mb-2p">
+    <div class="flex-this w-100 mb-2p" style="flex:1;">
 
         <div class="side-nav-container">
             <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'update-service-provider' service_provider.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if '/update/' in request.path %} selected {% else %} grey-text {% endif %}">
-                    <div class="w-20 ml-8 mt-8"><i class="fa-solid fa-circle-user fa-3x"></i></div>
+                    <div class="w-20 m-auto"><i class="fa-solid fa-circle-user fa-3x m-auto"></i></div>
                     <div class="w-80">
                         <p class="mt-0">
                             {% if community %}
@@ -53,7 +53,7 @@
             {% if community %}
                 <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
                     <div class="flex-this side-nav-item {% if '/communities/update-community-boundary/' in request.path %} selected {% else %} grey-text {% endif %}">
-                        <div class="w-20 ml-8 mt-8"><i class="fa-solid fa-location-dot fa-3x"></i></div>
+                        <div class="w-20 m-auto"><i class="fa-solid fa-location-dot fa-3x m-auto"></i></div>
                         <div class="w-80">
                             <p class="mt-8">
                                 <strong>Boundary</strong><br>Community Location
@@ -65,12 +65,25 @@
 
             <a href="{% if community %}{% url 'community-api-key' community.id %}{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}{% if service_provider %}{% url 'service-provider-api-key' service_provider.id %}{% endif %}">
                 <div class="flex-this side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
-                    <div class="w-20 mr-8"><i class="fa fa-code fa-3x" aria-hidden="true"></i></div>
+                    <div class="w-20 m-auto"><i class="fa fa-code fa-3x m-auto" style="font-size: 40px;" aria-hidden="true"></i></div>
                     <div class="w-80">
                         <p class="mt-0"><strong>API Keys</strong><br>Manage API Keys</p>
                     </div>
                 </div>
             </a>
+
+            {% if not service_provider %}
+                <a href="{% if community %}{% url 'community-connect-service-provider' community.id %}{% endif %}{% if institution %}{% url 'institution-connect-service-provider' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-connect-service-provider' researcher.id %}{% endif %}">
+                    <div class="flex-this side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
+                        <div class="w-20 m-auto" style="width: fit-content;">
+                            <img width="45" src="{% static 'images/logos/sp-logo-grey.png' %}">
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0"><strong>Service Providers</strong><br>Connect to a Service Provider</p>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
         </div>
 
         <!-- Right side of the settings div -->

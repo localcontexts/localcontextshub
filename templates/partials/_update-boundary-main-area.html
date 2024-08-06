@@ -34,7 +34,7 @@
 <script>
     async function resetBoundary(){
         // do post call to reset boundary in request
-        const response = await fetch("{% url 'reset-community_boundary' community.id %}", {
+        const response = await fetch("{% url 'reset-community-boundary' community.id %}", {
             method: 'POST',
             headers: {
               'X-CSRFToken': '{{csrf_token}}'

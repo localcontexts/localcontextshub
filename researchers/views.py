@@ -813,7 +813,20 @@ def connections(request, researcher):
     }
     return render(request, 'researchers/connections.html', context)
 
-    
+
+@login_required(login_url="login")
+@get_researcher(pk_arg_name='pk')
+def connect_service_provider(request, researcher):
+    try:
+        context = {
+            'researcher': researcher,
+            'user_can_view': True,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
+
 @force_maintenance_mode_off
 def embed_otc_notice(request, pk):
     layout = request.GET.get('lt')

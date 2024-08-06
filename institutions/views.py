@@ -1431,6 +1431,22 @@ def connections(request, pk):
     return render(request, "institutions/connections.html", context)
 
 
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def connect_service_provider(request, pk):
+    try:
+        institution = get_institution(pk)
+        member_role = check_member_role(request.user, institution)
+
+        context = {
+            "member_role": member_role,
+            "institution": institution,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
+
 @force_maintenance_mode_off
 def embed_otc_notice(request, pk):
     layout = request.GET.get("lt")

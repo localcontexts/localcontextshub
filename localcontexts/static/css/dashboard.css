@@ -135,6 +135,7 @@
 .side-nav-item i {
     display: block;
     font-size: 45px;
+    width: fit-content;
 }
 
 .leave-acct-btn {

@@ -1299,6 +1299,22 @@ def connections(request, pk):
     }
     return render(request, 'communities/connections.html', context)
 
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def connect_service_provider(request, pk):
+    try:
+        community = get_community(pk)
+        member_role = check_member_role(request.user, community)
+
+        context = {
+            "member_role": member_role,
+            "community": community,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
 # show community Labels in a PDF
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
