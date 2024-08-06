@@ -55,6 +55,12 @@
         document.querySelector('#preview-boundary-container').classList.add('hidden-element')
         hideSpinner()
     }
+
+    function shapeFileChange(self) {
+      // set the input element sent to backend when saved
+      BoundaryPayLoad.name = self.value
+      document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
+    }
 </script>
 <div id="preview-boundary-container">
 
