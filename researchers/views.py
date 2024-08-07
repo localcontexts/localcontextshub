@@ -210,10 +210,9 @@ def researcher_notices(request, researcher):
     create_restricted_message = False
 
     try:
-        if researcher.is_subscribed:
-            subscription = Subscription.objects.get(researcher=researcher.id)
-            not_approved_download_notice = None
-            not_approved_shared_notice = None
+        subscription = Subscription.objects.get(researcher=researcher.id)
+        not_approved_download_notice = None
+        not_approved_shared_notice = None
     except Subscription.DoesNotExist:
         subscription = None
         not_approved_download_notice = "Your researcher account needs to be confirmed in order to download this Notice."

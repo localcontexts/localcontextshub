@@ -717,7 +717,7 @@ def form_initiation(request,account_type=""):
     elif account_type == "researcher_action":
         exclude_choices = {"member", "service_provider", "cc_only"}
     else:
-        return None, None
+        exclude_choices = set()
 
     subscription_form = SubscriptionForm()
     subscription_form.fields["inquiry_type"].choices = [
