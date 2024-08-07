@@ -3,7 +3,10 @@
 <div class="flex-this column">
     <div class="flex-this space-between w-100">
         <h2 class="mt-0">Choose an account</h2>
-        <p class="mt-0">Received an invite? <a href="{% url 'member-invitations' %}" class="default-a">Go to Profile</a></p>
+        <p class="mt-0">
+            Received an invite?
+            <a href="{% url 'member-invitations' %}" class="default-a">Go to Profile</a>
+        </p>
     </div>
     <p class="mt-0">Choose an account type that best suites your situation. Depending on the account you select, either join or create a new account. Users can be a member of multiple accounts.</p>
 
@@ -11,98 +14,123 @@
 
         <div class="account-card">
             <div class="flex-this w-100 align-center">
-                <input 
-                    class="w-10" 
-                    type="radio" 
-                    name="selectAccount" 
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
                     value="community"
                     onclick="showButtons(this);"
                 >
-                <img 
-                    loading="lazy" 
-                    class="w-10 ml-16 mr-16 tiny-label pointer-event-none" 
-                    src="{% static 'images/tk-labels/tk-attribution.png' %}" 
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-label pointer-event-none"
+                    src="{% static 'images/tk-labels/tk-attribution.png' %}"
                     alt="TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right."
                 >
                 <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Community Account</strong></p>
+                        <div class="tooltip ml-8"><strong>i</strong>
+                            <span class="tooltiptext">
+                                A community entity might be an Indigenous or local community’s Cultural Department; Tribal and Historical Preservation Office; Community Center; Preservation Office; Community Library, Archive, or Museum; Land Council; or Indigenous Rangers.
+                            </span>
+                        </div>
+                    </div>
                     <p class="mb-0 mt-0">
-                        <strong>Community Account</strong>
-                        <br>
                         An Indigenous or local community entity or representative who can Customize and apply TK and BC Labels, and create Projects.
                     </p>
-                </div>           
+                </div>
             </div>
         </div>
 
         <div class="account-card">
             <div class="flex-this w-100 align-center">
-                <input 
-                    class="w-10" 
-                    type="radio" 
-                    name="selectAccount" 
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
                     value="institution"
                     onclick="showButtons(this);"
                 >
-                <img 
-                    loading="lazy" 
-                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none" 
-                    src="{% static 'images/notices/tk-notice.png' %}" 
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/notices/tk-notice.png' %}"
                     alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
                 >
                 <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Institution Account</strong></p>
+                        <div class="tooltip ml-8"><strong>i</strong>
+                            <span class="tooltiptext">
+                                An institution might be an archive, library, museum, historical society, gallery, data repository, university, or media production company. If you are an Indigenous institution, choose the community account.
+                            </span>
+                        </div>
+                    </div>
                     <p class="mb-0 mt-0">
-                        <strong>Institution Account</strong>
-                        <br>
                         Cultural or research institutions, data repositories, and other organizations can create projects and generate Notices.
                     </p>
-                </div>           
+                </div>
             </div>
         </div>
 
         <div class="account-card">
             <div class="flex-this w-100 align-center">
-                <input 
-                    class="w-10" 
-                    type="radio" 
-                    name="selectAccount" 
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
                     value="researcher"
                     onclick="showButtons(this);"
                 >
-                <img 
-                    loading="lazy" 
-                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none" 
-                    src="{% static 'images/notices/tk-notice.png' %}" 
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/notices/tk-notice.png' %}"
                     alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
                 >
                 <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Researcher Account</strong></p>
+                        <div class="tooltip ml-8"><strong>i</strong>
+                            <span class="tooltiptext">
+                                An individual who carries out academic or scientific research independently or in an institution.
+                            </span>
+                        </div>
+                    </div>
                     <p class="mb-0 mt-0">
-                        <strong>Researcher Account</strong>
-                        <br>
                         An individual who carries out academic or scientific research independently or in an institution can create projects and generate Notices.
                     </p>
-                </div>           
+                </div>
             </div>
         </div>
 
         <div class="account-card">
             <div class="flex-this w-100 align-center">
-                <input 
-                    class="w-10" 
-                    type="radio" 
-                    name="selectAccount" 
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
                     value="service-provider"
                     onclick="showButtons(this);"
                 >
-                <img 
-                    loading="lazy" 
-                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none" 
-                    src="{% static 'images/logos/sp-logo-black.png' %}" 
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/logos/sp-logo-black.png' %}"
                     alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
                 >
                 <div class="flex-this column w-80">
-                    <p class="mb-0 mt-0 bold">Service Provider Account</p>
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Service Provider Account</strong></p>
+                        <div class="tooltip ml-8"><strong>i</strong>
+                            <span class="tooltiptext">
+                                A Service Provider is an organization that offers platforms that can be used by customers/users to organize or share collections or data. This includes collections management systems, digital asset management systems, repositories, and databases.
+                            </span>
+                        </div>
+                    </div>
                     <p class="mb-0 mt-0">Any organization that integrates Local Contexts Labels and Notices into their products.</p>
-                </div>           
+                </div>
             </div>
         </div>
     </div>
