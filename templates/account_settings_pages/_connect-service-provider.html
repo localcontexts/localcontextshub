@@ -1,10 +1,96 @@
 {% extends 'account-settings-base.html' %}{% load static %}
 
 {% block account_settings %}
-<div class="flex-this space-between">
-    <div><h3 class="mt-0">Linked Service Providers</h3></div>
+<style>
+    .disconnect-btn {
+        background-color: #DDDDDD;
+        border: 1px solid #DDDDDD;
+    }
+
+    .disconnect-btn:hover {
+        background-color: #e7e7e7;
+    }
+</style>
+
+<div>
+    <h3 class="mt-0">Linked Service Providers</h3>
+    <p class="mt-0">Connect to internal service providers.</p>
 </div>
 {% include 'partials/_alerts.html' %}
-<p class="mt-0">Connect to internal service providers.</p>
+
+<div class="w-60 mb-16">
+    <form class="default-searchbar w-100" method="GET" action="">
+        <input type="search" name="q" placeholder="Search" autocomplete="off">
+        <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+    </form>
+</div>
+
+<div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+    <div class="w-70 ml-16">
+        <p class="bold">Metadata Game Changers</p>
+    </div>
+    <button name="connectServiceProviderbtn" class="mr-16 primary-btn green-btn" data-name="Metadata Game Changers">Connect <i class="fa-solid fa-link-simple"></i></button>
+</div>
+<div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+    <div class="w-70 ml-16">
+        <p class="bold">ArchivesSpace</p>
+    </div>
+    <button name="connectServiceProviderbtn" class="mr-16 primary-btn green-btn">Connect <i class="fa-solid fa-link-simple"></i></button>
+</div>
+<div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+    <div class="w-70 ml-16">
+        <p class="bold">Omeka</p>
+    </div>
+    <button name="disconnectServiceProviderbtn" class="mr-16 primary-btn disconnect-btn">Disconnect <i class="fa-solid fa-link-simple-slash"></i></button>
+</div>
+<div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+    <div class="w-70 ml-16">
+        <p class="bold">Oceans Network Canada</p>
+    </div>
+    <button name="connectServiceProviderbtn" class="mr-16 primary-btn green-btn">Connect <i class="fa-solid fa-link-simple"></i></button>
+</div>
+
+<!-- Connect Service Provider Modal -->
+<div id="connectServiceProvidermodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Connect Service Provider</h2>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <p class="mt-0">When you link your Hub account, <span id="serviceProvidername" class="bold"></span> will be able to:</p>
+            <ul>
+                <li>Basic account information</li>
+                <li>See your Projects</li>
+            </ul>
+            <p>Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.</p>
+
+            <div class="flex-this column gap-half">
+                <form id="connectServiceProviderForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueServiceProviderConnectBtn" class="primary-btn action-btn w-100" name="connectServiceProvider" value="">Connect with this Service Provider</button>
+                </form>
+                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const connectBtns = document.querySelectorAll(`[name="connectServiceProviderbtn"]`);
+    const connectServiceProvidermodal = document.getElementById('connectServiceProvidermodal')
+    connectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            openModal('connectServiceProvidermodal', 'closeConnectServiceProvidermodal');
+            serviceProvidername.innerHTML = btn.dataset.name;
+        });
+    });
+</script>
 
 {% endblock %}

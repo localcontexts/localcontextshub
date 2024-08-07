@@ -1950,6 +1950,7 @@ function shareToSocialsBtnAction(btnElem) {
 }
 
 function openModal(modalId, closeBtnId) {
+    console.log(modalId)
     const modal = document.getElementById(modalId)
     modal.classList.replace('hide', 'show')
 
