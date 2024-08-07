@@ -215,8 +215,8 @@ def researcher_notices(request, researcher):
         not_approved_shared_notice = None
     except Subscription.DoesNotExist:
         subscription = None
-        not_approved_download_notice = "Your researcher account needs to be confirmed in order to download this Notice."
-        not_approved_shared_notice = "Your researcher account needs to be confirmed in order to share this Notice."
+        not_approved_download_notice = "Your researcher account needs to be subscribed in order to download this Notice."
+        not_approved_shared_notice = "Your researcher account needs to be subscribed in order to share this Notice."
 
     urls = OpenToCollaborateNoticeURL.objects.filter(researcher=researcher).values_list('url', 'name', 'id')
     form = OpenToCollaborateNoticeURLForm(request.POST or None)

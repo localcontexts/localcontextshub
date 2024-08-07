@@ -55,18 +55,6 @@
                             <a id="addURLBtn" class="primary-btn disabled-btn" title="Add a link in order to share the Notice.">Share <i class="fa-solid fa-share-nodes"></i></a>
                         {% endif %}
                     {% else %}
-                        <a
-                            class="primary-btn disabled-btn"
-                            title="{% if not_approved_download_notice %}{{ not_approved_download_notice }}{% endif %}{% if is_sandbox %}{{ download_notice_on_sandbox }}{% endif %}"
-                        >
-                            Download Notice <i class="fa-regular fa-arrow-down-to-line"></i>
-                        </a>
-                        <a
-                            class="primary-btn disabled-btn"
-                            title="{% if not_approved_shared_notice %}{{ not_approved_shared_notice }}{% endif %}{% if is_sandbox %}{{ share_notice_on_sandbox }}{% endif %}"
-                        >
-                            Share <i class="fa-solid fa-share-nodes"></i>
-                        </a>
                         <a class="primary-btn disabled-btn" title="{% if not_approved_download_notice %}{{ not_approved_download_notice }}{% endif %}{% if is_sandbox %}{{ download_notice_on_sandbox }}{% endif %}">Download Notice <i class="fa-regular fa-arrow-down-to-line"></i></a>
                         <a class="primary-btn disabled-btn" title="{% if not_approved_shared_notice %}{{ not_approved_shared_notice }}{% endif %}{% if is_sandbox %}{{ share_notice_on_sandbox }}{% endif %}">Share <i class="fa-solid fa-share-nodes"></i></a>
                     {% endif %}
@@ -184,29 +172,6 @@
                 {% endif %}      
             </div>        
         </div>
-            {% if institution %}
-                <div class="flex-this align-center">
-                    {% if member_role == 'admin' or member_role == 'editor' %}
-                        <div class="btn-with-helptext">
-                            <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext{% else %} primary-btn green-btn mt-2p {% endif %}" 
-                                href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
-                                Create a Project <i class="fa fa-arrow-right"></i>
-                            </a>
-                            {% if not institution.is_subscribed or subscription.project_count == 0 %}
-                                <span class="btn-help-text">
-                                    {% if institution.is_subscribed == False %}
-                                        The subscription process of your institution is not completed yet. Please wait for the completion of the subscription process.
-                                    {% else %}
-                                        Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
-                                    {% endif %}
-                                </span>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endif %}      
-        </div>        
-    </div>
 
         <div class="w-80">
             <p>
