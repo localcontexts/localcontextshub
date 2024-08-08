@@ -1306,10 +1306,42 @@ def connect_service_provider(request, pk):
     try:
         community = get_community(pk)
         member_role = check_member_role(request.user, community)
-        service_providers = ServiceProvider.objects.filter(is_certified=True)
-        connected_service_providers = ServiceProviderConnections.objects.filter(
-            communities=community
-        )
+        if request.method == "GET":
+            service_providers = ServiceProvider.objects.filter(is_certified=True)
+            connected_service_providers = ServiceProviderConnections.objects.filter(
+                communities=community
+            )
+
+        elif request.method == "POST":
+            if "connectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('connectServiceProvider')
+
+                if ServiceProviderConnections.objects.filter(
+                        service_provider=service_provider_id).exists():
+                    # Connect community to existing Service Provider connection
+                    sp_connection = ServiceProviderConnections.objects.get(
+                        service_provider=service_provider_id
+                    )
+                    sp_connection.communities.add(community)
+                    sp_connection.save()
+                else:
+                    # Create new Service Provider Connection and add community
+                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                    sp_connection = ServiceProviderConnections.objects.create(
+                        service_provider = service_provider
+                    )
+                    sp_connection.communities.add(community)
+                    sp_connection.save()
+
+            elif "disconnectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('disconnectServiceProvider')
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider_id
+                )
+                sp_connection.communities.remove(community)
+                sp_connection.save()
+
+            return redirect("community-connect-service-provider", community.id)
 
         context = {
             'member_role': member_role,

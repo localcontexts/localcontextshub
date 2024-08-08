@@ -1450,7 +1450,9 @@ def connect_service_provider(request, pk):
                 if ServiceProviderConnections.objects.filter(
                         service_provider=service_provider_id).exists():
                     # Connect institution to existing Service Provider connection
-                    sp_connection = ServiceProviderConnections.objects.get(service_provider=service_provider_id)
+                    sp_connection = ServiceProviderConnections.objects.get(
+                        service_provider=service_provider_id
+                    )
                     sp_connection.institutions.add(institution)
                     sp_connection.save()
                 else:
@@ -1464,7 +1466,9 @@ def connect_service_provider(request, pk):
 
             elif "disconnectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('disconnectServiceProvider')
-                sp_connection = ServiceProviderConnections.objects.get(service_provider=service_provider_id)
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider_id
+                )
                 sp_connection.institutions.remove(institution)
                 sp_connection.save()
 
