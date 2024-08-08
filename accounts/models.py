@@ -172,3 +172,30 @@ class InactiveUser(models.Model):
 
     def __str__(self):
         return self.username
+
+
+class ServiceProviderConnections(models.Model):
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="service_provider_connection"
+    )
+    communities = models.ManyToManyField(
+        Community, blank=True, related_name="service_provider_communities"
+    )
+    institutions = models.ManyToManyField(
+        Institution, blank=True, related_name="service_provider_institutions"
+    )
+    researchers = models.ManyToManyField(
+        Researcher, blank=True, related_name="service_provider_researchers"
+    )
+
+    def __str__(self):
+        return str(self.service_provider)
+
+    class Meta:
+        indexes = [models.Index(fields=["service_provider"])]
+        verbose_name = "Service Provider Connection"
+        verbose_name_plural = "Service Provider Connections"

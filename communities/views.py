@@ -4,7 +4,7 @@ from django.contrib import messages
 from itertools import chain
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, ServiceProviderConnections
 from helpers.models import *
 from notifications.models import *
 from bclabels.models import BCLabel
@@ -1306,10 +1306,16 @@ def connect_service_provider(request, pk):
     try:
         community = get_community(pk)
         member_role = check_member_role(request.user, community)
+        service_providers = ServiceProvider.objects.filter(is_certified=True)
+        connected_service_providers = ServiceProviderConnections.objects.filter(
+            communities=community
+        )
 
         context = {
-            "member_role": member_role,
-            "community": community,
+            'member_role': member_role,
+            'community': community,
+            'service_providers': service_providers,
+            'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
     except:

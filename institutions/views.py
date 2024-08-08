@@ -21,7 +21,7 @@ from helpers.models import *
 from api.models import AccountAPIKey
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation, Subscription
+from accounts.models import UserAffiliation, Subscription, ServiceProviderConnections
 
 from projects.forms import *
 from helpers.forms import (
@@ -1437,12 +1437,47 @@ def connect_service_provider(request, pk):
     try:
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)
+        if request.method == "GET":
+            service_providers = ServiceProvider.objects.filter(is_certified=True)
+            connected_service_providers = ServiceProviderConnections.objects.filter(
+                institutions=institution
+            )
+
+        elif request.method == "POST":
+            if "connectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('connectServiceProvider')
+
+                if ServiceProviderConnections.objects.filter(
+                        service_provider=service_provider_id).exists():
+                    # Connect institution to existing Service Provider connection
+                    sp_connection = ServiceProviderConnections.objects.get(service_provider=service_provider_id)
+                    sp_connection.institutions.add(institution)
+                    sp_connection.save()
+                else:
+                    # Create new Service Provider Connection and add institution
+                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                    sp_connection = ServiceProviderConnections.objects.create(
+                        service_provider = service_provider
+                    )
+                    sp_connection.institutions.add(institution)
+                    sp_connection.save()
+
+            elif "disconnectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('disconnectServiceProvider')
+                sp_connection = ServiceProviderConnections.objects.get(service_provider=service_provider_id)
+                sp_connection.institutions.remove(institution)
+                sp_connection.save()
+
+            return redirect("institution-connect-service-provider", institution.id)
 
         context = {
-            "member_role": member_role,
-            "institution": institution,
+            'member_role': member_role,
+            'institution': institution,
+            'service_providers': service_providers,
+            'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+
     except:
         raise Http404()
 

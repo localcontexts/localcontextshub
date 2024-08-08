@@ -14,6 +14,7 @@ from notifications.utils import send_action_notification_to_project_contribs
 
 from communities.models import Community
 from notifications.models import ActionNotification
+from accounts.models import ServiceProviderConnections
 from helpers.models import *
 from projects.models import *
 from api.models import AccountAPIKey
@@ -818,9 +819,16 @@ def connections(request, researcher):
 @get_researcher(pk_arg_name='pk')
 def connect_service_provider(request, researcher):
     try:
+        service_providers = ServiceProvider.objects.filter(is_certified=True)
+        connected_service_providers = ServiceProviderConnections.objects.filter(
+            researchers=researcher
+        )
+
         context = {
             'researcher': researcher,
             'user_can_view': True,
+            'service_providers': service_providers,
+            'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
     except:
