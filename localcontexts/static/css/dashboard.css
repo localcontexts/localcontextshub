@@ -112,7 +112,7 @@
     margin-right: 1%;
 }
 
-.side-nav-a {
+.side-nav-container a {
     display: block;
     width: 100%;
 }
@@ -132,6 +132,12 @@
     margin-bottom: 5px;
 }
 
+.side-nav-item .icon {
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+}
+
 .side-nav-item i {
     display: block;
     font-size: 45px;
@@ -143,7 +149,6 @@
     border-radius: 4px;
 }
 
-.side-nav-item > div:nth-of-type(1) { width: 25%;}
 .side-nav-item > div:nth-of-type(2) {
     margin-left: 5px;
     padding-right: 5px;
