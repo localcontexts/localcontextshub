@@ -162,6 +162,7 @@ def confirm_subscription(request, user, form, account_type):
         isbusiness = True
     elif account_type == "researcher_account":
         hub_id = str(user.id) + "_r"
+        isbusiness = False
     elif account_type == "service_provider_account":
         hub_id = str(user.id) + "_sp"
         isbusiness = True

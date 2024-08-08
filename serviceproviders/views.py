@@ -53,9 +53,7 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_service_provider(request):
     form = CreateServiceProviderForm()
-    user_form,subscription_form  = form_initiation(
-        request, "service_provider_action"
-    )
+    user_form = form_initiation(request)
     env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
@@ -67,6 +65,7 @@ def create_service_provider(request):
             "first_name": user_form.cleaned_data['first_name'],
             "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
+            "inquiry_type": "service_provider",
             "account_type": "service_provider_account",
             "organization_name": form.cleaned_data['name'],
             }
@@ -90,7 +89,6 @@ def create_service_provider(request):
         "serviceproviders/create-service-provider.html",
         {
             "form": form,
-            "subscription_form": subscription_form,
             "user_form": user_form,
         },
     )
