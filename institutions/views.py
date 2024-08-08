@@ -371,14 +371,13 @@ def institution_notices(request, pk):
     )
 
     try:
-        if institution.is_subscribed:
-            subscription = Subscription.objects.get(institution=institution)
-            not_approved_download_notice = None
-            not_approved_shared_notice = None
+        subscription = Subscription.objects.get(institution=institution)
+        not_approved_download_notice = None
+        not_approved_shared_notice = None
     except Subscription.DoesNotExist:
         subscription = None
-        not_approved_download_notice = "Your institution account needs to be confirmed in order to download this Notice."
-        not_approved_shared_notice = "Your institution account needs to be confirmed in order to share this Notice."
+        not_approved_download_notice = "Your institution account needs to be subscribed in order to download this Notice."
+        not_approved_shared_notice = "Your institution account needs to be subscribed in order to share this Notice."
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
