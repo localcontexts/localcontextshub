@@ -80,6 +80,7 @@ def is_user_member(account, user):
     if isinstance(account, Community):
         return account.is_user_in_community(user)
 
+
 @register.simple_tag
 def is_connected_service_provider(sp_account, account):
     if isinstance(account, Institution):
