@@ -1,15 +1,99 @@
 {% extends 'account-base.html' %} {% block title %} View Label {% endblock %}{% load static %} {% load custom_tags %} {% block community_content %}
 
 <section class="content-card-v2 content-card-space">
-    <div class="mb-16">
-        <small class="bold">
-            <a class="darkteal-text"href="{% url 'select-label' community.id %}">Labels</a> 
-            <span class="grey-text"> >> View Label</span>
-        </small>
+
+
+    <div class="flex-this space-between mb-16">
+        <div>
+            <small class="bold">
+                <a class="darkteal-text"href="{% url 'select-label' community.id %}">Labels</a> 
+                <span class="grey-text"> >> View Label</span>
+            </small>
+        </div>
+
+        <div>
+            {% if bclabel %}
+                <!-- If label is approved -->
+                {% if bclabel.is_approved %}
+                    <!-- Any member but viewer can propose an edit -->
+                    {% if not member_role == 'viewer' %}
+                        <div>
+                            <a class="primary-btn white-btn" href="{% url 'edit-label' community.id bclabel.unique_id %}">Propose an edit <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <!-- If Label is waiting for approval and current user is creator -->
+                    {% if bclabel.created_by == request.user %}
+                        <!-- If no last editor or current user is the last editor -->
+                        {% if not bclabel.last_edited_by or bclabel.last_edited_by == request.user %}
+                            <div>
+                                <a class="primary-btn white-btn" href="{% url 'edit-label' community.id bclabel.unique_id %}">Edit Label <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            </div>
+                        {% else %}
+                            <!-- If creator is not last editor -->
+                            {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
+                            {% if user_can_approve %}
+                                <div class="mt-1p">
+                                    <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                    <!-- If creator not current user -->
+                        {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
+                        {% if user_can_approve %}
+                            <div class="mt-1p">
+                                <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            {% if tklabel %}
+                <!-- If label is approved -->
+                {% if tklabel.is_approved %}
+                    <!-- Any member but viewer can propose an edit -->
+                    {% if not member_role == 'viewer' %}
+                        <div>
+                            <a class="primary-btn white-btn" href="{% url 'edit-label' community.id tklabel.unique_id %}">Propose an edit <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <!-- If Label is waiting for approval and current user is creator -->
+                    {% if tklabel.created_by == request.user %}
+                        <!-- If no last editor or current user is the last editor -->
+                        {% if not tklabel.last_edited_by or tklabel.last_edited_by == request.user %}
+                            <div>
+                                <a class="primary-btn white-btn" href="{% url 'edit-label' community.id tklabel.unique_id %}">Edit Label <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            </div>
+                        {% else %}
+                            <!-- If creator is not last editor -->
+                            {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
+                            {% if user_can_approve %}
+                                <div class="mt-1p">
+                                    <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                    <!-- If creator not current user -->
+                        {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
+                        {% if user_can_approve %}
+                            <div class="mt-1p">
+                                <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+        </div>                    
     </div>
 
     <div class="flex-this space-between border-bottom-solid-teal">
-        <div class="w-20 center-text">
+        
+        <div class="w-10 center-text">
             {% if bclabel %}
                 {% include 'bclabels/which-label.html' %}
             {% endif %}
@@ -19,102 +103,71 @@
         </div>
         <div class="w-90">
 
-            <div class="flex-this space-between">
-                <div>
-                    <h2 class="mt-0">
-                        {% if bclabel %} {{ bclabel.name }} {% endif %}
-                        {% if tklabel %} {{ tklabel.name }} {% endif %}
-                    </h2>                    
-                </div>
-
-                <div>
-                    {% if bclabel %}
-                        {% if not bclabel.is_approved %}
-                            {% if bclabel.created_by == request.user %}
-                                <div>
-                                    <a class="primary-btn white-btn" href="{% url 'edit-label' community.id bclabel.unique_id %}">Edit Label <i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                </div>
-                            {% else %}
-                                {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
-                                {% if user_can_approve %}
-                                    <div class="mt-1p">
-                                        <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% else %}
-                            {% if member_role == 'admin' or member_role == 'editor' %}
-                                <div>
-                                    <a class="primary-btn white-btn" href="{% url 'edit-label' community.id bclabel.unique_id %}">Propose an edit <i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                </div>   
-                            {% endif %}  
-                        {% endif %}
-                    {% endif %}
-
-                    {% if tklabel %}
-                        {% if not tklabel.is_approved %}
-                            {% if tklabel.created_by == request.user %}
-                                <div>
-                                    <a class="primary-btn white-btn" href="{% url 'edit-label' community.id tklabel.unique_id %}">Edit Label <i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                </div>
-                            {% else %}
-                                {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
-                                {% if user_can_approve %}
-                                    <div class="mt-1p">
-                                        <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% else %}
-                            {% if member_role == 'admin' or member_role == 'editor' %}
-                                <div>
-                                    <a class="primary-btn white-btn" href="{% url 'edit-label' community.id tklabel.unique_id %}">Propose an edit <i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-
-                </div>                    
+            <div>
+                <h2 class="mt-0">
+                    {% if bclabel %} {{ bclabel.name }} {% endif %}
+                    {% if tklabel %} {{ tklabel.name }} {% endif %}
+                </h2>                    
             </div>
 
-            <div class="w-80">
+            <div class="w-90">
                 <p class="mt-0 mb-0">
                     <span class="bold">Created by</span> - 
-                    {% if bclabel %} {{ creator_name }} | {{ bclabel.community }} - {{ bclabel.created|date:'M Y'}} {% endif %}
-                    {% if tklabel %} {{ creator_name }} | {{ tklabel.community }} - {{ tklabel.created|date:'M Y'}} {% endif %}
+                    {% if bclabel %} {{ creator_name }} | {{ bclabel.community }} | {{ bclabel.created|date:'M Y'}} {% endif %}
+                    {% if tklabel %} {{ creator_name }} | {{ tklabel.community }} | {{ tklabel.created|date:'M Y'}} {% endif %}
                     <br>
 
-                    <span class="bold">Approved by</span> - 
-                    {% if bclabel %}   
-                        {% if not bclabel.is_approved %} This Label has not been approved yet {% else %} {{ approver_name }} {% endif %}
-                    {% endif %}
+                    <div class="mt-8 mb-8">
+                        <span class="bold">Approved by</span> - 
+                        {% if bclabel %}   
+                            {% if not bclabel.is_approved %} 
+                                {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
+                                {% if user_can_approve %}
+                                    <small class="green-tag">Ready for Review</small>
+                                {% else %}
+                                    <small class="orange-tag">Waiting Approval</small>
+                                {% endif %}
+                            {% else %} 
+                                {{ approver_name }} 
+                            {% endif %}
+                        {% endif %}
 
-                    {% if tklabel %} 
-                        {% if not tklabel.is_approved %} This Label has not been approved yet {% else %} {{ approver_name }} {% endif %}
-                    {% endif %}
-                    <br>
+                        {% if tklabel %} 
+                            {% if not tklabel.is_approved %} 
+                                {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
+                                {% if user_can_approve %}
+                                    <small class="green-tag">Ready for Review</small>
+                                {% else %}
+                                    <small class="orange-tag">Waiting Approval</small>
+                                {% endif %}
+                            {% else %} 
+                                {{ approver_name }} 
+                            {% endif %}
+                        {% endif %}                        
+                    </div>
 
-                    <span class="bold">Last edited by</span> - 
-                    {% if bclabel %}   
-                        {% if not bclabel.last_edited_by %} No edits have been made to this Label yet {% else %} {{ last_editor_name }} {% endif %}
-                    {% endif %}
+                    <div class="mb-8">
+                        <span class="bold">Last edited by</span> - 
+                        {% if bclabel %}   
+                            {% if not bclabel.last_edited_by %} No edits have been made to this Label yet {% else %} {{ last_editor_name }} {% endif %}
+                        {% endif %}
+    
+                        {% if tklabel %} 
+                            {% if not tklabel.last_edited_by %} No edits have been made to this Label yet {% else %} {{ last_editor_name }} {% endif %}
+                        {% endif %}
+                    </div>
 
-                    {% if tklabel %} 
-                        {% if not tklabel.last_edited_by %} No edits have been made to this Label yet {% else %} {{ last_editor_name }} {% endif %}
-                    {% endif %}
-                    <br>
-
-                    {% if bclabel %} {% if bclabel.version %} <span class="bold">Version </span> - {{ bclabel.version }}{% endif %} <br> {% endif %}
-                    {% if tklabel %} {% if tklabel.version %} <span class="bold">Version </span> - {{ tklabel.version }}{% endif %} <br> {% endif %}
-
-                    {% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                    {% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
-                    <br>                    
+                    <div>
+                        <span class="bold">Version - 
+                            {% if bclabel %} {% if bclabel.version %} {{ bclabel.version }} {% else %} 1 {% endif %} {% endif %}
+                            {% if tklabel %} {% if tklabel.version %} {{ tklabel.version }} {% else %} 1 {% endif %} {% endif %}
+                        </span>
+                    </div>
                 </p>
 
                 <div>
                     <div class="flex-this space-between">
-                        <div><p class="bold">Label text</p></div>
+                        <h3 class="mb-8">Label Text</h3>
                         <div>
                             <p>
                                 {% if bclabel %} {{ bclabel.language }} {% endif %}
@@ -132,8 +185,12 @@
 
                 {% include 'partials/_label-translation.html' %}
 
-                <p>
-                    <h3>Related Projects</h3>
+                {% if bclabel.audiofile or tklabel.audiofile %}<h3>Audio Description</h3>{% endif %}
+                {% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
+                {% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}                  
+
+                <div class="mb-16">
+                    <h3 class="mb-8">Related Projects</h3>
                     {% if projects %}
                         <ul>
                             {% for project in projects %}
@@ -143,36 +200,45 @@
                     {% else %}
                         This label has not yet been applied to any Local Contexts Projects
                     {% endif %}
-                </p>
+                </div>
 
                 {% if bclabel.version or tklabel.version %}
+                    <h3>Label Text Versions</h3>
                     {% if bclabel.version > 1 or tklabel.version > 1 %}
-                        <div class="flex-this flex-end mb-8">
-                            <small id="openLabelHistoryBtn" class="default-a block right-text">View Label History <i class="fa fa-angle-down" aria-hidden="true"></i></small>
-                        </div>
-                        <div id="labelHistoryDiv" class="hide mb-8">
-                                <p>
-                                {% if label_versions %}
-                                    {% for version in label_versions %}
-                                        {% if version.version == bclabel.version or version.version == tklabel.version %}
-                                        {% else %}
-                                            <h3 class="bold"><i>Version {{ version.version }}: Created {{ version.created|date:'M Y'}}</i></h3>
-                                            <i>
-                                                <span class="bold block mb-16">Label text</span>
-                                                {{ version.version_text }}
+
+                        {% if label_versions %}
+                            {% for version in label_versions %}
+                                {% if not version.version == bclabel.version or not version.version == tklabel.version %}
+
+                                    <div class="notice-translation__container">
+                                        <div class="flex-this space-between">
+                                            <h3>
+                                                Version 
+                                                {% if version.version < 10 %}0{{ version.version }}{% else %}{{ version.version }}{% endif %}
+                                            </h3>
+                                            <div class="flex-this align-center"><i class="fa-solid fa-angle-down fa-2xl toggle-icon pointer" data-target="label-version-{{version.version}}"></i></div>                        
+                                        </div>
+            
+                                        <div id="label-version-{{version.version}}" class="hide">
+                                            <span class="bold">Date created</span> - {{ version.created|date:'d M Y'}}
+                                            <p>
+                                                <span class="bold block mb-8">Label text</span>
+                                                {{ version.version_text }} <br>
 
                                                 {% if version.label_version_translation.all %}
                                                     {% for translated_version in version.label_version_translation.all %}
-                                                        <span class="bold block mb-16 mt-16">{{ translated_version.language }}</span>
+                                                        <span class="bold block mb-8 mt-16">{{ translated_version.language }}</span>
                                                         {{ translated_version.translated_text }}
                                                     {% endfor %}
                                                 {% endif %}
-                                            </i>
-                                        {% endif %}
-                                    {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+
                                 {% endif %}
-                            </p>
-                        </div>
+                            {% endfor %}
+                        {% endif %}
+
                     {% endif %}
                 {% endif %}
             </div>

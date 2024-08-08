@@ -56,19 +56,13 @@
         <!-- UNAPPROVED BCLABELS -->
         {% for bclabel in bclabels %}
             {% if not bclabel.is_approved %}
-                <div class="w-20">
-                    <small class="center-text block bold darkteal-text mb-8">
-                        {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
-                        {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
-                    </small>
-                    <div class="mt-16 mb-16">
-                        <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
-                            <div class="m-auto">
-                                {% include 'bclabels/mini-labels.html' %}
-                                <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
-                            </div>
+                <div class="w-20 custom-label-hover mt-16 mb-16">
+                    <a href="{% url 'view-label' community.id bclabel.unique_id %}" class="center-text pointer">
+                        <div class="m-auto">
+                            {% include 'bclabels/mini-labels.html' %}
+                            <p class="bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
                         </div>
-                    </div>                    
+                    </a>
                 </div>
             {% endif %}
         {% empty %}
@@ -77,17 +71,11 @@
         <!-- UNAPPROVED TK LABELS -->
         {% for tklabel in tklabels %}
             {% if not tklabel.is_approved %}
-                <div class="w-20">
-                    <small class="center-text block bold darkteal-text mb-8">
-                        {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
-                        {% if not user_can_approve %} Waiting approval * {% else %} Review for approval * {% endif %}
-                    </small>
-                    <div class="mt-16 mb-16">
-                        <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
-                            {% include 'tklabels/mini-labels.html' %}
-                            <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
-                        </div>
-                    </div>                    
+                <div class="w-20 custom-label-hover mt-16 mb-16">
+                    <a href="{% url 'view-label' community.id tklabel.unique_id %}" class="center-text pointer">
+                        {% include 'tklabels/mini-labels.html' %}
+                        <p class="bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
+                    </a>                
                 </div>
             {% endif %}
         {% empty %}
@@ -96,13 +84,11 @@
         <!-- APPROVED BC LABELS -->
         {% for bclabel in bclabels %}
             {% if bclabel.is_approved %}
-                <div class="w-20">
-                    <div class="mt-16 mb-16">
-                        <div id="{{ bclabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
-                            {% include 'bclabels/mini-labels.html' %}
-                            <p id="toggle-color-{{ bclabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
-                        </div>
-                    </div>                    
+                <div class="w-20 custom-label-hover mt-16 mb-16">
+                    <a href="{% url 'view-label' community.id bclabel.unique_id %}" class="center-text pointer">
+                        {% include 'bclabels/mini-labels.html' %}
+                        <p class="bold primary-black-text label-name-box m-auto">{{ bclabel.name }}</p>
+                    </a>                 
                 </div>
             {% endif %}
         {% empty %}
@@ -111,135 +97,17 @@
         <!-- APPROVED TKLABELS -->
         {% for tklabel in tklabels %}
             {% if tklabel.is_approved %}
-                <div class="w-20 mt-16 mb-16">
-                    <div id="{{ tklabel.unique_id }}" onclick="customText(this)" class="center-text pointer">
+                <div class="w-20 custom-label-hover mt-16 mb-16">
+                    <a href="{% url 'view-label' community.id tklabel.unique_id %}" class="center-text pointer">
                         {% include 'tklabels/mini-labels.html' %}
-                        <p id="toggle-color-{{ tklabel.unique_id }}" class="toggle-txt-color bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
-                    </div>
+                        <p class="bold primary-black-text label-name-box m-auto">{{ tklabel.name }}</p>
+                    </a>
                 </div>
             {% endif %}
         {% empty %}
         {% endfor %}
 
     </div>
-
-    {% for bclabel in bclabels %}
-        <div id="open-div-{{ bclabel.unique_id }}" style="height: 0px; overflow: hidden;" class="div-toggle">
-            <div class="full-label-card flex-this">
-                <div class="mr-16"><img src="{{bclabel.img_url}}" class="label-large pointer-event-none" alt="{{ bclabel.alt_text }}"></div>
-                <div class="w-90">
-                    <div class="flex-this space-between">
-                        <div><h3 class="mt-0">{{ bclabel.name }}</h3></div>
-
-                        <div class="flex-this flex-end">
-                            {% if not bclabel.is_approved %}
-                                {% can_user_approve_label request.user bclabel member_role as user_can_approve %}
-
-                                {% if user_can_approve %}
-                                    <div class="mt-1p">
-                                        <a class="primary-btn green-btn" href="{% url 'approve-label' community.id bclabel.unique_id %}">Review for approval</a>
-                                    </div>
-                                {% else %}
-                                    <div class="mt-1p">
-                                        <button class="primary-btn disabled-btn" href="#" disabled>Waiting for approval</button>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-
-                            <div class="mt-1p ml-8">
-                                <a class="primary-btn action-btn block" href="{% url 'view-label' community.id bclabel.unique_id %}">View Label</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-
-                    <div>
-                        <div class="flex-this space-between">
-                            <div><p class="bold">Label text</p></div>
-                            <div><p>{{ bclabel.language }}</p></div>
-                        </div>
-                        <div><p class="mt-0 mb-0">{{ bclabel.label_text }} </p></div>
-                    </div>
-
-                    {% include 'partials/_label-translation.html' %}
-
-                    {% if not bclabel.is_approved %}
-                        {% if bclabel.bclabel_note.all %}
-                            <h4>A note was added to this Label:</h4>
-                            {% for note in bclabel.bclabel_note.all %}
-                                <div class="mt-16 note-container">
-                                    <p> Member {% firstof note.sender.get_full_name note.sender.username %} wrote: <br>{{ note.note }}</p>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-                </div>
-
-            </div>
-        </div>
-    {% empty %}
-    {% endfor %}
-
-    {% for tklabel in tklabels %}
-        <div id="open-div-{{ tklabel.unique_id }}" style="height: 0px; overflow: hidden;" class="div-toggle">
-            <div class="full-label-card flex-this">
-                <div class="mr-16">
-                    <img src="{{ tklabel.img_url }}" class="label-large  pointer-event-none" alt="{{ tklabel.alt_text }}">
-                </div>
-                <div class="w-90">
-                    <div class="flex-this space-between">
-                        <div><h3 class="mt-0">{{ tklabel.name }}</h3></div>
-
-                        <div class="flex-this flex-end">
-                            {% if not tklabel.is_approved %}
-                                {% can_user_approve_label request.user tklabel member_role as user_can_approve %}
-
-                                {% if user_can_approve %}
-                                    <div class="mt-1p">
-                                        <a class="primary-btn green-btn" href="{% url 'approve-label' community.id tklabel.unique_id %}">Review for approval</a>
-                                    </div>
-                                {% else %}
-                                    <div class="mt-1p">
-                                        <button class="primary-btn disabled-btn" href="#" disabled>Waiting for approval</button>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-
-                            <div class="mt-1p ml-8">
-                                <a class="primary-btn action-btn block" href="{% url 'view-label' community.id tklabel.unique_id %}">View Label</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
-                   
-                    <div>
-                        <div class="flex-this space-between">
-                            <div><p class="bold">Label text</p></div>
-                            <div><p>{{ tklabel.language }}</p></div>
-                        </div>
-                        <div><p class="mt-0 mb-0">{{ tklabel.label_text }} </p></div>
-                    </div>
-
-                    {% include 'partials/_label-translation.html' %}
-
-                    {% if not tklabel.is_approved %}
-                        {% if tklabel.tklabel_note.all %}
-                            <h4>A note was added to this Label:</h4>
-                            {% for note in tklabel.tklabel_note.all %}
-                                <div class="mt-16 note-container">
-                                    <p> Member {% firstof note.sender.get_full_name note.sender.username %} wrote: <br>{{ note.note }}</p>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-                </div>
-
-            </div>
-        </div>
-    {% empty %}
-    {% endfor %}
 
 </div>
 

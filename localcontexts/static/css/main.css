@@ -490,21 +490,21 @@ visibility: visible;
 /* COLORED TAGS */
 .orange-tag, 
 .green-tag {
-    height: 40px;
-    border-radius: 51px;
-    padding: 8px 16px;
+    border-radius: 2px;
+    padding: 4px 8px;
     text-align: center;
     font-size: 14px;
-    text-transform: uppercase;
     font-weight: bold;
 }
 
 .orange-tag {
+ border: 1px solid rgba(239, 108, 0, 0.2);
  background-color: #FCE2CC;
  color: #EF6C00;
 }
 
 .green-tag {
+    border: 1px solid rgba(16, 134, 112, 0.2);
     background-color: #CFE7E2;
     color: #108670;
 }
@@ -1013,18 +1013,12 @@ i[data-tooltip]:hover:after {
     padding: 8px;
     border-radius: 4px;
     width: 176px;
+    transition: 0.3s;
 }
 
-.label-name-active {
+.custom-label-hover:hover p {
     color: #fff;
     background-color: #007385;
-}
-
-/* Full Label card with all label info */
-.full-label-card {
-    padding: 16px;
-    border: 1px solid #A09D9D;
-    border-radius: 17px;
 }
 
 /* COMMUNITY: PROJECT */

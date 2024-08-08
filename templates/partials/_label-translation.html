@@ -3,7 +3,7 @@
         {% for translation in bclabel.bclabel_translation.all %}
             <div>
                 <div class="flex-this space-between">
-                    <div><p class="bold">{{ translation.translated_name }}</p></div>
+                    <div><h3>{{ translation.translated_name }}</h3></div>
                     <div><p>{{ translation.language }}</p></div>
                 </div>
                 <div><p class="mt-0 mb-0">{{ translation.translated_text }} </p></div>
@@ -17,7 +17,7 @@
         {% for translation in tklabel.tklabel_translation.all %}
             <div>
                 <div class="flex-this space-between">
-                    <div><p class="bold">{{ translation.translated_name }}</p></div>
+                    <div><h3>{{ translation.translated_name }}</h3></div>
                     <div><p>{{ translation.language }}</p></div>
                 </div>
                 <div><p class="mt-0 mb-0">{{ translation.translated_text }} </p></div>

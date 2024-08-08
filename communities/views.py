@@ -515,6 +515,7 @@ def customize_label(request, pk, label_code):
                 data.label_type = label_type
                 data.community = community
                 data.created_by = request.user
+                data.version = 1
                 data.save()
 
                 # Save all label translation instances
