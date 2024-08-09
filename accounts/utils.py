@@ -190,6 +190,7 @@ def confirm_subscription(request, user, form, account_type):
 
     return redirect('dashboard')
 
+
 def escape_single_quotes(data):
     if isinstance(data, dict):
         return {key: escape_single_quotes(value) for key, value in data.items()}
