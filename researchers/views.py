@@ -14,6 +14,7 @@ from notifications.utils import send_action_notification_to_project_contribs
 
 from communities.models import Community
 from notifications.models import ActionNotification
+from accounts.models import ServiceProviderConnections
 from helpers.models import *
 from projects.models import *
 from api.models import AccountAPIKey
@@ -812,7 +813,59 @@ def connections(request, researcher):
     }
     return render(request, 'researchers/connections.html', context)
 
-    
+
+@login_required(login_url="login")
+@get_researcher(pk_arg_name='pk')
+def connect_service_provider(request, researcher):
+    try:
+        if request.method == "GET":
+            service_providers = ServiceProvider.objects.filter(is_certified=True)
+            connected_service_providers = ServiceProviderConnections.objects.filter(
+                researchers=researcher
+            )
+
+        elif request.method == "POST":
+            if "connectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('connectServiceProvider')
+
+                if ServiceProviderConnections.objects.filter(
+                        service_provider=service_provider_id).exists():
+                    # Connect researcher to existing Service Provider connection
+                    sp_connection = ServiceProviderConnections.objects.get(
+                        service_provider=service_provider_id
+                    )
+                    sp_connection.researchers.add(researcher)
+                    sp_connection.save()
+                else:
+                    # Create new Service Provider Connection and add researcher
+                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                    sp_connection = ServiceProviderConnections.objects.create(
+                        service_provider = service_provider
+                    )
+                    sp_connection.researchers.add(researcher)
+                    sp_connection.save()
+
+            elif "disconnectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('disconnectServiceProvider')
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider_id
+                )
+                sp_connection.researchers.remove(researcher)
+                sp_connection.save()
+
+            return redirect("researcher-connect-service-provider", researcher.id)
+
+        context = {
+            'researcher': researcher,
+            'user_can_view': True,
+            'service_providers': service_providers,
+            'connected_service_providers': connected_service_providers,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
+
 @force_maintenance_mode_off
 def embed_otc_notice(request, pk):
     layout = request.GET.get('lt')

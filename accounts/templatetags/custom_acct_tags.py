@@ -5,6 +5,7 @@ from accounts.utils import get_users_name
 from communities.models import Community, JoinRequest
 from institutions.models import Institution
 from researchers.models import Researcher
+from accounts.models import ServiceProviderConnections
 
 register = template.Library()
 
@@ -78,3 +79,16 @@ def is_user_member(account, user):
         return account.is_user_in_institution(user)
     if isinstance(account, Community):
         return account.is_user_in_community(user)
+
+
+@register.simple_tag
+def is_connected_service_provider(sp_account, account):
+    if isinstance(account, Institution):
+        return ServiceProviderConnections.objects.filter(
+            institutions=account, service_provider=sp_account).exists()
+    if isinstance(account, Community):
+        return ServiceProviderConnections.objects.filter(
+            communities=account, service_provider=sp_account).exists()
+    if isinstance(account, Researcher):
+        return ServiceProviderConnections.objects.filter(
+            researchers=account, service_provider=sp_account).exists()

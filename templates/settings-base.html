@@ -6,14 +6,14 @@
 >
   <h2 class="mt-0">User Settings</h2>
 
-  <div class="flex-this w-100 mb-2p">
+  <div class="flex-this w-100 mb-2p" style="flex:1;">
     <div class="side-nav-container">
       <a class="side-nav-a" href="{% url 'update-profile' %}">
         <div
           class="side-nav-item {% if 'update-profile' in request.path %} selected {% else %} grey-text {% endif %}"
         >
-          <div class="w-20 ml-8 mt-8">
-            <i class="fa-solid fa-circle-user fa-3x"></i>
+          <div class="w-20 m-auto">
+            <i class="fa-solid fa-circle-user fa-3x m-auto"></i>
           </div>
           <div>
             <p class="mt-0">
@@ -27,7 +27,9 @@
         <div
           class="side-nav-item {% if 'manage' in request.path %} selected {% else %} grey-text {% endif %}"
         >
-          <div><i class="fa-solid fa-user-group"></i></div>
+          <div class="w-20 m-auto">
+            <i class="fa-solid fa-user-group m-auto"></i>
+          </div>
           <div>
             <p class="mt-0">
               <strong>Accounts</strong><br />Manage your accounts
@@ -40,7 +42,9 @@
         <div
           class="side-nav-item {% if 'link-account' in request.path %} selected {% else %} grey-text {% endif %}"
         >
-          <div><i class="fa-solid fa-link-simple"></i></div>
+          <div class="w-20 m-auto">
+            <i class="fa-solid fa-link-simple m-auto"></i>
+          </div>
           <div>
             <p class="mt-0">
               <strong>Linked Accounts</strong><br />Google
@@ -53,7 +57,9 @@
         <div
           class="side-nav-item {% if 'change-password' in request.path %} selected {% else %} grey-text {% endif %}"
         >
-          <div><i class="fa fa-key" aria-hidden="true"></i></div>
+          <div class="w-20 m-auto">
+            <i class="fa fa-key m-auto" aria-hidden="true"></i>
+          </div>
           <div>
             <p class="mt-0">
               <strong>Password</strong><br />Change your password
@@ -66,8 +72,8 @@
         <div
           class="side-nav-item {% if 'deactivate' in request.path %} selected {% else %} grey-text {% endif %}"
         >
-          <div class="w-20 mr-8">
-            <i class="fa fa-power-off fa-3x" aria-hidden="true"></i>
+          <div class="w-20 m-auto">
+            <i class="fa fa-power-off fa-3x m-auto" aria-hidden="true"></i>
           </div>
           <div class="w-80">
             <p class="mt-0">

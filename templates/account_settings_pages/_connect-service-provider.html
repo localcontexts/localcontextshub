@@ -1,0 +1,136 @@
+{% extends 'account-settings-base.html' %}{% load static %} {% load custom_acct_tags %}
+
+{% block account_settings %}
+<style>
+    .disconnect-btn {
+        background-color: #DDDDDD;
+        border: 1px solid #DDDDDD;
+    }
+
+    .disconnect-btn:hover {
+        background-color: #e7e7e7;
+    }
+</style>
+
+<div>
+    <h3 class="mt-0">Linked Service Providers</h3>
+    <p class="mt-0">Connect to internal service providers.</p>
+</div>
+{% include 'partials/_alerts.html' %}
+
+<div class="w-60 mb-16">
+    <form class="default-searchbar w-100" method="GET" action="">
+        <input type="search" name="q" placeholder="Search" autocomplete="off">
+        <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+    </form>
+</div>
+
+{% for service_provider in service_providers %}
+    <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+        <div class="w-70 ml-16">
+            <p class="bold">{{ service_provider.name }}</p>
+        </div>
+
+        {% if institution %}
+            {% is_connected_service_provider service_provider institution as connected_sp %}
+        {% elif community %}
+            {% is_connected_service_provider service_provider community as connected_sp %}
+        {% elif researcher %}
+            {% is_connected_service_provider service_provider researcher as connected_sp %}
+        {% endif %}
+
+        {% if connected_sp %}
+            <button name="disconnectServiceProviderbtn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}" class="mr-16 primary-btn disconnect-btn">Disconnect <i class="fa-solid fa-link-simple-slash"></i></button>
+        {% else %}
+            <button name="connectServiceProviderbtn" class="mr-16 primary-btn green-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<!-- Connect Service Provider Modal -->
+<div id="connectServiceProvidermodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Connect Service Provider</h2>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <p class="mt-0">When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:</p>
+            <ul>
+                <li>See basic account information</li>
+                <li>See your Projects</li>
+            </ul>
+            <p>Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.</p>
+
+            <div class="flex-this column gap-half">
+                <form id="connectServiceProviderForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueServiceProviderConnectBtn" class="primary-btn action-btn w-100" name="connectServiceProvider" value="">Connect with this Service Provider</button>
+                </form>
+                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Disconnect Service Provider Modal -->
+<div id="disconnectServiceProvidermodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Disconnect from Service Provider?</h2>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <p class="mt-0">Are you sure you want to disconnect from <span id="disconnectServiceProvidername" class="bold"></span>? They will no longer be able to:</p>
+            <ul>
+                <li>See basic account information</li>
+                <li>See your Projects</li>
+            </ul>
+
+            <div class="flex-this column gap-half">
+                <form id="disconnectServiceProviderForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueServiceProviderDisconnectBtn" class="primary-btn action-btn w-100" name="disconnectServiceProvider" value="">Yes, disconnect from this Service Provider</button>
+                </form>
+                <div id="closeDisconnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const connectBtns = document.querySelectorAll(`[name="connectServiceProviderbtn"]`);
+    const connectServiceProvidermodal = document.getElementById('connectServiceProvidermodal')
+    connectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            openModal('connectServiceProvidermodal', 'closeConnectServiceProvidermodal');
+            connectServiceProvidername.innerHTML = btn.dataset.name;
+            continueServiceProviderConnectBtn.value = btn.dataset.id;
+        });
+    });
+
+    const disconnectBtns = document.querySelectorAll(`[name="disconnectServiceProviderbtn"]`);
+    const disconnectServiceProvidermodal = document.getElementById('disconnectServiceProvidermodal')
+    disconnectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            openModal('disconnectServiceProvidermodal', 'closeDisconnectServiceProvidermodal');
+            console.log(btn.dataset.name)
+            disconnectServiceProvidername.innerHTML = btn.dataset.name;
+            continueServiceProviderDisconnectBtn.value = btn.dataset.id;
+        });
+    });
+</script>
+
+{% endblock %}
