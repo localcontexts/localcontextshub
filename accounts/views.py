@@ -537,6 +537,7 @@ def invite_user(request):
 
 
 def registry(request, filtertype=None):
+    default_items_per_page = 20
     try:
         c = Community.objects.select_related('community_creator').prefetch_related(
             'admins', 'editors', 'viewers'
@@ -568,7 +569,7 @@ def registry(request, filtertype=None):
 
             cards = return_registry_accounts(c, r, i, sp)
 
-            p = Paginator(cards, 5)
+            p = Paginator(cards, default_items_per_page)
 
         else:
             if filtertype == "communities":
@@ -593,7 +594,7 @@ def registry(request, filtertype=None):
             else:
                 cards = return_registry_accounts(c, r, i, sp)
 
-            p = Paginator(cards, 5)
+            p = Paginator(cards, default_items_per_page)
 
         page_num = request.GET.get("page", 1)
         page = p.page(page_num)

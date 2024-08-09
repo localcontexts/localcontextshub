@@ -51,7 +51,11 @@
             </div>
             <div class="flex-this">
                 <div class="project-left-sidebar"><p class="bold">Status</p></div>
-                <div><p>{% if project_archived %} Archived {% else %} Active {% endif %}</p></div>
+                <div>
+                    <p class="{% if project_archived %}orange-tag{% else %}green-tag{% endif %}">
+                        {% if project_archived %}Archived{% else %}Active{% endif %}
+                    </p>
+                </div>
             </div>
             {% if project.source_project_uuid %}
                 <div class="flex-this">
@@ -368,20 +372,11 @@
                                                     {% include 'bclabels/which-label.html' %} 
                                                 </div>
                                                 <div class="ml-16">
-                                                    <p class="mt-0 bold">{{bclabel.name}} </p><br>
+                                                    <h3 class="mt-0">{{bclabel.name}} </h3><br>
                                                 </div>
                                             </div>
             
-                                            <h3>{{ bclabel.language }}</h3>
-                                            <p>
-                                                {{ bclabel.label_text }} <br>
-                                            </p>
-                                            {% for translation in bclabel.bclabel_translation.all %}
-                                                <h3>{{ translation.language }}</h3>
-                                                <p>
-                                                    {{ translation.translated_text }}
-                                                </p>
-                                            {% endfor %}
+                                            {% include 'partials/_label-content.html' %}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -393,20 +388,11 @@
                                                     {% include 'tklabels/which-label.html' %} 
                                                 </div>
                                                 <div class="ml-16">
-                                                    <p class="mt-0 bold">{{ tklabel.name }} </p><br>
+                                                    <h3 class="mt-0">{{ tklabel.name }} </h3><br>
                                                 </div>
                                             </div>
             
-                                            <h3>{{ tklabel.language }}</h3>
-                                            <p>
-                                                {{ tklabel.label_text }} <br>
-                                            </p>
-                                            {% for translation in tklabel.tklabel_translation.all %}
-                                                <h3>{{ translation.language }}</h3>
-                                                <p>
-                                                    {{ translation.translated_text }}
-                                                </p>
-                                            {% endfor %}
+                                            {% include 'partials/_label-content.html' %}
                                         </div>
                                     </div>
                                 {% endfor %}                                

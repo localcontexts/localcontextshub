@@ -1,5 +1,5 @@
 {% load static %}
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     .border-hr{
         border: 1px solid #DDDDDD;
     }
@@ -29,6 +29,18 @@
     #community-boundary-update{
         margin-top: 20px;
     }
+    .name_of_boundary {
+        field-sizing: content;
+        padding: 12px;
+        font-weight: bold;
+        font-size: 16px;
+        max-height: 40px;
+        min-height: 40px;
+        background-color: #fff;
+        border: 1px solid #1f293700;
+        border-radius: 4px;
+        max-width: 560px;
+    }
 </style>
 
 <script>
@@ -44,6 +56,13 @@
             alert('Error Resetting Boundary')
         }
         document.querySelector('#preview-container-wrapper').classList.add('hidden-element')
+    }
+
+    function shapeFileChange(self) {
+      // set the input element sent to backend when saved
+      document.querySelector('.selected-title').value = self.value
+
+      enableContinueButton()
     }
 </script>
 <div class="flex-this space-between">
@@ -62,9 +81,17 @@
 {% if community.name_of_boundary %}
     <div id="preview-container-wrapper">
         <div id="preview-boundary-container">
-            <strong class="center-boundary-container-item-vertically">
-                {{ community.name_of_boundary }} (territories)
-            </strong>
+
+            <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
+                <div style="display: flex">
+                    <input class='name_of_boundary' value="{{ community.name_of_boundary }}" onchange="shapeFileChange(this)"
+                    {% if 'native-land.ca' in community.source_of_boundary %}disabled{% endif %}
+                    >
+                    <div style="margin: auto 0px">
+                        <div style="width: 100px">(territories)</div>
+                    </div>
+                </div>
+            </div>
 
             <div id="boundary-container-right">
                 <div id="remove-boundary" class="center-boundary-container-item-vertically"
