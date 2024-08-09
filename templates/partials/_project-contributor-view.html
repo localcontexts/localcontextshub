@@ -88,11 +88,8 @@
                         </div>
                         <div class="pad-left-2">
                             <p>Label shared by <a href="{% url 'public-community' bclabel.community.id %}" class="default-a">{{ bclabel.community.community_name }}</a> </p>
-                            <p class="bold"> {{ bclabel.name }} </p>
-                            {% if bclabel.audiofile %} <div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                            <p>{{ bclabel.label_text}}</p>
 
-                            {% include 'partials/_label-translation.html' %}
+                            {% include 'partials/_label-content.html' %}
                         </div>
                     </div>
                     <div class="border-bottom-solid-teal mt-1p"></div>
@@ -109,11 +106,8 @@
                         </div>
                         <div class="pad-left-2">
                             <p>Label shared by <a href="{% url 'public-community' tklabel.community.id %}" class="default-a">{{ tklabel.community.community_name }}</a> </p>
-                            <p class="bold"> {{ tklabel.name }} </p>
-                            {% if tklabel.audiofile %} <div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
-                            <p>{{ tklabel.label_text}}</p>
 
-                            {% include 'partials/_label-translation.html' %}
+                            {% include 'partials/_label-content.html' %}
                         </div>
                     </div>
                     <div class="border-bottom-solid-teal mt-1p"></div>
