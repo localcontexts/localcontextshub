@@ -165,29 +165,8 @@
                     </div>
                 </p>
 
-                <div>
-                    <div class="flex-this space-between">
-                        <h3 class="mb-8">Label Text</h3>
-                        <div>
-                            <p>
-                                {% if bclabel %} {{ bclabel.language }} {% endif %}
-                                {% if tklabel %} {{ tklabel.language }} {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="mt-0 mb-0">
-                            {% if bclabel %} {{ bclabel.label_text }} {% endif %}
-                            {% if tklabel %} {{ tklabel.label_text }} {% endif %}
-                        </p>
-                    </div>
-                </div>
 
-                {% include 'partials/_label-translation.html' %}
-
-                {% if bclabel.audiofile or tklabel.audiofile %}<h3>Audio Description</h3>{% endif %}
-                {% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                {% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}                  
+                {% include 'partials/_label-content.html' %}
 
                 <div class="mb-16">
                     <h3 class="mb-8">Related Projects</h3>
@@ -202,9 +181,37 @@
                     {% endif %}
                 </div>
 
+                {% if bclabel %}
+                    {% if bclabel.bclabel_note.all %}
+                        <div class="mb-16">
+                            <h3 class="mb-8">Label Notes</h3>
+                            {% for note in bclabel.bclabel_note.all %}
+                                <p>
+                                    <span class="bold">{% firstof note.sender.get_full_name note.sender.username %}</span>:
+                                    {{ note.note }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if tklabel %}
+                    {% if tklabel.tklabel_note.all %}
+                        <div class="mb-16">
+                            <h3 class="mb-8">Label Notes</h3>
+                            {% for note in tklabel.tklabel_note.all %}
+                                <p>
+                                    <span class="bold">{% firstof note.sender.get_full_name note.sender.username %}</span>:
+                                    {{ note.note|linebreaks }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
                 {% if bclabel.version or tklabel.version %}
-                    <h3>Label Text Versions</h3>
                     {% if bclabel.version > 1 or tklabel.version > 1 %}
+                        <h3>Label Text Versions</h3>
 
                         {% if label_versions %}
                             {% for version in label_versions %}

@@ -43,9 +43,9 @@
         </div>
 
         <div class="content-card-v2 content-card-space"> 
-            <h2 class="mt-0">Proposed Edit</h2>
+            <h2 class="mt-0">Label to Approve</h2>
             <div class="flex-this mb-8 mt-8 about-this-label">
-                <div class="w-20 ml-16 mt-16 mb-16">
+                <div class="w-20 ml-16 mt-16 mb-16 flex-end">
                     {% if bclabel %}
                         {% include 'bclabels/which-label.html' %}
                     {% endif %}
@@ -54,34 +54,12 @@
                     {% endif %}
                 </div>   
                 <div class="w-90 mr-16">
-                    <div>
-                        <p class="bold">
-                            {% if bclabel.name %}{{ bclabel.name }}{% endif %}
-                            {% if tklabel.name %}{{ tklabel.name }}{% endif %}
-                        </p>
-                        {% if bclabel.audiofile %} <div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
-                        {% if tklabel.audiofile %} <div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}
+                    <h3>
+                        {% if bclabel.name %}{{ bclabel.name }}{% endif %}
+                        {% if tklabel.name %}{{ tklabel.name }}{% endif %}
+                    </h3>
 
-                    </div>
-                    <div class="mb-16">{% if bclabel %}{{ bclabel.label_text }}{% endif %}{% if tklabel %}{{ tklabel.label_text }}{% endif %}</div>
-                    
-                    {% if bclabel %}
-                        {% if bclabel.bclabel_translation.all %}
-                            {% for translation in bclabel.bclabel_translation.all %}
-                                <div><p class="bold">{{ translation.translated_name }} | {{ translation.language }}</p></div>
-                                <div class="mb-16">{{ translation.translated_text }}</div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-
-                    {% if tklabel %}
-                        {% if tklabel.tklabel_translation.all %}
-                            {% for translation in tklabel.tklabel_translation.all %}
-                                <div><p class="bold">{{ translation.translated_name }} | {{ translation.language }}</p> </div>
-                                <div class="mb-16">{{ translation.translated_text }}</div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
+                    {% include 'partials/_label-content.html' %}
 
                 </div>                
             </div>
