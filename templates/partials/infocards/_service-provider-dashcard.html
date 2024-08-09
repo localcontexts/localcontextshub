@@ -8,8 +8,8 @@
                 <small>
                     <a href="{% url 'dashboard' %}" class="default-a">
                         {% firstof request.user.first_name request.user %}
-                    </a> 
-                    >> {{ service_provider.name }}                    
+                    </a>
+                    >> {{ service_provider.name }}
                 </small>
             </div>
 
@@ -19,24 +19,29 @@
 
                 {% if request.user == service_provider.account_creator %}
                     <div class="ml-8">
-                        <a href="{% url 'update-service-provider' service_provider.id%}" class="darkteal-text primary-btn white-btn"> Settings <i class="fa fa-cog" aria-hidden="true"></i></a>
+                        <a
+                            href="{% url 'update-service-provider' service_provider.id%}"
+                            class="darkteal-text primary-btn white-btn"
+                        >
+                            Settings <i class="fa fa-cog" aria-hidden="true"></i>
+                        </a>
                     </div>
                 {% endif %}
             </div>
-            
+
         </div>
             <!-- Image, headers, description -->
         <div class="flex-this">
 
                 <div class="dashcard-img-container">
-                    <img loading="lazy" 
-                        class="profile-img" 
-                        src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
+                    <img loading="lazy"
+                        class="profile-img"
+                        src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}"
                         alt="{{ service_provider.name }} image"
                     >
                     {% if service_provider and service_provider.is_certified %}
                         <div class="certified-overlay">
-                            <img 
+                            <img
                                 src="{% static 'images/logos/sp-badge-orange.png' %}"
                                 width="157px"
                                 height="47px"
@@ -49,18 +54,31 @@
                     <div>
                         <p class="primary-black-text dashcard-subheader">Service Provider</p>
                     </div>
-                    <div><p class="dashcard-description description-sm">{% if service_provider.description %}{{ service_provider.description }} {% else %} No description provided. {% endif %}</p></div>
+                    <div>
+                        <p class="dashcard-description description-sm">
+                            {% if service_provider.description %}{{ service_provider.description }} {% else %}No description provided. {% endif %}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Count cards -->
                 <div class="flex-this column stats-card-container">
-    
-                    <div class="stats-card flex-this space-between">
-                        <div>
-                            <p>0</p>
-                        </div>
-                        <div><span>Connections</span></div>
+
+                    <div class="stats-card flex-this flex-start">
+                        <div><p>0</p></div>
+                        <div class="ml-16"><span>Notices</span></div>
                     </div>
+
+                    <div class="stats-card flex-this flex-start">
+                        <div><p>0</p></div>
+                        <div class="ml-16"><span>Connections</span></div>
+                    </div>
+
+                    <div class="stats-card flex-this flex-start">
+                        <div><p>{{ service_provider.get_member_count }}</p></div>
+                        <div class="ml-16"><span>Members</span></div>
+                    </div>
+
                 </div>
 
         </div>
