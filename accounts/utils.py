@@ -189,3 +189,12 @@ def confirm_subscription(request, user, form, account_type):
             " Please contact support@localcontexts.org.")
 
     return redirect('dashboard')
+
+def escape_single_quotes(data):
+    if isinstance(data, dict):
+        return {key: escape_single_quotes(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [escape_single_quotes(item) for item in data]
+    elif isinstance(data, str):
+        return data.replace("'", "\\'")
+    return data
