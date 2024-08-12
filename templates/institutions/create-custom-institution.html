@@ -20,6 +20,10 @@
             <label for="institution_name">Institution Name</label>
             {{ noror_form.institution_name }}
             <div class="w-100 mt-1p">
+            {% if noror_form.institution_name.errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.institution_name.errors.as_text }}</small></div>
+            {% endif %}
+
                 {% if noror_form.errors %}
                     {% for field_name, errors in noror_form.errors.items %}
                         <div class="red-text">
@@ -72,6 +76,10 @@
 
                 <br>
                 {{ noror_form.description }}
+
+                {% if noror_form.description.errors %}
+                    <div class="msg-red w-50"><small>{{ noror_form.description.errors.as_text }}</small></div>
+                {% endif %}
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
