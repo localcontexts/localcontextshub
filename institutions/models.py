@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.functions import Lower
 from django_countries.fields import CountryField
 from django.core.validators import MaxLengthValidator
 import uuid
@@ -87,3 +88,11 @@ class Institution(models.Model):
         indexes = [models.Index(fields=['id', 'institution_creator', 'image'])]
         verbose_name = 'Institution'
         verbose_name_plural = 'Institutions'
+
+        constraints = [
+            models.UniqueConstraint(
+                Lower('institution_name'),
+                name='Institution Name must be unique'
+            ),
+        ]
+
