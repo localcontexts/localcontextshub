@@ -319,7 +319,6 @@ function autocomplete(inp, arr) {
 function translationFormValidation() {
     const languageError = document.getElementById('language-error')
     const addTranslationForms = document.querySelectorAll('.add-translation-form')
-    const currentTranslationForms = document.querySelectorAll('.current-translation-form')
     const mainLangInput = document.getElementById('id_language')
 
     function saveLabelBtnValidation(status) {
@@ -332,31 +331,33 @@ function translationFormValidation() {
         }
     }
 
-    invalidInputs = 0
+    valid = true
     if (window.location.href.includes('/labels/customize') &&
-        (mainLangInput.value != '' && !mainLangInput.classList.contains('readonly-input'))) 
-        { invalidInputs += 1}
+        (mainLangInput.value == '')) 
+        { valid = false}
+    // Validate addTranslationForms
     for (var i = 0; i < addTranslationForms.length; i++) {
-        var translatedNameInput = addTranslationForms[i].querySelector('[id$="translated_name"]')
-        var translatedLangInput = addTranslationForms[i].querySelector('[id$="language"]')
-        var translatedTextInput = addTranslationForms[i].querySelector('[id$="translated_text"]')
+        var translatedNameInput = addTranslationForms[i].querySelector('[id$="translated_name"]');
+        var translatedLangInput = addTranslationForms[i].querySelector('[id$="language"]');
+        var translatedTextInput = addTranslationForms[i].querySelector('[id$="translated_text"]');
 
-        if ((translatedLangInput.value != '' && !translatedLangInput.classList.contains('readonly-input')) ||
-            (translatedNameInput.value != '' && !translatedLangInput.classList.contains('readonly-input')) ||
-            (translatedTextInput.value != '' && !translatedLangInput.classList.contains('readonly-input'))) 
-            { invalidInputs += 1 }
+        // Check if all required fields are empty or not
+        if (translatedLangInput.value === '' && !translatedLangInput.classList.contains('readonly-input') &&
+            translatedNameInput.value === '' &&
+            translatedTextInput.value === '') {
+            // All fields are empty - no issue
+            valid = true
+        }
+
+        // Invalidate if any field is filled and others are empty
+        if ((translatedLangInput.value !== '' && (translatedNameInput.value === '' || translatedTextInput.value === '')) ||
+            (translatedNameInput.value !== '' && (translatedLangInput.value === '' || translatedTextInput.value === '')) ||
+            (translatedTextInput.value !== '' && (translatedLangInput.value === '' || translatedNameInput.value === ''))) {
+            valid = false
+        }
     }
-    for (var i = 0; i < currentTranslationForms.length; i++) {
-        var translatedNameInput = currentTranslationForms[i].querySelector('[id$="translated_name"]')
-        var translatedLangInput = currentTranslationForms[i].querySelector('[id$="language"]')
-        var translatedTextInput = currentTranslationForms[i].querySelector('[id$="translated_text"]')
 
-        if ((translatedNameInput.value != '' && translatedLangInput.value == '') ||
-            (translatedTextInput.value != '' && translatedLangInput.value == '')) 
-            { invalidInputs += 1 }
-    }
-
-    if (invalidInputs == 0) {
+    if (valid == true) {
         saveLabelBtnValidation('enable')
     } else {saveLabelBtnValidation('disable')}
 }
