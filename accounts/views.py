@@ -39,7 +39,7 @@ from .forms import (
 
 from .utils import (
     get_next_path, get_users_name, return_registry_accounts, manage_mailing_list,
-    institute_account_subscription,
+    institute_account_subscription, escape_single_quotes
 )
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
@@ -792,6 +792,8 @@ def subscription_inquiry(request):
         "json", Institution.objects.filter(is_ror=False)
     )
     communities = serializers.serialize("json", Community.approved.all())
+    communities = escape_single_quotes(communities)
+    non_ror_institutes = escape_single_quotes(non_ror_institutes)
 
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():
