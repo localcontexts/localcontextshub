@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import Http404
 from itertools import chain
 from .decorators import member_required
+from maintenance_mode.decorators import force_maintenance_mode_off
 
 from localcontexts.utils import dev_prod_or_local
 from helpers.utils import (
@@ -177,6 +178,7 @@ def public_service_provider_view(request, pk):
     except:
         raise Http404()
 
+
 # Notices
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
@@ -192,8 +194,10 @@ def service_provider_notices(request, pk):
         not_approved_download_notice = None
         not_approved_shared_notice = None
     else:
-        not_approved_download_notice = "Your service provider account needs to be subscribed in order to download this Notice."
-        not_approved_shared_notice = "Your service provider account needs to be subscribed in order to share this Notice."
+        not_approved_download_notice = "Your service provider account needs to be subscribed " \
+            "in order to download this Notice."
+        not_approved_shared_notice = "Your service provider account needs to be subscribed in " \
+            "order to share this Notice."
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -235,6 +239,7 @@ def service_provider_notices(request, pk):
     }
     return render(request, "serviceproviders/notices.html", context)
 
+
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 def delete_otc_notice(request, pk, notice_id):
@@ -242,6 +247,30 @@ def delete_otc_notice(request, pk, notice_id):
         otc = OpenToCollaborateNoticeURL.objects.get(id=notice_id)
         otc.delete()
     return redirect("service-provider-notices", pk)
+
+
+@force_maintenance_mode_off
+def embed_otc_notice(request, pk):
+    layout = request.GET.get("lt")
+    lang = request.GET.get("lang")
+    align = request.GET.get("align")
+
+    service_provider = get_service_provider(pk)
+    otc_notices = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider)
+
+    context = {
+        "layout": layout,
+        "lang": lang,
+        "align": align,
+        "otc_notices": otc_notices,
+        "service_provider": service_provider,
+    }
+
+    response = render(request, "partials/_embed.html", context)
+    response["Content-Security-Policy"] = "frame-ancestors https://*"
+
+    return response
+
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
@@ -254,6 +283,7 @@ def connections(request, pk):
         "member_role": member_role,
     }
     return render(request, "serviceproviders/connections.html", context)
+
 
 # Members
 @login_required(login_url='login')
@@ -371,6 +401,7 @@ def service_provider_members(request, pk):
     }
     return render(request, 'serviceproviders/members.html', context)
 
+
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor', 'viewer'])
 def service_provider_member_invites(request, pk):
@@ -386,6 +417,7 @@ def service_provider_member_invites(request, pk):
         'member_invites': member_invites,
     }
     return render(request, 'serviceproviders/member-requests.html', context)
+
 
 @login_required(login_url='login')
 @member_required(roles=['admin'])
@@ -414,6 +446,7 @@ def service_provider_remove_member(request, pk, member_id):
         return redirect('manage-orgs')
     else:
         return redirect('service-provider-members', service_provider.id)
+
 
 # ACCOUNT SETTINGS
 @login_required(login_url="login")
@@ -453,6 +486,7 @@ def update_service_provider(request, pk):
     return render(
         request, 'account_settings_pages/_update-account.html', context
     )
+
 
 # Create API Key
 @login_required(login_url="login")
