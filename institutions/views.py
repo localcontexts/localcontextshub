@@ -113,7 +113,8 @@ def preparation_step(request):
 @login_required(login_url="login")
 def create_institution(request):
     form = CreateInstitutionForm()
-    user_form,subscription_form  = form_initiation(request, "institution_action")    
+    user_form = form_initiation(request)
+    subscription_form = SubscriptionForm()
     env = dev_prod_or_local(request.get_host())
     
     if request.method == "POST":
@@ -125,6 +126,7 @@ def create_institution(request):
                 "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
                 "account_type": "institution_account",
+                "inquiry_type": request.POST['inquiry_type'],
                 "organization_name": form.cleaned_data['institution_name'],
             }
             
@@ -149,7 +151,8 @@ def create_institution(request):
 @login_required(login_url="login")
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm()
-    user_form,subscription_form  = form_initiation(request, "institution_action")
+    user_form = form_initiation(request)
+    subscription_form = SubscriptionForm()
     env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
@@ -161,6 +164,7 @@ def create_custom_institution(request):
             "last_name": user_form.cleaned_data['last_name'],
             "email": request.user._wrapped.email,
             "account_type": "institution_account",
+            "inquiry_type": request.POST['inquiry_type'],
             "organization_name": noror_form.cleaned_data['institution_name'],
             }
             

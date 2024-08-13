@@ -51,7 +51,7 @@ def preparation_step(request):
 def connect_researcher(request):
     researcher = is_user_researcher(request.user)
     form = ConnectResearcherForm(request.POST or None)
-    user_form, subscription_form  = form_initiation(request, "researcher_action")
+    user_form = form_initiation(request)
     
     env = dev_prod_or_local(request.get_host())
     
@@ -63,6 +63,7 @@ def connect_researcher(request):
                 "first_name": user_form.cleaned_data['first_name'],
                 "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
+                "inquiry_type": "subscriber",
                 "account_type": "researcher_account",
                 "organization_name": get_users_name(request.user),
                 }
@@ -81,7 +82,7 @@ def connect_researcher(request):
                         "Something went wrong. Please Try again later.",
                     )
                     return redirect('dashboard')
-        context = {'form': form, 'env': env, 'subscription_form': subscription_form, 'user_form': user_form}
+        context = {'form': form, 'env': env, 'user_form': user_form}
         return render(request, 'researchers/connect-researcher.html', context)
     else:
         return redirect('researcher-notices', researcher.id)
