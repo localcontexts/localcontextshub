@@ -2,49 +2,47 @@
 {% load socialaccount %}
 {% block settings %}
 
-<div class="flex-this column w-80 mr-1p">
-    <div>
-        <h3>Linked Accounts</h3>
-        <p>Manage, link or remove accounts connected to this account.</p>
-    </div>
-    
-    {% if socialaccount and provider == 'google' %}
-        <form id="unlinkForm" method="post" action="{% url 'socialaccount_connections' provider='google' %}">
-            {% csrf_token %}
-            <div class="flex-this">
-                <button type="button" class="w-50 white-btn flex-this align-center justify-center" onclick="showConfirmationAlert()">
-                    <img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt="">
-                    <span class="ml-1p primary-black-text">Unlink With Google</span>
-                    <i class="fa-solid fa-link-simple-slash ml-55p"></i>
-                </button>
-            </div>
-        </form>
-    {% else %}
-        <form method="post" action="{% provider_login_url 'google' process='connect' %}">
-            {% csrf_token %}
-            <div class="flex-this">
-                <button type="submit" class="w-50 white-btn flex-this align-center justify-center">
-                    <img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt="">
-                    <span class="ml-1p primary-black-text">Link With Google</span>
-                    <i class="fa-solid fa-link-simple ml-55p"></i>
-                </button>
-            </div>
-        </form>
-    {% endif %}
+<div>
+    <h3>Linked Accounts</h3>
+    <p>Manage, link or remove accounts connected to this account.</p>
+</div>
 
-    {% include 'partials/_alerts.html' %}
+{% if socialaccount and provider == 'google' %}
+    <form id="unlinkForm" method="post" action="{% url 'socialaccount_connections' provider='google' %}">
+        {% csrf_token %}
+        <div class="flex-this">
+            <button type="button" class="w-50 white-btn flex-this align-center justify-center" onclick="showConfirmationAlert()">
+                <img class="mr-8" src="{% static 'images/logos/google.png' %}" alt="">
+                <span class="primary-black-text">Unlink With Google</span>
+                <i class="fa-solid fa-link-simple-slash ml-auto"></i>
+            </button>
+        </div>
+    </form>
+{% else %}
+    <form method="post" action="{% provider_login_url 'google' process='connect' %}">
+        {% csrf_token %}
+        <div class="flex-this">
+            <button type="submit" class="w-50 white-btn flex-this align-center justify-center">
+                <img class="mr-8" src="{% static 'images/logos/google.png' %}" alt="">
+                <span class="primary-black-text">Link With Google</span>
+                <i class="fa-solid fa-link-simple ml-auto"></i>
+            </button>
+        </div>
+    </form>
+{% endif %}
 
-    <div id="googleConfirmationAlert" class="modal hide">
-        <div class="modal-defaults deactivate-modal flex-this column w-100">
-            <div class="w-100">
-                <div>
-                    <h2 class="primary-black-text mt-0">Are you sure you want to unlink the Google account?</h2>  
-                    <p>You'll need to use your user name {{ request.user.username }} and password next time you login.</p>  
-                </div>
-                <div class="flex-this w-100 text-align-center">
-                    <div class="primary-btn white-btn mr-1p" onclick="confirmUnlink()">Unlink</div>    
-                    <div class="ml-1p primary-btn action-btn" onclick="cancelUnlink()">Cancel</div>
-                </div>
+{% include 'partials/_alerts.html' %}
+
+<div id="googleConfirmationAlert" class="modal hide">
+    <div class="modal-defaults deactivate-modal flex-this column w-100">
+        <div class="w-100">
+            <div>
+                <h2 class="primary-black-text mt-0">Are you sure you want to unlink the Google account?</h2>  
+                <p>You'll need to use your user name {{ request.user.username }} and password next time you login.</p>  
+            </div>
+            <div class="flex-this w-100 text-align-center">
+                <div class="primary-btn white-btn mr-1p" onclick="confirmUnlink()">Unlink</div>    
+                <div class="ml-1p primary-btn action-btn" onclick="cancelUnlink()">Cancel</div>
             </div>
         </div>
     </div>
