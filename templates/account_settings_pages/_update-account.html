@@ -14,19 +14,19 @@
             {% if service_provider %} {{ service_provider.id }} {% endif %}
         </div>
     </div>
-    
+
     <form
         method="POST"
         action="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'update-service-provider' service_provider.id %}{% endif %}"
         enctype="multipart/form-data">
         {% csrf_token %}
-    
+
         <!-- Account Image -->
         <div>
             <div class="hide">{{ update_form.image }}</div>
-    
+
             <div id="defaultPlaceholderUrl" data-url="{% static 'images/placeholders/community-place.jpg' %}"></div>
-    
+
             <div class="flex-this space-between mb-16">
                 <div class="w-50">
                     {% if community %}
@@ -38,7 +38,7 @@
                             {% endif %}
                         </div>
                     {% endif %}
-    
+
                     {% if institution %}
                         <div id="imagePreviewContainer" class="img-preview__container__rectangle">
                             {% if not institution.image %}
@@ -48,7 +48,7 @@
                             {% endif %}
                         </div>
                     {% endif %}
-    
+
                     {% if researcher %}
                         <div id="imagePreviewContainer" class="img-preview__container__square">
                             {% if not researcher.image %}
@@ -69,7 +69,7 @@
                         </div>
                     {% endif %}
                 </div>
-    
+
                 <div class="flex-this">
                     <div>
                         <button id="altImageUploadBtn" class="primary-btn action-btn mr-8">Upload image <i class="fa-solid fa-upload"></i></button>
@@ -79,20 +79,21 @@
                     </div>
                 </div>
             </div>
-    
+
             {% if update_form.image.errors %}
                 <div class="msg-red w-50"><small>{{ update_form.image.errors.as_text }}</small></div>
             {% endif %}
         </div>
-    
+
         <div class="w-100 mb-8">
             {{ update_form.description.label }} <br>
             {{ update_form.description }}
             {% if update_form.description.errors %}
                 <div class="msg-red w-80"><small>{{ update_form.description.errors.as_text }}</small></div>
             {% endif %}
+            <small id="charCount" class="block text-align-right">200/200</small>
         </div>
-    
+
         <!-- Community entity -->
         {% if community %}
             <div class="w-100 mb-8">
@@ -103,25 +104,56 @@
                 {% endif %}
             </div>
         {% endif %}
-    
-        <!-- Primary institution -->
+
+         <!-- Primary institution -->
         {% if researcher %}
             <div class="mb-8">
                 <label for="primary_institution"> Primary Institution </label><br>
                 {{ update_form.primary_institution }}
             </div>
-            <div class="mb-8">
-                {{ update_form.website.label }} <br>
-                {{ update_form.website }}
-            </div>
             {% if update_form.primary_institution.errors %}
                 <div class="msg-red w-50"><small>{{ update_form.primary_institution.errors.as_text }}</small></div>
             {% endif %}
+        {% endif %}
+
+        <!-- Website -->
+        <div class="mb-8">
+            {{ update_form.website.label }}
+            <div class="tooltip"><strong>i</strong>
+                <span class="tooltiptext">A link to your platform's website</span>
+            </div>
+            <br>
+            {{ update_form.website }}
             {% if update_form.website.errors %}
                 <div class="msg-red w-50"><small>{{ update_form.website.errors.as_text }}</small></div>
             {% endif %}
+        </div>
+
+        {% if service_provider %}
+            <!-- Documentation -->
+            <div class="mb-8">
+                {{ update_form.documentation.label }}
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">A link to your platform's documentation of the Local Contexts integration</span>
+                </div>
+                <br>
+                {{ update_form.documentation }}
+                {% if update_form.documentation.errors %}
+                    <div class="msg-red w-50">
+                        <small>{{ update_form.documentation.errors.as_text }}</small>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Show/Hide Connections -->
+            <div class="mt-16 mb-8">
+                {{ update_form.show_connections }} <label for="show_connections">Show connections in Registry</label>
+            </div>
+            {% if update_form.show_connections.errors %}
+                <div class="msg-red w-50"><small>{{ update_form.show_connections.errors.as_text }}</small></div>
+            {% endif %}
         {% endif %}
-    
+
         <!-- Location -->
         {% if institution or community %}
             <div class="w-100 mb-8">
@@ -147,7 +179,7 @@
                 {% endif %}
             </div>
         {% endif %}
-    
+
         {% if researcher %}
             <!-- Researcher account contact, disabled in sandbox -->
             {% if not env == "SANDBOX" %}
@@ -157,22 +189,22 @@
                         <label for="contact_email"> Contact Email </label><br>
                         {{ update_form.contact_email }}
                     </div>
-    
+
                     {% if update_form.contact_email.errors %}
                         <div class="msg-red w-50"><small>{{ update_form.contact_email.errors.as_text }}</small></div>
                     {% endif %}
-    
+
                     <div class="mt-16">
                         {{ update_form.contact_email_public.label }}
                         {{ update_form.contact_email_public }}
-    
+
                         {% if update_form.contact_email_public.errors %}
                             <div class="msg-red w-50"><small>{{ update_form.contact_email_public.errors.as_text }}</small></div>
                         {% endif %}
                     </div>
                 </div>
             {% endif %}
-    
+
             <!-- Researcher: ORCiD -->
             <div>
                 <div><h3>ORCiD</h3></div>
@@ -209,12 +241,12 @@
                                 </a>
                             </div>
                         </div>
-    
+
                         <div>
                             <a class="primary-btn white-btn" href="{% url 'disconnect-orcid' %}">Disconnect ORCiD</a>
                         </div>
                     </div>
-    
+
                 {% else %}
                     <div class="flex-this space-between">
                         <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="darkteal-text underline-hover" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
@@ -237,18 +269,18 @@
                         >
                         </div>
                     </div>
-    
+
                     {% if env == "DEV" or env == "SANDBOX" %}
                         <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="darkteal-text underline-hover" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
                     {% endif %}
                 {% endif %}
-    
+
                 </div>
             </div>
         {% endif %}
-    
+
         {% include 'partials/_alerts.html' %}
-    
+
         <div>
             <p>
                 <small>Providing your personal information is optional.
@@ -262,4 +294,3 @@
 </div>
 
 {% endblock %}
-    

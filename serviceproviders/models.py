@@ -29,7 +29,7 @@ class ServiceProvider(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
-    show_connections = models.BooleanField(default=False)
+    show_connections = models.BooleanField(default=True)
 
     # Managers
     objects = models.Manager()

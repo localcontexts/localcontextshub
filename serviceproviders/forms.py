@@ -6,60 +6,45 @@ class CreateServiceProviderForm(forms.ModelForm):
 
     class Meta:
         model = ServiceProvider
-        fields = ['name', 'description', 'contact_name', 'contact_email',]
+        fields = ['name', 'description', 'website', 'contact_name', 'contact_email',]
         error_messages = {
-            'name': {
-                'unique': _("This service provider is already on the Hub."),
-            },
+            'name': {'unique': _("This service provider is already on the Hub."),},
         }
         widgets = {
             'name': forms.TextInput(
-                attrs={
-                    'name':'name',
-                    'class': 'w-100',
-                    'autocomplete': 'off',
-                    'required': True
-                }
+                attrs={'name':'name', 'class': 'w-100', 'autocomplete': 'off', 'required': True}
             ),
             'description': forms.Textarea(
-                attrs={
-                    'class': 'w-100',
-                    'rows': 2,
-                    'required': True
-                }
+                attrs={'class': 'w-100', 'rows': 2, 'required': True}
             ),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
             'contact_name': forms.TextInput(
                 attrs={
-                    'class': 'w-100',
-                    'id': 'serviceProviderContactNameField',
-                    'required': True
+                    'class': 'w-100', 'id': 'serviceProviderContactNameField', 'required': True
                 }
             ),
             'contact_email': forms.EmailInput(
                 attrs={
-                    'class': 'w-100',
-                    'id': 'serviceProviderContactEmailField',
-                    'required': True
+                    'class': 'w-100', 'id': 'serviceProviderContactEmailField', 'required': True
                 }
             ),
         }
 
 class UpdateServiceProviderForm(forms.ModelForm):
+
+    show_connections = forms.BooleanField(required=False)
+
     class Meta:
         model = ServiceProvider
-        fields = ['image', 'description']
+        fields = ['image', 'description', 'website', 'documentation', 'show_connections']
         widgets = {
-            'description': forms.Textarea(
-                attrs={
-                    'class': 'w-100',
-                    'rows': 3,
-                }
-            ),
+            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 3,}),
             'image': forms.ClearableFileInput(
                 attrs={
-                    'class': 'w-100 hide',
-                    'id': 'serviceProviderImgUploadBtn',
-                    'onchange': 'showFile()'
+                    'class': 'w-100 hide', 'id': 'serviceProviderImgUploadBtn',
+                    'onchange': 'showFile()',
                 }
             ),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
+            'documentation': forms.TextInput(attrs={'class': 'w-100'}),
         }
