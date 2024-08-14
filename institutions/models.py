@@ -92,7 +92,8 @@ class Institution(models.Model):
         constraints = [
             models.UniqueConstraint(
                 Lower('institution_name'),
-                name='Institution Name must be unique'
+                name='institution_name',
+                violation_error_message='This institution is already on the Hub.'
             ),
         ]
 
