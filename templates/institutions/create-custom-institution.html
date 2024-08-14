@@ -20,6 +20,7 @@
             <label for="institution_name">Institution Name</label>
             {{ noror_form.institution_name }}
             <div class="w-100 mt-1p">
+
             {% if noror_form.institution_name.errors %}
                 <div class="msg-red w-50"><small>{{ noror_form.institution_name.errors.as_text }}</small></div>
             {% endif %}
@@ -58,6 +59,14 @@
         <div class="pad-top-1-5">
             <label for="country">Country</label><br>
             {{ noror_form.country }}                
+        </div>
+
+        <div class="mt-8">
+            <label>Institution Website</label>
+            {{ noror_form.website }}
+            {% if noror_form.website.errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.website.errors.as_text }}</small></div>
+            {% endif %}
         </div>
 
         <div class="w-100">
