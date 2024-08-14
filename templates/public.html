@@ -354,10 +354,37 @@
             <!-- Account Information -->
             <div class="flex-this column dashcard-text-container">
                 <h3 class="dashcard-h3">{{ service_provider }}</h3>
-                <div>
-                    <p class="dashcard-subheader">Service Provider</p>
-                </div>
-                <div><p class="dashcard-description description-sm">{% if service_provider.description %}{{ service_provider.description }}{% else %} No description provided. {% endif %}</p></div>
+                <p class="dashcard-subheader">Service Provider</p>
+                <p class="dashcard-description description-sm">
+                    {% if service_provider.description %}{{ service_provider.description }}{% else %}No description provided.{% endif %}
+                </p>
+                {% if service_provider.website or service_provider.documentation%}
+                    <div class="flex-this mt-8 description-sm">
+                        {% if service_provider.website %}
+                            <p class="mt-0 mb-0 mr-16">
+                                <i class="fa-regular fa-globe" title="Website"></i>
+                                <a
+                                    class="default-a ml-5"
+                                    href="{{ service_provider.website }}"
+                                >
+                                    {{ service_provider.website }}
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        {% if service_provider.documentation %}
+                            <p class="mt-0 mb-0">
+                                <i class="fa-regular fa-book" title="Documentation"></i>
+                                <a
+                                    class="default-a ml-5"
+                                    href="{{ service_provider.documentation }}"
+                                >
+                                    {{ service_provider.documentation }}
+                                </a>
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
                 {% include 'partials/_alerts.html' %}
             </div>
 
