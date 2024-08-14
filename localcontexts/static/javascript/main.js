@@ -29,6 +29,36 @@ function disableSubmitRegistrationBtn() {
     })
 } 
 
+(function() {
+    // COPY BUTTONS
+    const copyBtns = document.querySelectorAll('.copy-btn')
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = document.querySelector(`#${btn.dataset.target}`)
+            target.select()
+            target.setSelectionRange(0, 99999)
+            navigator.clipboard.writeText(target.value)
+        })
+    })
+
+    // GREY CONTENT DROPDOWNS
+    const toggleIcons = document.querySelectorAll('.toggle-icon')
+    toggleIcons.forEach(icon => {
+        icon.addEventListener('click', () => {
+            const targetDivId = icon.getAttribute('data-target')
+            const targetDiv = document.getElementById(targetDivId)
+            targetDiv.classList.toggle('hide')
+
+            if (targetDiv.classList.contains('hide')) {
+                icon.classList.replace('fa-angle-up', 'fa-angle-down');
+            } else {
+                icon.classList.replace('fa-angle-down', 'fa-angle-up');
+            }
+        })
+    })
+
+})()
+
 if (window.location.href.includes('sandbox.localcontextshub')) {
     let regHeader = document.getElementById('reg-header')
     let authHeader = document.getElementById('auth-header')
@@ -42,27 +72,37 @@ if (window.location.href.includes('sandbox.localcontextshub')) {
     }
 }
 
-if (window.location.href.includes('create-community') || window.location.href.includes('create-institution') || window.location.href.includes('connect-researcher') ) {
-    let textArea = document.getElementById('id_description')
-    let characterCounter = document.getElementById('charCount')
-    const maxNumOfChars = 200
+document.addEventListener('DOMContentLoaded', () => {
+    const initializeCharacterCounter = (textAreaId, counterId, maxChars) => {
+        let textArea = document.getElementById(textAreaId);
+        let characterCounter = document.getElementById(counterId);
 
-    const countCharacters = () => {
-        let numOfEnteredChars = textArea.value.length
-        let counter = maxNumOfChars - numOfEnteredChars
-        characterCounter.textContent = counter + '/200'
+        const countCharacters = () => {
+            let numOfEnteredChars = textArea.value.length;
+            let counter = maxChars - numOfEnteredChars;
+            characterCounter.textContent = counter + '/' + maxChars;
 
-        if (counter < 0) {
-            characterCounter.style.color = 'red'
-        } else if (counter < 50) {
-            characterCounter.style.color = '#EF6C00'
-        } else {
-            characterCounter.style.color = 'black'
-        }
+            if (counter < 0) {
+                characterCounter.style.color = 'red';
+            } else if (counter < 50) {
+                characterCounter.style.color = '#EF6C00';
+            } else {
+                characterCounter.style.color = 'black';
+            }
+        };
+
+        countCharacters();
+        textArea.addEventListener('input', countCharacters);
+    };
+
+    const url = window.location.href;
+    const createPages = ['create-community', 'create-institution', 'connect-researcher'];
+    const updatePages = ['communities/update', 'institutions/update', 'researchers/update'];
+
+    if (createPages.some(page => url.includes(page)) || updatePages.some(page => url.includes(page))) {
+        initializeCharacterCounter('id_description', 'charCount', 200);
     }
-
-    textArea.addEventListener('input', countCharacters)
-}
+});
 
 // Get languages from the IANA directory
 function fetchLanguages() {
@@ -319,22 +359,6 @@ function translationFormValidation() {
     if (invalidInputs == 0) {
         saveLabelBtnValidation('enable')
     } else {saveLabelBtnValidation('disable')}
-}
-
-// Show customized label text in community: labels
-function customText(imgDiv) {
-    let labelID = imgDiv.id
-    let divs = Array.from(document.querySelectorAll('.div-toggle'))
-    // console.log(labelID)
-
-    divs.forEach(div => { if (div.id.includes(labelID) && div.style.height == '0px') { div.style.height = 'auto' } else { div.style.height = '0px' } })
-
-    // Toggle text color based on what Label is selected
-    let pDivs = Array.from(document.querySelectorAll('.toggle-txt-color'))
-    pDivs.forEach(node => {
-        let nodeID = node.id
-        if (nodeID.includes(labelID)) { node.classList.add('label-name-active') } else { node.classList.remove('label-name-active') }
-    })
 }
 
 async function fetchLabels(type) {
@@ -1269,23 +1293,9 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
             })
         })
     }
-
-    // SHOW/HIDE NOTICE TRANSLATIONS
-    const toggleIcons = document.querySelectorAll('.toggle-icon')
-    toggleIcons.forEach(icon => {
-        icon.addEventListener('click', () => {
-            const targetDivId = icon.getAttribute('data-target')
-            const targetDiv = document.getElementById(targetDivId)
-            targetDiv.classList.toggle('hide')
-
-            if (targetDiv.classList.contains('hide')) {
-                icon.classList.replace('fa-angle-up', 'fa-angle-down');
-            } else {
-                icon.classList.replace('fa-angle-down', 'fa-angle-up');
-            }
-        })
-    })
 }
+
+
 
 function isValidHttpUrl(string) {
     let url;
@@ -1776,35 +1786,6 @@ if (window.location.href.includes('notices')) {
     }
 }
 
-if (window.location.href.includes('labels/view/')) {
-    const btn = document.getElementById('openLabelHistoryBtn')
-    let historyDiv = document.getElementById('labelHistoryDiv')
-
-    if (btn) {
-        btn.onclick = function(e) {
-            if (historyDiv.classList.contains('hide')) {
-                historyDiv.classList.replace('hide', 'show')
-                btn.innerHTML = `View Label History <i class="fa fa-angle-up" aria-hidden="true"></i>`
-            } else {
-                historyDiv.classList.replace('show', 'hide')
-                btn.innerHTML = `View Label History <i class="fa fa-angle-down" aria-hidden="true"></i>`
-            }
-        }
-    }
-}
-
-(function() {
-    const copyBtns = document.querySelectorAll('.copy-btn');
-    copyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = document.querySelector(`#${btn.dataset.target}`);
-            target.select();
-            target.setSelectionRange(0, 99999)
-            navigator.clipboard.writeText(target.value)
-        });
-    });
-})()
-
 // PROJECT ACTION PAGE
 var copyProjectURLBtn = document.getElementsByClassName('copyProjectURLBtn')
 var copyProjectIDBtn = document.getElementsByClassName('copyProjectIDBtn')
@@ -1950,6 +1931,7 @@ function shareToSocialsBtnAction(btnElem) {
 }
 
 function openModal(modalId, closeBtnId) {
+    console.log(modalId)
     const modal = document.getElementById(modalId)
     modal.classList.replace('hide', 'show')
 

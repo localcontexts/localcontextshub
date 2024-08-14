@@ -46,7 +46,7 @@
                                     href="{% url 'download-open-to-collaborate-notice-service-provider' perm=otc_download_perm service_provider_id=service_provider.id %}"
                                 {% endif %}
                             {% endif %}
-                            >                            
+                            >
                             Download Notice <i class="fa-regular fa-arrow-down-to-line"></i>
                         </a>
                         {% if urls %}
@@ -70,14 +70,14 @@
             <div class="w-90">
                 <h3 class="mt-0">Open to Collaborate</h3>
 
-                <p class="mt-0">                    
+                <p class="mt-0">
                     <span class="bold">Why Use this Notice?</span><br>
-                    The Engagement Notice, the Open to Collaborate Notice, indicates that a researcher or an institution is committed to developing new modes of collaboration, engagement, and partnership over Indigenous collections and data that have colonial and/or problematic histories or unclear provenance. This Notice indicates a commitment to change and to develop new processes for the care and stewardship of past and future heritage collections. We recommend beginning with the Open to Collaborate Notice.               
+                    The Engagement Notice, the Open to Collaborate Notice, indicates that a researcher or an institution is committed to developing new modes of collaboration, engagement, and partnership over Indigenous collections and data that have colonial and/or problematic histories or unclear provenance. This Notice indicates a commitment to change and to develop new processes for the care and stewardship of past and future heritage collections. We recommend beginning with the Open to Collaborate Notice.
                 </p>
                 <p>
                     <span class="bold">How can I use this Notice?</span><br>
-                    Access the Hub API or click the “Download Notice” button on this page to use the Open to Collaborate Notice. For detailed information about the Engagement Notice and how to apply it, 
-                    <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>. 
+                    Access the Hub API or click the “Download Notice” button on this page to use the Open to Collaborate Notice. For detailed information about the Engagement Notice and how to apply it,
+                    <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                     <br><br>
                     If you add the Notice to a website, click the “Add Link” button and enter the information about where your Notice is displayed. If you have applied the Notice in multiple places, you can add multiple links.
                     <br><br>
@@ -85,8 +85,8 @@
                 </p>
                 <p>
                     <span class="bold">Notice Text</span><br>
-                    Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.                
-                </p>            
+                    Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.
+                </p>
                 <p>
                     <span class="bold">Places this Notice has been applied</span><br>
                     {% if urls %}
@@ -97,7 +97,7 @@
                                         <a class="default-a block" href="{{ url.0 }}" target="_blank" rel="noopener">{{ url.1 }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
                                         {% if researcher %}
                                             <a class="default-a block" href="{% url 'researcher-delete-otc' researcher.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
-                                        {% endif %}     
+                                        {% endif %}
                                         {% if institution %}
                                             {% if member_role == 'admin' or member_role == 'editor' %}
                                                 <a class="default-a block" href="{% url 'institution-delete-otc' institution.id url.2 %}"> <i class="fa fa-trash" aria-hidden="true"></i></a>
@@ -117,7 +117,7 @@
                     {% endif %}
                 </p>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -169,8 +169,8 @@
                             </div>
                         {% endif %}
                     </div>
-                {% endif %}      
-            </div>        
+                {% endif %}
+            </div>
         </div>
 
         <div class="w-80">
@@ -180,9 +180,9 @@
             </p>
             <p>
                 <span class="bold">How can I use these Notices?</span><br>
-                To apply the Disclosure Notices, you will create a Project to describe the context. After creating a Project, you can use the Hub API or download from the Project page to use the Notice(s). For detailed information about the Disclosure Notices and how to apply them, 
+                To apply the Disclosure Notices, you will create a Project to describe the context. After creating a Project, you can use the Hub API or download from the Project page to use the Notice(s). For detailed information about the Disclosure Notices and how to apply them,
                 <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-            </p>        
+            </p>
         </div>
 
         <div class="flex-this justify-center">
@@ -194,7 +194,7 @@
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="119px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                 <div><p>Biocultural</p></div>
             </div>
-            
+
             <div id="disclosureAI" class="cc-notice__container" onclick="expandDisclosureNotice(this)">
                 <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" width="119px" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line."></div>
                 <div><p>Attribution Incomplete</p></div>
@@ -212,17 +212,17 @@
                             <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 This Notice should be used to recognize that place-based knowledge carries accompanying cultural rights and responsibilities and that appropriate permissions may need to be sought for future use of this material.
-                            </p>        
+                            </p>
                         </div>
                         <div class="w-90">
                             <p>
-                                <span class="bold">Notice Text</span><br>                        
-                                The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated. For more information about the TK Notice click 
+                                <span class="bold">Notice Text</span><br>
+                                The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated. For more information about the TK Notice click
                                 <a class="default-a" href="https://localcontexts.org/notice/tk-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-                            </p>         
+                            </p>
                         </div>
                     </div>
-                </div>            
+                </div>
             </div>
 
             <div id="openDiv-disclosureBC" class="disclosure-notice__expanded-container hide">
@@ -234,17 +234,17 @@
                             <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 The BC Notice should be used to recognize the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity and genetic resources associated with their traditional lands, waters, and territories. It acknowledges the importance of cultural protocols and recognizes that appropriate permissions may need to be sought for future use of this material or data.
-                            </p>        
+                            </p>
                         </div>
                         <div class="w-90">
                             <p>
                                 <span class="bold">Notice Text</span><br>
                                 The BC Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material or data. The BC Notice recognizes the rights of Indigenous peoples to permission the use of information, collections, data and digital sequence information generated from the biodiversity or genetic resources associated with traditional lands, waters, and territories. The BC Notice may indicate that BC (Biocultural) Labels are in development and their implementation is being negotiated. For more information about the BC Notice click 
                                 <a class="default-a" href="https://localcontexts.org/notice/bc-notice/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
-                            </p>         
+                            </p>
                         </div>
                     </div>
-                </div>            
+                </div>
             </div>
 
             <div id="openDiv-disclosureAI" class="disclosure-notice__expanded-container hide">
@@ -256,17 +256,17 @@
                             <p class="mt-0">
                                 <span class="bold">Why Use this Notice?</span><br>
                                 The Attribution Incomplete Notice is attached to a collection or at an item level where there is incomplete, inaccurate, or missing attribution. This Notice indicates to the public that the record and/or metadata is incomplete. Visibly identifying missing attribution within collections is the first step towards correcting existing attribution to include: contributors, collaborators, other authors and/or communities of origin.
-                            </p>        
+                            </p>
                         </div>
                         <div class="w-90">
                             <p>
                                 <span class="bold">Notice Text</span><br>
                                 Collections and items in our institution have incomplete, inaccurate, and/or missing attribution. We are using this notice to clearly identify this material so that it can be updated, or corrected by communities of origin. Our institution is committed to collaboration and partnerships to address this problem of incorrect or missing attribution.
-                            </p>         
+                            </p>
                         </div>
                     </div>
-                </div>            
-            </div>   
+                </div>
+            </div>
 
         </div>
 
@@ -279,7 +279,7 @@
         <div class="flex-this space-between">
             <div><h2 class="mt-0">Collections Care Notices</h2></div>
             <div class="flex-this flex-end">
-                
+
                 <div class="mr-16"><a id="openCCNoticeModal" class="primary-btn action-btn">Add Policy <i class="fa-solid fa-circle-plus"></i></a></div>
 
                 <div>
@@ -322,9 +322,9 @@
                     </p>
                     <p>
                         <span class="bold">How can I use these Notices?</span><br>
-                        Within the downloaded zip file are folders for each Notice containing its text, png, svg, QR code, and printable labels. Also included in the zip file is a poster with the Overall Notice. For transparency and staff awareness, we highly recommend that the poster with the Overall Notice is displayed in collections storage where the CC Notices are in use. 
+                        Within the downloaded zip file are folders for each Notice containing its text, png, svg, QR code, and printable labels. Also included in the zip file is a poster with the Overall Notice. For transparency and staff awareness, we highly recommend that the poster with the Overall Notice is displayed in collections storage where the CC Notices are in use.
                         <br><br>
-                        For detailed information about the CC Notices and how to apply them, 
+                        For detailed information about the CC Notices and how to apply them,
                         <a class="default-a" href="https://localcontexts.org/support/downloadable-resources/" target="_blank" rel="noopener">see our usage guide <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.
                     </p>
                 </div>
@@ -340,12 +340,12 @@
                             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-belonging.png' %}" width="119px" alt="Belonging Collections Care Notice icon. White square with top right corner folded. Inside are three black circles in descending size from top to bottom, each with two lines like arms extending down to touch the figure below."></div>
                             <div><p>Belonging</p></div>
                         </div>
-                        
+
                         <div id="caring" class="cc-notice__container" onclick="expandCCNotice(this)">
                             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-caring.png' %}" width="119px" alt="Caring Collections Care Notice icon. White square with top right corner folded. Inside are two wave-like curved lines extending from the edge toward the center which curve around a black circle."></div>
                             <div><p>Caring</p></div>
                         </div>
-                    
+
                         <div id="gender-aware" class="cc-notice__container" onclick="expandCCNotice(this)">
                             <div><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/collections-care/cc-gender-aware.png' %}" width="119px" alt="Gender Aware Collections Care Notice icon. White square with top right corner folded. Inside are three circles in a diagonal. One has white shading, one has black shading, one has striped shading."></div>
                             <div><p>Gender Aware</p></div>
@@ -377,7 +377,7 @@
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
-                                The Authorization Notice recognizes that specific Tribal or community authorization through consultation is necessary prior to use of specific items or collections in all forms of publication and exhibits.                                
+                                The Authorization Notice recognizes that specific Tribal or community authorization through consultation is necessary prior to use of specific items or collections in all forms of publication and exhibits.
                                 <br><br>
 
                                 <span class="bold">Notice Text</span><br>
@@ -438,7 +438,7 @@
 
                             <p>
                                 <span class="bold">Why use this Notice?</span><br>
-                                The Leave Undisturbed Notice recognizes the cultural significance and necessity of not disturbing certain cultural materials.                                
+                                The Leave Undisturbed Notice recognizes the cultural significance and necessity of not disturbing certain cultural materials.
                                 <br><br>
                                 <span class="bold">Notice Text</span><br>
                                 The Leave Undisturbed Notice is being used to indicate that items in a collection should not be disturbed. They should only be moved or disturbed under very limited circumstances according to community guidance.
@@ -494,7 +494,7 @@
                     </div>
 
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -504,18 +504,18 @@
             <div class="w-100">
                 <form id="ccPolicyForm" method="POST" autocomplete="off" enctype="multipart/form-data">
                     {% csrf_token %}
-    
+
                     <div class="flex-this space-between">
                         <div><h2 class="primary-black-text mt-0">Add Collections Care Notice Policy</h2></div>
                         <div>
                             <div id="closeCCNoticeModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                        </div>            
+                        </div>
                     </div>
-    
+
                     <div>
                         <p>
                             Before downloading the Notices, if you have a collections care policy that you can share, please upload or provide a link.
-                        </p>  
+                        </p>
 
                         <div class="w-50">
                             <button id="customCCPolicyFileUploadBtn" class="primary-btn green-btn">
@@ -525,7 +525,7 @@
                         </div>
 
                         {% if cc_policy_form.policy_document.errors %}
-                            <div class="msg-red w-50"><small>{{ cc_policy_form.policy_document.errors.as_text }}</small></div> 
+                            <div class="msg-red w-50"><small>{{ cc_policy_form.policy_document.errors.as_text }}</small></div>
                         {% endif %}
 
                         <br>
@@ -533,7 +533,7 @@
                         {{ cc_policy_form.url }}
                     </div>
                     <div class="flex-this flex-end w-100 mt-16">
-                        <button class="primary-btn action-btn" name="add_policy">Add policy </button>    
+                        <button class="primary-btn action-btn" name="add_policy">Add policy </button>
                     </div>
                 </form>
             </div>
@@ -551,13 +551,13 @@
                     <div><h2 class="primary-black-text mt-0">Add Open to Collaborate Notice Link</h2></div>
                     <div>
                         <div id="closeAddURLModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                    </div>            
+                    </div>
                 </div>
 
                 <div>
                     <p>
                         If you have added an Open to Collaborate Notice to a website, add the link where it appears. If you have applied the Notice in multiple places, you can add multiple links.
-                    </p>  
+                    </p>
                     {{ form.name.label }}
                     <div class="tooltip"><strong>i</strong>
                         <span class="tooltiptext">The name of the website or webpage where the Notice is displayed. This will appear on your account’s public page in the registry.</span>
@@ -572,7 +572,7 @@
                     {{ form.url }}
                 </div>
                 <div class="flex-this flex-end w-100 mt-16">
-                    <button class="primary-btn action-btn">Add Link</button>    
+                    <button class="primary-btn action-btn">Add Link</button>
                 </div>
             </form>
         </div>
@@ -584,7 +584,7 @@
 
         <div class="flex-this space-between">
             <div class="w-80">
-                <h2 class="primary-black-text mt-0">Share Open to Collaborate Notice</h2>  
+                <h2 class="primary-black-text mt-0">Share Open to Collaborate Notice</h2>
             </div>
             <div>
                 <div id="closeshareOTCNoticeModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
@@ -604,8 +604,8 @@
                 <p class="font-size-14 mt-0 mb-8">Add this Notice to your website by copying the code below.</p>
 
                 <div class="text-input-to-copy">
-                    <input class="w-100 grey-chip" type="text" 
-                    value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}" title="Local Contexts Open to Collaborate" frameborder="0"></iframe>' data-url='{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% endif %}' title="Local Contexts Open to Collaborate" id="embedToCopy" readonly>
+                    <input class="w-100 grey-chip" type="text"
+                    value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% elif service_provider %}{% url "embed-notice-service-provider" service_provider.id %}{% endif %}" title="Local Contexts Open to Collaborate" frameborder="0"></iframe>' data-url='{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url "embed-notice-institution" institution.id %}{% elif researcher %}{% url "embed-notice-researcher" researcher.id %}{% elif service_provider %}{% url "embed-notice-service-provider" service_provider.id %}{% endif %}' title="Local Contexts Open to Collaborate" id="embedToCopy" readonly>
                     <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                 </div>
                 <p class="font-size-14 mt-1p mb-0">Embed Options</p>
@@ -626,19 +626,19 @@
             <div class="flex-this bold">Share on Social Media</div>
             <div class="share-to-socials-container">
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="email" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-solid fa-envelope" style="mr-10" title="Share via Email"></i>
+                    <i class="socials-btn fa-solid fa-envelope mr-10" title="Share via Email"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="whatsapp" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-whatsapp" style="mr-10" title="Share via WhatsApp"></i>
+                    <i class="socials-btn fa-brands fa-whatsapp mr-10" title="Share via WhatsApp"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="facebook" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-facebook-f" style="mr-10" title="Share on Facebook"></i>
+                    <i class="socials-btn fa-brands fa-facebook-f mr-10" title="Share on Facebook"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="twitter" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-twitter" style="mr-10" title="Share on Twitter"></i>
+                    <i class="socials-btn fa-brands fa-twitter mr-10" title="Share on Twitter"></i>
                 </div>
                 <div class="shareToSocialsBtn" data-type="otc-notice" data-social="linkedin" data-title="Open to Collaborate Notice" data-url="{{ request.scheme }}://{{ request.get_host }}{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% endif %}">
-                    <i class="socials-btn fa-brands fa-linkedin" style="mr-10" title="Share on LinkedIn"></i>
+                    <i class="socials-btn fa-brands fa-linkedin mr-10" title="Share on LinkedIn"></i>
                 </div>
             </div>
         </div>

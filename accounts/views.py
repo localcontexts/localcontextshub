@@ -39,7 +39,7 @@ from .forms import (
 
 from .utils import (
     get_next_path, get_users_name, return_registry_accounts, manage_mailing_list,
-    institute_account_subscription,
+    institute_account_subscription, escape_single_quotes
 )
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
@@ -537,6 +537,7 @@ def invite_user(request):
 
 
 def registry(request, filtertype=None):
+    default_items_per_page = 20
     try:
         c = Community.objects.select_related('community_creator').prefetch_related(
             'admins', 'editors', 'viewers'
@@ -568,7 +569,7 @@ def registry(request, filtertype=None):
 
             cards = return_registry_accounts(c, r, i, sp)
 
-            p = Paginator(cards, 5)
+            p = Paginator(cards, default_items_per_page)
 
         else:
             if filtertype == "communities":
@@ -593,7 +594,7 @@ def registry(request, filtertype=None):
             else:
                 cards = return_registry_accounts(c, r, i, sp)
 
-            p = Paginator(cards, 5)
+            p = Paginator(cards, default_items_per_page)
 
         page_num = request.GET.get("page", 1)
         page = p.page(page_num)
@@ -791,6 +792,8 @@ def subscription_inquiry(request):
         "json", Institution.objects.filter(is_ror=False)
     )
     communities = serializers.serialize("json", Community.approved.all())
+    communities = escape_single_quotes(communities)
+    non_ror_institutes = escape_single_quotes(non_ror_institutes)
 
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():

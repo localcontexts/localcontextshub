@@ -40,7 +40,7 @@ class ServiceProvider(models.Model):
     def get_member_count(self):
         admins = 1
         editors = self.editors.count()
-        total_members = admins + editors + 1
+        total_members = admins + editors
         return total_members
 
     def get_editors(self):

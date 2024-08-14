@@ -4,7 +4,7 @@ from django.contrib import messages
 from itertools import chain
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, ServiceProviderConnections
 from helpers.models import *
 from notifications.models import *
 from bclabels.models import BCLabel
@@ -517,6 +517,7 @@ def customize_label(request, pk, label_code):
                 data.label_type = label_type
                 data.community = community
                 data.created_by = request.user
+                data.version = 1
                 data.save()
 
                 # Save all label translation instances
@@ -1298,6 +1299,60 @@ def connections(request, pk):
         'communities': communities,
     }
     return render(request, 'communities/connections.html', context)
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def connect_service_provider(request, pk):
+    try:
+        community = get_community(pk)
+        member_role = check_member_role(request.user, community)
+        if request.method == "GET":
+            service_providers = ServiceProvider.objects.filter(is_certified=True)
+            connected_service_providers = ServiceProviderConnections.objects.filter(
+                communities=community
+            )
+
+        elif request.method == "POST":
+            if "connectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('connectServiceProvider')
+
+                if ServiceProviderConnections.objects.filter(
+                        service_provider=service_provider_id).exists():
+                    # Connect community to existing Service Provider connection
+                    sp_connection = ServiceProviderConnections.objects.get(
+                        service_provider=service_provider_id
+                    )
+                    sp_connection.communities.add(community)
+                    sp_connection.save()
+                else:
+                    # Create new Service Provider Connection and add community
+                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                    sp_connection = ServiceProviderConnections.objects.create(
+                        service_provider = service_provider
+                    )
+                    sp_connection.communities.add(community)
+                    sp_connection.save()
+
+            elif "disconnectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('disconnectServiceProvider')
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider_id
+                )
+                sp_connection.communities.remove(community)
+                sp_connection.save()
+
+            return redirect("community-connect-service-provider", community.id)
+
+        context = {
+            'member_role': member_role,
+            'community': community,
+            'service_providers': service_providers,
+            'connected_service_providers': connected_service_providers,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
 
 # show community Labels in a PDF
 @login_required(login_url='login')

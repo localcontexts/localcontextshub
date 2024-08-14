@@ -42,7 +42,9 @@ from django.contrib.auth.models import Group, User
 from django.contrib.admin.widgets import AdminFileWidget
 
 import helpers
-from accounts.models import (InactiveUser, Profile, SignUpInvitation, UserAffiliation)
+from accounts.models import (
+    InactiveUser, Profile, SignUpInvitation, UserAffiliation, ServiceProviderConnections
+)
 from accounts.utils import get_users_name
 from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
@@ -1782,4 +1784,11 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     )
     search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
 
+class ServiceProviderConnectionsAdmin(admin.ModelAdmin):
+    list_display = (
+        'service_provider',
+    )
+    search_fields = ('service_provider',)
+
 admin_site.register(ServiceProvider, ServiceProviderAdmin)
+admin_site.register(ServiceProviderConnections, ServiceProviderConnectionsAdmin)
