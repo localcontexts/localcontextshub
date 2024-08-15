@@ -19,7 +19,7 @@
 
                 <!-- Settings -->
                 {% if request.user == community.community_creator or member_role == 'admin' %}
-                    <div class="margin-left-8">
+                    <div class="ml-8">
                         <a href="{% url 'update-community' community.id %}" class="darkteal-text primary-btn white-btn"> Settings <i class="fa fa-cog" aria-hidden="true"></i></a>
                     </div>
                 {% endif %}
@@ -27,8 +27,8 @@
             
         </div>
             <!-- Image, headers, description -->
-        <div class="flex-this">
-
+        <div class="flex-this space-between">
+            <div class="flex-this">
                 <div class="dashcard-img-container">
                     <img loading="lazy" 
                         class="profile-img" 
@@ -48,11 +48,11 @@
                     </div>
                     <div><p class="dashcard-description description-sm">{% if community.description %}{{ community.description }} {% else %} No description provided. {% endif %}</p></div>
                 </div>
-
+            </div>
                 <!-- Count cards -->
-                <div class="flex-this column stats-card-container">
+                <div class="flex-this column stats-card-container  bold mr-0">
 
-                    <div class="stats-card flex-this space-between">
+                    <div class="stats-card flex-this flex-start">
                         <div>
                             <p>
                                 <!-- How many Labels has the community applied to projects -->
@@ -60,10 +60,10 @@
                                 {% if label_count < 10 %}0{{ label_count }}{% else %}{{ label_count }}{% endif %}
                             </p>
                         </div>
-                        <div><span>Labels</span></div>
+                        <div class="ml-16"><span>Labels</span></div>
                     </div>
     
-                    <div class="stats-card flex-this space-between">
+                    <div class="stats-card flex-this flex-start">
                         <div>
                             <p>
                                 <!-- Notices that a community has been notified about -->
@@ -71,17 +71,17 @@
                                 {% if notice_count < 10 %}0{{ notice_count }}{% else %}{{ notice_count }}{% endif %}
                             </p>
                         </div>
-                        <div><span>Notices</span></div>
+                        <div class="ml-16"><span>Notices</span></div>
                     </div>
     
-                    <div class="stats-card flex-this space-between">
+                    <div class="stats-card flex-this flex-start">
                         <div>
                             <p>
                                 {% connections_count community as connect_count %}
                                 {% if connect_count < 10 %}0{{ connect_count }}{% else %}{{ connect_count }}{% endif %}
                             </p>
                         </div>
-                        <div><span>Connections</span></div>
+                        <div class="ml-16"><span>Connections</span></div>
                     </div>
                 </div>
 

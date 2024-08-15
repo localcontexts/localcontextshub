@@ -1,9 +1,22 @@
 {% extends 'auth-base.html' %} {% block title %} View Account {% endblock %}{% load static %} {% load custom_acct_tags %} {% block main %}
+<script>
+    function closeRequestToJoinModal() {
+        const modalContent = document.getElementById('requestToJoinModal')
+        const elementClickedIsChild = modalContent.contains(event.target)
+        const elementClickedIsSelf = modalContent === event.target
+        const elementClickedIsNotChild = !elementClickedIsChild || elementClickedIsSelf
+
+        if (elementClickedIsNotChild) {
+            const modal = document.getElementById('requestToJoinModal')
+            modal.classList.replace('show', 'hide')
+        }
+    }
+</script>
 <div class="dashcard">
 
     {% if community %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold margin-bottom-16">
+            <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -22,12 +35,12 @@
                             {% if request_exists or community in user_communities %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
-                                <div class="margin-top-8 margin-bottom-8">
+                                <div class="mt-8 mb-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                            
                         </div>
-                        <div class="margin-left-16">
+                        <div class="ml-16">
                             {% if env == "SANDBOX" %}
                                 <div class="btn-with-helptext">
                                     <a class="primary-btn disabled-btn">Contact Us</a>
@@ -47,11 +60,13 @@
                                 <div class="w-100">
                                     <div class="flex-this space-between">
                                         <div class="w-80">
-                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                            <h2 class="primary-black-text mt-0">Contact form</h2>  
                                             <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
                                         </div>
                                         <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                                            <div class="close-modal-btn">
+                                                <i class="fa-regular fa-xmark fa-xl"></i>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -67,14 +82,14 @@
                     {% endif %}
 
                 {% else %}
-                    <div class="loc bold margin-bottom-16">
+                    <div class="loc bold mb-16">
                         <small>
                             You are a member of this community
                         </small>
                     </div>
                 {% endif %}
             {% else %}
-                <div class="loc grey-text bold margin-bottom-16">
+                <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
                             Login
@@ -107,20 +122,23 @@
 
         </div>
 
-        {% if community.boundary.coordinates %}
+        {% if community.share_boundary_publicly and community.boundary.coordinates %}
         <div>
             <h3>Community Location</h3>
-            {% if 'native-land.ca' in community.source_of_boundary %}
-                This community boundary originates from the
-                <a href="https://native-land.ca/contact"
-                   class="default-a" target="_blank" rel="noopener">
-                    Native Land Digital database
-                    <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
-                </a>.<br><br>
-            {% endif %}
-            <iframe src="{% url 'community-boundary-view' community.id %}"
-                    style="width: 100%; height: 450px; border: 1px solid cadetblue;">
+            <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
+            style="width: 100%; height: 450px; border: 1px solid cadetblue;">
             </iframe>
+            {% if 'native-land.ca' in community.source_of_boundary %}
+                <span class="italic">
+                    This community boundary originates from the
+                    <a href="https://native-land.ca/contact"
+                       class="default-a" target="_blank" rel="noopener">
+                        Native Land Digital database
+                        <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                    </a>.
+                </span>
+                <br><br>
+            {% endif %}
         </div>
         {% endif %}
 
@@ -131,7 +149,7 @@
                 <div class="public-page-labels flex-this w-100 wrap">
                     {% if bclabels %}
                         {% for bclabel in bclabels %}
-                            <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 mb-16">
                                 {% include 'bclabels/which-label.html' %}
                                 <span>{{ bclabel.name }}</span>
                             </div> 
@@ -140,7 +158,7 @@
 
                     {% if tklabels %}
                         {% for tklabel in tklabels %}
-                            <div class="condensed-labels center-text margin-right-16 margin-bottom-16">
+                            <div class="condensed-labels center-text mr-16 mb-16">
                                 {% include 'tklabels/which-label.html' %}
                                 <span>{{ tklabel.name }}</span>
                             </div> 
@@ -153,7 +171,7 @@
 
     {% if institution %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold  margin-bottom-16">
+            <div class="loc grey-text bold  mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -171,13 +189,13 @@
                             {% if request_exists or institution in user_institutions %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
                             {% else %}
-                                <div class="margin-top-8 margin-bottom-8">
+                                <div class="mt-8 mb-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
                             {% endif %}                                
                         </div>
                         
-                        <div class="margin-left-16">
+                        <div class="ml-16">
                             {% if env == "SANDBOX" %}
                                 <div class="btn-with-helptext">
                                     <a class="primary-btn disabled-btn">Contact Us</a>
@@ -197,7 +215,7 @@
                                 <div class="w-100">
                                     <div class="flex-this space-between">
                                         <div class="w-70">
-                                            <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                            <h2 class="primary-black-text mt-0">Contact form</h2>  
                                             <p>This message will be sent to the administrator of {{ institution.institution_name }}.</p>  
                                         </div>
                                         <div>
@@ -217,14 +235,14 @@
                     {% endif %}
 
                 {% else %}
-                    <div class="loc bold margin-bottom-16">
+                    <div class="loc bold mb-16">
                         <small>
                             You are a member of this institution
                         </small>
                     </div>
                 {% endif %}
             {% else %}
-                <div class="loc grey-text bold margin-bottom-16">
+                <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
                             Login
@@ -238,7 +256,7 @@
         <div class="flex-this">
             <div class="dashcard-img-container">
                 <img loading="lazy" 
-                    class="profile-img" 
+                    class="profile-img"
                     src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
                     alt="{{ institution.institution_name }} image"
                 >
@@ -257,15 +275,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                        <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                        <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -275,7 +293,7 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
+                        <div class="mr-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
@@ -293,7 +311,7 @@
 
     {% if researcher %}
         <div class="flex-this space-between">
-            <div class="loc grey-text bold margin-bottom-16">
+            <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
@@ -308,7 +326,7 @@
                 {% if researcher.contact_email_public %}
                     {% if not researcher.user == request.user %}
 
-                        <div class="margin-left-16">
+                        <div class="ml-16">
                             {% if env == "SANDBOX" %}
                                 <div class="btn-with-helptext">
                                     <a class="primary-btn disabled-btn">Contact Me</a>
@@ -331,7 +349,7 @@
                             <div class="w-100">
                                 <div class="flex-this space-between">
                                     <div>
-                                        <h2 class="primary-black-text no-top-margin">Contact form</h2>  
+                                        <h2 class="primary-black-text mt-0">Contact form</h2>  
                                         <p>This message will be sent to {% firstof researcher.user.get_full_name researcher.user.username %}.</p>  
                                     </div>
                                     <div>
@@ -378,15 +396,15 @@
                 <h3>Notices Used</h3>
                 <div class="flex-this">
                     {% if bcnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
                     {% if tknotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
                     {% if attrnotice %} 
-                        <div class="margin-right-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
+                        <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
                 </div>
@@ -396,7 +414,7 @@
                 <div class="flex-this column">
                     <h3>Open To Collaboration</h3>
                     <div class="flex-this">
-                        <div class="margin-right-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle. "></div>
+                        <div class="mr-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle. "></div>
                         <ul>
                             {% for notice in otc_notices %}
                                 <li>
@@ -436,47 +454,68 @@
 </div> <!-- dashcard-->
 
     {% if request.user.is_authenticated %}
-        <div id="requestToJoinModal" class="modal hide">
+        <div id="requestToJoinModal" class="modal hide" onclick="closeRequestToJoinModal()">
             <div class="modal-defaults join-modal flex-this column w-100">
                 <div class="w-100">
                     <div>
                         <div class="flex-this space-between">
                             <div class="flex-this">
-                                <h2 class="primary-black-text no-top-margin">Request to join</h2>  
-                                <div class="tooltip" style="margin-top: 10px; margin-left: 5px;"><strong>i</strong>
-                                    <span class="tooltiptext">
-                                        <strong>You should request to join community and institution accounts you are already affiliated with. </strong> <br><br>
-                                        If you wish to collaborate with a community or institution you are not affiliated with, you will connect with them through Projects. You do not need to join their account.
-                                    </span>
-                                </div>                            
+                                <h2 class="primary-black-text mt-0">Request to join</h2>
                             </div>
                             <div>
                                 <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
                             </div>
                         </div>
 
+                        {% if institution %}
+                            Request to join an account for an institution you are already affiliated with.
+                            If you wish to collaborate with an institution you are not affiliated with,
+                            you can contact them or connect with them through Projects and do not need
+                            to join their account.
+                            <br><br>
+                        {% elif community %}
+                            Request to join an account for a community that you are already affiliated with.
+                            If you wish to collaborate with a community you are not affiliated with,
+                            you can contact them or connect with them through Projects and do not need to join
+                            their account.
+                            <br><br>
+                        {% endif %}
 
-                        <p class="no-top-margin">Every account has various responsibilities within the community.<br>
-                            <strong>Administrator:</strong> responsible for adding, editing and removing members<br>
-                            <strong>Editor:</strong> responsible for customizing Labels and Projects<br>
-                            <strong>Viewer:</strong> can view activity happening on the hub
-                        </p>  
                     </div>
 
-                        <div class="margin-left-8">
+                        <div>
                             <form id="requestToJoinForm" method="POST" action="">
                                 {% csrf_token %}
 
                                 <div class="flex-this column w-100">
-                                    <div class="margin-top-8">
-                                        <label>Requested Responsibility</label><br>
+                                    <div class="mt-8">
+                                        <label>Requested Responsibility</label>
+                                        {% if institution %}
+                                            <div class="tooltip mt-10 ml-5"><strong>i</strong>
+                                                <span class="tooltiptext" >
+                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                    <strong>Editor:</strong> Place Notices, create and edit Projects, and notify communities<br><br>
+                                                    <strong>Viewer:</strong> View account’s Projects, Connections, and Members without edit access
+                                                </span>
+                                            </div>
+                                        {% elif community %}
+                                            <div class="tooltip mt-10 ml-5"><strong>i</strong>
+                                                <span class="tooltiptext">
+                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                    <strong>Editor:</strong> Customize, edit, and review account Labels, and create and edit Projects<br><br>
+                                                    <strong>Viewer:</strong> View account’s Labels, Projects, Connections, and Members without edit access
+                                                </span>
+                                            </div>
+                                        {% endif %}
+
+                                        <br>
                                         {{ join_form.role }}
                                         {% if join_form.role.errors %}
                                             <div class="msg-red w-50"><small>{{ join_form.role.errors.as_text }}</small></div> 
                                         {% endif %}
                                     </div>
-                                    
-                                    <div class="margin-top-8">
+
+                                    <div class="mt-8">
                                         <label>Include a message with this request</label><br>
                                         {{ join_form.message }}
                                         {% if join_form.message.errors %}
@@ -485,8 +524,8 @@
                                     </div>
                                 </div>
 
-                                <div class="flex-this space-between margin-top-8 w-100">
-                                    <p class="w-70 no-top-margin">
+                                <div class="flex-this space-between mt-8 w-100">
+                                    <p class="w-70 mt-0">
                                         <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
                                     </p>
                                     <div>

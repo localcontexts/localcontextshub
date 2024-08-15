@@ -3,10 +3,10 @@
 {% block settings %}
 <form id="deactivateUserForm" method="POST">
 
-    <div class="flex-this column w-80   margin-right-1">
+    <div class="flex-this column w-80   mr-1p">
         <div><h3>Deactivate Your Profile</h3></div>
 
-        <div class="w-70 margin-bottom-2">
+        <div class="w-70 mb-2p">
             <p class="no-top-margin">
                 {% if user_role == 'is_creator' %}
                     It looks like you are the main administrator of an account.
@@ -36,13 +36,13 @@
             <div class="w-100">
     
                 <div>
-                    <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
+                    <h2 class="primary-black-text mt-0">Are you sure?</h2>  
                     <p>Are you sure you want to deactivate your profile? <br><br>
                         This cannot be undone and you will be automatically logged out. <br></p>  
                 </div>
                 <div class="flex-this w-100 text-align-center">
-                    <div id="continueDeactivationBtn" class="primary-btn white-btn margin-right-1">Yes, deactivate my profile</div>    
-                    <div id="closeDeactivationModal" class="margin-left-1 primary-btn action-btn">Cancel</div>
+                    <div id="continueDeactivationBtn" class="primary-btn white-btn mr-1p">Yes, deactivate my profile</div>    
+                    <div id="closeDeactivationModal" class="ml-1p primary-btn action-btn">Cancel</div>
                 </div>
     
             </div>

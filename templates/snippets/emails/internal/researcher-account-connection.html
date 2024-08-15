@@ -1,23 +1,31 @@
 {% autoescape off %}
 <h3>
-    {% if researcher.user.get_full_name %}
-        {{ researcher.user.get_full_name }} ({{ researcher.user.username }}) 
-    {% else %}
-        {{ researcher.user.username}}
-    {% endif %}
-    has connected their Researcher Account 
+    {% firstof researcher.user.get_full_name researcher.user.username %}
+    has created a researcher account 
 </h3>
 
-<p>
-    Contact Email:
-    {% if researcher.contact_email %}
-        {{ researcher.contact_email }}<br>
-    {% else %}
-        {{ researcher.user.email }}<br>
-    {% endif %}
-    Primary Institution: {{ researcher.primary_institution }}<br>
-    Description: {{ researcher.description }}<br>
-    <br><br>
-</p>
+<table cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Contact email:</th>
+        <td>{{ researcher.user.email }}</td>
+    </tr>
+    <tr>
+        <th>Primary institution:</th>
+        <td>{% if researcher.primary_institution %} {{ researcher.primary_institution }} {% else %} None provided {% endif %}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{% if researcher.description %} {{ researcher.description }} {% else %} None provided {% endif %}</td>
+    </tr>
+    <tr>
+        <th>Website:</th>
+        <td>{% if researcher.website %} {{ researcher.website }} {% else %} None provided {% endif %}</td>
+    </tr>
+    <tr>
+        <th>ORCiD:</th>
+        <td>{% if researcher.orcid %} {{ researcher.orcid }} {% else %} None provided {% endif %}</td>
+    </tr>
+</table>
+
 
 {% endautoescape %}

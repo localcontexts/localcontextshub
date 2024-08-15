@@ -10,6 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
+from projects.models import Project
 from .downloads import download_otc_notice, download_cc_notices
 import requests
 from .models import NoticeDownloadTracker
@@ -77,20 +78,6 @@ def download_community_support_letter(request):
     except:
         raise Http404()
 
-@login_required(login_url='login')
-def download_institution_support_letter(request):
-    try:
-        url = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/agreements/Local%20Contexts%20Institution%20Information%20and%20Support%20Letter%20Template.docx'
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            file_content = response.content
-            response = HttpResponse(file_content, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = 'attachment; filename="LC_Institution_Support_Letter_Template.docx"'
-            return response
-    except:
-        raise Http404()
-
 
 @xframe_options_sameorigin
 def community_boundary_view(request, community_id):
@@ -129,7 +116,7 @@ def boundary_view(request):
         print(f'{message}: {e}')
         raise Exception(message)
 
-
+        
 def determine_user_role(user: User) -> str:
     created_accounts_count = Researcher.objects.filter(user=user).count() + \
                              Community.objects.filter(community_creator=user).count() + \
@@ -149,3 +136,20 @@ def determine_user_role(user: User) -> str:
         return 'is_member'
 
     return 'default'
+
+  
+@xframe_options_sameorigin
+def project_boundary_view(request, project_id):
+    project = Project.objects.filter(id=project_id).first()
+    if not project:
+        message = 'Project Does Not Exist'
+        raise Http404(message)
+
+    boundary = []
+    if project.boundary:
+        boundary = project.boundary.get_coordinates(as_tuple=False)
+
+    context = {
+        'boundary': boundary
+    }
+    return render(request, 'boundary/boundary-view.html', context)

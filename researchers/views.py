@@ -27,6 +27,15 @@ from .models import Researcher
 from .forms import *
 from .utils import *
 
+@login_required(login_url='login')
+def preparation_step(request):
+    environment = dev_prod_or_local(request.get_host())
+    researcher = True
+    context = {
+        'researcher': researcher,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 @login_required(login_url='login')
 def connect_researcher(request):
@@ -50,19 +59,22 @@ def connect_researcher(request):
                 request.user.user_profile.is_researcher = True
                 request.user.user_profile.save()
 
-                # Add researcher to mailing list
-                manage_researcher_mailing_list(request.user.email, True)                
+                # sends one email to the account creator
+                # and one to either site admin or support
+                send_researcher_email(request) 
+                send_hub_admins_account_creation_email(request, data)
 
-                if dev_prod_or_local(request.get_host()) == 'PROD':
-                    send_email_to_support(data) # Send support an email in prod only about a Researcher signing up
-                    send_researcher_survey(data) # Send survey email
+                # Add researcher to mailing list
+                if env == 'PROD':
+                    manage_researcher_mailing_list(request.user.email, True)                
 
                 # Adds activity to Hub Activity
                 HubActivity.objects.create(
                     action_user_id=request.user.id,
                     action_type="New Researcher"
                 )
-                    
+                messages.add_message(request, messages.INFO,
+                             'Your researcher account has been created.')
                 return redirect('dashboard')
         context = {'form': form, 'env': env}
         return render(request, 'researchers/connect-researcher.html', context)
@@ -195,9 +207,13 @@ def researcher_notices(request, researcher):
     if dev_prod_or_local(request.get_host()) == 'SANDBOX':
         is_sandbox = True
         otc_download_perm = 0
+        download_notice_on_sandbox = "Download of Notices is not available on the sandbox site."
+        share_notice_on_sandbox = "Sharing of Notices is not available on the sandbox site."
     else:
         is_sandbox = False
         otc_download_perm = 1
+        download_notice_on_sandbox = None
+        share_notice_on_sandbox = None
 
     if request.method == 'POST':
         if form.is_valid():
@@ -220,6 +236,8 @@ def researcher_notices(request, researcher):
         'urls': urls,
         'otc_download_perm': otc_download_perm,
         'is_sandbox': is_sandbox,
+        'download_notice_on_sandbox': download_notice_on_sandbox,
+        'share_notice_on_sandbox': share_notice_on_sandbox,
     }
     return render(request, 'researchers/notices.html', context)
 
@@ -351,6 +369,11 @@ def create_project(request, researcher, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
 
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             if source_proj_uuid and not related:
@@ -442,6 +465,12 @@ def edit_project(request, researcher, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             editor_name = get_users_name(request.user)
@@ -457,8 +486,13 @@ def edit_project(request, researcher, project_uuid):
 
             instances = formset.save(commit=False)
             for instance in instances:
-                instance.project = data
-                instance.save()
+                if instance.name or instance.email:
+                    instance.project = project
+                    instance.save()
+
+            # Delete instances marked for deletion
+            for instance in formset.deleted_objects:
+                instance.delete()
 
             # Add selected contributors to the ProjectContributors object
             add_to_contributors(request, researcher, data)
@@ -483,6 +517,8 @@ def edit_project(request, researcher, project_uuid):
         'user_can_view': True,
         'urls': project.urls,
         'notice_translations': notice_translations,
+        'boundary_reset_url': reverse('reset-project-boundary', kwargs={'pk': project.id}),
+        'boundary_preview_url': reverse('project-boundary-view', kwargs={'project_id': project.id}),
     }
     return render(request, 'researchers/edit-project.html', context)
 
@@ -719,10 +755,10 @@ def embed_otc_notice(request, pk):
         'lang' : lang,
         'align' : align,
         'otc_notices' : otc_notices,
-        'researcher' : researcher 
+        'researcher' : researcher,
     }
 
-    response = render(request, 'accounts/embed-notice.html', context)
+    response = render(request, 'partials/_embed.html', context)
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response

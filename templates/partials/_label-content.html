@@ -1,0 +1,48 @@
+<!-- Default Label text -->
+{% if bclabel or tklabel %}
+    <div class="mb-16">
+        <h3 class="mb-8">
+            Label Text | 
+            {% if bclabel %} {{ bclabel.language }} {% endif %}
+            {% if tklabel %} {{ tklabel.language }} {% endif %} 
+        </h3>
+        <div>
+            <p class="mt-0 mb-0">
+                {% if bclabel %} {{ bclabel.label_text }} {% endif %}
+                {% if tklabel %} {{ tklabel.label_text }} {% endif %}
+            </p>
+        </div>
+    </div>
+{% endif %}
+
+<!--  Label translations -->
+{% if bclabel %}
+    {% if bclabel.bclabel_translation.all %}
+        {% for translation in bclabel.bclabel_translation.all %}
+            <div>
+                <h3 class="mb-8">
+                    {% if translation.translated_name %} {{ translation.translated_name }} |{% endif %} {{ translation.language }}
+                </h3>
+                <p class="mt-0 mb-0">{{ translation.translated_text }} </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% if tklabel %}
+    {% if tklabel.tklabel_translation.all %}
+        {% for translation in tklabel.tklabel_translation.all %}
+            <div>
+                <h3 class="mb-8">
+                    {% if translation.translated_name %} {{ translation.translated_name }} |{% endif %} {{ translation.language }}
+                </h3>
+                <p class="mt-0 mb-0">{{ translation.translated_text }} </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+<!-- Label Audiofile -->
+{% if bclabel.audiofile or tklabel.audiofile %}<h3>Audio Description</h3>{% endif %}
+{% if bclabel.audiofile %}<div><audio src="{{ bclabel.audiofile.url }}" controls></audio></div>{% endif %}
+{% if tklabel.audiofile %}<div><audio src="{{ tklabel.audiofile.url }}" controls></audio></div>{% endif %}                  

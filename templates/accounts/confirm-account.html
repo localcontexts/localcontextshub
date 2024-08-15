@@ -1,30 +1,31 @@
 {% extends 'register-base.html' %} {% block title %} Confirmation Step {% endblock %}{% load static %} {% block card %}
     
 <div class="flex-this column w-90">
-    <div class="margin-bottom-1">
-        <h2>Confirmation step</h2>
-        <p>
-            This account will represent your 
-            {% if institution %} institution, so the creation of this account must be approved by the appropriate representative from your institution.{% endif %}
-            {% if community %}community, so the creation of this account must be confirmed by the appropriate representative of your community. {% endif %}
-            <br><br>      
-            This step can be completed by providing either:
-            <ul>
-                <li>
-                    The name and email of a representative, who will be contacted by our team to confirm, or
-                </li>
-                <li>
-                    A letter from a representative detailing their approval to create this account.   
-                </li>
-            </ul>
-        </p>    
+    <div class="mb-1p">
+        {% if community %}
+            <h2>Confirmation step</h2>
+            <p>
+                This account will represent your 
+                community, so the creation of this account must be confirmed by the appropriate representative of your community.
+                <br><br>      
+                This step can be completed by providing either:
+                <ul>
+                    <li>
+                        The name and email of a representative, who will be contacted by our team to confirm, or
+                    </li>
+                    <li>
+                        A letter from a representative detailing their approval to create this account.   
+                    </li>
+                </ul>
+            </p> 
+        {% endif %}   
     </div>
     
     <form id="confirmationForm" action="" method="POST" enctype="multipart/form-data" class="w-100">
         {% csrf_token %}
 
-        <div class="flex-this space-between margin-bottom-16">
-            <div class="margin-right-8 w-100">
+        <div class="flex-this space-between mb-16">
+            <div class="mr-8 w-100">
                 <label for="contact_name">
                     Contact name
                 </label>
@@ -45,29 +46,23 @@
             </div>
         </div>
 
-        <div class="margin-top-16 margin-bottom-16 flex-this w-100">
-            <div class="w-50 margin-right-8">
+        <div class="mt-16 mb-16 flex-this w-100">
+            <div class="w-50 mr-8">
                 <div class="hide">{{ form.support_document }}</div>
-                <button id="customFileUploadBtn" class="primary-btn green-btn margin-right-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
+                <button id="customFileUploadBtn" class="primary-btn green-btn mr-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
                 {% if form.support_document.errors %}
                     <div class="msg-red w-100"><small>{{ form.support_document.errors.as_text }}</small></div> 
                 {% endif %}
             </div>
             
-            <div class="w-50">
-                <div>
-                    <a 
-                        {% if community %}
+                <div class="w-50">
+                    <div>
+                        <a 
                             href="{% url 'download-community-support-letter' %}" 
-                        {% endif %}
-                        {% if institution %}
-                            href="{% url 'download-institution-support-letter' %}"
-                        {% endif %}
-
-                        class="primary-btn blue-btn"
-                    > Download letter template <i class="fa-solid fa-download"></i></a>
-                </div>  
-            </div>
+                            class="primary-btn blue-btn"
+                        > Download letter template <i class="fa-solid fa-download"></i></a>
+                    </div>  
+                </div>
         </div>
 
         <div class="flex-this space-between">
@@ -76,9 +71,8 @@
                     For more information about this step, <a href="https://localcontexts.org/support/getting-started-on-the-hub/#confirmation-step" class="default-a">see our website</a>.
                 </p>
             </div>
-
             <div class="flex-this flex-end">
-                <button class="primary-btn action-btn margin-top-2">Continue <i class="fa fa-arrow-right"></i></button>
+                <button class="primary-btn action-btn mt-2p">Continue <i class="fa fa-arrow-right"></i></button>
             </div>            
         </div>
 

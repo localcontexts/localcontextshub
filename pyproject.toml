@@ -7,8 +7,16 @@ omit = [
 ]
 
 [tool.yapfignore]
-column_limit=79
 ignore_patterns = [
+    '*/apps.py',
+    'localcontexts/settings.py',
+    '*/migrations/*',
+    'tests/*',
+    'manage.py'
+]
+
+[tool.isort]
+skip_glob = [
     '*/apps.py',
     'localcontexts/settings.py',
     '*/migrations/*',

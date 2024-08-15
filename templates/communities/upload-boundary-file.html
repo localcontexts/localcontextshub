@@ -78,12 +78,24 @@
         #selected-title-wrapper{
             position: relative;
         }
+        #share-boundary-publicly-wrapper{
+            padding-top: 12px;
+
+        }
+        #can-change-in-settings-indication{
+            width: 75%;
+            font-style: italic;
+        }
+        #share-boundary-publicly-wrapper input{
+            transform: scale(2);
+        }
         #selected-title{
             padding: 12px;
             border: 3px solid #007385;
             background: aliceblue;
             border-radius: 5px;
             user-select: none;
+            width: 100%
         }
         #nld-link{
             right: 8px;
@@ -101,7 +113,7 @@
         }
     </style>
     <div class="w-90" id="define-community-body">
-        <h2 class="no-top-margin">Upload Shapefile</h2>
+        <h2 class="mt-0">Upload Shapefile</h2>
         <p id="define-community-top-text">
             Add your community boundary by uploading a shapefile.
             A shapefile is a vector data file format commonly used for geospatial analysis.
@@ -143,7 +155,7 @@
 
             {% if community_id %}
             <div id="selected-title-wrapper">
-                <div id="selected-title">Placeholder</div>
+                <input id="selected-title" maxlength="60">
                 <a id="nld-link"
                    href="{% url 'community-boundary-view' community_id %}"
                    target="_blank">
@@ -163,6 +175,13 @@
             <i class="fa fa-circle-check"></i>
             <div class="message">File upload successfully</div>
         </div>
+        <div id="share-boundary-publicly-wrapper" class="invisible">
+            <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
+            <label for="share-boundary-publicly">Share Boundary Publicly</label>
+        </div>
+        <p id="can-change-in-settings-indication">
+            Your boundary and its visibility can be updated or removed in your account's settings.
+        </p>
     </div>
 
     <div class="flex-this w-90" id="buttonRow">
@@ -173,11 +192,12 @@
                     id="community-boundary-continue-btn"
                     class="primary-btn action-btn disabled-btn"
                     href="{% url 'confirm-community' %}"
+                    onclick="updateBoundaryInformation(); event.preventDefault()"
                 >
                     Confirm location <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
-            <div class="margin-right-8" id="skip-this-step">
+            <div class="mr-8" id="skip-this-step">
                 <a class="primary-btn white-btn" href="{% url 'confirm-community' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
@@ -227,10 +247,12 @@
         var file = files[0]
         const successMessage = document.querySelector('.feedback.success')
         const failureMessage = document.querySelector('.feedback.failure')
+        const sharePublicly = document.querySelector('#share-boundary-publicly-wrapper')
 
         // hide feedback messages
         successMessage.classList.add('invisible')
         failureMessage.classList.add('invisible')
+        sharePublicly.classList.add('invisible')
         document.querySelector('#selected-location').classList.add('invisible')
 
         try {
@@ -269,12 +291,12 @@
             }
           )
 
-          // upload shapefile to session for community
-          await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
-
+        // upload shapefile to session for community
+        await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
         successMessage.classList.toggle('invisible')
+        sharePublicly.classList.toggle('invisible')
         // show and label ui elements
-        document.querySelector('#selected-title').innerText = geoJsonData.fileName
+        document.querySelector('#selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
         document.querySelector('#selected-location').classList.remove('invisible')
         enableContinueButton()
 
@@ -291,7 +313,34 @@
         return false
     }
 
+    async function updateBoundaryInformation() {
+            // Updates the boundary name and shareBoundaryPublicly attributes
+            try {
+                const payload = {
+                    share_boundary_publicly: document.getElementById("share-boundary-publicly").checked,
+                    name: document.getElementById("selected-title").value
+                }
 
+                // do post call to set boundary in request
+                const registrationResponse = await fetch("{% url 'registration-boundary' %}", {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: {
+                          'X-CSRFToken': '{{csrf_token}}'
+                        }
+                    })
+
+                if (registrationResponse.status !== 201) {
+                    throw new Error('Error Setting boundary')
+                }
+
+                // relocate to the window href url
+              window.location.href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
+
+            } catch (error) {
+                console.error('Error Fetching boundary:', error)
+            }
+        }
     </script>
 <script src="{% static 'javascript/shpjs.js' %}"></script>
 {% endblock %}

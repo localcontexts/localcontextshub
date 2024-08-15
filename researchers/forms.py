@@ -5,10 +5,11 @@ from django.utils.translation import gettext_lazy as _
 class ConnectResearcherForm(forms.ModelForm):
     class Meta:
         model = Researcher
-        fields = ['primary_institution', 'description']
+        fields = ['primary_institution', 'description', 'website']
         widgets = {
             'primary_institution': forms.TextInput(attrs={'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
+            'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
 class UpdateResearcherForm(forms.ModelForm):

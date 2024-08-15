@@ -29,6 +29,36 @@ function disableSubmitRegistrationBtn() {
     })
 } 
 
+(function() {
+    // COPY BUTTONS
+    const copyBtns = document.querySelectorAll('.copy-btn')
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = document.querySelector(`#${btn.dataset.target}`)
+            target.select()
+            target.setSelectionRange(0, 99999)
+            navigator.clipboard.writeText(target.value)
+        })
+    })
+
+    // GREY CONTENT DROPDOWNS
+    const toggleIcons = document.querySelectorAll('.toggle-icon')
+    toggleIcons.forEach(icon => {
+        icon.addEventListener('click', () => {
+            const targetDivId = icon.getAttribute('data-target')
+            const targetDiv = document.getElementById(targetDivId)
+            targetDiv.classList.toggle('hide')
+
+            if (targetDiv.classList.contains('hide')) {
+                icon.classList.replace('fa-angle-up', 'fa-angle-down');
+            } else {
+                icon.classList.replace('fa-angle-down', 'fa-angle-up');
+            }
+        })
+    })
+
+})()
+
 if (window.location.href.includes('sandbox.localcontextshub')) {
     let regHeader = document.getElementById('reg-header')
     let authHeader = document.getElementById('auth-header')
@@ -42,27 +72,37 @@ if (window.location.href.includes('sandbox.localcontextshub')) {
     }
 }
 
-if (window.location.href.includes('create-community') || window.location.href.includes('create-institution') || window.location.href.includes('connect-researcher') ) {
-    let textArea = document.getElementById('id_description')
-    let characterCounter = document.getElementById('charCount')
-    const maxNumOfChars = 200
+document.addEventListener('DOMContentLoaded', () => {
+    const initializeCharacterCounter = (textAreaId, counterId, maxChars) => {
+        let textArea = document.getElementById(textAreaId);
+        let characterCounter = document.getElementById(counterId);
 
-    const countCharacters = () => {
-        let numOfEnteredChars = textArea.value.length
-        let counter = maxNumOfChars - numOfEnteredChars
-        characterCounter.textContent = counter + '/200'
+        const countCharacters = () => {
+            let numOfEnteredChars = textArea.value.length;
+            let counter = maxChars - numOfEnteredChars;
+            characterCounter.textContent = counter + '/' + maxChars;
 
-        if (counter < 0) {
-            characterCounter.style.color = 'red'
-        } else if (counter < 50) {
-            characterCounter.style.color = '#EF6C00'
-        } else {
-            characterCounter.style.color = 'black'
-        }
+            if (counter < 0) {
+                characterCounter.style.color = 'red';
+            } else if (counter < 50) {
+                characterCounter.style.color = '#EF6C00';
+            } else {
+                characterCounter.style.color = 'black';
+            }
+        };
+
+        countCharacters();
+        textArea.addEventListener('input', countCharacters);
+    };
+
+    const url = window.location.href;
+    const createPages = ['create-community', 'create-institution', 'connect-researcher'];
+    const updatePages = ['communities/update', 'institutions/update', 'researchers/update'];
+
+    if (createPages.some(page => url.includes(page)) || updatePages.some(page => url.includes(page))) {
+        initializeCharacterCounter('id_description', 'charCount', 200);
     }
-
-    textArea.addEventListener('input', countCharacters)
-}
+});
 
 // Get languages from the IANA directory
 function fetchLanguages() {
@@ -319,22 +359,6 @@ function translationFormValidation() {
     if (invalidInputs == 0) {
         saveLabelBtnValidation('enable')
     } else {saveLabelBtnValidation('disable')}
-}
-
-// Show customized label text in community: labels
-function customText(imgDiv) {
-    let labelID = imgDiv.id
-    let divs = Array.from(document.querySelectorAll('.div-toggle'))
-    // console.log(labelID)
-
-    divs.forEach(div => { if (div.id.includes(labelID) && div.style.height == '0px') { div.style.height = 'auto' } else { div.style.height = '0px' } })
-
-    // Toggle text color based on what Label is selected
-    let pDivs = Array.from(document.querySelectorAll('.toggle-txt-color'))
-    pDivs.forEach(node => {
-        let nodeID = node.id
-        if (nodeID.includes(labelID)) { node.classList.add('label-name-active') } else { node.classList.remove('label-name-active') }
-    })
 }
 
 async function fetchLabels(type) {
@@ -1051,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             let parentDiv = document.getElementById('person-form-0');
             let clone = parentDiv.cloneNode(true);
             clone.id = 'person-form-' + ++count; // unique id
-            clone.classList.add('margin-top-8');
+            clone.classList.add('mt-8');
 
             // Name input has name='form-0-name' and id='id_form-0-name'
             // Email input has name='form-0-email' and id='id_form-0-email'
@@ -1130,12 +1154,12 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
             if (isValidHttpUrl(item.trim())) {
                 const li = document.createElement('li')
                 li.id = item.trim()
-                li.classList.add('margin-bottom-8')
+                li.classList.add('mb-8')
                 li.classList.add('show')
                 li.innerHTML = `
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name word-break">${item}</p></div>
-                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer margin-left-8">&times;</div>
+                    <div id="btn-${item.trim()}" class="removeProjectUrlBtn pointer ml-8">&times;</div>
                 </div>
                 <input type="hidden" value="${item.trim()}" name="project_urls">`
     
@@ -1259,23 +1283,9 @@ if (window.location.href.includes('/projects/edit-project') || window.location.h
             })
         })
     }
-
-    // SHOW/HIDE NOTICE TRANSLATIONS
-    const toggleIcons = document.querySelectorAll('.toggle-icon')
-    toggleIcons.forEach(icon => {
-        icon.addEventListener('click', () => {
-            const targetDivId = icon.getAttribute('data-target')
-            const targetDiv = document.getElementById(targetDivId)
-            targetDiv.classList.toggle('hide')
-
-            if (targetDiv.classList.contains('hide')) {
-                icon.classList.replace('fa-angle-up', 'fa-angle-down');
-            } else {
-                icon.classList.replace('fa-angle-down', 'fa-angle-up');
-            }
-        })
-    })
 }
+
+
 
 function isValidHttpUrl(string) {
     let url;
@@ -1327,7 +1337,7 @@ function validateProjectDisableSubmitBtn() {
     // h/t: https://vyspiansky.github.io/2019/07/13/javascript-at-least-one-checkbox-must-be-selected/
 
     let form = document.querySelector('#createProjectForm')
-    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"])')
+    let checkboxes = form.querySelectorAll('input[type=checkbox]:not([id*="DELETE"]):not(.no-auto-validate)')
 
     if (checkboxes.length == 0) {
         disableSubmitBtn()
@@ -1444,6 +1454,18 @@ function copyToClipboard(elemID) {
     document.execCommand("Copy");
     textArea.remove();
 }
+function buttonPulse(btnElm, milliseconds= 1000) {
+    /*
+    * Allows simulates the pulsing effect for some time period
+    * */
+    const pulseClasses = ['fa-solid', 'fa-check', 'fa-beat']
+
+    btnElm.classList.add(...pulseClasses)
+    setTimeout(() => {
+        btnElm.classList.remove(...pulseClasses)
+    }, milliseconds)
+}
+
 
 function openMemberModal() {
     const memberModal = document.getElementById('memberModal')
@@ -1723,35 +1745,6 @@ if (window.location.href.includes('notices')) {
     }
 }
 
-if (window.location.href.includes('labels/view/')) {
-    const btn = document.getElementById('openLabelHistoryBtn')
-    let historyDiv = document.getElementById('labelHistoryDiv')
-
-    if (btn) {
-        btn.onclick = function(e) {
-            if (historyDiv.classList.contains('hide')) {
-                historyDiv.classList.replace('hide', 'show')
-                btn.innerHTML = `View Label History <i class="fa fa-angle-up" aria-hidden="true"></i>`
-            } else {
-                historyDiv.classList.replace('show', 'hide')
-                btn.innerHTML = `View Label History <i class="fa fa-angle-down" aria-hidden="true"></i>`
-            }
-        }
-    }
-}
-
-(function() {
-    const copyBtns = document.querySelectorAll('.copy-btn');
-    copyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = document.querySelector(`#${btn.dataset.target}`);
-            target.select();
-            target.setSelectionRange(0, 99999)
-            navigator.clipboard.writeText(target.value)
-        });
-    });
-})()
-
 // PROJECT ACTION PAGE
 var copyProjectURLBtn = document.getElementsByClassName('copyProjectURLBtn')
 var copyProjectIDBtn = document.getElementsByClassName('copyProjectIDBtn')
@@ -1984,7 +1977,7 @@ function showProjectLabels(elem) {
 }
 
 
-if (window.location.href.includes('create-institution')) {
+if (window.location.href.includes('create-institution') && !window.location.href.includes('/noROR')) {
     const nameInputField = document.getElementById('organizationInput')
     const suggestionsContainer = document.getElementById('suggestionsContainer')
     const cityTownInputField = document.getElementById('institutionCityTown')
@@ -2114,11 +2107,11 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     })
  }
 
- if (window.location.href.includes('/confirm-institution/') || window.location.href.includes('/confirm-community/')) {
-    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn') || document.getElementById('institutionSupportLetterUploadBtn')
+ if (window.location.href.includes('/confirm-community/')) {
+    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn')
     const customFileUploadBtn = document.getElementById('customFileUploadBtn')
     const form = document.querySelector('#confirmationForm')
-    const contactEmailInput = document.getElementById('communityContactEmailField') || document.getElementById('institutionContactEmailField')
+    const contactEmailInput = document.getElementById('communityContactEmailField')
 
     function showFileName() {
         const selectedFile = realFileUploadBtn.files[0]
@@ -2184,7 +2177,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     ccNoticeDownloadBtn.addEventListener('click', function() {    
         let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
         ccNoticeDownloadBtn.setAttribute('disabled', true)
-        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader margin-left-8"></div>'
+        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader ml-8"></div>'
 
         // Re-enable the button after a certain timeout
         // re-enable it after a while, assuming an average download duration

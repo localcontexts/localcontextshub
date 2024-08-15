@@ -9,7 +9,7 @@ AddLabelTranslationFormSet = modelformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...', 'autocomplete': 'off'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p mb-2p', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
@@ -20,7 +20,7 @@ UpdateBCLabelTranslationFormSet = inlineformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p mb-2p', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
@@ -31,7 +31,7 @@ UpdateTKLabelTranslationFormSet = inlineformset_factory(
     widgets = {
         'translated_name': forms.TextInput(attrs={'class': 'w-100', 'placeholder': 'Customized Label name'}),
         'language': forms.TextInput(attrs={'class': 'languageListInput w-100', 'placeholder': 'Search for language...'}),
-        'translated_text': forms.Textarea(attrs={'class': 'w-100 margin-top-1 margin-bottom-2', 'style': 'height: 150px; padding: 10px;'}),
+        'translated_text': forms.Textarea(attrs={'class': 'w-100 mt-1p mb-2p', 'style': 'height: 150px; padding: 10px;'}),
     }
 )
 
@@ -48,7 +48,7 @@ class LabelNoteForm(forms.ModelForm):
         model = LabelNote
         fields = ['note']
         widgets = {
-            'note': forms.Textarea(attrs={'class': 'w-100 margin-bottom-2', 'style': 'height: 150px; padding: 10px;', 'placeholder': 'Add Note About This Label'}),
+            'note': forms.Textarea(attrs={'class': 'w-100 mb-2p', 'style': 'height: 150px; padding: 10px;'}),
         }
 
 class OpenToCollaborateNoticeURLForm(forms.ModelForm):
@@ -56,7 +56,7 @@ class OpenToCollaborateNoticeURLForm(forms.ModelForm):
         model = OpenToCollaborateNoticeURL
         fields = ['name', 'url']
         widgets = { 
-            'name': forms.TextInput(attrs={'class': 'w-100 margin-bottom-8'}), 
+            'name': forms.TextInput(attrs={'class': 'w-100 mb-8'}), 
             'url': forms.TextInput(attrs={'class': 'w-100'}), 
         }
 

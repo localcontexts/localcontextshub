@@ -1,26 +1,57 @@
 {% autoescape off %}
 <h3>
     {% firstof data.institution_creator.get_full_name data.institution_creator.username %}
-    has applied to create a institution.
+    has created an institution account.
 </h3>
 
-<p>
-    Confirmation Contact Name: {{ data.contact_name }}<br>
-    {% if data.contact_email == data.institution_creator.email %}
-        Confirmation Contact Email: {{ data.contact_email }}<br>
-    {% else %}
-        Confirmation Contact Email: {{ data.contact_email }}<br>
-        Institution Account Creator Email: {{ data.institution_creator.email }}<br><br>
-    {% endif %}
+<table cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Account creator:</th>
+        <td>{% firstof data.institution_creator.get_full_name data.institution_creator.username %}</td>
+    </tr>
+    <tr>
+        <th>Contact email(s):</th>
+        <td>
+            {% if data.contact_email %}
+                {% if data.contact_email == data.institution_creator.email %} 
+                    {{ data.institution_creator.email }}
+                {% else %}
+                    Account creator email: {{ data.institution_creator.email }}<br>
+                    Additional contact email: {{ data.contact_email }}
+                {% endif %}
+            {% else %}
+                {{ data.institution_creator.email }}
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Institution name:</th>
+        <td>{{ data.institution_name }}</td>
+    </tr>
+    <tr>
+        <th>Location:</th>
+        <td>{{ data.get_location }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{{ data.description }}</td>
+    </tr>
+    <tr>
+        <th>Website:</th>
+        <td>{% if data.website %} {{ data.website }} {% else %} None provided {% endif %}</td>
+    </tr>
+    <tr>
+        <th>ROR ID:</th>
+        <td>
+            {% if data.is_ror %}
+                {{ data.ror_id }}
+            {% else %}
+                <br>
+                If you would like to add this institution to ROR, you can fill out <a href="https://docs.google.com/forms/d/e/1FAIpQLSdJYaMTCwS7muuTa-B_CnAtCSkKzt19lkirAKG4u7umH9Nosg/viewform" target="_blank" rel="noopener">this form</a>.
+            {% endif %}
+        </td>
+    </tr>
+</table>
 
-    Institution Name: {{ data.institution_name }}<br>
-    Location: {{ data.city_town }} {{ data.state_province_region }} {{ data.country.name }}<br>
-    Description: {{ data.description }}<br>
-    <br><br>
-    
-    {% if data.is_ror == False %}
-        If you would like to add this institution to ROR, you can fill out <a href="https://docs.google.com/forms/d/e/1FAIpQLSdJYaMTCwS7muuTa-B_CnAtCSkKzt19lkirAKG4u7umH9Nosg/viewform" target="_blank" rel="noopener">this form</a>.
-    {% endif %}
-</p>
 
 {% endautoescape %}

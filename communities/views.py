@@ -43,13 +43,25 @@ def registration_boundary(request):
     post_data = json.loads(request.body.decode('UTF-8'))
     # update community with boundary-related information
     community = get_community(request.session.get('new_community_id'))
-    community.source_of_boundary = post_data['source']
-    community.name_of_boundary = post_data['name']
 
-    # add new boundary in this community
-    community.create_or_update_boundary(post_data['boundary'])
+    source = post_data.get('source')
+    name = post_data.get('name')
+    boundary = post_data.get('boundary')
+
+    if source:
+        community.source_of_boundary = source
+
+    if name:
+        community.name_of_boundary = name
+
+    if boundary:
+        # add new boundary in this community
+        community.create_or_update_boundary(post_data['boundary'])
+
+    if 'share_boundary_publicly' in post_data:
+        community.share_boundary_publicly = post_data.get('share_boundary_publicly')
+
     community.save()
-
     return HttpResponse(status=201)
 
 
@@ -93,12 +105,13 @@ def connect_community(request):
 
 @login_required(login_url='login')
 def preparation_step(request):
-    if dev_prod_or_local(request.get_host()) == "SANDBOX":
-        return redirect('create-community')
-    else:
-        community = True
-        return render(request, 'accounts/preparation.html', { 'community' : community })
-
+    environment = dev_prod_or_local(request.get_host())
+    community = True
+    context = {
+        'community': community,
+        'environment': environment
+    }
+    return render(request, 'accounts/preparation.html', context)
 
 # Create Community
 @login_required(login_url='login')
@@ -154,9 +167,9 @@ def add_community_boundary(request):
 @has_new_community_id
 @login_required(login_url='login')
 def upload_boundary_file(request):
-    community_id = get_community(request.session.get('new_community_id'))
+    community = get_community(request.session.get('new_community_id'))
     context = {
-        'community_id': community_id.id
+        'community_id': community.id,
     }
     return render(request, 'communities/upload-boundary-file.html', context)
 
@@ -174,7 +187,7 @@ def confirm_community(request):
         if form.is_valid():
             data = form.save(commit=False)
             data.save()
-            send_hub_admins_application_email(request, community, data)
+            send_hub_admins_account_creation_email(request, data)
 
             # remove new_community_id from session to prevent
             # future access with this particular new_community_id
@@ -502,6 +515,7 @@ def customize_label(request, pk, label_code):
                 data.label_type = label_type
                 data.community = community
                 data.created_by = request.user
+                data.version = 1
                 data.save()
 
                 # Save all label translation instances
@@ -885,6 +899,11 @@ def create_project(request, pk, source_proj_uuid=None, related=None):
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
 
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
+
             data.save()
 
             if source_proj_uuid and not related:
@@ -963,6 +982,10 @@ def edit_project(request, pk, project_uuid):
             data = form.save(commit=False)
             project_links = request.POST.getlist('project_urls')
             data.urls = project_links
+            create_or_update_boundary(
+                post_data=request.POST,
+                entity=data
+            )
             data.save()
 
             editor_name = get_users_name(request.user)
@@ -994,6 +1017,8 @@ def edit_project(request, pk, project_uuid):
         'formset': formset,
         'contributors': contributors,
         'urls': project.urls,
+        'boundary_reset_url': reverse('reset-project-boundary', kwargs={'pk': project.id}),
+        'boundary_preview_url': reverse('project-boundary-view', kwargs={'project_id': project.id}),
     }
     return render(request, 'communities/edit-project.html', context)
 
@@ -1321,6 +1346,7 @@ def update_community_boundary(request, pk):
         'community': community,
         'main_area': 'boundary',
         'member_role': member_role,
+        'set_boundary_url': reverse('update-community-boundary-data', kwargs={'pk': community.id})
     }
     return render(request, 'communities/update-community.html', context)
 
@@ -1330,10 +1356,24 @@ def update_community_boundary(request, pk):
 def update_community_boundary_data(request, pk):
     community = get_community(pk)
     data = json.loads(request.body)
-    community.name_of_boundary = data.get('name')
-    community.source_of_boundary = data.get('source')
-    boundary_data = data.get('boundary')
-    community.create_or_update_boundary(boundary_data)
+
+    name = data.get('name')
+    source = data.get('source')
+    boundary = data.get('boundary')
+    share_boundary_publicly = data.get('share_boundary_publicly', False)
+
+    if name:
+        community.name_of_boundary = name
+
+    if source:
+        community.source_of_boundary = source
+
+    if 'share_boundary_publicly' in data:
+        community.share_boundary_publicly = share_boundary_publicly
+
+    if boundary:
+        community.create_or_update_boundary(boundary)
+
     community.save()
     return HttpResponse(status=204)
 

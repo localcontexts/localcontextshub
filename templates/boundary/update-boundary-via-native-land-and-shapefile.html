@@ -1,0 +1,534 @@
+{% load static %}
+<style>
+    .region-container{
+        margin-top: 20px;
+    }
+    .region-results-wrapper{
+        position: relative;
+    }
+    .region-results{
+        max-height: 190px;
+        background: white;
+        overflow-y: scroll;
+        position: absolute;
+        width: 100%;
+        border: solid 1px #d9d1d1;
+        border-radius: 2px;
+        border-top: transparent;
+        z-index: 1;
+    }
+    .result-item{
+        padding-top: 5px;
+        padding-left: 20px;
+        padding-bottom: 5px;
+        background: white;
+        transition: 0.3s;
+        cursor: pointer;
+        user-select: none;
+    }
+    .result-item:hover {
+        background: #d7e7e4;
+    }
+
+    .selected-title{
+        padding: 12px;
+        border: 3px solid #007385;
+        background: aliceblue;
+        border-radius: 5px;
+        user-select: none;
+        width: 100%;
+    }
+    .selected-title-ellipsis{
+        width: 430px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .selected-title-wrapper{
+        position: relative;
+    }
+    #share-boundary-publicly-wrapper{
+        padding-top: 12px;
+    }
+    #share-boundary-publicly-wrapper input{
+        transform: scale(2);
+    }
+    .view-boundary-link{
+        right: 8px;
+        position: absolute;
+        top: 14px;
+        font-weight: bold;
+        color: #007385;
+        cursor: pointer;
+    }
+
+    .community-boundary-search {
+        position: relative;
+    }
+
+    .community-boundary-search input{
+        width: 100%;
+        padding: 20px;
+    }
+
+    .community-boundary-search i{
+        position: absolute;
+        right: 10px;
+        top: 14px;
+    }
+
+    .invisible{
+        display: none !important;
+    }
+
+    .browse-files-btn{
+        margin-left: 6px;
+        width: 120px
+    }
+    .browse-files-container{
+        margin-top: 10px;
+    }
+
+    .community-boundary-upload {
+        position: relative;
+        display: flex;
+    }
+
+    .community-boundary-upload input{
+        width: calc(100% - 120px);
+        padding: 24px;
+        padding-left: 10px;
+        cursor: pointer;
+    }
+
+    .community-boundary-search i{
+        position: absolute;
+        right: 10px;
+        top: 14px;
+    }
+
+    .feedback {
+        display: flex;
+        padding: 16px;
+        border-radius: 8px;
+        width: max-content;
+        margin-top: 8px;
+    }
+    .feedback i{
+        font-size: 24px;
+        margin-right: 12px;
+    }
+    .failure {
+        color: #B01212;
+        background: #FBF3F3;
+        border: #B0120B 1px solid;
+    }
+    .success {
+        color: #166534;
+        background: #F2F7F4;
+        border: #166534 1px solid;
+    }
+
+    .save-cancel-container {
+        margin-top: 20px;
+        position: relative;
+    }
+    .save-cancel-container .spinner{
+        z-index: 16;
+        position: absolute;
+        font-size: 50px;
+        left: 270px;
+    }
+    .save-cancel-container .spinner.shown{
+        display: block;
+    }
+
+    .disabled-btn{
+        pointer-events: none;
+    }
+</style>
+<span class="boundary-selection-unit">
+    <div class="region-container">
+        <label class="pad-top-1-5">Search the Native Land Digital database</label><br>
+        <div class="community-boundary-search">
+            <input class="input-field search" type="text"
+                   placeholder="Search by address, community name or town"
+            >
+            <i class="fa fa-search icon"></i>
+        </div>
+        <div class="region-results-wrapper">
+            <div class="region-results"></div>
+        </div>
+    </div>
+    <div class="browse-files-container">
+                <label class="pad-top-1-5">Upload shapefile (. zip)</label><br>
+                <div class="community-boundary-upload">
+                    <input type="text"
+                           class="input-field select-file-input"
+                           placeholder="Select file"
+                           readonly
+                           onclick="triggerShapeFileInput(this)"
+                    >
+                    <div
+                        class="browse-files-btn primary-btn action-btn"
+                        onclick="triggerShapeFileInput(this)"
+                    >
+                        Browse files
+                    </div>
+                    <input
+                        type="file" class="shapefile-input" style="display: none"
+                        onchange="uploadShapeFileData(this)"
+                        accept=".zip"
+                    >
+                </div>
+            </div>
+    <div class="selected-location invisible">
+            <br>
+            <strong>
+                <label class="pad-top-1-5">Selected Location</label>
+            </strong><br>
+
+            <div class="selected-title-wrapper">
+                <input class="selected-title" maxlength="60" onchange="updateName(this)">
+                <a class="view-boundary-link" target="_blank">
+                    View Location &nbsp;
+                    <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+
+        </div>
+    <div class="feedback failure invisible">
+        <i class="fa fa-circle-exclamation"></i>
+        <div class="message">File not accepted. Please upload another file</div>
+    </div>
+    <div class="feedback success invisible">
+        <i class="fa fa-circle-check"></i>
+        <div class="message">File upload successful</div>
+    </div>
+    <div id="share-boundary-publicly-wrapper">
+        <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly" class="no-auto-validate"
+               onchange="enableContinueButton()"
+               {% if entity.share_boundary_publicly %}checked{% endif %}>
+        <label for="share-boundary-publicly">Share Boundary Publicly</label>
+    </div>
+    <div class="save-cancel-container w-90 flex-this flex-start">
+        <div class="{% if create_mode %}invisible{% endif %}">
+            <a
+                id="community-boundary-continue-btn"
+                class="primary-btn action-btn disabled-btn mr-8"
+                onclick="setBoundary(this)"
+            >
+                Update Boundary
+            </a>
+        </div>
+        <div>
+            <a id="cancel-btn" class="primary-btn white-btn disabled-btn" onclick="cancelChange(this)">Clear Boundary</a>
+        </div>
+        <i class="fa fa-spinner fa-spin fa-2x spinner"></i>
+    </div>
+    <input type="text" id="boundary-data" name="boundary-payload" class="invisible" />
+</span>
+<script>
+    let BoundaryPayLoad = {}
+    let InitialShareBoundaryPublicly = {% if entity.share_boundary_publicly %}true{% else %}false{% endif %}
+
+    fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+
+    document.querySelector('.region-container input.search').addEventListener("keyup", (event) => {
+        let html = ''
+        const textInput = event.target.value
+        const inputLength = textInput.length
+        if (inputLength >= 3) {
+            var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
+            results.forEach(result => {
+            html += `
+                <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug(this)">
+                ${result.post_title} (territories)</br />
+                </div>
+            `
+            })
+        } else if (inputLength === 0){
+            html = ''
+        }
+        event.target.closest('.boundary-selection-unit').querySelector('.region-results').innerHTML = html
+    })
+
+  })
+
+    const target = document.querySelector('.region-results')
+    document.addEventListener('click', (event) => {
+        const withinboundary = event.composedPath().includes(target)
+        if (!withinboundary) {
+            // click outside element
+            hideSearchDropDown()
+        }
+    })
+
+    function raiseError(selectionUnit, text) {
+       selectionUnit.querySelector('.feedback.failure').innerText = text
+       selectionUnit.querySelector('.feedback.failure').classList.remove('invisible')
+    }
+    function clearNLInput(selectionUnit) {
+       selectionUnit.querySelector('.input-field.search').value = ''
+    }
+    function clearShapeFileInput(selectionUnit) {
+       selectionUnit.querySelector('.input-field.select-file-input').value = ''
+    }
+    function selectInitialShareBoundaryPublicly() {
+
+      if (InitialShareBoundaryPublicly) {
+        document.getElementById("share-boundary-publicly").checked = true
+      } else {
+        document.getElementById("share-boundary-publicly").checked = false
+      }
+
+    }
+    function hideSearchDropDown() {
+       document.querySelector('.region-results').innerHTML = ''
+    }
+    function showSelectedSlug() {
+        document.querySelector('.selected-location').classList.remove('invisible')
+    }
+    function enableCancelButton(){
+        document.querySelector('#cancel-btn').classList.remove('disabled-btn')
+    }
+    function disableCancelButton(){
+        document.querySelector('#cancel-btn').classList.add('disabled-btn')
+    }
+    function enableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+        enableCancelButton()
+    }
+    function disableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
+        disableCancelButton()
+    }
+
+    function showSpinner(){
+        document.querySelector('.save-cancel-container .spinner').classList.add('shown')
+    }
+    function hideSpinner(){
+        document.querySelector('.save-cancel-container .spinner').classList.remove('shown')
+    }
+
+    function setBoundaryPayloadForInputElement() {
+      /*
+      This is useful when submitting the boundary via a form
+      * */
+      document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
+    }
+    function updateName(self) {
+      BoundaryPayLoad.name = self.value
+      setBoundaryPayloadForInputElement()
+    }
+    async function getNativeLandBoundary(selectionUnit, slug) {
+        /*
+        * This code attempts to get the actual boundary data from Native Land.
+        * If it fails to do so, it raises an error
+        * */
+        try {
+            // do post call to get boundary
+            const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+            showSpinner()
+            const boundaryResponse = await fetch(url)
+            const boundaryData = await boundaryResponse.json()
+            hideSpinner()
+
+            if (boundaryData.length === 0) {
+                const errorMessage = 'Selected location does not have any Native Land boundary'
+                raiseError(selectionUnit, errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            const boundary = boundaryData[0]
+            const boundaryCoordinates = boundary.geometry.coordinates[0]
+            // reorder so (lon, lat)'s become (lat, lon)'s
+            boundaryCoordinates.map(row=>row.reverse())
+
+            // set Boundary with payload
+            BoundaryPayLoad = {
+                source: boundary.properties.description,
+                name: boundary.properties.Name,
+                boundary: boundaryCoordinates
+            }
+            setBoundaryPayloadForInputElement()
+            setViewLocationsHref(selectionUnit, boundaryCoordinates)
+            clearShapeFileInput(selectionUnit)
+
+        } catch (error) {
+            console.error('Error Fetching boundary:', error)
+            hideSpinner()
+            clearNLInput(selectionUnit)
+            return false
+        }
+        return true
+    }
+
+    function setViewLocationsHref(selectionUnit, boundary) {
+        // set href for view-boundary-location
+        const href = `{% url 'boundary-view' %}?boundary=${JSON.stringify(boundary)}`
+        selectionUnit.querySelector('.view-boundary-link').setAttribute('href', href)
+    }
+
+    async function selectSlug(self) {
+        const selectionUnit = self.closest('.boundary-selection-unit')
+        const title = event.target.dataset.title
+        const slug = event.target.dataset.slug
+
+
+        // hide feedback messages
+        selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+        selectionUnit.querySelector('.feedback.success').classList.add('invisible')
+
+        hideSearchDropDown()
+        showSpinner()
+        const success = await getNativeLandBoundary(selectionUnit, slug)
+        hideSpinner()
+
+        if (!success) {
+          return
+        }
+
+        selectionUnit.querySelector('.selected-title').value = `${title} (territories)`
+        selectionUnit.querySelector('.selected-title').disabled = true
+
+        // set selected data for selection
+        selectionUnit.querySelector('.selected-title').setAttribute('data-slug', slug)
+
+        showSelectedSlug()
+        enableContinueButton()
+
+        // hide feedback messages
+        selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+        selectionUnit.querySelector('.feedback.success').classList.add('invisible')
+    }
+
+    // code below for shapefile
+
+    function triggerShapeFileInput(self) {
+        self.closest('.boundary-selection-unit').querySelector('.shapefile-input').click()
+    }
+
+    async function uploadShapeFileData(self) {
+        var files = event.target.files
+        var file = files[0]
+        const selectionUnit = self.closest('.boundary-selection-unit')
+        const successMessage = selectionUnit.querySelector('.feedback.success')
+        const failureMessage = selectionUnit.querySelector('.feedback.failure')
+
+        // hide feedback messages
+        successMessage.classList.add('invisible')
+        failureMessage.classList.add('invisible')
+        selectionUnit.querySelector('.selected-location').classList.add('invisible')
+
+        try {
+          showSpinner()
+          const shapeFileData = await file.arrayBuffer()
+          const geoJsonData = await shp(shapeFileData)
+          hideSpinner()
+
+          // merge geoJson to get unique contours
+          let listOfFeatures = geoJsonData.features
+          let fileName = geoJsonData.fileName
+
+          if (geoJsonData.length) {
+            // flatten features from multiple geoJson objects
+            fileName = geoJsonData[0].fileName
+            listOfFeatures = []
+            for (const geoJsonObject of geoJsonData) {
+              for (const featureIndex in geoJsonObject.features) {
+                listOfFeatures.push(geoJsonObject.features[featureIndex])
+              }
+            }
+          }
+
+          const firstBoundaryGeometry = listOfFeatures[0]
+          let firstBoundary = [].concat(...firstBoundaryGeometry.geometry.coordinates).map(arr => arr)
+
+          if (firstBoundaryGeometry.geometry.type === 'MultiPolygon') {
+              // when polygon is made up of multiple polygons, use the first
+              firstBoundary = firstBoundary[0]
+            }
+
+          if(listOfFeatures.length > 1) {
+              alert('Warning:\nThere is more than 1 boundary present. Only the first will be used.')
+            }
+          const distinctBoundaryReordered = firstBoundary.map(function(coordinate){
+              // reverse so code extracts (lat-lon)'s
+              return [coordinate[1], coordinate[0]]
+            }
+          )
+
+        // set Boundary with payload
+        BoundaryPayLoad = {
+            source: 'Shapefile',
+            name: fileName,
+            boundary: distinctBoundaryReordered
+        }
+        setBoundaryPayloadForInputElement()
+        setViewLocationsHref(selectionUnit, distinctBoundaryReordered)
+
+        successMessage.classList.toggle('invisible')
+        // show and label ui elements
+        self.closest('.boundary-selection-unit').querySelector('.selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
+        self.closest('.boundary-selection-unit').querySelector('.selected-location').classList.remove('invisible')
+        selectionUnit.querySelector('.selected-title').disabled = false
+        enableContinueButton()
+
+        clearNLInput(selectionUnit)
+
+      } catch (e) {
+        raiseError(selectionUnit, 'File not accepted. Please upload another file')
+        console.log('Error extracting boundary data from Shapefile', e)
+        disableContinueButton()
+        hideSpinner()
+      }
+        self.closest('.boundary-selection-unit').querySelector('.select-file-input').value = file.name
+        // set value to null so user can resubmit
+        // same file if needed
+        self.value = null
+        return false
+    }
+
+    async function setBoundary(self) {
+
+        // do post call to set boundary in request
+        showSpinner()
+        BoundaryPayLoad.share_boundary_publicly = document.getElementById("share-boundary-publicly").checked
+
+        const url = "{{ set_boundary_url }}"
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(BoundaryPayLoad),
+            headers: {
+              'X-CSRFToken': '{{csrf_token}}'
+            }
+        })
+        hideSpinner()
+
+        if (response.status !== 204) {
+            const message = 'Error Changing Boundary'
+            alert(message)
+            throw new Error(message)
+        }
+
+       // reload page
+       location.reload()
+    }
+    function cancelChange(self) {
+        const selectionUnit = self.closest('.boundary-selection-unit')
+
+      // hide feedback messages
+      selectionUnit.querySelector('.feedback.failure').classList.add('invisible')
+      selectionUnit.querySelector('.feedback.success').classList.add('invisible')
+
+      // hide selected location
+      selectionUnit.querySelector('.selected-location').classList.add('invisible')
+
+      clearNLInput(selectionUnit)
+      clearShapeFileInput(selectionUnit)
+      selectInitialShareBoundaryPublicly()
+      disableContinueButton()
+    }
+</script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>
