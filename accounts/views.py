@@ -401,8 +401,21 @@ def deactivate_user(request):
         )
         return redirect('login')
 
+    affiliations = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions', 'communities__community_creator',
+        'institutions__institution_creator'
+    ).get(user=request.user)
+    researcher = Researcher.objects.none()
+    users_name = get_users_name(request.user)
+    if Researcher.objects.filter(user=request.user).exists():
+        researcher = Researcher.objects.get(user=request.user)
+
     return render(request, 'accounts/deactivate.html', {
-        'profile': profile, 'user_role': user_role
+        'profile': profile,
+        'user_role': user_role,
+        'affiliations': affiliations,
+        'researcher': researcher,
+        'users_name': users_name
     })
 
 
