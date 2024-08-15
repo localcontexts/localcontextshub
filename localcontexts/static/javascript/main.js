@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const url = window.location.href;
-    const createPages = ['create-community', 'create-institution', 'connect-researcher'];
-    const updatePages = ['communities/update', 'institutions/update', 'researchers/update'];
+    const createPages = ['create-community', 'create-institution', 'connect-researcher', 'create-service-provider'];
+    const updatePages = ['communities/update', 'institutions/update', 'researchers/update', 'service-providers/update'];
 
     if (createPages.some(page => url.includes(page)) || updatePages.some(page => url.includes(page))) {
         initializeCharacterCounter('id_description', 'charCount', 200);

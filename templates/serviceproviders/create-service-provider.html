@@ -29,21 +29,24 @@
 
         <div class="w-100 flex-this mt-16">
             <div class="w-50 mr-1p">
-                <label class="pad-top-1-5" >First Name</label><br>
+                <label class="pad-top-1-5" >First Name</label>
                 {{ user_form.first_name }}
             </div>
 
             <div class="w-50">
-                <label>Last Name</label><br>
+                <label>Last Name</label>
                 {{ user_form.last_name }}
             </div>
         </div>
 
         <div class="mt-8 w-100">
-            <label for="name">Service Provider Name<span class="orange-text required-label" title="">*</span></label>
+            <label for="name">
+                Service Provider Name<span class="orange-text required-label" title="">*</span>
+            </label>
             {{ form.name }}
-            <div class="w-100 mt-1p">
-                {% if form.errors %}
+
+            {% if form.errors %}
+                <div class="w-100 mt-1p">
                     {% for field_name, errors in form.errors.items %}
                         <div class="red-text">
                             <strong>{{ field_name }}</strong>:
@@ -52,39 +55,46 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
-                {% endif %}
+                </div>
+            {% endif %}
 
-                {% include 'partials/_alerts.html' %}
-            </div>
+            {% include 'partials/_alerts.html' %}
         </div>
 
-        <div class="w-100">
-            <div class="pad-top-1-5">
-                <label for="description">Service Provider Description<span class="orange-text required-label" title="">*</span></label>
-                <div class="tooltip"><strong>i</strong>
-                    <span class="tooltiptext">A service provider description allows you to share key public information about your organization with other users on the Hub.</span>
-                </div>
-
-                <br>
-                {{ form.description }}
+        <div class="w-100 mt-8">
+            <label for="description">Service Provider Description<span class="orange-text required-label" title="">*</span></label>
+            <div class="tooltip"><strong>i</strong>
+                <span class="tooltiptext">A service provider description allows you to share key public information about your organization with other users on the Hub.</span>
             </div>
+            {{ form.description }}
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
 
-        <div class="w-100 flex-this">
+        <div class="w-100">
+            <label for="website">Service Provider Website</label>
+            {{ form.website }}
+            {% if form.website.errors %}
+                <div class="msg-red w-50"><small>{{ form.website.errors.as_text }}</small></div>
+            {% endif %}
+        </div>
+
+        <div class="w-100 flex-this mt-8">
             <div class="w-50 mr-1p">
-                <label class="pad-top-1-5">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                <label for="contact_name">
+                    Contact name<span class="orange-text required-label" title="">*</span>
+                </label>
                 {{ form.contact_name }}
             </div>
 
             <div class="w-50">
-                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                <label for="contact_email">
+                    Contact Email<span class="orange-text required-label" title="">*</span>
+                </label>
                 {{ form.contact_email }}
             </div>
         </div>
 
         <div class="flex-this flex-end">
-            
             <input
             type="hidden"
             name="g-recaptcha-response"
