@@ -242,7 +242,6 @@ def embed_otc_notice(request, pk):
     return response
 
 
-# Connections
 # CONNECTIONS
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
@@ -251,7 +250,9 @@ def connections(request, pk):
         service_provider = get_service_provider(pk)
         member_role = check_member_role(request.user, service_provider)
         if request.method == "GET":
-            sp_connections = ServiceProviderConnections.objects.filter(service_provider=service_provider)
+            sp_connections = ServiceProviderConnections.objects.filter(
+                service_provider=service_provider
+            )
 
             institution_ids = sp_connections.values_list('institutions__id', flat=True)
             community_ids = sp_connections.values_list('communities__id', flat=True)
