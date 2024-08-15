@@ -200,7 +200,7 @@ function autocomplete(inp, arr) {
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value)
                 inp.setAttribute('readonly', true)
                 inp.classList.add('readonly-input')
-                showClearLangBtn(inp.parentElement)
+                showClearLangBtn(inp.closest('.add-translation-form'))
                 translationFormValidation()
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
@@ -296,14 +296,19 @@ function autocomplete(inp, arr) {
         clearLangBtn.classList.remove("hide")
         clearLangBtn.addEventListener("click", function(e) {
             e.preventDefault()
-            langInput = elem.getElementsByTagName("input")[0]
-            langInput.value = ''
-            langInput.removeAttribute('value')
-            langInput.focus()
+            langInput = elem.getElementsByTagName("input")
+            textarea = elem.getElementsByTagName("textarea")
+            langInput[0].value = ''
+            langInput[0].removeAttribute('value')
+            langInput[1].value = ''
+            langInput[1].removeAttribute('value')
+            textarea[0].value=''
+            textarea[0].removeAttribute('value')
+            langInput[1].focus()
 
-            if (langInput.getAttribute('readonly', true) && langInput.classList.contains('readonly-input')) {
-                langInput.removeAttribute('readonly')
-                langInput.classList.remove('readonly-input')
+            if (langInput[1].getAttribute('readonly', true) && langInput[1].classList.contains('readonly-input')) {
+                langInput[1].removeAttribute('readonly')
+                langInput[1].classList.remove('readonly-input')
             }
 
             if (e.target.tagName.toLowerCase() == 'i') {
@@ -331,7 +336,7 @@ function translationFormValidation() {
         }
     }
 
-    valid = true
+    var valid = true
     if (window.location.href.includes('/labels/customize') &&
         (mainLangInput.value == '')) 
         { valid = false}
@@ -343,16 +348,16 @@ function translationFormValidation() {
 
         // Check if all required fields are empty or not
         if (translatedLangInput.value === '' && !translatedLangInput.classList.contains('readonly-input') &&
-            translatedNameInput.value === '' &&
-            translatedTextInput.value === '') {
+        translatedNameInput.value === '' &&
+        translatedTextInput.value === '') {
             // All fields are empty - no issue
             valid = true
         }
 
         // Invalidate if any field is filled and others are empty
         if ((translatedLangInput.value !== '' && (translatedNameInput.value === '' || translatedTextInput.value === '')) ||
-            (translatedNameInput.value !== '' && (translatedLangInput.value === '' || translatedTextInput.value === '')) ||
-            (translatedTextInput.value !== '' && (translatedLangInput.value === '' || translatedNameInput.value === ''))) {
+        (translatedNameInput.value !== '' && (translatedLangInput.value === '' || translatedTextInput.value === '')) ||
+        (translatedTextInput.value !== '' && (translatedLangInput.value === '' || translatedNameInput.value === ''))) {
             valid = false
         }
     }
@@ -381,6 +386,7 @@ function findLabelAndSetValues(labels, id, selectedLanguage,label_name,label_tex
     if (label) {
         label_name.value = label.labelTranslatedName;
         label_text.innerHTML = label.labelTranslatedText;
+        translationFormValidation()
     }
 }
 
