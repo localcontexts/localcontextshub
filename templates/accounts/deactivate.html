@@ -22,6 +22,34 @@
                     Your profile and its associated data will be deleted 30 days after deactivation.
                 {% endif %}
             </p>
+
+            {% if researcher %}
+                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                    <div class="w-70"><h3>{{ users_name }} | Researcher</h3></div>
+                </div>
+            {% endif %}
+
+            {% for community in affiliations.communities.all %}
+                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                    <div class="w-70"><h3>{{ community.community_name }} | Community</h3></div>
+                    {% if not request.user == community.community_creator %}
+                        <a id="openCommLeaveAcctBtn_{{community.id}}" class="leave-acct-btn block darkteal-text bold pointer leaveCommunityBtn"><small class="block">Leave account</small></a>
+                    {% endif %}
+                </div>
+                {% include 'snippets/modals/leave-account-modal.html' %}
+            {% endfor %}
+
+            {% for institution in affiliations.institutions.all %}
+                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                    <div class="w-70"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                    {% if not request.user == institution.institution_creator %}
+                        <a id="openInstLeaveAcctBtn_{{institution.id}}" class="leave-acct-btn block darkteal-text bold pointer leaveInstitutionBtn"><small class="block">Leave account</small></a>
+                    {% endif %}
+                </div>
+                {% include 'snippets/modals/leave-account-modal.html' %}
+            {% endfor %}
+
+            <br>
             {% csrf_token %}
             <button id="submitDeactivation" class="primary-btn white-btn
                 {% if user_role != 'default' %}disabled-btn pointer-event-none{% endif %}">
