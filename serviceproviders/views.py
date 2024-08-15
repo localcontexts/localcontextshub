@@ -16,12 +16,16 @@ from helpers.utils import (
     change_member_role
 )
 from notifications.utils import UserNotification, send_account_member_invite
+from institutions.utils import get_institution
 from .utils import handle_service_provider_creation, get_service_provider
 
 from django.contrib.auth.models import User
 from helpers.models import OpenToCollaborateNoticeURL
 from api.models import AccountAPIKey
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, ServiceProviderConnections
+from institutions.models import Institution
+from communities.models import Community
+from researchers.models import Researcher
 from .models import ServiceProvider
 
 from helpers.forms import OpenToCollaborateNoticeURLForm, HubActivity
@@ -272,17 +276,55 @@ def embed_otc_notice(request, pk):
     return response
 
 
+# Connections
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 def connections(request, pk):
-    service_provider = get_service_provider(pk)
-    member_role = check_member_role(request.user, service_provider)
+    try:
+        service_provider = get_service_provider(pk)
+        member_role = check_member_role(request.user, service_provider)
+        if request.method == "GET":
+            sp_connections = ServiceProviderConnections.objects.filter(service_provider=service_provider)
 
-    context = {
-        "service_provider": service_provider,
-        "member_role": member_role,
-    }
-    return render(request, "serviceproviders/connections.html", context)
+            institution_ids = sp_connections.values_list('institutions__id', flat=True)
+            community_ids = sp_connections.values_list('communities__id', flat=True)
+            researcher_ids = sp_connections.values_list('researchers__id', flat=True)
+
+            communities = Community.objects.filter(id__in=community_ids)
+            researchers = Researcher.objects.filter(id__in=researcher_ids)
+            institutions = Institution.objects.filter(id__in=institution_ids)
+
+        elif request.method == "POST":
+            if "disconnectAccount" in request.POST:
+                account_id, account_type = request.POST.get('disconnectAccount').split('_')
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider
+                )
+
+                if account_type == "institution":
+                    sp_connection.institutions.remove(account_id)
+
+                elif account_type == "community":
+                    sp_connection.communities.remove(account_id)
+
+                elif account_type == "researcher":
+                    sp_connection.researchers.remove(account_id)
+
+                sp_connection.save()
+
+            return redirect("service-provider-connections", service_provider.id)
+
+        context = {
+            "service_provider": service_provider,
+            "member_role": member_role,
+            "communities": communities,
+            "researchers": researchers,
+            "institutions": institutions,
+        }
+        return render(request, "serviceproviders/connections.html", context)
+
+    except:
+        raise Http404()
 
 
 # Members
