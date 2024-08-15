@@ -8,12 +8,8 @@ from maintenance_mode.decorators import force_maintenance_mode_off
 
 from localcontexts.utils import dev_prod_or_local
 from helpers.utils import (
-    InviteMember,
-    validate_recaptcha,
-    check_member_role,
-    encrypt_api_key,
-    form_initiation,
-    change_member_role
+    InviteMember, validate_recaptcha, check_member_role, encrypt_api_key,
+    form_initiation, change_member_role
 )
 from notifications.utils import UserNotification, send_account_member_invite
 from .utils import handle_service_provider_creation, get_service_provider
@@ -26,11 +22,7 @@ from .models import ServiceProvider
 
 from helpers.forms import OpenToCollaborateNoticeURLForm, HubActivity
 from communities.forms import InviteMemberForm
-from accounts.forms import (
-    ContactOrganizationForm,
-    SignUpInvitationForm,
-    SubscriptionForm,
-)
+from accounts.forms import ContactOrganizationForm, SignUpInvitationForm, SubscriptionForm
 from api.forms import APIKeyGeneratorForm
 from .forms import CreateServiceProviderForm, UpdateServiceProviderForm
 
@@ -45,9 +37,7 @@ def preparation_step(request):
     else:
         service_provider = True
         return render(
-            request,
-            "accounts/preparation.html",
-            {"service_provider": service_provider}
+            request, "accounts/preparation.html", {"service_provider": service_provider}
         )
 
 
@@ -55,6 +45,7 @@ def preparation_step(request):
 def create_service_provider(request):
     form = CreateServiceProviderForm()
     user_form = form_initiation(request)
+    subscription_form = SubscriptionForm()
     env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
@@ -63,38 +54,36 @@ def create_service_provider(request):
         validate_recaptcha(request)):
             mutable_post_data = request.POST.copy()
             subscription_data = {
-            "first_name": user_form.cleaned_data['first_name'],
-            "last_name": user_form.cleaned_data['last_name'],
-            "email": request.user._wrapped.email,
-            "inquiry_type": "service_provider",
-            "account_type": "service_provider_account",
-            "organization_name": form.cleaned_data['name'],
+                "first_name": user_form.cleaned_data['first_name'],
+                "last_name": user_form.cleaned_data['last_name'],
+                "email": request.user._wrapped.email,
+                "inquiry_type": "service_provider",
+                "account_type": "service_provider_account",
+                "organization_name": form.cleaned_data['name'],
             }
 
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
+
             if subscription_form.is_valid():
-                handle_service_provider_creation(
-                    request, form, subscription_form, env
-                )
+                handle_service_provider_creation(request, form, subscription_form, env)
                 return redirect('dashboard')
             else:
                 messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "Something went wrong. Please Try again later.",
+                    request, messages.ERROR, "Something went wrong. Please Try again later."
                 )
                 return redirect('dashboard')
-    return render(
-        request,
-        "serviceproviders/create-service-provider.html",
-        {
-            "form": form,
-            "user_form": user_form,
-        },
-    )
+
+    context = {
+        "form": form,
+        "subscription_form": subscription_form,
+        "user_form": user_form,
+    }
+
+    return render(request, "serviceproviders/create-service-provider.html", context)
 
 
+# PUBLIC VIEW
 def public_service_provider_view(request, pk):
     try:
         environment = dev_prod_or_local(request.get_host())
@@ -123,41 +112,20 @@ def public_service_provider_view(request, pk):
                         to_email = service_provider.account_creator.email
 
                         send_contact_email(
-                            request,
-                            to_email,
-                            from_name,
-                            from_email,
-                            message,
-                            service_provider,
+                            request, to_email, from_name, from_email, message, service_provider,
                         )
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            "Message sent!"
-                        )
-                        return redirect(
-                            "public-service-provider", service_provider.id
-                        )
+                        messages.add_message(request, messages.SUCCESS, "Message sent!")
+                        return redirect("public-service-provider", service_provider.id)
                     else:
                         if not form.data["message"]:
                             messages.add_message(
-                                request,
-                                messages.ERROR,
-                                "Unable to send an empty message.",
+                                request, messages.ERROR, "Unable to send an empty message.",
                             )
-                            return redirect(
-                                "public-service-provider",
-                                service_provider.id
-                            )
+                            return redirect("public-service-provider", service_provider.id)
 
                 else:
-                    messages.add_message(
-                        request, messages.ERROR, "Something went wrong."
-                    )
-                    return redirect(
-                        "public-service-provider",
-                        service_provider.id
-                    )
+                    messages.add_message(request, messages.ERROR, "Something went wrong.")
+                    return redirect("public-service-provider", service_provider.id)
 
         else:
             context = {
@@ -179,15 +147,14 @@ def public_service_provider_view(request, pk):
         raise Http404()
 
 
-# Notices
+# NOTICES
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 def service_provider_notices(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
-    urls = OpenToCollaborateNoticeURL.objects.filter(
-        service_provider=service_provider
-    ).values_list("url", "name", "id")
+    urls = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider
+                                                            ).values_list("url", "name", "id")
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
     if service_provider.is_certified:
@@ -272,6 +239,7 @@ def embed_otc_notice(request, pk):
     return response
 
 
+# CONNECTIONS
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 def connections(request, pk):
@@ -285,7 +253,7 @@ def connections(request, pk):
     return render(request, "serviceproviders/connections.html", context)
 
 
-# Members
+# MEMBERS
 @login_required(login_url='login')
 @member_required(roles=['admin', 'editor'])
 def service_provider_members(request, pk):
@@ -301,9 +269,7 @@ def service_provider_members(request, pk):
     members.append(service_provider.account_creator.id)
     users = User.objects.exclude(id__in=members).order_by('username')
 
-    form = InviteMemberForm(
-        request.POST or None, service_provider=service_provider
-    )
+    form = InviteMemberForm(request.POST or None, service_provider=service_provider)
 
     if request.method == "POST":
         if 'change_member_role_btn' in request.POST:
@@ -311,9 +277,7 @@ def service_provider_members(request, pk):
             new_role = request.POST.get('new_role')
             user_id = request.POST.get('user_id')
             member = User.objects.get(id=user_id)
-            change_member_role(
-                service_provider, member, current_role, new_role
-            )
+            change_member_role(service_provider, member, current_role, new_role)
             return redirect('members', service_provider.id)
 
         elif 'send_invite_btn' in request.POST:
@@ -336,12 +300,8 @@ def service_provider_members(request, pk):
                 if not username_to_check in users.values_list(
                     'username', flat=True
                 ):
-                    message = "Invalid user selection. " \
-                        "Please select user from the list."
-                    messages.add_message(
-                        request,
-                        messages.INFO,
-                        message)
+                    message = "Invalid user selection. Please select user from the list."
+                    messages.add_message(request, messages.INFO, message)
                 else:
                     selected_user = User.objects.get(username=username_to_check)
 
@@ -363,33 +323,17 @@ def service_provider_members(request, pk):
                         send_account_member_invite(data)
 
                         # Send email to target user
-                        send_member_invite_email(
-                            request, data, service_provider
-                        )
+                        send_member_invite_email(request, data, service_provider)
                         messages.add_message(
-                            request,
-                            messages.INFO,
-                            f'Invitation sent to {selected_user}!'
+                            request, messages.INFO, f'Invitation sent to {selected_user}!'
                         )
-                        return redirect(
-                            'service-provider-members',
-                            service_provider.id
-                        )
+                        return redirect('service-provider-members', service_provider.id)
                     else:
-                        message = f"The user you are trying to add already " \
-                            f"has an invitation pending to join " \
-                            f"{service_provider.name}."
-                        messages.add_message(
-                            request,
-                            messages.INFO,
-                            message
-                        )
+                        message = f"The user you are trying to add already has an invitation" \
+                            f"invitation pending to join {service_provider.name}."
+                        messages.add_message(request, messages.INFO, message)
             else:
-                messages.add_message(
-                    request,
-                    messages.INFO,
-                    'Something went wrong.'
-                )
+                messages.add_message(request, messages.INFO, 'Something went wrong.')
 
     context = {
         'service_provider': service_provider,
@@ -407,9 +351,7 @@ def service_provider_members(request, pk):
 def service_provider_member_invites(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
-    member_invites = InviteMember.objects.filter(
-        service_provider=service_provider
-    )
+    member_invites = InviteMember.objects.filter(service_provider=service_provider)
 
     context = {
         'member_role': member_role,
@@ -467,14 +409,8 @@ def update_service_provider(request, pk):
         else:
             if update_form.is_valid():
                 update_form.save()
-                messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    "Settings updated!"
-                )
-                return redirect(
-                    "update-service-provider", service_provider.id
-                )
+                messages.add_message(request, messages.SUCCESS, "Settings updated!")
+                return redirect("update-service-provider", service_provider.id)
     else:
         update_form = UpdateServiceProviderForm(instance=service_provider)
 
@@ -488,7 +424,6 @@ def update_service_provider(request, pk):
     )
 
 
-# Create API Key
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
 def api_keys(request, pk):
