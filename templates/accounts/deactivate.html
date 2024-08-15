@@ -36,7 +36,6 @@
                         <a id="openCommLeaveAcctBtn_{{community.id}}" class="leave-acct-btn block darkteal-text bold pointer leaveCommunityBtn"><small class="block">Leave account</small></a>
                     {% endif %}
                 </div>
-                {% include 'snippets/modals/leave-account-modal.html' %}
             {% endfor %}
 
             {% for institution in affiliations.institutions.all %}
@@ -46,8 +45,11 @@
                         <a id="openInstLeaveAcctBtn_{{institution.id}}" class="leave-acct-btn block darkteal-text bold pointer leaveInstitutionBtn"><small class="block">Leave account</small></a>
                     {% endif %}
                 </div>
-                {% include 'snippets/modals/leave-account-modal.html' %}
             {% endfor %}
+
+            {% if affiliations.institutions.count or affiliations.communities.count %}
+                {% include 'snippets/modals/leave-account-modal.html' %}
+            {% endif %}
 
             <br>
             {% csrf_token %}
