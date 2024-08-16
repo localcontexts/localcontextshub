@@ -200,7 +200,7 @@ function autocomplete(inp, arr) {
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value)
                 inp.setAttribute('readonly', true)
                 inp.classList.add('readonly-input')
-                showClearLangBtn(inp.parentElement)
+                showClearLangBtn(inp.closest('.add-translation-form'))
                 translationFormValidation()
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
@@ -296,14 +296,19 @@ function autocomplete(inp, arr) {
         clearLangBtn.classList.remove("hide")
         clearLangBtn.addEventListener("click", function(e) {
             e.preventDefault()
-            langInput = elem.getElementsByTagName("input")[0]
-            langInput.value = ''
-            langInput.removeAttribute('value')
-            langInput.focus()
+            langInput = elem.getElementsByTagName("input")
+            textarea = elem.getElementsByTagName("textarea")
+            langInput[0].value = ''
+            langInput[0].removeAttribute('value')
+            langInput[1].value = ''
+            langInput[1].removeAttribute('value')
+            textarea[0].value=''
+            textarea[0].removeAttribute('value')
+            langInput[1].focus()
 
-            if (langInput.getAttribute('readonly', true) && langInput.classList.contains('readonly-input')) {
-                langInput.removeAttribute('readonly')
-                langInput.classList.remove('readonly-input')
+            if (langInput[1].getAttribute('readonly', true) && langInput[1].classList.contains('readonly-input')) {
+                langInput[1].removeAttribute('readonly')
+                langInput[1].classList.remove('readonly-input')
             }
 
             if (e.target.tagName.toLowerCase() == 'i') {
@@ -319,7 +324,6 @@ function autocomplete(inp, arr) {
 function translationFormValidation() {
     const languageError = document.getElementById('language-error')
     const addTranslationForms = document.querySelectorAll('.add-translation-form')
-    const currentTranslationForms = document.querySelectorAll('.current-translation-form')
     const mainLangInput = document.getElementById('id_language')
 
     function saveLabelBtnValidation(status) {
@@ -332,31 +336,33 @@ function translationFormValidation() {
         }
     }
 
-    invalidInputs = 0
+    var valid = true
     if (window.location.href.includes('/labels/customize') &&
-        (mainLangInput.value != '' && !mainLangInput.classList.contains('readonly-input'))) 
-        { invalidInputs += 1}
+        (mainLangInput.value == '')) 
+        { valid = false}
+    // Validate addTranslationForms
     for (var i = 0; i < addTranslationForms.length; i++) {
-        var translatedNameInput = addTranslationForms[i].querySelector('[id$="translated_name"]')
-        var translatedLangInput = addTranslationForms[i].querySelector('[id$="language"]')
-        var translatedTextInput = addTranslationForms[i].querySelector('[id$="translated_text"]')
+        var translatedNameInput = addTranslationForms[i].querySelector('[id$="translated_name"]');
+        var translatedLangInput = addTranslationForms[i].querySelector('[id$="language"]');
+        var translatedTextInput = addTranslationForms[i].querySelector('[id$="translated_text"]');
 
-        if ((translatedLangInput.value != '' && !translatedLangInput.classList.contains('readonly-input')) ||
-            (translatedNameInput.value != '' && !translatedLangInput.classList.contains('readonly-input')) ||
-            (translatedTextInput.value != '' && !translatedLangInput.classList.contains('readonly-input'))) 
-            { invalidInputs += 1 }
+        // Check if all required fields are empty or not
+        if (translatedLangInput.value === '' && !translatedLangInput.classList.contains('readonly-input') &&
+        translatedNameInput.value === '' &&
+        translatedTextInput.value === '') {
+            // All fields are empty - no issue
+            valid = true
+        }
+
+        // Invalidate if any field is filled and others are empty
+        if ((translatedLangInput.value !== '' && (translatedNameInput.value === '' || translatedTextInput.value === '')) ||
+        (translatedNameInput.value !== '' && (translatedLangInput.value === '' || translatedTextInput.value === '')) ||
+        (translatedTextInput.value !== '' && (translatedLangInput.value === '' || translatedNameInput.value === ''))) {
+            valid = false
+        }
     }
-    for (var i = 0; i < currentTranslationForms.length; i++) {
-        var translatedNameInput = currentTranslationForms[i].querySelector('[id$="translated_name"]')
-        var translatedLangInput = currentTranslationForms[i].querySelector('[id$="language"]')
-        var translatedTextInput = currentTranslationForms[i].querySelector('[id$="translated_text"]')
 
-        if ((translatedNameInput.value != '' && translatedLangInput.value == '') ||
-            (translatedTextInput.value != '' && translatedLangInput.value == '')) 
-            { invalidInputs += 1 }
-    }
-
-    if (invalidInputs == 0) {
+    if (valid == true) {
         saveLabelBtnValidation('enable')
     } else {saveLabelBtnValidation('disable')}
 }
@@ -380,6 +386,7 @@ function findLabelAndSetValues(labels, id, selectedLanguage,label_name,label_tex
     if (label) {
         label_name.value = label.labelTranslatedName;
         label_text.innerHTML = label.labelTranslatedText;
+        translationFormValidation()
     }
 }
 

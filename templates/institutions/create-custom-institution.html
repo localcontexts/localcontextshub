@@ -44,16 +44,6 @@
             <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ noror_form.institution_name }}
             <div class="w-100 mt-1p">
-                {% if noror_form.errors %}
-                    {% for field_name, errors in noror_form.errors.items %}
-                        <div class="red-text">
-                            <strong>{{ field_name }}</strong>:
-                            {% for error in errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
 
                 {% include 'partials/_alerts.html' %}
             </div>
@@ -106,6 +96,14 @@
                     </label>
                 </div>
             </div>
+        </div>
+
+        <div class="mt-8">
+            <label>Institution Website</label>
+            {{ noror_form.website }}
+            {% if noror_form.website.errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.website.errors.as_text }}</small></div>
+            {% endif %}
         </div>
 
         <div class="w-100">
