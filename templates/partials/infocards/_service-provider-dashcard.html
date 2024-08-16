@@ -66,7 +66,12 @@
 
                     <!-- Count of OTC Notices Service Provider has added -->
                     <div class="stats-card flex-this flex-start">
-                        <div><p>00</p></div>
+                        <div>
+                            <p>
+                                {% get_notices_count service_provider as notice_count %}
+                                {% if notice_count < 10 %}0{{ notice_count }}{% else %}{{ notice_count }}{% endif %}
+                            </p>
+                        </div>
                         <div class="ml-16"><span>Notices</span></div>
                     </div>
 

@@ -2,13 +2,14 @@ from django import template
 
 from django.db.models import Count
 from accounts.models import ServiceProviderConnections
+from helpers.models import OpenToCollaborateNoticeURL
 
 
 register = template.Library()
 
-# @register.simple_tag
-# def get_notices_count(institution):
-#     return Notice.objects.filter(institution=institution, archived=False).count()
+@register.simple_tag
+def get_notices_count(service_provider):
+    return OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider).count()
 
 
 @register.simple_tag
