@@ -17,41 +17,146 @@
         <hr class="searchbar-divider">
 
         <div class="flex-this align-center">
-            <div>
-                <form class="default-searchbar" method="GET" action="">
+            <div class="w-50 mr-8">
+                <form class="default-searchbar w-100" method="GET" action="">
                     <input type="search" name="q" placeholder="Search" autocomplete="off">
                     <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
                 </form>
             </div>
-            <div class="flex-this align-center ml-16">
-                <p>
-                    Browse:
-                    <a
-                        href="{% url 'registry' %}"
-                        class="{% if filtertype is None %} bold {% endif %}darkteal-text pointer underline-hover"
-                    >All ({% all_account_count %})
-                    </a> |
-                    <a
-                        href="{% url 'registry' filtertype='communities' %}"
-                        class="{% if '/communities/' in request.path %} bold {% endif %}darkteal-text pointer underline-hover"
-                    >Communities ({% community_count %})
-                    </a> |
-                    <a
-                        href="{% url 'registry' filtertype='institutions' %}"
-                        class="{% if '/institutions/' in request.path %} bold {% endif %}darkteal-text pointer underline-hover"
-                    >Institutions ({% institution_count %})
-                    </a> |
-                    <a
-                        href="{% url 'registry' filtertype='researchers' %}"
-                        class="{% if '/researchers/' in request.path %} bold {% endif %}darkteal-text pointer underline-hover"
-                    >Researchers ({% researcher_count %})
-                    </a> |
-                    <a
-                        href="{% url 'registry' filtertype='otc' %}"
-                        class="{% if '/otc/' in request.path %} bold {% endif %}darkteal-text pointer underline-hover"
-                    >Open To Collaborate ({% otc_registry_count %})
-                    </a>
-                </p>
+            <div class="w-25">
+                <div id="filterRegistry" class="dropdown-select w-100">
+                    <div class="container">
+                        <div class="h-100 flex-this align-center">
+                            <i class="fa-regular fa-sliders mr-8"></i>
+                            <p>Filter by:
+                                {% if not filtertype %}
+                                    All
+                                {% elif filtertype == 'community-all' %}
+                                    Community (All)
+                                {% elif filtertype == 'community-members' %}
+                                    Community (Members)
+                                {% elif filtertype == 'institution-all' %}
+                                    Institution (All)
+                                {% elif filtertype == 'institution-subscribed' %}
+                                    Insittution (Subscribed)
+                                {% elif filtertype == 'researcher-all' %}
+                                    Researcher (All)
+                                {% elif filtertype == 'researcher-subscribed' %}
+                                    Researcher (Subscribed)
+                                {% elif filtertype == 'service-provider-all' %}
+                                    Service provider (All)
+                                {% elif filtertype == 'service-provider-subscribed' %}
+                                    Service provider (Subscribed)
+                                {% elif filtertype == 'engagement-notice' %}
+                                    Engagement Notice
+                                {% endif %}
+                            </p>
+                            <i class="fa-solid fa-angle-down pointer ml-auto"></i>
+                        </div>
+                    </div>
+                    <div class="options">
+                        <div>
+                            <input
+                                id="all"
+                                type="radio"
+                                value="all"
+                                name="filterType"
+                                {% if filtertype == 'all' %}checked{% endif %}
+                            >
+                            <label for="all">All</label>
+                        </div>
+                        <div>
+                            <input
+                                id="community-all"
+                                type="radio"
+                                value="community-all"
+                                name="filterType"
+                                {% if filtertype == 'community-all' %}checked{% endif %}
+                            >
+                            <label for="community-all">Community (All)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="community-members"
+                                type="radio"
+                                value="community-members"
+                                name="filterType"
+                                {% if filtertype == 'community-members' %}checked{% endif %}
+                            >
+                            <label for="community-members">Community (Members)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="institution-all"
+                                type="radio"
+                                value="institution-all"
+                                name="filterType"
+                                {% if filtertype == 'institution-all' %}checked{% endif %}
+                            >
+                            <label for="institution-all">Institution (All)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="institution-subscribed"
+                                type="radio"
+                                value="institution-subscribed"
+                                name="filterType"
+                                {% if filtertype == 'institution-subscribed' %}checked{% endif %}
+                            >
+                            <label for="institution-subscribed">Institution (Subscribed)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="researcher-all"
+                                type="radio"
+                                value="researcher-all"
+                                name="filterType"
+                                {% if filtertype == 'researcher-all' %}checked{% endif %}
+                            >
+                            <label for="researcher-all">Researcher (All)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="researcher-subscribed"
+                                type="radio"
+                                value="researcher-subscribed"
+                                name="filterType"
+                                {% if filtertype == 'researcher-subscribed' %}checked{% endif %}
+                            >
+                            <label for="researcher-subscribed">Researcher (Subscribed)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="service-provider-all"
+                                type="radio"
+                                value="service-provider-all"
+                                name="filterType"
+                                {% if filtertype == 'service-provider-all' %}checked{% endif %}
+                            >
+                            <label for="service-provider-all">Service Provider (All)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="service-provider-certified"
+                                type="radio"
+                                value="service-provider-certified"
+                                name="filterType"
+                                {% if filtertype == 'service-provider-certified' %}checked{% endif %}
+                            >
+                            <label for="service-provider-certified">Service Provider (Certified)</label>
+                        </div>
+                        <div>
+                            <input
+                                id="engagement-notice"
+                                type="radio"
+                                value="engagement-notice"
+                                name="filterType"
+                                {% if filtertype == 'engagement-notice' %}checked{% endif %}
+                            >
+                            <label for="engagement-notice">Engagement Notice</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -80,5 +185,25 @@
     {% include 'snippets/pagination.html' %}
 
 </section>
+
+<script>
+    var selectList = document.getElementById('filterRegistry');
+    if (selectList) {
+        selectList.getElementsByClassName('container')[0].onclick = function(evt) {
+            if (selectList.classList.contains('visible'))
+            selectList.classList.remove('visible');
+            else
+            selectList.classList.add('visible');
+        }
+    }
+
+    let radioItems = document.querySelectorAll('input[name="filterType"]')
+    radioItems.forEach(function(radioItem) {
+        radioItem.addEventListener('click', function() {
+            link = '{% url "registry" %}' + radioItem.value;
+            window.location.href = link.toString();
+        })
+    })
+</script>
 
 {% endblock %}

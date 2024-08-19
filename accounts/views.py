@@ -572,15 +572,23 @@ def registry(request, filtertype=None):
             p = Paginator(cards, default_items_per_page)
 
         else:
-            if filtertype == "communities":
+            if filtertype == "community-all":
                 cards = c
-            elif filtertype == "institutions":
+            elif filtertype == "community-members":
+                cards = c.filter(is_approved=True)
+            elif filtertype == "institution-all":
                 cards = i
-            elif filtertype == "service_providers":
+            elif filtertype == "institution-subscribed":
+                cards = i.filter(is_subscribed=True)
+            elif filtertype == "service-provider-all":
                 cards = sp
-            elif filtertype == "researchers":
+            elif filtertype == "service-provider-certified":
+                cards = sp.filter(is_certified=True)
+            elif filtertype == "researcher-all":
                 cards = r
-            elif filtertype == 'otc':
+            elif filtertype == "researcher-subscribed":
+                cards = r.filter(is_subscribed=True)
+            elif filtertype == 'engagement-notice':
                 researchers_with_otc = r.filter(otc_researcher_url__isnull=False).distinct()
                 institutions_with_otc = i.filter(otc_institution_url__isnull=False).distinct()
                 service_providers_with_otc = sp.filter(
@@ -591,6 +599,8 @@ def registry(request, filtertype=None):
                     institutions_with_otc,
                     service_providers_with_otc
                 )
+            elif filtertype == 'all':
+                return redirect('registry')
             else:
                 cards = return_registry_accounts(c, r, i, sp)
 
