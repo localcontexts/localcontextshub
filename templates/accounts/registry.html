@@ -17,13 +17,13 @@
         <hr class="searchbar-divider">
 
         <div class="flex-this align-center">
-            <div class="w-50 mr-8">
+            <div class="w-70 mr-8">
                 <form class="default-searchbar w-100" method="GET" action="">
-                    <input type="search" name="q" placeholder="Search" autocomplete="off">
-                    <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+                    <input type="search" name="q" placeholder="Search" autocomplete="off" style="width:90%;">
+                    <button class="search-btn w-10"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
                 </form>
             </div>
-            <div class="w-25">
+            <div class="w-30">
                 <div id="filterRegistry" class="dropdown-select w-100">
                     <div class="container">
                         <div class="h-100 flex-this align-center">
@@ -38,15 +38,15 @@
                                 {% elif filtertype == 'institution-all' %}
                                     Institution (All)
                                 {% elif filtertype == 'institution-subscribed' %}
-                                    Insittution (Subscribed)
+                                    Institution (Subscribed)
                                 {% elif filtertype == 'researcher-all' %}
                                     Researcher (All)
                                 {% elif filtertype == 'researcher-subscribed' %}
                                     Researcher (Subscribed)
                                 {% elif filtertype == 'service-provider-all' %}
-                                    Service provider (All)
-                                {% elif filtertype == 'service-provider-subscribed' %}
-                                    Service provider (Subscribed)
+                                    Service Provider (All)
+                                {% elif filtertype == 'service-provider-certified' %}
+                                    Service Provider (Certified)
                                 {% elif filtertype == 'engagement-notice' %}
                                     Engagement Notice
                                 {% endif %}
