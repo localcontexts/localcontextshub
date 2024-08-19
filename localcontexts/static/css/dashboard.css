@@ -226,7 +226,7 @@
     flex-grow: 1;
 }
 
-.subscription-details h6,
+.subscription-details h5,
 .subscription-details p {
     margin-top: 0;
     margin-bottom: 0;
@@ -237,7 +237,7 @@
     padding-left: 10px;
 }
 
-.subscription-activity h6,
+.subscription-activity h5,
 .subscription-activity p {
     margin-top: 0;
     margin-bottom: 0;

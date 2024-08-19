@@ -27,20 +27,20 @@
             Your institution is Large Organization.
         </span>
       </span> </small></p></div> {% endcomment %}
-      <div class="pad-left-2"><h6>Start Date</h6> <p><small>{{ start_date }}</small></p></div>
-      <div class="vl pad-left-2"><h6 class="ml-8 ">End Date</h6> <p class="ml-8 "><small>{{ end_date }}</small></p></div>
+      <div class="pad-left-2"><h5>Start Date</h5> <p>{{ start_date }}</p></div>
+      <div class="vl pad-left-2"><h5 class="ml-8 ">End Date</h5> <p class="ml-8 ">{{ end_date }}</p></div>
     </div>
     <div class="flex-this space-between">
       <div><h4 class="mb-0">Subscription Activity</h4></div>
     </div>
-    <p class="mt-0"><small>See an overview of the activities happening within your subscription</small></p>
-    <div class="flex-this subscription-activity subscription-details w-70">
-      <div><h6>Users Added</h6> <p><small>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</small></p></div>
-      <div class="vl"><h6>Projects Created</h6> <p><small>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</small></p></div>
-      <div class="vl"><h6>Notifications Sent</h6> <p><small>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</small></p></div>
-      <div class="vl"><h6>Notices and Labels</h6> <p><small>Unlimited</small></p></div>
-      <div class="vl"><h6>API Keys</h6> <p><small>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</small></p></div>
+    <p class="mt-0">See an overview of the activities happening within your subscription</p>
+    <div class="flex-this subscription-activity subscription-details w-80">
+      <div><h5>Users Added</h5> <p>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Projects Created</h5> <p>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notifications Sent</h5> <p>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notices and Labels</h5> <p>Unlimited</p></div>
+      <div class="vl"><h5>API Keys</h5> <p>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</p></div>
     </div>
-    <p><small>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></small></p>
+    <p>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></p>
   {% endif %}
 {% endblock %}

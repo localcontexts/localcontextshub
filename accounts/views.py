@@ -882,9 +882,9 @@ def subscription(request, pk, account_type, related=None):
         }
     if account_type == 'researcher':
         researcher = Researcher.objects.get(id=pk)
-        try:
-            subscription = Subscription.objects.get(researcher=researcher)
-        except Subscription.DoesNotExist:
+        if researcher.is_subscribed:
+            subscription = Subscription.objects.filter(researcher=researcher).first()
+        else:
             subscription = None
         renew = (
             subscription.end_date < timezone.now() if subscription is not None
