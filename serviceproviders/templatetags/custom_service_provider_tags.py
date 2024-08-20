@@ -7,11 +7,8 @@ from helpers.models import OpenToCollaborateNoticeURL
 
 register = template.Library()
 
-@register.simple_tag
-def get_notices_count(service_provider):
-    return OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider).count()
 
-
+# Count of Accounts connected to Service Provider
 @register.simple_tag
 def connections_count(service_provider):
     institutions = ServiceProviderConnections.objects.filter(
