@@ -23,10 +23,8 @@
 
             {% if noror_form.institution_name.errors %}
                 <div class="msg-red w-50"><small>{{ noror_form.institution_name.errors.as_text }}</small></div>
-            {% endif %}
-
-            {% if noror_form.non_field_errors %}
-                <div class="msg-red w-50"><small>{{ noror_form.non_field_errors }}</small></div>
+            {% elif noror_form.non_field_errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.non_field_errors.as_text }}</small></div>
             {% endif %}
 
                 {% include 'partials/_alerts.html' %}
