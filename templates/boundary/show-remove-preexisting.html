@@ -37,6 +37,9 @@
         border-radius: 4px;
         max-width: 560px;
     }
+    .edit_name_icon{
+        margin-left: 10px
+    }
 </style>
 
 <script>
@@ -66,9 +69,10 @@
 
     <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
         <div style="display: flex">
-            <input class='name_of_boundary' value="{{ entity.name_of_boundary }}" onchange="shapeFileChange(this)"
-            {% if 'native-land.ca' in entity.source_of_boundary %}disabled{% endif %}
-            >
+            <input disabled class='name_of_boundary' value="{{ entity.name_of_boundary }}" onchange="shapeFileChange(this)">
+            {% if 'native-land.ca' not in entity.source_of_boundary %}
+                <i class="fa-solid fa-edit fa-2x pointer edit_name_icon" disabled></i>
+            {% endif %}
         </div>
     </div>
 
