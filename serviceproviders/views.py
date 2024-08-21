@@ -60,7 +60,7 @@ def create_service_provider(request):
                 "first_name": user_form.cleaned_data['first_name'],
                 "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
-                "inquiry_type": "service_provider",
+                "inquiry_type": "Service Provider",
                 "account_type": "service_provider_account",
                 "organization_name": form.cleaned_data['name'],
             }
