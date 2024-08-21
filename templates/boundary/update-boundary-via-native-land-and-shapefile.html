@@ -266,7 +266,7 @@
             results.forEach(result => {
             html += `
                 <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug(this)">
-                ${result.post_title} (territories)</br />
+                ${result.post_title}</br />
                 </div>
             `
             })
@@ -412,7 +412,7 @@
           return
         }
 
-        selectionUnit.querySelector('.selected-title').value = `${title} (territories)`
+        selectionUnit.querySelector('.selected-title').value = title
         selectionUnit.querySelector('.selected-title').disabled = true
 
         // set selected data for selection
