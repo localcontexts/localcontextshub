@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %}{% load custom_service_provider_tags %}
 
     <div class="dashcard">
 
@@ -62,20 +62,26 @@
                 </div>
 
                 <!-- Count cards -->
-                <div class="flex-this column stats-card-container">
+                <div class="flex-this column stats-card-container bold mr-0">
 
+                    <!-- Count of accounts connected to the Service Provider -->
                     <div class="stats-card flex-this flex-start">
-                        <div><p>0</p></div>
-                        <div class="ml-16"><span>Notices</span></div>
-                    </div>
-
-                    <div class="stats-card flex-this flex-start">
-                        <div><p>0</p></div>
+                        <div>
+                            <p>
+                                {% connections_count service_provider as connect_count %}
+                                {% if connect_count < 10 %}0{{ connect_count }}{% else %}{{ connect_count }}{% endif %}
+                            </p>
+                        </div>
                         <div class="ml-16"><span>Connections</span></div>
                     </div>
 
+                    <!-- Count of members added to Service Provider account -->
                     <div class="stats-card flex-this flex-start">
-                        <div><p>{{ service_provider.get_member_count }}</p></div>
+                        <div>
+                            <p>
+                                {% if service_provider.get_member_count < 10 %} 0{{ service_provider.get_member_count }} {% else %} {{ service_provider.get_member_count }} {% endif %}
+                            </p>
+                        </div>
                         <div class="ml-16"><span>Members</span></div>
                     </div>
 
