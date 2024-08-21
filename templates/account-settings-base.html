@@ -85,7 +85,23 @@
                         </div>
                     </div>
                 </a>
+
+                <!-- Connect to Service Provider -->
+                {% if not service_provider %}
+                    <a href="{% if community %}{% url 'community-connect-service-provider' community.id %}{% endif %}{% if institution %}{% url 'institution-connect-service-provider' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-connect-service-provider' researcher.id %}{% endif %}">
+                        <div class="flex-this side-nav-item {% if '/connect-service-provider/' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 m-auto" style="width: fit-content;">
+                                <img width="45" src="{% if '/connect-service-provider/' in request.path %}{% static 'images/logos/sp-logo-white.png' %}{% else %}{% static 'images/logos/sp-logo-grey.png' %}{% endif %}">
+                            </div>
+                            <div class="w-80">
+                                <p class="mt-0"><strong>Service Providers</strong><br>Connect to a Service Provider</p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+
             </div>
+
 
             <!-- Right side of the settings div (main) -->
             <div class="flex-this column w-70 ml-16">
