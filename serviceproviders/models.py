@@ -46,7 +46,7 @@ class ServiceProvider(models.Model):
     def get_editors(self):
         return self.editors.all()
 
-    def is_user_in_institution(self, user):
+    def is_user_in_service_provider(self, user):
         if user in self.editors.all() or user == self.account_creator:
             return True
         else:
