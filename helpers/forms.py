@@ -48,7 +48,7 @@ class LabelNoteForm(forms.ModelForm):
         model = LabelNote
         fields = ['note']
         widgets = {
-            'note': forms.Textarea(attrs={'class': 'w-100 mb-2p', 'style': 'height: 150px; padding: 10px;', 'placeholder': 'Add Note About This Label'}),
+            'note': forms.Textarea(attrs={'class': 'w-100 mb-2p', 'style': 'height: 150px; padding: 10px;'}),
         }
 
 class OpenToCollaborateNoticeURLForm(forms.ModelForm):

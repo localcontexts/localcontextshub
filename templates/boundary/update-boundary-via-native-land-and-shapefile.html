@@ -146,10 +146,26 @@
     .disabled-btn{
         pointer-events: none;
     }
+
+    .tooltip .tooltiptext {
+        z-index: 2;
+    }
 </style>
 <span class="boundary-selection-unit">
     <div class="region-container">
-        <label class="pad-top-1-5">Search the Native Land Digital database</label><br>
+        <label class="pad-top-1-5">Search the Native Land Digital database</label>
+        <div class="tooltip"><strong>?</strong>
+            <span class="tooltiptext">
+                Native Land Digital is an Indigenous-led mapping tool that maps Indigenous territories, treaties,
+                and languages around the world.
+                <br>
+                <a href="https://native-land.ca/" class="white-text bold underline-hover" target="_blank" rel="noopener">
+                    See more information here.
+                    <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                </a>
+            </span>
+        </div>
+        <br>
         <div class="community-boundary-search">
             <input class="input-field search" type="text"
                    placeholder="Search by address, community name or town"
@@ -161,7 +177,14 @@
         </div>
     </div>
     <div class="browse-files-container">
-                <label class="pad-top-1-5">Upload shapefile (. zip)</label><br>
+                <label class="pad-top-1-5">Upload shapefile (. zip)</label>
+                <div class="tooltip"><strong>?</strong>
+                    <span class="tooltiptext">
+                        A shapefile is a vector data file format commonly used for geospatial analysis.
+                        You can create shapefiles on third-party websites like ArcGIS and QGIS.
+                    </span>
+                </div>
+                <br>
                 <div class="community-boundary-upload">
                     <input type="text"
                            class="input-field select-file-input"

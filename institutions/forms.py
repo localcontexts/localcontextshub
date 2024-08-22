@@ -41,6 +41,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
     class Meta:
         model = Institution
         fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email',]
+        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email', 'website']
         error_messages = {
             'institution_name': {
                 'unique': _("This institution is already on the Hub."),

@@ -3,49 +3,17 @@
     <form method="POST" action="">
         {% csrf_token %}
 
-        <div class="content-card-v2 content-card-space">
-            <div class="flex-this space-between">    
-                <div class="w-80">
-                    <h2 class="mb-0 mt-0">Approve Label</h2>
-                    <p>Unapproved Labels need to be approved by a secondary person (admin or editor) of the community. <br>
-                        If you would like to request changes to or deny approval for this Label, select 'No', then
-                        include a reason in the textbox that appears.<br><br>
-                        By approving this Label your community will now be able to apply it to the Local Contexts Projects.<br>
-                    </p>
-                </div>
-                <div>
-                    <p>Approve Label?</p>
-                    <div class="flex-this space-between">
-                        <div>
-                            <button class="primary-btn action-btn mt-2p" name="approve_label_yes">Yes</button>
-                        </div>
-                        <div>
-                            <a id="displayLabelNote" class="primary-btn white-btn mt-2p">No</a>
-                        </div>                        
-                    </div>
-                </div>
+        <div class="content-card-v2 content-card-space">   
+            <div class="w-80">
+                <h2 class="mb-0 mt-0">Review for Approval</h2>
+                <p>As an account Administrator or Editor, you can approve this customized Label so that it can be used on Hub Projects. Labels can be edited in the future.</p>
             </div>
-        </div>
-
-        <div id="labelNoteDiv" class="content-card-v2 content-card-space hide">
-            <div class="mt-8">
-                <div class="flex-this space-between mb-8">
-                    <div>
-                        <h4 class="mt-0">Please add a note to request changes or give reason for not approving this Label.</h4>
-                    </div>
-                    <div>
-                        <button id="closeNoteDiv" class="primary-btn white-btn">Close <i class="fa fa-times" aria-hidden="true"></i></button>
-                    </div>
-                </div>
-                <div>{{ form.note }}</div>
-                <div><button class="primary-btn action-btn" name="create_label_note">Submit</button></div>
-            </div>            
         </div>
 
         <div class="content-card-v2 content-card-space"> 
             <h2 class="mt-0">Label to Approve</h2>
-            <div class="flex-this mb-8 mt-8 about-this-label">
-                <div class="w-20 ml-16 mt-16 mb-16 flex-end">
+            <div class="flex-this mt-8">
+                <div class="w-10">
                     {% if bclabel %}
                         {% include 'bclabels/which-label.html' %}
                     {% endif %}
@@ -54,16 +22,47 @@
                     {% endif %}
                 </div>   
                 <div class="w-90 mr-16">
-                    <h3>
+                    <h2 class="mt-0">
                         {% if bclabel.name %}{{ bclabel.name }}{% endif %}
                         {% if tklabel.name %}{{ tklabel.name }}{% endif %}
-                    </h3>
+                    </h2>
 
                     {% include 'partials/_label-content.html' %}
 
                 </div>                
             </div>
 
+        </div>
+
+        <div class="content-card-v2 content-card-space">
+            <h2 class="mt-0">Should this Label be approved?</h2>
+            <p>If you would like to suggest revisions or further discussion, select "No" and share additional information in the text box that appears.</p>
+            <div class="flex-this">
+                <div class="mr-16">
+                    <button class="primary-btn action-btn mt-2p" name="approve_label_yes">Yes, this Label is approved</button>
+                </div>
+                <div>
+                    <a id="displayLabelNote" class="primary-btn white-btn mt-2p">No, this Label is not approved</a>
+                </div>                        
+            </div>
+
+        </div>
+
+        <div id="labelNoteDiv" class="content-card-v2 content-card-space hide">
+            <div class="mt-8">
+                <h2 class="mt-0">Submit your feedback</h2>
+                <p>Please add a note to request changes or give reason for not approving this Label.</p>
+
+                <div class="w-90">{{ form.note }}</div>
+                <div class="flex-this">
+                    <div class="mr-16">
+                        <button class="primary-btn action-btn" name="create_label_note">Submit feedback</button>
+                    </div>
+                    <div>
+                        <button id="closeNoteDiv" class="primary-btn white-btn">Cancel</button></div>
+                    </div>                        
+                </div>
+            </div>            
         </div>
         
     </form>
