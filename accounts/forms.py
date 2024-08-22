@@ -210,7 +210,7 @@ class SubscriptionForm(forms.Form):
         ("Subscription", "Subscription"),
         ("Membership", "Membership"),
         ("Service Provider", "Service Provider"),
-        ("CC Notice Only", "CC Notice Only"),
+        ("Subscription -- CC Notices Only", "CC Notices Only"),
         ("Something Else", "Something Else"),
         ("Not Sure", "Not Sure"),
     )
