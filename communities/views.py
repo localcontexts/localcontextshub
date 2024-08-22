@@ -422,7 +422,7 @@ def delete_join_request(request, pk, join_id):
     return redirect('member-requests', community.id)
 
 @login_required(login_url='login')
-@member_required(roles=['admin'])
+@member_required(roles=['admin', 'editor', 'viewer'])
 def remove_member(request, pk, member_id):
     community = get_community(pk)
     member = User.objects.get(id=member_id)
