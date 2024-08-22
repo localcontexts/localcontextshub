@@ -11,6 +11,9 @@ def member_required(roles=[]):
             member_role = check_member_role(request.user, community)
             if member_role not in roles:
                 return redirect('restricted')
+
+            # update view function args
+            kwargs['callee_role'] = member_role
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
