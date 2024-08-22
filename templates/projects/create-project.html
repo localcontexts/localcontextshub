@@ -293,6 +293,15 @@
         <!-- Project Boundary -->
         <div class="content-card-v2 content-card-space">
             <h3>Project Boundary</h3>
+            <div class="mb-1p mt-1p w-80">
+                {% if institution or researcher %}
+                    A Project boundary represents the spatial area where a Project is located or originated from.
+                    By adding a Project boundary, you can connect this material with communities on the Hub who
+                    have added a community boundary.
+                {% elif community %}
+                    A Project boundary represents the spatial area where a Project is located or originated from.
+                {% endif %}
+            </div>
 
             <div class="mb-1p mt-1p w-80">
                 {% with entity=project %}
