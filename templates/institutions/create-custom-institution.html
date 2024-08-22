@@ -44,16 +44,12 @@
             <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ noror_form.institution_name }}
             <div class="w-100 mt-1p">
-                {% if noror_form.errors %}
-                    {% for field_name, errors in noror_form.errors.items %}
-                        <div class="red-text">
-                            <strong>{{ field_name }}</strong>:
-                            {% for error in errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+
+            {% if noror_form.institution_name.errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.institution_name.errors.as_text }}</small></div>
+            {% elif noror_form.non_field_errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.non_field_errors.as_text }}</small></div>
+            {% endif %}
 
                 {% include 'partials/_alerts.html' %}
             </div>
@@ -108,6 +104,14 @@
             </div>
         </div>
 
+        <div class="mt-8">
+            <label>Institution Website</label>
+            {{ noror_form.website }}
+            {% if noror_form.website.errors %}
+                <div class="msg-red w-50"><small>{{ noror_form.website.errors.as_text }}</small></div>
+            {% endif %}
+        </div>
+
         <div class="w-100">
             <div class="pad-top-1-5">
                 <label for="description">Institution Description<span class="orange-text required-label" title="">*</span></label>
@@ -117,6 +121,10 @@
 
                 <br>
                 {{ noror_form.description }}
+
+                {% if noror_form.description.errors %}
+                    <div class="msg-red w-50"><small>{{ noror_form.description.errors.as_text }}</small></div>
+                {% endif %}
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
