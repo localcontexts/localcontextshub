@@ -20,313 +20,39 @@
 {% endif %}
 
 {% for connected_institution in institutions %}
-    <div class="dashcard">
-        <div class="flex-this">
-            <!-- Account Image -->
-            <div class="dashcard-img-container">
-                <img loading="lazy"
-                    class="profile-img"
-                    src="{% if connected_institution.image %} {{ connected_institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}"
-                    alt="{{ connected_institution.institution_name }} image"
-                >
-            </div>
-
-            <!-- Account Information -->
-            <div class="flex-this column w-50">
-                <div class="subscribed-icon-wrapper">
-                    <h3 class="dashcard-h3 darkteal-text">{{ connected_institution.institution_name }}</h3>
-                    {% if connected_institution.is_subscribed %}
-                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
-                    {% endif %}
-                </div>
-                <div>
-                    <p class="dashcard-subheader">
-                        Institution | Members: {% if connected_institution.get_member_count < 10 %}0{{ connected_institution.get_member_count }}{% else %}{{ connected_institution.get_member_count }}{% endif %} | Location: {{ connected_institution.get_location }}
-                    </p>
-                </div>
-                <div>
-                    <p class="dashcard-description description-sm">
-                        {% if connected_institution.description %}{{ connected_institution.description }}{% else %}No description provided.{% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="dashcard-btn-container ml-auto">
-                <div class="mr-8">
-                    <a
-                        class="primary-btn action-btn"
-                        href="{% url 'public-institution' connected_institution.id %}"
-                    >
-                        View public page
-                    </a>
-                </div>
-                <div>
-                    {% if service_provider and '/connections/' in request.path %}
-                        <button
-                            name="disconnectAccountbtn"
-                            data-name="{{ connected_institution.institution_name }}"
-                            data-id="{{ connected_institution.id }}_institution"
-                            class="primary-btn disconnect-btn"
-                        >
-                            Disconnect <i class="fa-solid fa-link-simple-slash"></i>
-                        </button>
-                    {% elif not service_provider and '/connections/' in request.path %}
-                        <span
-                            id="{{ connected_institution.institution_name }}"
-                            class="primary-btn white-btn"
-                            onclick="showMore(this)"
-                        >
-                            Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        {% if not service_provider and '/connections/' in request.path %}
-            <!-- Expanded Info -->
-            <div id="expand-div-{{ connected_institution.institution_name }}" class="hide">
-                <div class="border-bottom-dash-teal">
-                    <p class="mb-0">
-                        <span class="bold">Account Contact Name</span> | {% firstof connected_institution.institution_creator.get_full_name  connected_institution.institution_creator.username %}
-                        <span class="bold ml-8">Account Contact Email</span> | {{ connected_institution.institution_creator.email }}
-                        <span class="bold ml-8">Website</span> | {{ connected_institution.website }}<br><br>
-                    </p>
-                </div>
-
-                <div>
-                    <h3> Projects</h3>
-                    {% if institution %}
-                        {% connections_collaborative_projects institution connected_institution as projects %}
-                    {% elif community %}
-                        {% connections_collaborative_projects community connected_institution as projects %}
-                    {% elif researcher %}
-                        {% connections_collaborative_projects researcher connected_institution as projects %}
-                    {% endif %}
-                    <table class="projects-table">
-                        <tr>
-                            <th><i class="fa-regular fa-line-columns"></i> Title</th>
-                            <th><i class="fa-light fa-user"></i> Creator</th>
-                            <th><i class="fa-light fa-calendar"></i> Last updated</th>
-                            <th>Visibility</th>
-                        </tr>
-
-                        {% for project in projects %}
-                            {% include 'projects/project-overview.html' %}
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
+    {% if community %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=service_provider %}
+    {% endif %}
 {% endfor %}
 
 {% for connected_researcher in researchers %}
-    <div class="dashcard">
-        <div class="flex-this">
-            <!-- Account Image -->
-            <div class="researcher-img-container">
-                <img loading="lazy"
-                    src="{% if connected_researcher.image %}{{ connected_researcher.image.url }}{% else %}{% static 'images/placeholders/researcher-place.jpg' %}{% endif %}"
-                    alt="{{ connected_researcher.researcher_name }} image"
-                >
-            </div>
-
-            <!-- Account Information -->
-            <div class="flex-this column w-50">
-                <div class="subscribed-icon-wrapper">
-                    <h3 class="dashcard-h3 darkteal-text">{% firstof connected_researcher.user.get_full_name connected_researcher.user.username %}</h3>
-                    {% if connected_researcher.is_subscribed %}
-                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
-                    {% endif %}
-                </div>
-                <div>
-                    <p class="dashcard-subheader">
-                        Researcher | Location: {{ connected_researcher.user.user_profile.get_location }}
-                    </p>
-                </div>
-                <div>
-                    <p class="dashcard-description description-sm">
-                        {% if connected_researcher.description %}{{ connected_researcher.description }}{% else %}No description provided.{% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="dashcard-btn-container ml-auto">
-                <div class="mr-8">
-                    <a
-                        class="primary-btn action-btn"
-                        href="{% url 'public-researcher' connected_researcher.id %}"
-                    >
-                        View public page
-                    </a>
-                </div>
-                {% if '/connections/' in request.path %}
-                    <div>
-                        {% if service_provider %}
-                            <button
-                                name="disconnectAccountbtn"
-                                data-name="{% firstof connected_researcher.user.get_full_name connected_researcher.user.username %}"
-                                data-id="{{ connected_researcher.id }}_researcher"
-                                class="primary-btn disconnect-btn"
-                            >
-                                Disconnect <i class="fa-solid fa-link-simple-slash"></i>
-                            </button>
-                        {% elif not service_provider %}
-                            <span
-                                id="{{ connected_researcher.id }}"
-                                class="primary-btn white-btn"
-                                onclick="showMore(this)"
-                            >
-                                Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        {% if not service_provider and '/connections/' in request.path %}
-            <!-- Expanded Info -->
-            <div id="expand-div-{{ connected_researcher.id }}" class="hide">
-                <div class="border-bottom-dash-teal">
-                    <p class="mb-0">
-                        <span class="bold">Contact Email</span> | {% if connected_researcher.contact_email %}{{ connected_researcher.contact_email }}{% else %}{{ connected_researcher.user.email }}{% endif %}<br><br>
-                    </p>
-                </div>
-
-                <div>
-                    <h3> Projects</h3>
-                    {% if institution %}
-                        {% connections_collaborative_projects institution connected_researcher as projects %}
-                    {% elif community %}
-                        {% connections_collaborative_projects community connected_researcher as projects %}
-                    {% elif researcher %}
-                        {% connections_collaborative_projects researcher connected_researcher as projects %}
-                    {% endif %}
-                    <table class="projects-table">
-                        <tr>
-                            <th><i class="fa-regular fa-line-columns"></i> Title</th>
-                            <th><i class="fa-light fa-user"></i> Creator</th>
-                            <th><i class="fa-light fa-calendar"></i> Last updated</th>
-                            <th>Visibility</th>
-                        </tr>
-
-                        {% for project in projects %}
-                            {% include 'projects/project-overview.html' %}
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
+    {% if community %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=service_provider %}
+    {% endif %}
 {% endfor %}
 
 {% for connected_community in communities %}
-    <div class="dashcard">
-        <div class="flex-this">
-            <!-- Account Image -->
-            <div class="dashcard-img-container">
-                <img loading="lazy"
-                    class="profile-img"
-                    src="{% if connected_community.image %} {{ connected_community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}"
-                    alt="{{ connected_community.community_name }} image"
-                >
-            </div>
-
-            <!-- Account Information -->
-            <div class="flex-this column w-50">
-                <div class="subscribed-icon-wrapper">
-                    <h3 class="dashcard-h3 darkteal-text">{{ connected_community.community_name }}</h3>
-                    {% if connected_community.is_approved %}
-                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
-                    {% endif %}
-                </div>
-                <div>
-                    <p class="dashcard-subheader">
-                        Community | Members: {% if connected_community.get_member_count < 10 %}0{{ connected_community.get_member_count }}{% else %}{{ connected_community.get_member_count }}{% endif %} | Location: {{ connected_community.get_location }}
-                    </p>
-                </div>
-                <div>
-                    <p class="dashcard-description description-sm">
-                        {% if connected_community.description %}{{ connected_community.description }}{% else %}No description provided.{% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="dashcard-btn-container ml-auto">
-                <div class="mr-8">
-                    <a
-                        class="primary-btn action-btn"
-                        href="{% url 'public-community' connected_community.id %}"
-                    >
-                        View public page
-                    </a>
-                </div>
-                <div>
-                    {% if service_provider and '/connections/' in request.path %}
-                        <button
-                            name="disconnectAccountbtn"
-                            data-name="{{ connected_community.community_name }}"
-                            data-id="{{ connected_community.id }}_community"
-                            class="primary-btn disconnect-btn"
-                        >
-                            Disconnect <i class="fa-solid fa-link-simple-slash"></i>
-                        </button>
-                    {% elif not service_provider and '/connections/' in request.path %}
-                        <span
-                            id="{{ connected_community.community_name }}"
-                            class="primary-btn white-btn"
-                            onclick="showMore(this)"
-                        >
-                            Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        {% if not service_provider and '/connections/' in request.path %}
-            <!-- Expanded Info -->
-            <div id="expand-div-{{ connected_community.community_name }}" class="hide">
-                <div class="border-bottom-dash-teal">
-                    <p class="mb-0">
-                        <span class="bold">Account Contact Name</span> | {% firstof connected_community.community_creator.get_full_name connected_community.community_creator.get_full_name %}
-                        <span class="bold ml-8">Account Contact Email</span> | {{ connected_community.community_creator.email }}<br><br>
-                    </p>
-                </div>
-
-                <div>
-                    <h3> Projects</h3>
-                    {% if institution %}
-                        {% connections_collaborative_projects institution connected_community as projects %}
-                    {% elif community %}
-                        {% connections_collaborative_projects community connected_community as projects %}
-                    {% elif researcher %}
-                        {% connections_collaborative_projects researcher connected_community as projects %}
-                    {% endif %}
-                    <table class="projects-table">
-                        <tr>
-                            <th><i class="fa-regular fa-line-columns"></i> Title</th>
-                            <th><i class="fa-light fa-user"></i> Creator</th>
-                            <th><i class="fa-light fa-calendar"></i> Last updated</th>
-                            <th>Visibility</th>
-                        </tr>
-
-                        {% for project in projects %}
-                            {% include 'projects/project-overview.html' %}
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
+    {% if community %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=service_provider %}
+    {% endif %}
 {% endfor %}
 
 {% if service_provider and '/connections/' in request.path %}
