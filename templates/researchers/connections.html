@@ -87,14 +87,14 @@
                         alt="{{ res.researcher_name }} image"
                     >
                 </div>
-                <div class="flex-this column dashcard-text-container">
+                <div class="flex-this column w-50">
                     <div><h3 class="dashcard-h3 darkteal-text">{% firstof res.user.get_full_name res.user.username %}</h3></div>
                     <div>
                         <p class="dashcard-subheader">Researcher | Location: {{ researcher.user.user_profile.get_location }}</p>
                     </div>
                     <div><p class="dashcard-description description-sm">{% if res.description %}{{ res.description }} {% else %} No description provided. {% endif %}</p></div>
                 </div>
-                <div class="dashcard-btn-container">
+                <div class="dashcard-btn-container ml-auto">
                     <div class="mr-8">
                         <a class="primary-btn action-btn" href="{% url 'public-researcher' res.id %}">View public page</a>
                     </div>
