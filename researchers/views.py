@@ -876,6 +876,21 @@ def connect_service_provider(request, researcher):
                 sp_connection.researchers.remove(researcher)
                 sp_connection.save()
 
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                researcher.show_sp_connection = False
+                researcher.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                researcher.show_sp_connection = True
+                researcher.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
             return redirect("researcher-connect-service-provider", researcher.id)
 
         context = {

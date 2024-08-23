@@ -40,6 +40,8 @@ class Institution(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_subscribed = models.BooleanField(default=False)
 
+    show_sp_connection = models.BooleanField(default=True)
+
     # Managers
     objects = models.Manager()
     subscribed = SubscribedManager()

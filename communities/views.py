@@ -1362,6 +1362,21 @@ def connect_service_provider(request, pk):
                 sp_connection.communities.remove(community)
                 sp_connection.save()
 
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                community.show_sp_connection = False
+                community.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                community.show_sp_connection = True
+                community.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
             return redirect("community-connect-service-provider", community.id)
 
         context = {

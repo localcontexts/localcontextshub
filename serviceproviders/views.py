@@ -107,9 +107,15 @@ def public_service_provider_view(request, pk):
             community_ids = sp_connections.values_list('communities__id', flat=True)
             researcher_ids = sp_connections.values_list('researchers__id', flat=True)
 
-            communities = Community.objects.filter(id__in=community_ids)
-            researchers = Researcher.objects.filter(id__in=researcher_ids)
-            institutions = Institution.objects.filter(id__in=institution_ids)
+            communities = Community.objects.filter(
+                    id__in=community_ids
+                ).exclude(show_sp_connection=False)
+            researchers = Researcher.objects.filter(
+                    id__in=researcher_ids
+                ).exclude(show_sp_connection=False)
+            institutions = Institution.objects.filter(
+                    id__in=institution_ids
+                ).exclude(show_sp_connection=False)
         else:
             communities = None
             researchers = None

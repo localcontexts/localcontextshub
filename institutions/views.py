@@ -1478,6 +1478,21 @@ def connect_service_provider(request, pk):
                 sp_connection.institutions.remove(institution)
                 sp_connection.save()
 
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                institution.show_sp_connection = False
+                institution.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                institution.show_sp_connection = True
+                institution.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
             return redirect("institution-connect-service-provider", institution.id)
 
         context = {
