@@ -1,5 +1,5 @@
 {% load static %}{% load custom_project_tags %}
-<div class="dashcard">
+<div class="dashcard" {% if '/view/' in request.path %}style="width: inherit;"{% endif %}>
   <div class="flex-this">
 
     <!-- Account Image -->
@@ -36,7 +36,7 @@
 
     <!-- Buttons and OTC Notice -->
     <div class="dashcard-btn-container ml-auto">
-      {% if '/registry/' in request.path or '/connections/' in request.path %}
+      {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
         <!-- View Public Page -->
         <div>
           <a
