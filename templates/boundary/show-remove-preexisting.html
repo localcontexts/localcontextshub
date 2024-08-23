@@ -37,8 +37,9 @@
         border-radius: 4px;
         max-width: 560px;
     }
-    #edit_name_icon{
-        margin-left: 10px
+    #edit_name_icon {
+        margin-left: 10px;
+        margin-top: 11px;
     }
     #edit_name_icon.disabled {
         color: grey;
@@ -86,7 +87,7 @@
                    onblur="disableNameInput(this)"
             >
             {% if 'native-land.ca' not in entity.source_of_boundary %}
-                <i id="edit_name_icon" class="fa-solid fa-edit fa-2x pointer"
+                <i id="edit_name_icon" class="fa-solid fa-edit sm pointer"
                     onclick="enableNameInput(this)"
                 ></i>
             {% endif %}
