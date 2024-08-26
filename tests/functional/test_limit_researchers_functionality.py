@@ -17,6 +17,7 @@ class TestFeatures(TransactionTestCase):
         users_count=1,
         notification_count=1,
         api_key_count=1,
+        subscription_type='large'
         )
         self.subscribed_researcher_project = ProjectFactory(project_creator=self.subscribed_researcher.user)
         self.unsubscribed_researcher = ResearcherFactory(user=UserFactory(), is_subscribed=False)
