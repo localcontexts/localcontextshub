@@ -1316,6 +1316,7 @@ def connect_service_provider(request, pk):
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('connectServiceProvider')
+                connection_reference_id = f"{service_provider_id}:{community.id}_c"
 
                 if ServiceProviderConnections.objects.filter(
                         service_provider=service_provider_id).exists():
@@ -1334,13 +1335,48 @@ def connect_service_provider(request, pk):
                     sp_connection.communities.add(community)
                     sp_connection.save()
 
+                # Delete instances of disconnect Notifications
+                if ActionNotification.objects.filter(
+                    reference_id=connection_reference_id
+                ).exists():
+                    for notification in ActionNotification.objects.filter(
+                        reference_id=connection_reference_id
+                    ):
+                        notification.delete()
+
+                # Send notification of connection to Service Provider
+                target_org = sp_connection.service_provider
+                title = f"{community.community_name} has connected to {target_org.name}"
+                send_simple_action_notification(
+                    None, target_org, title, "Activity", connection_reference_id
+                )
+
             elif "disconnectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('disconnectServiceProvider')
+                connection_reference_id = f"{service_provider_id}:{community.id}_c"
+
                 sp_connection = ServiceProviderConnections.objects.get(
                     service_provider=service_provider_id
                 )
                 sp_connection.communities.remove(community)
                 sp_connection.save()
+
+                # Delete instances of the connection notification
+                if ActionNotification.objects.filter(
+                    reference_id=connection_reference_id
+                ).exists():
+                    for notification in ActionNotification.objects.filter(
+                        reference_id=connection_reference_id
+                    ):
+                        notification.delete()
+
+                # Send notification of disconneciton to Service Provider
+                target_org = sp_connection.service_provider
+                title = f"{community.community_name} has been disconnected from " \
+                        f"{target_org.name}"
+                send_simple_action_notification(
+                    None, target_org, title, "Activity", connection_reference_id
+                )
 
             return redirect("community-connect-service-provider", community.id)
 
