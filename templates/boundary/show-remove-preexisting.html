@@ -70,7 +70,9 @@
 
     function enableNameInput(self) {
       self.classList.add('disabled')
-      document.querySelector('.name_of_boundary').disabled = false
+      const name_of_boundary = document.querySelector('.name_of_boundary')
+      name_of_boundary.disabled = false
+      name_of_boundary.select()
     }
     function disableNameInput(self) {
       self.disabled = true
