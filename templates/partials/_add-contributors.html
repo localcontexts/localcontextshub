@@ -40,7 +40,7 @@
                     {% endfor %}
                 {% endif %}
             </datalist>
-            <div id="add-contributor-btn" class="add-square-btn pointer margin-left-8">
+            <div id="add-contributor-btn" class="add-square-btn pointer ml-8">
                 <span>+</span>
             </div>              
         </div>
@@ -57,7 +57,7 @@
         <!-- If edit project -->
         {% if contributors %}
             {% for community in contributors.communities.all %}
-                <li id="selected-community-{{ community.id }}" class="margin-bottom-8 show">
+                <li id="selected-community-{{ community.id }}" class="mb-8 show">
                     <div class="grey-chip flex-this row space-between">
                         <div><p class="center-name">{{ community.community_name }} (Community)</p></div>
                         <div id="closeComm-{{ community.id }}" class="removeSelectedCommunityBtn pointer">&times;</div>
@@ -67,7 +67,7 @@
             {% endfor %}  
 
             {% for researcher in contributors.researchers.all %}
-                <li id="selected-researcher-{{ researcher.id }}" class="margin-bottom-8 show">
+                <li id="selected-researcher-{{ researcher.id }}" class="mb-8 show">
                     <div class="grey-chip flex-this row space-between">
                         <div><p class="center-name">{% firstof researcher.user.get_full_name researcher.user.username %} (Researcher)</p></div>
                         <div id="closeRes-{{ researcher.id }}" class="removeSelectedResearcherBtn pointer">&times;</div>
@@ -77,7 +77,7 @@
             {% endfor %}
 
             {% for institution in contributors.institutions.all %}
-                <li id="selected-institution-{{ institution.id }}" class="margin-bottom-8 show">
+                <li id="selected-institution-{{ institution.id }}" class="mb-8 show">
                     <div class="grey-chip flex-this row space-between">
                         <div><p class="center-name">{{ institution.institution_name }} (Institution)</p></div>
                         <div id="closeInst-{{ institution.id }}" class="removeSelectedInstitutionBtn pointer">&times;</div>
@@ -88,7 +88,7 @@
 
             {% for f in formset %}
                 {% if f.name.value or f.email.value  %}
-                    <li id="selected-project-person-{{f.instance.pk}}" class="margin-bottom-8 show">
+                    <li id="selected-project-person-{{f.instance.pk}}" class="mb-8 show">
                         <div class="grey-chip flex-this row space-between">
                             <div><p class="center-name">Name: {{ f.name.value }} Email: {{ f.email.value }} (Contributor not on HUB)</p></div>
                             <div id="closeProjectPerson-{{ f.instance.pk }}" class="removeSelectedProjectPerson pointer">&times;</div>
@@ -104,7 +104,7 @@
 
         <!-- If create project and new selections-->
         {% for community in all_communities %}
-            <li id="selected-community-{{ community.id }}" class="margin-bottom-8 hide">
+            <li id="selected-community-{{ community.id }}" class="mb-8 hide">
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name">{{ community.community_name }} (Community)</p></div>
                     <div id="closeComm-{{ community.id }}" class="removeSelectedCommunityBtn pointer">&times;</div>
@@ -113,7 +113,7 @@
         {% endfor %}  
 
         {% for researcher in all_researchers %}
-            <li id="selected-researcher-{{ researcher.id }}" class="margin-bottom-8 hide">
+            <li id="selected-researcher-{{ researcher.id }}" class="mb-8 hide">
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name">{% firstof researcher.user.get_full_name researcher.user.username %} (Researcher)</p></div>
                     <div id="closeRes-{{ researcher.id }}" class="removeSelectedResearcherBtn pointer">&times;</div>
@@ -122,7 +122,7 @@
         {% endfor %}
 
         {% for institution in all_institutions %}
-            <li id="selected-institution-{{ institution.id }}" class="margin-bottom-8 hide">
+            <li id="selected-institution-{{ institution.id }}" class="mb-8 hide">
                 <div class="grey-chip flex-this row space-between">
                     <div><p class="center-name">{{ institution.institution_name }} (Institution)</p></div>
                     <div id="closeInst-{{ institution.id }}" class="removeSelectedInstitutionBtn pointer">&times;</div>

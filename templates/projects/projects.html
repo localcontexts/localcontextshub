@@ -4,12 +4,12 @@
     <div class="content-card content-card-space white-bg">
 
         <div class="flex-this space-between">
-            <div class="w-60"><h2 class="no-top-margin">Local Contexts Projects</h2></div>
+            <div class="w-60"><h2 class="mt-0">Local Contexts Projects</h2></div>
 
             {% if community or institution %}
                 {% if member_role == 'admin' or member_role == 'editor' %}
                     <div class="flex-this align-center">
-                        <a class="primary-btn green-btn margin-top-2 "
+                        <a class="primary-btn green-btn mt-2p "
                             {% if community %} href="{% url 'create-project' community.id %}" {% endif %}
                             {% if institution %} href="{% url 'inst-create-project' institution.id %}" {% endif %}
                         >
@@ -19,14 +19,14 @@
                 {% endif %}
             {% else %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn margin-top-2 " href="{% url 'researcher-create-project' researcher.id %}">
+                    <a class="primary-btn green-btn mt-2p " href="{% url 'researcher-create-project' researcher.id %}">
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
             {% endif %}
         </div>
         <div class="w-70">
-            <p class="no-top-margin">
+            <p class="mt-0">
                 {% if institution or researcher %}
                     Institutions and researchers can only generate Notices. Institutions and researchers generate Notices by creating a Project within the Local Contexts Hub. 
                     Local Contexts projects describe the context where Notices are being applied. For example, a project could include: a website, a university syllabus, a dissertation, 
@@ -51,7 +51,7 @@
         <hr class="searchbar-divider">
 
         <div class="flex-this">
-            <div class="margin-right-16">
+            <div class="mr-16">
                 <form class="default-searchbar" method="GET" action="">
                     <input type="search" name="q" placeholder="Search" autocomplete="off">
                     <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
@@ -137,7 +137,7 @@
                             Sort: Archived
                         </option>
                     </select>  
-                    <input class="primary-btn action-btn margin-left-8" type="submit" value="Sort"> 
+                    <input class="primary-btn action-btn ml-8" type="submit" value="Sort"> 
                 </form>
 
 
@@ -169,7 +169,7 @@
       </div>
 
     {% if not results and not items %}
-        <div class="w-100 center-text margin-top-16 margin-bottom-16" style="margin-top: 100px;">
+        <div class="w-100 center-text mt-16 mb-16" style="margin-top: 100px;">
             <h2>There are no Projects yet</h2>
             <h3>Let's create a Project!</h3>
             <p>Click the button above to start.</p>

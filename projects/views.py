@@ -1,9 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from projects.models import Boundary
 from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
 from helpers.models import Notice
 from django.http import Http404
+from bclabels.models import BCLabel
+from tklabels.models import TKLabel
+from django.http import Http404, HttpResponse
 from accounts.models import UserAffiliation
 from researchers.models import Researcher
 from helpers.downloads import download_project_zip
@@ -101,17 +106,48 @@ def embed_project(request, unique_id):
                     ).get(unique_id=unique_id)
     notices = Notice.objects.filter(project=project, archived=False)
     label_groups = return_project_labels_by_community(project)
-    
-    context = {
-        'layout' : layout,
-        'lang' : lang,
-        'align' : align,
-        'notices' : notices,
-        'label_groups' :  label_groups,
-        'project' : project
-    }
 
-    response = render(request, 'projects/embed-project.html', context)
+    if project.project_privacy == "Public":
+        context = {
+            'layout' : layout,
+            'lang' : lang,
+            'align' : align,
+            'notices' : notices,
+            'label_groups' :  label_groups,
+            'project' : project,
+            'restricted': False,
+        }
+    
+    else:
+        context = {
+            'restricted': True,
+        }
+
+    response = render(request, 'partials/_embed.html', context)
     response['Content-Security-Policy'] = 'frame-ancestors https://*'
 
     return response
+
+
+@login_required(login_url='login')
+def reset_project_boundary(request, pk):
+    try:
+        project = Project.objects.get(id=pk)
+        creator = ProjectCreator.objects.get(project=project)
+        creator.validate_user_access(request.user)
+
+        project.name_of_boundary = ''
+        project.source_of_boundary = ''
+
+        if project.boundary:
+            # update boundary when it exists
+            project.boundary.coordinates = []
+            project.boundary.save()
+        else:
+            # create boundary when it does not exist
+            project.boundary = Boundary(coordinates=[])
+
+        project.save()
+        return HttpResponse(status=204)
+    except (Project.DoesNotExist, UnconfirmedAccountException):
+        return render(request, '404.html', status=404)
