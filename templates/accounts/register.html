@@ -14,7 +14,7 @@
 </script>
 
 <div class="flex-this space-between w-90">
-  <div><h2 class="no-bottom-margin">Register with Local Contexts</h2></div>
+  <div><h2 class="mb-0">Register with Local Contexts</h2></div>
   <div>
     <p>
       Already signed up? <a href="{% url 'login' %}" class="default-a">Sign in</a>
@@ -22,7 +22,7 @@
   </div>
 </div>
 <div class="register-text">
-  <p class="no-top-margin">
+  <p class="mt-0">
     Welcome to Local Contexts! We are so happy to see you, let’s get started.
   </p>
 </div>
@@ -79,12 +79,12 @@
     </div>
     {% endif %}
 
-    <div class="flex-this row margin-top-16">
+    <div class="flex-this row mt-16">
       <div class="flex-this align-center space-between">
-        <div class="text-align-right margin-right-1">
+        <div class="text-align-right mr-1p">
           <input type="checkbox" name="terms-agreement" required />
         </div>
-        <div class="no-margin w-100">
+        <div class="m-0 w-100">
           <p>
             <span>Creating an account means you agree with the</span>
             <a
@@ -120,10 +120,10 @@
       id="g-recaptcha-response"
     />
 
-    <div class="flex-this column signin-banner margin-top-2">
+    <div class="flex-this column signin-banner mt-2p">
       <div class="w-100">
         <div class="flex-this justify-center">
-          <button class="primary-btn action-btn margin-top-2 w-100 signin-btn">
+          <button class="primary-btn action-btn mt-2p w-100 signin-btn">
             Continue
           </button>
         </div>
@@ -135,7 +135,7 @@
         <div class="horizental-line"> </div>
         </div>
         <div class="flex-this">
-            <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="margin-right-1" src="{% static 'images/logos/google.png' %}" alt=""><span class="margin-left-1 primary-black-text">Register With Google</span></a>
+            <a class="w-100 white-btn flex-this align-center justify-center" href="{% provider_login_url 'google' %}"><img class="mr-1p" src="{% static 'images/logos/google.png' %}" alt=""><span class="ml-1p primary-black-text">Register With Google</span></a>
         </div>
         {% include 'partials/_alerts.html' %}
     </div>

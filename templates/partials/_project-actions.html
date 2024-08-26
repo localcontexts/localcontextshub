@@ -4,7 +4,7 @@
     {% if request.user.is_authenticated %}
         <div class="back-to-projects">
             <a 
-                class="pointer margin-top-2 margin-left-8"
+                class="pointer mt-2p ml-8"
                 {% if community %}
                     href="{% url 'community-projects' community.id %}"
                 {% endif %}
@@ -15,13 +15,13 @@
                     href="{% url 'researcher-projects' researcher.id %}"
                 {% endif %}
             >
-                <i class="fa fa-arrow-left darkteal-text margin-right-8"></i><span class="primary-black-text">Back to Projects</span>
+                <i class="fa fa-arrow-left darkteal-text mr-8"></i><span class="primary-black-text">Back to Projects</span>
             </a>
         </div>
     {% endif %}
 {% endif %}
 
-<div class="flex-this auto-margin" style="max-width: 1271px;">
+<div class="flex-this m-auto" style="max-width: 1271px;">
 
     <!-- PROJECT -->
     <div class="project-card content-card-space">
@@ -51,7 +51,11 @@
             </div>
             <div class="flex-this">
                 <div class="project-left-sidebar"><p class="bold">Status</p></div>
-                <div><p>{% if project_archived %} Archived {% else %} Active {% endif %}</p></div>
+                <div>
+                    <p class="{% if project_archived %}orange-tag{% else %}green-tag{% endif %}">
+                        {% if project_archived %}Archived{% else %}Active{% endif %}
+                    </p>
+                </div>
             </div>
             {% if project.source_project_uuid %}
                 <div class="flex-this">
@@ -85,7 +89,7 @@
         <div>
             <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Project details</h2>
-                <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
             <div id="projectDetailsDiv" style="height: auto; overflow: hidden;">
                 <div class="flex-this">
@@ -125,7 +129,7 @@
                                             </div>
                                             {% if account == community and not account == creator.community %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -142,7 +146,7 @@
                                             </div>
                                             {% if account == institution and not account == creator.institution %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -164,7 +168,7 @@
                                             </div>
                                             {% if account == researcher and not account == creator.researcher %} 
                                                 <div>
-                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover margin-left-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
+                                                    <a onclick="openRemoveContributorModal()" class="pointer darkteal-text underline-hover ml-16"><i class="fa-solid fa-xmark fa-lg"></i></a> 
                                                 </div>
                                             {% endif %}                                            
                                         </div>
@@ -192,14 +196,14 @@
                                     <div class="w-100">
                             
                                         <div>
-                                            <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
+                                            <h2 class="primary-black-text mt-0">Are you sure?</h2>  
                                             <p>Are you sure you want to remove your account as a contributor on this Project?</p>  
                                         </div>
                                         <form method="POST" action="">
                                             {% csrf_token %}
                                             <div class="flex-this w-100 text-align-center">
-                                                <button class="primary-btn white-btn margin-right-1" name="remove_contributor">Yes, remove</button>    
-                                                <button id="closeContributorModalBtn" class="margin-left-1 primary-btn action-btn">Cancel</button>
+                                                <button class="primary-btn white-btn mr-1p" name="remove_contributor">Yes, remove</button>    
+                                                <button id="closeContributorModalBtn" class="ml-1p primary-btn action-btn">Cancel</button>
                                             </div>                                            
                                         </form>
                                     </div>
@@ -218,7 +222,7 @@
                                     <i class="round-btn fa-regular fa-clone fa-rotate-90"></i>
                                 </p>
                             </div>  
-                            <div class="margin-left-16">
+                            <div class="ml-16">
                                 <p>
                                     <span class="bold">Local Contexts Project ID</span><br>
                                     <span id="projectIDToCopy">{{ project.unique_id }}</span>
@@ -232,7 +236,7 @@
                                     <i class="round-btn fa-regular fa-clone fa-rotate-90"></i>
                                 </p>
                             </div>  
-                            <div class="margin-left-16">
+                            <div class="ml-16">
                                 <p>
                                     <span class="bold">Project URL</span><br>
                                     <span id="projectURLToCopy">{{ project.project_page }}</span>
@@ -241,7 +245,7 @@
                         </div>
                         
 
-                        <p class="no-top-margin">
+                        <p class="mt-0">
                             <span class="bold">Providers ID</span><br>
                             {{ project.providers_id }}<br><br>
 
@@ -253,12 +257,55 @@
                         </p>
                     </div>
                 </div>
+                {% if request.user.is_authenticated or project.share_boundary_publicly %}
+                    {% if project.boundary.coordinates %}
+                    <div class="flex-this">
+                    <div class="project-left-sidebar"><p class="bold">Boundary</p></div>
+                    <div class="w-100">
+                        <div class="flex-this w-100">
+                            <p class="w-100">
+                                {% if 'native-land.ca' in project.source_of_boundary and project.name_of_boundary %}
+                                    <span class="italic" style="font-size: 20px">
+                                        <a
+                                           href="{{project.source_of_boundary}}"
+                                           class="default-a" target="_blank" rel="noopener"
+                                           style="font-weight: unset; display: block; margin-bottom: 5px;">
+                                            {{ project.name_of_boundary }}
+                                            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                                        </a>
+                                    </span>
+                                {% endif %}
+                                <iframe src="{% url 'project-boundary-view' project.id %}" data-testid="project-boundary-iframe"
+                                style="width: 100%; height: 450px; border: 1px solid cadetblue;">
+                                </iframe>
+                                {% if 'native-land.ca' in project.source_of_boundary %}
+                                    <span class="italic">
+                                        Project boundary originates from the
+                                        <a href="https://native-land.ca/contact"
+                                           class="default-a" target="_blank" rel="noopener">
+                                            Native Land Digital database
+                                            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                                        </a>.
+                                    </span>
+                                    <br><br>
+                                {% else %}
+                                    <span class="italic">
+                                        Project boundary originates from an uploaded shapefile
+                                    </span>
+                                    <br><br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                    {% endif %}
+                {% endif %}
             </div>
 
             {% if notices %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
-                    <h2>Project Notices</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 id="notices">Project Notices</h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectNoticesDiv" style="height: auto; overflow: hidden;">
                     {% for notice in notices %}
@@ -271,7 +318,7 @@
                                 </p>
                             </div>
                             <div>
-                                <div class="margin-top-16">
+                                <div class="mt-16">
                                     {% if notice.notice_type == 'biocultural' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.">
                                     {% elif notice.notice_type == 'traditional_knowledge' %}
@@ -298,8 +345,8 @@
 
             {% if project.has_bclabels or project.has_tklabels %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
-                    <h2>Project Labels</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 id="labels">Project Labels</h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectLabelsDiv" style="height: auto; overflow: hidden;">
 
@@ -313,57 +360,39 @@
                                     </p>                                
                                 </div>
                                 <div>
-                                    <i id="{{community.id}}" onclick="showProjectLabels(this)" class="fa-solid fa-angle-down pointer" aria-label="Show Project Labels"></i>
+                                    <i id="{{community.id}}" onclick="showProjectLabels(this)" class="fa-solid fa-angle-down pointer fa-2x" aria-label="Show Project Labels"></i>
                                 </div>
                             </div>
                             <div id="showContent-{{community.id}}" class="hide">
                                 {% for bclabel in labels.bc_labels %}
                                     <div class="flex-this border-bottom-not-last">
                                         <div>
-                                            <div class="flex-this margin-top-16">
+                                            <div class="flex-this mt-16">
                                                 <div>
                                                     {% include 'bclabels/which-label.html' %} 
                                                 </div>
-                                                <div class="margin-left-16">
-                                                    <p class="no-top-margin bold">{{bclabel.name}} </p><br>
+                                                <div class="ml-16">
+                                                    <h3 class="mt-0">{{bclabel.name}} </h3><br>
                                                 </div>
                                             </div>
             
-                                            <h3>{{ bclabel.language }}</h3>
-                                            <p>
-                                                {{ bclabel.label_text }} <br>
-                                            </p>
-                                            {% for translation in bclabel.bclabel_translation.all %}
-                                                <h3>{{ translation.language }}</h3>
-                                                <p>
-                                                    {{ translation.translated_text }}
-                                                </p>
-                                            {% endfor %}
+                                            {% include 'partials/_label-content.html' %}
                                         </div>
                                     </div>
                                 {% endfor %}
                                 {% for tklabel in labels.tk_labels %}
                                     <div class="flex-this border-bottom-not-last">
                                         <div>
-                                            <div class="flex-this margin-top-16">
+                                            <div class="flex-this mt-16">
                                                 <div>
                                                     {% include 'tklabels/which-label.html' %} 
                                                 </div>
-                                                <div class="margin-left-16">
-                                                    <p class="no-top-margin bold">{{ tklabel.name }} </p><br>
+                                                <div class="ml-16">
+                                                    <h3 class="mt-0">{{ tklabel.name }} </h3><br>
                                                 </div>
                                             </div>
             
-                                            <h3>{{ tklabel.language }}</h3>
-                                            <p>
-                                                {{ tklabel.label_text }} <br>
-                                            </p>
-                                            {% for translation in tklabel.tklabel_translation.all %}
-                                                <h3>{{ translation.language }}</h3>
-                                                <p>
-                                                    {{ translation.translated_text }}
-                                                </p>
-                                            {% endfor %}
+                                            {% include 'partials/_label-content.html' %}
                                         </div>
                                     </div>
                                 {% endfor %}                                
@@ -378,17 +407,17 @@
             {% if not project.source_project_uuid %}
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>Sub Projects</h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="subProjectsDiv" style="height: auto; overflow: hidden;">
 
                     <div><p><strong>{{sub_projects.count}}</strong> Sub Projects </p></div>
 
-                    <div class="margin-bottom-16">
+                    <div class="mb-16">
                         {% if sub_projects %}
                             {% for field in sub_projects %}
                                 <div class="related-projects-div flex-this space-between">
-                                    <div class="w-80 margin-left-8">
+                                    <div class="w-80 ml-8">
                                         <a 
                                             class="darkteal-text underline-hover" 
                                             {% if community %}
@@ -415,11 +444,11 @@
 
             <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Related Projects</h2>
-                <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
             <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
 
-                <div class="flex-this space-between center-text margin-top-16">
+                <div class="flex-this space-between center-text mt-16">
                     <div>
                         <p>
                             <strong>{{project.related_projects.count}}</strong> Related Projects connected
@@ -428,7 +457,7 @@
                     {% if community or institution or researcher %}
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
                             <div class="flex-this">
-                                <div class="margin-right-8">
+                                <div class="mr-8">
                                     <a 
                                         class="primary-btn white-btn" 
                                         {% if community %}
@@ -440,22 +469,22 @@
                                         {% if researcher %}
                                             href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
                                         {% endif %}
-                                    > Create Related Project <i class="margin-left-8 fa-solid fa-square-plus"></i></a>                            
+                                    > Create Related Project <i class="ml-8 fa-solid fa-square-plus"></i></a>                            
                                 </div>
 
                                 <div>
-                                    <a class="primary-btn green-btn" onclick="openModal('linkProjectsModal', 'closeLinkProjectsModal')">Connect Projects <i class="margin-left-8 fa-solid fa-link-simple"></i></a>
+                                    <a class="primary-btn green-btn" onclick="openModal('linkProjectsModal', 'closeLinkProjectsModal')">Connect Projects <i class="ml-8 fa-solid fa-link-simple"></i></a>
                                 </div>
                             </div>    
                         {% endif %}
                     {% endif %}
                 </div>
 
-                <div class="margin-bottom-16">
+                <div class="mb-16">
                     {% if project.related_projects.all %}
                         {% for p in project.related_projects.all %}
                             <div class="related-projects-div flex-this space-between">
-                                <div class="w-80 margin-left-8">
+                                <div class="w-80 ml-8">
                                     <a 
                                         class="darkteal-text underline-hover" 
                                         {% if community %}
@@ -474,7 +503,7 @@
                                 </div>
                                 {% if community or institution or researcher %}
                                     {% if member_role == 'admin' or member_role == 'editor' or researcher %}
-                                        <div class="margin-right-8">
+                                        <div class="mr-8">
                                             <a 
                                                 class="primary-black-text unlink-related-project-btn pointer"
                                                 onclick="openUnlinkProjectModal(`{{p.unique_id}}`)"
@@ -490,9 +519,9 @@
                                             <div class="modal-defaults project-unlink-modal flex-this column w-100">
                                                 <div class="w-100">
 
-                                                    <div class="flex-this space-between margin-bottom-16">
+                                                    <div class="flex-this space-between mb-16">
                                                         <div class="w-80">
-                                                            <h2 class="primary-black-text no-top-margin">Remove Project Connection</h2>  
+                                                            <h2 class="primary-black-text mt-0">Remove Project Connection</h2>  
                                                             <p>Are you sure you want to remove this connection?</p>  
                                                         </div>
                                                         <div>
@@ -501,7 +530,7 @@
                                                     </div>
                                                     
                                                     <div class="flex-this">
-                                                        <div class="w-50 margin-right-8">
+                                                        <div class="w-50 mr-8">
                                                             <a 
                                                                 class="primary-btn action-btn center-text"
                                                                 {% if community %}
@@ -546,13 +575,13 @@
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>
                         Project activity
-                        <div class="tooltip" style="margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip ml-5"><strong>i</strong>
                             <span class="tooltiptext">
                                 Project activity is only visible to Project contributors.
                             </span>
                         </div> 
                     </h2>
-                    <h2 class="margin-right-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectActivityDiv" style="height: 0px; overflow: hidden;">
                     {% for activity in activities %}
@@ -573,9 +602,9 @@
     </div>
 
     <!-- ACTIONS  -->
-    <div class="margin-left-16">
+    <div class="ml-16">
         <div class="actions-card content-card-space flex-this column">
-            <h3 class="no-top-margin">Actions</h3>
+            <h3 class="mt-0">Actions</h3>
 
             {% if request.user.is_authenticated %}
                 {% if 'projects/actions/' in request.path %}
@@ -611,7 +640,7 @@
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
-                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                     <span class="tooltiptext">
                                         The Project you are viewing is already a sub-project.
                                     </span>
@@ -631,7 +660,7 @@
                             {% else %}
                                 <a class="block a-disabled"> 
                                     <i class="fa-solid fa-tag"></i> Apply Labels
-                                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                         <span class="tooltiptext">
                                             Your community was added as a contributor to this Project. The Project creator needs to notify your community if you wish to apply Labels. Please contact us with any questions.
                                         </span>
@@ -641,7 +670,7 @@
                         {% else %}
                             <a class="block a-disabled"> 
                                 <i class="fa-solid fa-tag"></i> Apply Labels
-                                <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                     <span class="tooltiptext">
                                         Your account needs to be confirmed before you can apply Labels. Please contact us if you have questions.
                                     </span>
@@ -663,7 +692,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-user-group"></i> Notify Communities
-                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                 <span class="tooltiptext">
                                     Your account needs to be confirmed before you can notify communities. Please contact us if you have questions.
                                 </span>
@@ -681,7 +710,7 @@
 
             {% endif %}
             {% if not project.project_privacy == 'Private' %}
-                <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+                <div class="border-bottom-grey mt-8 mb-8"></div>
                 
                 <a id="shareBtn" class="block pointer" onclick="openModal('shareProjectModal', 'closeShareProjectModal')"><i class="fa-solid fa-share-nodes"></i> Share</a>
 
@@ -690,7 +719,7 @@
 
                         <div class="flex-this space-between">
                             <div class="w-80">
-                                <h2 class="primary-black-text no-top-margin">Share Project</h2>  
+                                <h2 class="primary-black-text mt-0">Share Project</h2>  
                             </div>
                             <div>
                                 <div id="closeShareProjectModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
@@ -698,35 +727,35 @@
                         </div>
 
                         <div class="w-100 flex-this column">
-                            <div class="w-100 flex-this column margin-bottom-16">
-                                <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Project ID</label>
+                            <div class="w-100 flex-this column mb-16">
+                                <label class="bold mt-8 mb-8 block">Local Contexts Project ID</label>
                                 <div class="text-input-to-copy">
                                     <input class="w-100 grey-chip" type="text" value="{{ project.unique_id }}" id="projectUUIDToCopy" readonly>
                                     <button class="copy-btn btn-in-input" data-target="projectUUIDToCopy">Copy ID</button>
                                 </div>
     
-                                <label class="bold margin-top-8 margin-bottom-8 block">Local Contexts Project URL</label>
+                                <label class="bold mt-8 mb-8 block">Local Contexts Project URL</label>
     
                                 <div class="text-input-to-copy">
                                     <input class="w-100 grey-chip" type="text" value="{{ project.project_page}}" id="projectPageUrlToCopy" readonly>
                                     <button class="copy-btn btn-in-input" data-target="projectPageUrlToCopy">Copy URL</button>
                                 </div>
 
-                                <label class="bold margin-top-8 no-bottom-margin block">Embed Project</label>
-                                <p class="font-size-14 no-top-margin margin-bottom-8">Add this project's identifiers to your website by copying the code below.</p>
+                                <label class="bold mt-8 mb-0 block">Embed Project</label>
+                                <p class="font-size-14 mt-0 mb-8">Add this project's identifiers to your website by copying the code below.</p>
     
                                 <div class="text-input-to-copy">
                                     <input class="w-100 grey-chip" value='<iframe width="100%" height="150" src="{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}" title="Local Contexts Project Identifiers" frameborder="0"></iframe>' type="text" data-url='{{ request.scheme }}://{{ request.get_host }}{% url "embed-project" project.unique_id %}' title="Local Contexts Project Identifiers" id="embedToCopy" readonly>
                                     <button class="copy-btn btn-in-input" data-target="embedToCopy">Copy Code</button>
                                 </div>
-                                <p class="font-size-14 margin-top-1 no-bottom-margin">Embed Options</p>
+                                <p class="font-size-14 mt-1p mb-0">Embed Options</p>
                                 <div class="flex-this">
-                                    <select id="embedLayoutOptions" name="layout" class="project-sort w-30 margin-top-1 margin-right-1">
+                                    <select id="embedLayoutOptions" name="layout" class="project-sort w-30 mt-1p mr-1p">
                                         <option class="darkteal-text pointer" value="1" selected>Icons Only</option>
                                         <option class="darkteal-text pointer" value="2">Icon and Title</option>
                                         <option class="darkteal-text pointer" value="3">Icon, Title and Text</option>
                                     </select>
-                                    <select id="embedLanguageOptions" name="language" class="project-sort w-30 margin-top-1 margin-right-1">
+                                    <select id="embedLanguageOptions" name="language" class="project-sort w-30 mt-1p mr-1p">
                                         {% if notices %}
                                             <option class="darkteal-text pointer" value="en" selected>English</option>
                                             {% for notice in notices %}
@@ -752,14 +781,14 @@
                                             {% endfor %}
                                         {% endif %}
                                     </select>
-                                    <select id="embedAlignOptions" name="align" class="project-sort w-30 margin-top-1 margin-right-1">
+                                    <select id="embedAlignOptions" name="align" class="project-sort w-30 mt-1p mr-1p">
                                         <option class="darkteal-text pointer" value="left" selected>Left Align</option>
                                         <option class="darkteal-text pointer" value="right">Right Align</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+                            <div class="border-bottom-grey mt-8 mb-8"></div>
                             <div class="flex-this bold">Share on Social Media</div>
                             <div class="share-to-socials-container">
                                 <div class="shareToSocialsBtn" data-type="project" data-social="email" data-title="{{ project.title }}" data-url="{{ project.project_page }}">
@@ -787,7 +816,7 @@
                 {% else %}
                     <a class="block a-disabled"> 
                         <i class="fa-solid fa-download"></i> Download
-                        <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                             <span class="tooltiptext">
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
@@ -802,7 +831,7 @@
             {% else %}
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-share-nodes"></i> Share
-                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                         <span class="tooltiptext">
                             Private Projects cannot be shared.
                         </span>
@@ -810,7 +839,7 @@
                 </a>
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-download"></i> Download
-                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                         <span class="tooltiptext">
                             Private Projects cannot be downloaded.
                         </span>
@@ -821,7 +850,7 @@
             {% if 'projects/actions/' in request.path %}
 
                 {% if request.user.is_authenticated and request.user == project.project_creator %}
-                    <div class="border-bottom-grey margin-top-8 margin-bottom-8"></div>
+                    <div class="border-bottom-grey mt-8 mb-8"></div>
 
                     <a 
                         class="block" 
@@ -836,7 +865,7 @@
                         {% endif %}
                     ><i class="fa-solid fa-box-archive"></i> {% if project_archived %} Unarchive {% else %} Archive {% endif %}
 
-                        <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                             <span class="tooltiptext">
                                 Projects that are archived will only appear in your archived project list. Projects can be unarchived at any time.
                             </span>
@@ -850,7 +879,7 @@
                             onclick="openModal('deleteProjectModal', 'closeProjectDeletionModal')"
                         ><i class="fa-solid fa-trash"></i> Delete
 
-                        <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                             <span class="tooltiptext">
                                 Permanently remove this project. Projects with Labels cannot be deleted.
                             </span>
@@ -863,7 +892,7 @@
                                 <div class="w-100">
                     
                                     <div>
-                                        <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
+                                        <h2 class="primary-black-text mt-0">Are you sure?</h2>  
                                         <p>Are you sure you want to delete your Project? <br>
                                             This will delete the Project for everyone and cannot be undone. <br><br>
                                             <small>You will be redirected to the Projects page.</small> <br>
@@ -874,7 +903,7 @@
                                             {% csrf_token %}
                                             <button id="continueProjectDeletionBtn" class="primary-btn white-btn w-100" name="delete_project">Yes, delete this Project</button>    
                                         </form>
-                                        <div id="closeProjectDeletionModal" class="primary-btn action-btn margin-left-8">Cancel</div>
+                                        <div id="closeProjectDeletionModal" class="primary-btn action-btn ml-8">Cancel</div>
                                     </div>
                     
                                 </div>
@@ -883,7 +912,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-trash"></i> Delete
-                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                 <span class="tooltiptext">
                                     Projects with Labels cannot be deleted.
                                 </span>
@@ -901,8 +930,8 @@
             {% if not '/actions/' in request.path %}
                 {% if communities or institutions or user_researcher %}
                     <div class="actions-card content-card-space flex-this column">
-                        <h3 class="no-top-margin">View As 
-                            <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                        <h3 class="mt-0">View As 
+                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                                 <span class="tooltiptext">
                                     You are viewing what this Project looks like publicly. To access the action page as a contributor on this Project, select an account below.
                                 </span>
@@ -928,8 +957,8 @@
                 {% endif %}
             {% else %}
                 <div class="actions-card content-card-space flex-this column">
-                    <h3 class="no-top-margin">View As 
-                        <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                    <h3 class="mt-0">View As 
+                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                             <span class="tooltiptext">
                                 You are viewing the action page of this Project, which is only accessible to contributors. Use this button to see what this Project looks like publicly.
                             </span>
@@ -952,8 +981,8 @@
         {% if community or researcher or institution %}
             <div class="actions-card-notifified content-card-space flex-this column">
                 <div class="flex-this">
-                    <h3 class="no-top-margin no-bottom-margin">Communities Notified</h3>
-                    <div class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+                    <h3 class="mt-0 mb-0">Communities Notified</h3>
+                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
                         <span class="tooltiptext">
                             <i class="bold">Seen</i><br> The community has acknowledged the Project but has not made a decision about applying Labels.<br>
                             <i class="bold">No Labels Pending</i><br> The community will not apply Labels to the Project.<br>
@@ -1002,7 +1031,7 @@
                     {% csrf_token %}
 
                     <div class="flex-this space-between">
-                        <div><h2 class="primary-black-text no-top-margin">Notify Communities</h2></div>
+                        <div><h2 class="primary-black-text mt-0">Notify Communities</h2></div>
                         <div>
                             <div id="closeNotifyModal" class="close-modal-btn pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
                         </div>            
@@ -1028,9 +1057,9 @@
                             </select>                    
                         </div>
             
-                        <div class="flex-this margin-top-16 wrap">
+                        <div class="flex-this mt-16 wrap">
                             {% for community in communities %}
-                                <div id="selected-community-{{ community.id }}" class="hide margin-top-8">
+                                <div id="selected-community-{{ community.id }}" class="hide mt-8">
                                     <div class="grey-chip flex-this row space-between">
                                         <div><p class="center-name">{{community.community_name}}</p></div>
                                         <div id="close-{{ community.id }}" class="close-x pointer" onclick="cancelCommunitySelection(this)"><div>&times;</div></div>
@@ -1040,7 +1069,7 @@
                             {% endfor %}
                         </div>
                         
-                        <div class="flex-this flex-end w-100 margin-top-8">
+                        <div class="flex-this flex-end w-100 mt-8">
                             <button class="primary-btn action-btn" name="notify_btn">Send Notification <i class="fa fa-users" aria-hidden="true"></i></button>    
                         </div>
 
@@ -1063,7 +1092,7 @@
                     {% csrf_token %}
 
                     <div class="flex-this space-between">
-                        <div><h2 class="primary-black-text no-top-margin">Connect Existing Projects</h2></div>
+                        <div><h2 class="primary-black-text mt-0">Connect Existing Projects</h2></div>
                         <div>
                             <div id="closeLinkProjectsModal" class="pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
                         </div>            
@@ -1084,7 +1113,7 @@
                         </ul>
                     </div>
 
-                    <div class="margin-top-16 flex-this flex-end">
+                    <div class="mt-16 flex-this flex-end">
                         <button id="connectProjectsBtn" class="primary-btn disabled-btn" name="link_projects_btn" disabled>Connect Projects</button>
                     </div>
 
@@ -1100,10 +1129,10 @@
     <div class="modal-defaults deactivate-modal flex-this column w-100">
         <div class="w-100">
             <div>
-                <h5 class="primary-black-text no-top-margin">This account needs to be confirmed before public view is available to others.</h5>  
+                <h5 class="primary-black-text mt-0">This account needs to be confirmed before public view is available to others.</h5>  
             </div>
             <div class="flex-this w-100 text-align-center">   
-                <div class="margin-left-1 primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+                <div class="ml-1p primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
             </div>
         </div>
     </div>

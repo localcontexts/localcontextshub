@@ -1,7 +1,7 @@
 {% extends 'register-base.html' %} {% block title %} Confirmation Step {% endblock %}{% load static %} {% block card %}
     
 <div class="flex-this column w-90">
-    <div class="margin-bottom-1">
+    <div class="mb-1p">
         {% if community %}
             <h2>Confirmation step</h2>
             <p>
@@ -24,8 +24,8 @@
     <form id="confirmationForm" action="" method="POST" enctype="multipart/form-data" class="w-100">
         {% csrf_token %}
 
-        <div class="flex-this space-between margin-bottom-16">
-            <div class="margin-right-8 w-100">
+        <div class="flex-this space-between mb-16">
+            <div class="mr-8 w-100">
                 <label for="contact_name">
                     Contact name
                 </label>
@@ -46,10 +46,10 @@
             </div>
         </div>
 
-        <div class="margin-top-16 margin-bottom-16 flex-this w-100">
-            <div class="w-50 margin-right-8">
+        <div class="mt-16 mb-16 flex-this w-100">
+            <div class="w-50 mr-8">
                 <div class="hide">{{ form.support_document }}</div>
-                <button id="customFileUploadBtn" class="primary-btn green-btn margin-right-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
+                <button id="customFileUploadBtn" class="primary-btn green-btn mr-8 w-100">Upload letter <i class="fa-solid fa-upload"></i></button> 
                 {% if form.support_document.errors %}
                     <div class="msg-red w-100"><small>{{ form.support_document.errors.as_text }}</small></div> 
                 {% endif %}
@@ -72,7 +72,7 @@
                 </p>
             </div>
             <div class="flex-this flex-end">
-                <button class="primary-btn action-btn margin-top-2">Continue <i class="fa fa-arrow-right"></i></button>
+                <button class="primary-btn action-btn mt-2p">Continue <i class="fa fa-arrow-right"></i></button>
             </div>            
         </div>
 

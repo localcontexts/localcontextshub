@@ -7,7 +7,7 @@
         <div class="w-100">
 
             <div>
-                <h2 class="primary-black-text no-top-margin">Are you sure?</h2>  
+                <h2 class="primary-black-text mt-0">Are you sure?</h2>  
                 <p>
                     Are you sure you want remove member 
                     {% if admin %} {% firstof  admin.get_full_name admin.username %} {% endif %}
@@ -44,12 +44,12 @@
                             href="{% url 'remove-institution-member' institution.id viewer.id %}" 
                         {% endif %}
                     {% endif %} 
-                    class="primary-btn white-btn margin-right-1"
+                    class="primary-btn white-btn mr-1p"
                 >
                 Yes, remove member</a>    
                 <div 
                     id="closeRemoveMemberModal_{% if admin %}{{ admin.id }}{% endif %}{% if editor %}{{ editor.id }}{% endif %}{% if viewer %}{{ viewer.id }}{% endif %}" 
-                    class="margin-left-1 primary-btn action-btn"
+                    class="ml-1p primary-btn action-btn"
                 >Cancel</div>
             </div>
 

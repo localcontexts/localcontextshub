@@ -1,18 +1,102 @@
 {% load static %}
 {% if messages %}
-    {% for message in messages %}
-        <div id="alert-message">
-            <div class="{{ message.tags }} flex-this">
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                    <div class="msg-red"><small>{{ message }}</small></div>
-                {% endif %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                    <div class="msg-blue"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close"><i class="fa-sharp fa-regular fa-xmark"></i></span></div>
-                {% endif %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <div class="msg-green"><small>{{ message }}</small><span id="close-btn" class="close" aria-label="close"><i class="fa-sharp fa-regular fa-xmark"></i></span></div>
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+    <style>
+        #toast-container > .toast {
+            opacity: 1
+        }
+        #toast-container > .toast:before {
+            position: relative;
+            font-size: 24px;
+            line-height: 18px;
+            float: left;
+            margin-left: -22px;
+            color: #FFF;
+            margin-right: 16px;
+            margin-top: -5px;
+        }
+        #toast-container .toast{
+            display: block;
+            width: 380px;
+            padding-top: 22px;
+            padding-bottom: 10px;
+        }
+        #toast-container> .fa-circle-info , .toast {
+            background-color: #007385 !important;
+        }
+        #toast-container> .fa-check-circle , .toast {
+            background-color: #108670 !important;
+        }
+        #toast-container> .fa-circle-exclamation , .toast  {
+            background-color: #B91C1C !important;
+        }
+        .toast-close-button {
+            margin-top: -20px !important;
+            margin-right: -8px !important;
+            font-weight: 100;
+            padding: 20px  20px 0px 20px !important;
+        }
+        .toast-message {
+            padding-right: 8px;
+            margin-top: -12px;
+            margin-right: 38px;
+            border-right: solid 1px;
+            border-right-color: rgba(255,255,255,.8);
+            min-height: 44px;
+            max-height: 8em;
+            line-height: 1.6em;
+            font-size: 12px;
+
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            line-clamp: 5;
+            -webkit-box-orient: vertical;
+        }
+        #toast-container>div {
+            padding: 15px 15px 15px 40px;
+        }
+    </style>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-bottom-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": 300,
+    "hideDuration": 500,
+    "timeOut": 10000,
+    "extendedTimeOut": 1000,
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut",
+    "tapToDismiss": true,
+    "closeOnHover": false,
+    "closeHtml": "<button><i class='fa fa-xmark'></i></button>",
+    escapeHtml: true,
+    iconClasses: {
+      error: 'fa fa-circle-exclamation',
+      info: 'fa fa-circle-info',
+      success: 'fa fa-check-circle',
+    },
+  }
+
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+      toastr.error("{{ message }}")
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+      toastr.info("{{ message }}")
+    {% endif %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+      toastr.success("{{ message }}")
+    {% endif %}
+  {% endfor %}
+})
+</script>
+
 {% endif %}

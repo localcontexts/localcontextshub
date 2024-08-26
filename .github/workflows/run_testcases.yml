@@ -62,5 +62,5 @@ jobs:
           SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
         run: |
           python manage.py migrate
-          flake8 accounts
+          flake8 accounts notifications localcontexts
           pytest --cov=.  --cov-report=term-missing --cov-fail-under=15

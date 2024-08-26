@@ -1,8 +1,8 @@
 {% extends 'account-base.html' %} {% block title %} Connections {% endblock %}{% load static %} {% block institution_content %}{% load custom_project_tags %} {% load custom_institution_tags %}
 
 <div class="content-card-v2 content-card-space">
-    <div class="w-70">
-        <h2 class="no-top-margin">Connections</h2>
+    <div class="w-75">
+        <h2 class="mt-0">Connections</h2>
         <p>
             Connections are established when Labels are applied to a Project by a community or when this account is added to a Project as a contributor.
             Here you can see all the accounts that you have collaborated on Projects with.
@@ -31,7 +31,7 @@
             </div>
 
             <div class="dashcard-btn-container">
-                <div class="margin-right-8">
+                <div class="mr-8">
                     <a class="primary-btn action-btn" href="{% url 'public-institution' inst.id %}">View public page</a>
                 </div>
                 <div>
@@ -42,10 +42,10 @@
         </div>
         <div id="expand-div-{{ inst.institution_name }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof inst.institution_creator.get_full_name  inst.institution_creator.username %}
-                    <span class="bold margin-left-8">Account Contact Email</span> | {{ inst.institution_creator.email }}
-                    <span class="bold margin-left-8">Website</span> | {{ inst.website }} <br><br>
+                    <span class="bold ml-8">Account Contact Email</span> | {{ inst.institution_creator.email }}
+                    <span class="bold ml-8">Website</span> | {{ inst.website }} <br><br>
                 </p>                        
             </div>
 
@@ -78,15 +78,15 @@
                     alt="{{ researcher.researcher_name }} image"
                 >
             </div>
-            <div class="flex-this column dashcard-text-container">
+            <div class="flex-this column w-50">
                 <div><h3 class="dashcard-h3 darkteal-text">{% firstof researcher.user.get_full_name researcher.user.username %}</h3></div>
                 <div>
-                    <p class="dashcard-subheader">Researcher | Location: {{ profile.get_location }} </p>
+                    <p class="dashcard-subheader">Researcher | Location: {{ researcher.user.user_profile.get_location }}</p>
                 </div>
                 <div><p class="dashcard-description description-sm">{% if researcher.description %}{{ researcher.description }} {% else %} No description provided. {% endif %}</p></div>
             </div>
-            <div class="dashcard-btn-container">
-                <div class="margin-right-8">
+            <div class="dashcard-btn-container ml-auto">
+                <div class="mr-8">
                     <a class="primary-btn action-btn" href="{% url 'public-researcher' researcher.id %}">View public page</a>
                 </div>
                 <div>
@@ -97,7 +97,7 @@
 
         <div id="expand-div-{{ researcher.id }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Contact Email</span> | {% if researcher.contact_email %} {{ researcher.contact_email }} {% else %} {{ researcher.user.email }} {% endif %} <br><br>
                 </p>   
             </div> 
@@ -146,7 +146,7 @@
             </div>
 
             <div class="dashcard-btn-container">
-                <div class="margin-right-8">
+                <div class="mr-8">
                     <a class="primary-btn action-btn" href="{% url 'public-community' community.id %}">View public page</a>
                 </div>
                 <div>
@@ -156,9 +156,9 @@
         </div>
         <div id="expand-div-{{ community.community_name }}" class="hide">
             <div class="border-bottom-dash-teal">
-                <p class="no-bottom-margin">
+                <p class="mb-0">
                     <span class="bold">Account Contact Name</span> | {% firstof community.community_creator.get_full_name community.community_creator.get_full_name %}
-                    <span class="bold margin-left-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
+                    <span class="bold ml-8">Account Contact Email</span> | {{ community.community_creator.email }} <br><br>
                 </p>      
             </div>   
             

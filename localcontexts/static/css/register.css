@@ -65,6 +65,7 @@
     align-items: center;
     overflow-y: auto; /* Enable vertical scrolling */
     max-height: 650px;
+    overflow-x: hidden; /* Disable vertical scrolling */
 }
 
 /* Progress Container */
