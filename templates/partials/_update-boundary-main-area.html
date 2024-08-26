@@ -40,13 +40,12 @@
         border: 1px solid #1f293700;
         border-radius: 4px;
         max-width: 560px;
+        color: black;
     }
 
     #edit_name_icon {
         margin-left: 10px;
         margin-top: 11px;
-    }
-    #edit_name_icon.disabled {
         color: grey;
     }
 </style>
@@ -75,7 +74,9 @@
 
     function enableNameInput(self) {
       self.classList.add('disabled')
-      document.querySelector('.name_of_boundary').disabled = false
+      const name_of_boundary = document.querySelector('.name_of_boundary')
+      name_of_boundary.disabled = false
+      name_of_boundary.select()
     }
     function disableNameInput(self) {
       self.disabled = true
