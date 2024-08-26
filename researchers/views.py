@@ -63,7 +63,7 @@ def connect_researcher(request):
                 "first_name": user_form.cleaned_data['first_name'],
                 "last_name": user_form.cleaned_data['last_name'],
                 "email": request.user._wrapped.email,
-                "inquiry_type": "subscriber",
+                "inquiry_type": "Subscription",
                 "account_type": "researcher_account",
                 "organization_name": get_users_name(request.user),
                 }

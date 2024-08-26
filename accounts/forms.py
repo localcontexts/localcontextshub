@@ -207,12 +207,12 @@ class SubscriptionForm(forms.Form):
     )
     INQUIRY_TYPE_CHOICES = (
         ("", "Please select inquiry type..."),
-        ("subscriber", "Subscription"),
-        ("member", "Membership"),
-        ("service_provider", "Service Provider"),
-        ("cc_only", "CC Notice Only"),
-        ("something_else", " Something Else"),
-        ("not_sure", "Not Sure"),
+        ("Subscription", "Subscription"),
+        ("Membership", "Membership"),
+        ("Service Provider", "Service Provider"),
+        ("Subscription -- CC Notices Only", "CC Notices Only"),
+        ("Something Else", "Something Else"),
+        ("Not Sure", "Not Sure"),
     )
     first_name = forms.CharField(
         widget=forms.TextInput(
