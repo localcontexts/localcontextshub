@@ -372,7 +372,8 @@
             BoundaryPayLoad = {
                 source: boundary.properties.description,
                 name: boundary.properties.Name,
-                boundary: boundaryCoordinates
+                boundary: boundaryCoordinates,
+                should_update_coordinates: true,
             }
             setBoundaryPayloadForInputElement()
             setViewLocationsHref(selectionUnit, boundaryCoordinates)

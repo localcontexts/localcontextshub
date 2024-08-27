@@ -65,6 +65,7 @@
     function shapeFileChange(self) {
       // set the input element sent to backend when saved
       BoundaryPayLoad.name = self.value
+      BoundaryPayLoad.should_update_coordinates = true
       document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
     }
 
@@ -77,6 +78,9 @@
     function disableNameInput(self) {
       self.disabled = true
       document.querySelector('#edit_name_icon').classList.remove('disabled')
+      BoundaryPayLoad.should_update_coordinates = false
+      document.querySelector('#boundary-data').value = JSON.stringify(BoundaryPayLoad)
+      document.querySelector('#cancel-btn').click()
     }
 </script>
 <div id="preview-boundary-container">
