@@ -263,6 +263,32 @@ def send_institution_email(request, institution):
             "Local Contexts Hub <support@localcontexts.org>"
         )
 
+def send_service_provider_email(request, service_provider):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        name = get_users_name(request.user)
+        subject = f'Service Provider Account: {service_provider.name}'
+        data = {
+            'account_creator_name': name,
+            'service_provider_name': service_provider.name
+        }
+
+        cc_emails = [
+            settings.SUPPORT_EMAIL,
+            settings.CC_EMAIL_LH
+        ]
+        if service_provider.contact_email:
+            cc_emails.append(service_provider.contact_email)
+
+        # Send email to institution
+        send_mailgun_template_email(
+            request.user.email,
+            subject,
+            'new_service_provider_account',
+            data,
+            cc_emails,
+            "Local Contexts Hub <support@localcontexts.org>"
+        )
+
 """
     EMAILS FOR ACCOUNTS APP
 """
