@@ -11,7 +11,9 @@ from helpers.utils import (
     InviteMember, validate_recaptcha, check_member_role, encrypt_api_key,
     form_initiation, change_member_role
 )
-from notifications.utils import UserNotification, send_account_member_invite
+from notifications.utils import (
+    UserNotification, send_account_member_invite, send_simple_action_notification
+)
 from .utils import handle_service_provider_creation, get_service_provider
 
 from django.contrib.auth.models import User
@@ -21,6 +23,7 @@ from accounts.models import UserAffiliation, ServiceProviderConnections
 from institutions.models import Institution
 from communities.models import Community
 from researchers.models import Researcher
+from notifications.models import ActionNotification
 from .models import ServiceProvider
 
 from helpers.forms import OpenToCollaborateNoticeURLForm, HubActivity
@@ -264,19 +267,55 @@ def connections(request, pk):
 
         elif request.method == "POST":
             if "disconnectAccount" in request.POST:
+                connection_reference_id = f"{service_provider.id}:{request.POST.get('disconnectAccount')}"
                 account_id, account_type = request.POST.get('disconnectAccount').split('_')
                 sp_connection = ServiceProviderConnections.objects.get(
                     service_provider=service_provider
                 )
 
-                if account_type == "institution":
+                # Delete instances of the connection notification
+                if ActionNotification.objects.filter(
+                    reference_id=connection_reference_id
+                ).exists():
+                    for notification in ActionNotification.objects.filter(
+                        reference_id=connection_reference_id
+                    ):
+                        notification.delete()
+
+                if account_type == "i":
                     sp_connection.institutions.remove(account_id)
 
-                elif account_type == "community":
+                    # Send notification of disconnection to account
+                    institution = Institution.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, institution, title, "Activity", connection_reference_id
+                    )
+
+
+                elif account_type == "c":
                     sp_connection.communities.remove(account_id)
 
-                elif account_type == "researcher":
+                    # Send notification of disconnection to account
+                    community = Community.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, community, title, "Activity", connection_reference_id
+                    )
+
+                elif account_type == "r":
                     sp_connection.researchers.remove(account_id)
+                    # name = get_users_name(request.user)
+
+                    # Send notification of disconnection to account
+                    researcher = Researcher.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, researcher, title, "Activity", connection_reference_id
+                    )
 
                 sp_connection.save()
 

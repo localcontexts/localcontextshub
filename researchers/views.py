@@ -861,7 +861,7 @@ def connect_service_provider(request, researcher):
                 name = get_users_name(request.user)
                 title = f"{name} has connected to {target_org.name}"
                 send_simple_action_notification(
-                    None, target_org, title, "Activity", connection_reference_id
+                    None, target_org, title, "Connections", connection_reference_id
                 )
 
             elif "disconnectServiceProvider" in request.POST:
@@ -888,7 +888,7 @@ def connect_service_provider(request, researcher):
                 name = get_users_name(request.user)
                 title = f"{name} has been disconnected from {target_org.name}"
                 send_simple_action_notification(
-                    None, target_org, title, "Activity", connection_reference_id
+                    None, target_org, title, "Connections", connection_reference_id
                 )
 
             return redirect("researcher-connect-service-provider", researcher.id)

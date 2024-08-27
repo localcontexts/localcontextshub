@@ -1348,7 +1348,7 @@ def connect_service_provider(request, pk):
                 target_org = sp_connection.service_provider
                 title = f"{community.community_name} has connected to {target_org.name}"
                 send_simple_action_notification(
-                    None, target_org, title, "Activity", connection_reference_id
+                    None, target_org, title, "Connections", connection_reference_id
                 )
 
             elif "disconnectServiceProvider" in request.POST:
@@ -1375,7 +1375,7 @@ def connect_service_provider(request, pk):
                 title = f"{community.community_name} has been disconnected from " \
                         f"{target_org.name}"
                 send_simple_action_notification(
-                    None, target_org, title, "Activity", connection_reference_id
+                    None, target_org, title, "Connections", connection_reference_id
                 )
 
             return redirect("community-connect-service-provider", community.id)
