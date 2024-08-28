@@ -12,8 +12,13 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import BasePermission
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, NumberFilter, CharFilter
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from django_filters.rest_framework import (
+    DjangoFilterBackend, FilterSet, NumberFilter, CharFilter
+)
+from drf_spectacular.extensions import OpenApiAuthenticationExtension, OpenApiViewExtension
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiResponse
+from drf_spectacular.types import OpenApiTypes
 
 from api.base.views import *
 from api.base import views as base_views
@@ -44,7 +49,7 @@ ERROR MESSAGES TO USE:
 '''
 
 '''
-APIKeyAuthentication checks a valid API Key was passed. API Key from user will be the encrypted key. 
+APIKeyAuthentication checks a valid API Key was passed. API Key from user will be the encrypted key.
 If no API key provided, or an invalid key (expired/revoked) is provided, raise AuthenticationFailed.
 '''
 class APIKeyAuthentication(BaseAuthentication):
@@ -55,12 +60,25 @@ class APIKeyAuthentication(BaseAuthentication):
             raise AuthenticationFailed('Authentication not provided')
 
         try:
-            account = AccountAPIKey.objects.get(encrypted_key=api_key) 
+            account = AccountAPIKey.objects.get(encrypted_key=api_key)
         except AccountAPIKey.DoesNotExist:
             raise AuthenticationFailed('Invalid API key')
 
         return (account, None)
-    
+
+
+# OpenAPI Schema for LC API Key Authentication
+class MyAuthenticationScheme(OpenApiAuthenticationExtension):
+    target_class = 'api.versioned.v2.views.APIKeyAuthentication'  # full import path OR class ref
+    name = 'LCHubAPIKey'  # name used in the schema
+
+    def get_security_definition(self, auto_schema):
+        return {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'X-Api-Key',
+        }
+
 '''
 Checks for active status on subscriptions, service providers and members accounts.
 If inactive, message appears.
@@ -78,7 +96,7 @@ class IsActive(BasePermission):
             return True
         elif account.community and account.community.is_approved:
             return True
-        
+
         return False
 
 '''
@@ -92,7 +110,7 @@ class IsSuperuser(BasePermission):
                 return True
         except:
             return False
-        
+
 class IsActiveCreatorFilter(filters.BaseFilterBackend):
     """
     Filter that only allows users to see public projects and their own created projects if they are Active.
@@ -124,7 +142,7 @@ class IsActiveCreatorFilter(filters.BaseFilterBackend):
                         ),  # projects where researcher is contributor
                     )
                 )
-            
+
             elif account.community and account.community.is_approved:
                 projects_list = list(
                     chain(
@@ -136,9 +154,9 @@ class IsActiveCreatorFilter(filters.BaseFilterBackend):
                         ),  # projects where community is contributor
                     )
                 )
-            
+
             projects = list(chain(
-                queryset.values_list("unique_id", flat=True), 
+                queryset.values_list("unique_id", flat=True),
                 projects_list
             ))
             project_ids = list(set(projects))
@@ -158,7 +176,31 @@ class ProjectListFilterSet(FilterSet):
        model = Project
        fields = ['institution_id', 'researcher_id', 'community_id', 'user_id', 'title', 'providers_id', 'unique_id'] 
 
+
+# PUBLIC API CALLS
 class APIOverview(APIView):
+    @extend_schema(
+        request=None,
+        description="Get a list of all possible endpoints.",
+        responses={
+            200: inline_serializer(
+                name = "APIOverview",
+                fields = {
+                    'server': serializers.URLField(),
+                    'projects_list': serializers.CharField(),
+                    'project_detail': serializers.CharField(),
+                    'multi_project_detail': serializers.CharField(),
+                    'multi_project_date_modified': serializers.CharField(),
+                    'open_to_collaborate_notice': serializers.CharField(),
+                    'api_documentation': serializers.URLField(),
+                    'usage_guides': serializers.URLField(),
+                    'api_documentation': serializers.URLField(),
+                    'usage_guides': serializers.URLField(),
+                }
+            )
+        }
+    )
+
     def get(self, request, format=None):
         api_urls = {
             'server': reverse('api-overview', request=request, format=format),
@@ -175,8 +217,30 @@ class APIOverview(APIView):
         return Response(api_urls)
 
 class OpenToCollaborateNotice(APIView):
-    authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsActive]
+    authentication_classes = [APIKeyAuthentication,]
+    permission_classes = [IsActive,]
+
+    @extend_schema(
+        request=None,
+        description="Get a list of all possible endpoints.",
+        responses={
+            200: inline_serializer(
+                name = "OpenToCollaborateNotice",
+                fields = {
+                    'notice_type': serializers.CharField(),
+                    'name': serializers.CharField(),
+                    'default_text': serializers.CharField(),
+                    'profile_url': serializers.URLField(),
+                    'img_url': serializers.URLField(),
+                    'svg_url': serializers.URLField(),
+                    'usage_guides': serializers.URLField(),
+                }
+            ),
+            # 401: OpenApiResponse(
+            #     description='Error: Forbidden',
+            # ),
+        }
+    )
 
     def get(self, request):
         account = request.user
@@ -193,7 +257,7 @@ class OpenToCollaborateNotice(APIView):
                 'profile_url': profile_url,
                 'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
                 'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
-                'usage_guides': 'https://localcontexts.org/support/downloadable-resources/',
+                'usage_guides': 'https://localcontexts.org/support/downloadable-resources/'
             }
             return Response(api_urls)
         else:
@@ -225,7 +289,7 @@ class ProjectDetail(generics.RetrieveAPIView):
             return v2_serializers.ProjectSerializer
         else:
             return v2_serializers.ProjectNoNoticeSerializer
-    
+
     def get_object(self):
         try:
             queryset = self.get_queryset()
@@ -239,7 +303,7 @@ class ProjectDetail(generics.RetrieveAPIView):
             raise Http404("Project does not exist.")
             # TODO: check to see why this message won't show properly
 
-        
+
 class MultiProjectListDetail(ViewSet):
     authentication_classes = [APIKeyAuthentication]
     filter_backends = [IsActiveCreatorFilter]
@@ -257,7 +321,7 @@ class MultiProjectListDetail(ViewSet):
                 q = Q(unique_id=x)
                 query |= q  
             project=self.get_queryset().filter(query)
-            
+
             if not project:
                 if Project.objects.filter(query).exists():
                     return Response(
@@ -283,36 +347,37 @@ class MultiProjectListDetail(ViewSet):
             })
         except:
             return Response(
-                {"detail": "Invalid Project ID Provided."}, 
+                {"detail": "Invalid Project ID Provided."},
                 status=status.HTTP_404_NOT_FOUND)
-    
+
     def multisearch_date(self, request, unique_id):
         try:
             unique_id = unique_id.split(',')
             query= Q()
             for x in unique_id:
                 q = Q(unique_id=x)
-                query |= q  
+                query |= q
             project=self.get_queryset().filter(query)
 
             if not project:
                 if Project.objects.filter(query).exists():
                     return Response(
-                        {"detail": "You do not have permission to view this project."}, 
+                        {"detail": "You do not have permission to view this project."},
                         status=status.HTTP_403_FORBIDDEN)
                 else:
                     return Response(
-                        {"detail": "Project does not exist."}, 
+                        {"detail": "Project does not exist."},
                         status=status.HTTP_404_NOT_FOUND)
 
             serializer = ProjectDateModified(project, many=True)
             return Response(serializer.data)
         except:
             return Response(
-                {"detail": "Invalid Project ID Provided."}, 
+                {"detail": "Invalid Project ID Provided."},
                 status=status.HTTP_404_NOT_FOUND)
 
 # SALESFORCE CALLS
+@extend_schema(exclude=True)
 class GetUserAPIView(APIView):
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsSuperuser]
@@ -327,7 +392,8 @@ class GetUserAPIView(APIView):
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+
+@extend_schema(exclude=True)
 class SubscriptionAPI(APIView):
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsSuperuser]
