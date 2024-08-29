@@ -26,18 +26,33 @@
             {% if researcher %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                     <div class="w-70"><h3>{{ users_name }} | Researcher</h3></div>
+                    <small class="block">You're the creator of this account</small>
                 </div>
             {% endif %}
 
             {% for community in affiliations.communities.all %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                     <div class="w-70"><h3>{{ community.community_name }} | Community</h3></div>
+                    <small class="block">
+                        {% if profile.user.id == community.community_creator.id %}
+                            You're the creator of this account
+                        {% else %}
+                            You will be removed from this account
+                        {% endif %}
+                    </small>
                 </div>
             {% endfor %}
 
             {% for institution in affiliations.institutions.all %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                     <div class="w-70"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                    <small class="block">
+                        {% if profile.user.id == community.community_creator.id %}
+                            You're the creator of this account
+                        {% else %}
+                            You will be removed from this accounts
+                        {% endif %}
+                    </small>
                 </div>
             {% endfor %}
 
