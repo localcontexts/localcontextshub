@@ -10,6 +10,14 @@
     .disconnect-btn:hover {
         background-color: #e7e7e7;
     }
+
+    #settings-tooltip.tooltiptext::after{
+        left: 122%;
+    }
+
+    #settings-tooltip.tooltiptext {
+        left: -230px;
+    }
 </style>
 
 <div>
@@ -18,11 +26,35 @@
 </div>
 {% include 'partials/_alerts.html' %}
 
-<div class="w-60 mb-16">
-    <form class="default-searchbar w-100" method="GET" action="">
-        <input type="search" name="q" placeholder="Search" autocomplete="off">
-        <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
-    </form>
+<div class="flex-this mb-16">
+    <div class="w-60">
+        <form class="default-searchbar w-100" method="GET" action="">
+            <input type="search" name="q" placeholder="Search" autocomplete="off">
+            <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+        </form>
+    </div>
+
+    <!-- Show/Hide Connections -->
+    <div class="m-auto mr-0">
+        <form method="POST">
+            {% csrf_token %}
+            <input
+                onChange="this.form.submit()"
+                type="checkbox"
+                name="show_sp_connection"
+                {% if researcher and researcher.show_sp_connection %}checked
+                {% elif community and community.show_sp_connection %}checked
+                {% elif institution and institution.show_sp_connection %}checked
+                {% endif %}
+            >
+            <label for="show_sp_connection">Show/Hide Account</label>
+            <div class="tooltip ml-5"><strong>i</strong>
+                <span id="settings-tooltip" class="tooltiptext">
+                    When you connect to a Service Provider, your account may show on their Registry Public page. Turn this off to keep your account hidden from their Registry Public page.
+                </span>
+            </div>
+        </form>
+    </div>
 </div>
 
 {% for service_provider in service_providers %}

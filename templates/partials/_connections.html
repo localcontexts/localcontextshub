@@ -1,0 +1,103 @@
+{% load static %}{% load custom_project_tags %}
+
+{% if '/connections/' in request.path %}
+    <div class="content-card-v2 content-card-space">
+        <div class="w-75">
+            <h2 class="mt-0">Connections</h2>
+            <p>
+                {% if institution %}
+                    Connections are established when Labels are applied to a Project by a community or when this account is added to a Project as a contributor. Here you can see all the accounts that you have collaborated on Projects with.
+                {% elif community %}
+                    Connections are established when Labels are applied to a Project. Here you can see all the accounts that have notified your community of a Project where you have applied Labels.
+                {% elif researcher %}
+                    Connections are established when Labels are applied to a Project. Here you can see all the communities that have applied at least one Label to your Projects.
+                {% elif service_provider %}
+                    Connections are established when Hub accounts are linked to your platform. Here you can see and manage all Hub accounts that have linked to your Service Provider account.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endif %}
+
+{% for connected_institution in institutions %}
+    {% if community %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_institution-card.html' with institution=connected_institution account=service_provider %}
+    {% endif %}
+{% endfor %}
+
+{% for connected_researcher in researchers %}
+    {% if community %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_researcher-card.html' with researcher=connected_researcher account=service_provider %}
+    {% endif %}
+{% endfor %}
+
+{% for connected_community in communities %}
+    {% if community %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=community %}
+    {% elif institution %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=institution %}
+    {% elif researcher %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=researcher %}
+    {% elif service_provider %}
+        {% include 'partials/infocards/_community-card.html' with community=connected_community account=service_provider %}
+    {% endif %}
+{% endfor %}
+
+{% if service_provider and '/connections/' in request.path %}
+    <!-- Disconnect Account Modal -->
+    <div id="disconnectAccountmodal" class="modal hide">
+
+        <div class="modal-defaults share-modal flex-this column w-100">
+
+            <div class="flex-this space-between">
+                <div class="flex-this">
+                    <h2 class="primary-black-text mt-0">Disconnect this account?</h2>
+                </div>
+            </div>
+
+            <div class="w-100">
+                <p class="mt-0">Are you sure you want to disconnect <span id="disconnectAccountname" class="bold"></span> from your account? They will no longer be able to:</p>
+                <ul>
+                    <li>See basic account information</li>
+                    <li>See your Projects</li>
+                </ul>
+                <p>The admin of this account will be notified of the disconnection.</p>
+
+                <div class="flex-this column gap-half">
+                    <form id="disconnectAccountForm" method="POST">
+                        {% csrf_token %}
+                        <button id="continueAccountDisconnectBtn" class="primary-btn action-btn w-100" name="disconnectAccount" value="">Yes, disconnect this account</button>
+                    </form>
+                    <div id="closeDisconnectAccountmodal" class="primary-btn white-btn w-100">Cancel</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const disconnectBtns = document.querySelectorAll(`[name="disconnectAccountbtn"]`);
+        const disconnectAccountmodal = document.getElementById('disconnectAccountmodal')
+        disconnectBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                openModal('disconnectAccountmodal', 'closeDisconnectAccountmodal');
+                console.log(btn.dataset.name)
+                disconnectAccountname.innerHTML = btn.dataset.name;
+                continueAccountDisconnectBtn.value = btn.dataset.id;
+            });
+        });
+    </script>
+{% endif %}

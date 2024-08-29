@@ -1,89 +1,164 @@
-{% load static %}
-<div class="dashcard">
-    <div class="flex-this space-between">
-        
-        <div class="flex-this">
-            <div class="dashcard-img-container">
-                <img loading="lazy" 
-                    class="profile-img" 
-                    src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
-                    alt="{{ institution.institution_name }} image"
-                >
-            </div>
-            <div class="flex-this column dashcard-text-container">
-                <div class="subscribed-icon-wrapper">
-                <h3 class="dashcard-h3 darkteal-text">{{ institution }}</h3>
-                    {% if institution and institution.is_subscribed %}
+{% load static %}{% load custom_project_tags %}
+<div class="dashcard" {% if '/view/' in request.path %}style="width: inherit;"{% endif %}>
+    <div class="flex-this">
+
+        <!-- Account Image -->
+        <div class="dashcard-img-container">
+            <img loading="lazy"
+                class="profile-img"
+                src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}"
+                alt="{{ institution.institution_name }} image"
+            >
+        </div>
+
+        <!-- Account Information -->
+        <div class="flex-this column w-50">
+            <div class="subscribed-icon-wrapper">
+                <h3 class="dashcard-h3 darkteal-text">{{ institution.institution_name }}</h3>
+                {% if institution.is_subscribed %}
                     <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
                 {% endif %}
-                </div>
-                <div>
-                    <p class="dashcard-subheader">
-                        Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | 
-                        Location: {{ institution.get_location }}
-                    </p>
-                </div>
-                <div><p class="dashcard-description description-sm">
+            </div>
+            <div>
+                <p class="dashcard-subheader">
+                    Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | Location: {{ institution.get_location }}
+                </p>
+            </div>
+            <div>
+                <p class="dashcard-description description-sm">
                     {% if institution.description %}{{ institution.description }} {% else %} No description provided. {% endif %}
-                </p></div>
-            </div>            
+                </p>
+            </div>
         </div>
 
-        <div class="dashcard-btn-container">
-
-            <div class="flex-this gap-half">
-                {% if '/registry/' in request.path %}
-                    <div>
-                        <div class="mb-16">
-                            <a 
-                                class="primary-btn action-btn"
-                                href="{% url 'public-institution' institution.id %}"                    
-                            >View public page</a>                        
-                        </div>
+        <!-- Buttons and OTC Notice -->
+        <div class="dashcard-btn-container ml-auto">
+            {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
+                <!-- View Public Page -->
+                <div>
+                    <a
+                        class="primary-btn action-btn"
+                        href="{% url 'public-institution' institution.id %}"
+                    >
+                        View public page
+                    </a>
+                    {% if '/registry/' in request.path %}
                         {% if institution.otc_institution_url.all %}
-                            <div class="flex-this flex-end">
-                                <img class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
+                            <!-- OTC Notice -->
+                            <div class="flex-this flex-end mt-16">
+                                <img
+                                    class="pointer-event-none"
+                                    src="{% static 'images/notices/ci-open-to-collaborate.png' %}"
+                                    width="60px"
+                                    alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."
+                                >
                             </div>
                         {% endif %}
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
 
-                {% if '/dashboard/' in request.path %}
-                    <div>
-                        {% if institution_projects %}
-                            {% if request.user in institution.get_distinct_creators  %}
-                                <a 
-                                    class="primary-btn action-btn"
-                                    href="{% url 'institution-projects' institution.id %}"
-                                >View account</a>
-                            {% else %}
-                                <a 
-                                    class="primary-btn action-btn"
-                                    href="{% url 'institution-notices' institution.id %}"
-                                >View account</a>
-                            {% endif %}
+            {% if '/dashboard/' in request.path %}
+                <!-- View Account -->
+                <div class="mr-16">
+                    {% if institution_projects %}
+                        {% if request.user in institution.get_distinct_creators  %}
+                            <a
+                                class="primary-btn action-btn"
+                                href="{% url 'institution-projects' institution.id %}"
+                            >
+                                View account
+                            </a>
                         {% else %}
-                            <a 
+                            <a
                                 class="primary-btn action-btn"
                                 href="{% url 'institution-notices' institution.id %}"
-                            >View account</a>
+                            >
+                                View account
+                            </a>
                         {% endif %}
-                    </div>
+                    {% else %}
+                        <a
+                            class="primary-btn action-btn"
+                            href="{% url 'institution-notices' institution.id %}"
+                        >
+                            View account
+                        </a>
+                    {% endif %}
+                </div>
 
-                    <div class="ml-8 flex-this gap-half">
-                        <!-- Notification -->
-                        {% include 'snippets/notifications.html' with scope=institution %}
-                        <!-- Settings -->
-                        {% if request.user == institution.institution_creator or request.user in institution.get_admins %}
-                            <div>
-                                <a href="{% url 'update-institution' institution.id%}" class="round-btn-small darkteal-text primary-btn white-btn"><i class="m-0 fa fa-cog" aria-hidden="true"></i></a>
-                            </div>
-                        {% endif %}
+                <!-- Notification -->
+                {% include 'snippets/notifications.html' with scope=institution %}
+
+                {% if request.user == institution.institution_creator or request.user in institution.get_admins %}
+                    <!-- Settings -->
+                    <div>
+                        <a
+                            href="{% url 'update-institution' institution.id%}"
+                            class="round-btn-small darkteal-text primary-btn white-btn"
+                        >
+                            <i class="m-0 fa fa-cog" aria-hidden="true"></i>
+                        </a>
                     </div>
                 {% endif %}
-            </div>
+            {% endif %}
 
+            {% if '/connections/' in request.path %}
+                <div class="ml-8">
+                    {% if service_provider%}
+                        <!-- Disconnect Button -->
+                        <button
+                            name="disconnectAccountbtn"
+                            data-name="{{ institution.institution_name }}"
+                            data-id="{{ institution.id }}_institution"
+                            class="primary-btn disconnect-btn"
+                        >
+                            Disconnect <i class="fa-solid fa-link-simple-slash"></i>
+                        </button>
+                    {% elif not service_provider %}
+                        <!-- Show More Button -->
+                        <span
+                            id="{{ institution.institution_name }}"
+                            class="primary-btn white-btn"
+                            onclick="showMore(this)"
+                        >
+                            Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
-
     </div>
+
+    {% if '/connections/' in request.path %}
+        {% if not service_provider %}
+            <!-- Expanded Info -->
+            <div id="expand-div-{{ institution.institution_name }}" class="hide">
+                <div class="border-bottom-dash-teal">
+                    <p class="mb-0">
+                        <span class="bold">Account Contact Name</span> | {% firstof institution.institution_creator.get_full_name  institution.institution_creator.username %}
+                        <span class="bold ml-8">Account Contact Email</span> | {{ institution.institution_creator.email }}
+                        <span class="bold ml-8">Website</span> | {{ institution.website }}<br><br>
+                    </p>
+                </div>
+
+                <div>
+                    <h3> Projects</h3>
+                    {% connections_collaborative_projects account institution as projects %}
+                    <table class="projects-table">
+                        <tr>
+                            <th><i class="fa-regular fa-line-columns"></i> Title</th>
+                            <th><i class="fa-light fa-user"></i> Creator</th>
+                            <th><i class="fa-light fa-calendar"></i> Last updated</th>
+                            <th>Visibility</th>
+                        </tr>
+
+                        {% for project in projects %}
+                            {% include 'projects/project-overview.html' %}
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 </div>

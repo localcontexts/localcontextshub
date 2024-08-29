@@ -1395,34 +1395,37 @@ def connections(request, pk):
     member_role = check_member_role(request.user, institution)
     institutions = Institution.objects.none()
 
+    # Researcher contributors
     researcher_ids = institution.contributing_institutions.exclude(
         researchers__id=None
     ).values_list("researchers__id", flat=True)
+    researchers = Researcher.objects.select_related("user").filter(
+        id__in=researcher_ids
+    )
+
+    # Community contributors
     community_ids = institution.contributing_institutions.exclude(
         communities__id=None
     ).values_list("communities__id", flat=True)
-
     communities = (
         Community.objects.select_related("community_creator")
         .prefetch_related("admins", "editors", "viewers")
         .filter(id__in=community_ids)
     )
-    researchers = Researcher.objects.select_related("user").filter(
-        id__in=researcher_ids
-    )
 
+    # Institution contributors
     project_ids = institution.contributing_institutions.values_list(
         "project__unique_id", flat=True
     )
     contributors = ProjectContributors.objects.filter(
         project__unique_id__in=project_ids
+    ).values_list("institutions__id", flat=True)
+    institutions = (
+        Institution.objects.select_related("institution_creator")
+        .prefetch_related("admins", "editors", "viewers")
+        .filter(id__in=contributors)
+        .exclude(id=institution.id)
     )
-    for c in contributors:
-        institutions = (
-            c.institutions.select_related("institution_creator")
-            .prefetch_related("admins", "editors", "viewers")
-            .exclude(id=institution.id)
-        )
 
     context = {
         "member_role": member_role,
@@ -1474,6 +1477,21 @@ def connect_service_provider(request, pk):
                 )
                 sp_connection.institutions.remove(institution)
                 sp_connection.save()
+
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                institution.show_sp_connection = False
+                institution.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                institution.show_sp_connection = True
+                institution.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
 
             return redirect("institution-connect-service-provider", institution.id)
 

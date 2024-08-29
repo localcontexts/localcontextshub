@@ -96,6 +96,30 @@ def public_service_provider_view(request, pk):
             service_provider=service_provider
         )
 
+        # Do connections exist
+        sp_connections = ServiceProviderConnections.objects.filter(
+            service_provider=service_provider
+        ).exclude(institutions__id=None, communities__id=None, researchers__id=None)
+
+        if sp_connections:
+            institution_ids = sp_connections.values_list('institutions__id', flat=True)
+            community_ids = sp_connections.values_list('communities__id', flat=True)
+            researcher_ids = sp_connections.values_list('researchers__id', flat=True)
+
+            communities = Community.objects.filter(
+                    id__in=community_ids
+                ).exclude(show_sp_connection=False)
+            researchers = Researcher.objects.filter(
+                    id__in=researcher_ids
+                ).exclude(show_sp_connection=False)
+            institutions = Institution.objects.filter(
+                    id__in=institution_ids
+                ).exclude(show_sp_connection=False)
+        else:
+            communities = None
+            researchers = None
+            institutions = None
+
         if request.user.is_authenticated:
             user_service_providers = (
                 UserAffiliation.objects.prefetch_related("service_providers")
@@ -134,6 +158,10 @@ def public_service_provider_view(request, pk):
                 "service_provider": service_provider,
                 "otc_notices": otc_notices,
                 "env": environment,
+                "sp_connections": sp_connections,
+                "communities": communities,
+                "researchers": researchers,
+                "institutions": institutions,
             }
             return render(request, "public.html", context)
 
@@ -141,8 +169,12 @@ def public_service_provider_view(request, pk):
             "service_provider": service_provider,
             "form": form,
             "user_service_providers": user_service_providers,
+            "sp_connections": sp_connections,
             "otc_notices": otc_notices,
             "env": environment,
+            "communities": communities,
+            "researchers": researchers,
+            "institutions": institutions,
         }
         return render(request, "public.html", context)
     except:

@@ -1,73 +1,143 @@
-{% load static %}
-<div class="dashcard">
+{% load static %}{% load custom_project_tags %}
+<div class="dashcard" {% if '/view/' in request.path %}style="width: inherit;"{% endif %}>
+    <div class="flex-this">
 
-    <div class="flex-this space-between">
+        <!-- Account Image -->
+        <div class="dashcard-img-container">
+            <img loading="lazy"
+                class="profile-img"
+                src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}"
+                alt="{{ community.community_name }} image"
+            >
+        </div>
 
-        <div class="flex-this">
-            <div class="dashcard-img-container">
-                <img loading="lazy" 
-                    class="profile-img" 
-                    src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}" 
-                    alt="{{ community.community_name }} image"
-                >
-            </div>
-            <div class="flex-this column dashcard-text-container">
-                <div class="subscribed-icon-wrapper">
-                <h3 class="dashcard-h3 darkteal-text">{{ community }}</h3>
-                {% if community and community.is_approved %}
+        <!-- Account Information -->
+        <div class="flex-this column w-50">
+            <div class="subscribed-icon-wrapper">
+                <h3 class="dashcard-h3 darkteal-text">{{ community.community_name }}</h3>
+                {% if community.is_approved %}
                     <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
                 {% endif %}
             </div>
-                <div>
-                    <p class="dashcard-subheader">
-                        Community | Members: {% if community.get_member_count < 10 %}0{{ community.get_member_count }}{% else %}{{ community.get_member_count }}{% endif %} | 
-                        Location: {{ community.get_location }}
-                    </p>
-                </div>
-                <div><p class="dashcard-description description-sm">
-                        {% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}
-                </p></div>
-            </div>  
+            <div>
+                <p class="dashcard-subheader">
+                    Community | Members: {% if community.get_member_count < 10 %}0{{ community.get_member_count }}{% else %}{{ community.get_member_count }}{% endif %} | Location: {{ community.get_location }}
+                </p>
+            </div>
+            <div>
+                <p class="dashcard-description description-sm">
+                    {% if community.description %}{{ community.description }}{% else %}No description provided.{% endif %}
+                </p>
+            </div>
         </div>
 
-        <div class="dashcard-btn-container">
-            <div class="flex-this gap-half">
-                {% if '/registry/' in request.path %}
-                    <div> 
-                        <a 
+        <!-- Buttons -->
+        <div class="dashcard-btn-container ml-auto">
+            {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
+                <!-- View Public Page -->
+                <div>
+                    <a
+                        class="primary-btn action-btn"
+                        href="{% url 'public-community' community.id %}"
+                    >
+                        View public page
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if '/dashboard/' in request.path %}
+                <!-- View Account -->
+                <div class="mr-16">
+                    {% if approved_label %}
+                        {% if request.user in community.get_collaborator or request.user == community.community_creator %}
+                            <a
+                                class="primary-btn action-btn"
+                                href="{% url 'community-projects' community.id %}"
+                            >
+                                View account
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a
                             class="primary-btn action-btn"
-                            href="{% url 'public-community' community.id %}" 
-                        >View public page</a>
-                    </div> 
-                {% endif %}
+                            href="{% url 'select-label' community.id %}"
+                        >
+                            View account
+                        </a>
+                    {% endif %}
+                </div>
 
-                {% if '/dashboard/' in request.path %}
-                    <div>                 
+                <!-- Notification -->
+                {% include 'snippets/notifications.html' with scope=community %}
 
-                        {% if approved_label %}
-                            {% if request.user in community.get_collaborator or request.user == community.community_creator %}
-                                <a class="primary-btn action-btn" href="{% url 'community-projects' community.id %}">View account</a>
-                            {% endif %}
-                        {% else %}
-                            <a class="primary-btn action-btn" href="{% url 'select-label' community.id %}">View account</a>
-                        {% endif %} 
-                    </div>
-
-                    <div class="ml-8 flex-this gap-half">
-                        <!-- Notification -->
-                        {% include 'snippets/notifications.html' with scope=community %}
-                        <!-- Settings -->
-                        {% if request.user == community.community_creator or request.user in community.get_admins %}
-                            <div>
-                                <a href="{% url 'update-community' community.id %}" class="round-btn-small darkteal-text primary-btn white-btn">
-                                    <i class="m-0 fa fa-cog" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        {% endif %}                        
+                {% if request.user == community.community_creator or request.user in community.get_admins %}
+                    <!-- Settings -->
+                    <div>
+                        <a
+                            href="{% url 'update-community' community.id %}"
+                            class="round-btn-small darkteal-text primary-btn white-btn"
+                        >
+                            <i class="m-0 fa fa-cog" aria-hidden="true"></i>
+                        </a>
                     </div>
                 {% endif %}
-            </div>
+            {% endif %}
+
+            {% if '/connections/' in request.path %}
+                <div class="ml-8">
+                    {% if service_provider%}
+                        <!-- Disconnect Button -->
+                        <button
+                            name="disconnectAccountbtn"
+                            data-name="{{ connected_community.community_name }}"
+                            data-id="{{ connected_community.id }}_community"
+                            class="primary-btn disconnect-btn"
+                        >
+                            Disconnect <i class="fa-solid fa-link-simple-slash"></i>
+                        </button>
+                    {% elif not service_provider %}
+                        <!-- Show More Button -->
+                        <span
+                            id="{{ connected_community.community_name }}"
+                            class="primary-btn white-btn"
+                            onclick="showMore(this)"
+                        >
+                            Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
+    {% if '/connections/' in request.path %}
+        {% if not service_provider %}
+            <!-- Expanded Info -->
+            <div id="expand-div-{{ connected_community.community_name }}" class="hide">
+                <div class="border-bottom-dash-teal">
+                    <p class="mb-0">
+                        <span class="bold">Account Contact Name</span> | {% firstof connected_community.community_creator.get_full_name connected_community.community_creator.get_full_name %}
+                        <span class="bold ml-8">Account Contact Email</span> | {{ connected_community.community_creator.email }}<br><br>
+                    </p>
+                </div>
+
+                <div>
+                    <h3> Projects</h3>
+                    {% connections_collaborative_projects account community as projects %}
+                    <table class="projects-table">
+                        <tr>
+                            <th><i class="fa-regular fa-line-columns"></i> Title</th>
+                            <th><i class="fa-light fa-user"></i> Creator</th>
+                            <th><i class="fa-light fa-calendar"></i> Last updated</th>
+                            <th>Visibility</th>
+                        </tr>
+
+                        {% for project in projects %}
+                            {% include 'projects/project-overview.html' %}
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 </div>

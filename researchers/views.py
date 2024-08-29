@@ -788,22 +788,44 @@ def unlink_project(request, pk, target_proj_uuid, proj_to_remove_uuid):
     ProjectActivity.objects.create(project=target_project, activity=f'Connection was removed between Project "{target_project}" and Project "{project_to_remove}" by {name}')
     return redirect('researcher-project-actions', researcher.id, target_project.unique_id)
 
-        
+
 @login_required(login_url='login')
 @get_researcher(pk_arg_name='pk')
 def connections(request, researcher):
-    institution_ids = researcher.contributing_researchers.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
+    researchers = Researcher.objects.none()
 
-    community_ids = researcher.contributing_researchers.exclude(communities__id=None).values_list('communities__id', flat=True)
-    communities = Community.objects.select_related('community_creator').filter(id__in=community_ids)
+    # Institution contributors
+    institution_ids = researcher.contributing_researchers.exclude(
+        institutions__id=None
+    ).values_list('institutions__id', flat=True)
+    institutions = (
+        Institution.objects.select_related('institution_creator')
+        .prefetch_related('admins', 'editors', 'viewers')
+        .filter(id__in=institution_ids)
+    )
 
-    project_ids = researcher.contributing_researchers.values_list('project__unique_id', flat=True)
-    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
+    # Community contributors
+    community_ids = researcher.contributing_researchers.exclude(
+        communities__id=None
+    ).values_list('communities__id', flat=True)
+    communities = (
+        Community.objects.select_related('community_creator')
+        .prefetch_related("admins", "editors", "viewers")
+        .filter(id__in=community_ids)
+    )
 
-    researchers = []
-    for c in contributors:
-        researchers = c.researchers.select_related('user').exclude(id=researcher.id)
+    # Researcher contributors
+    project_ids = researcher.contributing_researchers.values_list(
+        "project__unique_id", flat=True
+    )
+    contributors = ProjectContributors.objects.filter(
+        project__unique_id__in=project_ids
+    ).values_list("researchers__id", flat=True)
+    researchers = (
+        Researcher.objects.select_related("user")
+        .filter(id__in=contributors)
+        .exclude(id=researcher.id)
+    )
 
     context = {
         'researcher': researcher,
@@ -853,6 +875,21 @@ def connect_service_provider(request, researcher):
                 )
                 sp_connection.researchers.remove(researcher)
                 sp_connection.save()
+
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                researcher.show_sp_connection = False
+                researcher.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                researcher.show_sp_connection = True
+                researcher.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
 
             return redirect("researcher-connect-service-provider", researcher.id)
 

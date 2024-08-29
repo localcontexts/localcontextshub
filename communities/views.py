@@ -1277,19 +1277,39 @@ def apply_labels(request, pk, project_uuid):
 def connections(request, pk):
     community = get_community(pk)
     member_role = check_member_role(request.user, community)
-
     communities = Community.objects.none()
 
-    institution_ids = community.contributing_communities.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-    researcher_ids = community.contributing_communities.exclude(researchers__id=None).values_list('researchers__id', flat=True)
+    # Institution contributors
+    institution_ids = community.contributing_communities.exclude(
+        institutions__id=None
+    ).values_list('institutions__id', flat=True)
+    institutions = (
+        Institution.objects.select_related('institution_creator')
+        .prefetch_related('admins', 'editors', 'viewers')
+        .filter(id__in=institution_ids)
+    )
 
-    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
-    researchers = Researcher.objects.select_related('user').filter(id__in=researcher_ids)
+    # Researcher contributors
+    researcher_ids = community.contributing_communities.exclude(
+        researchers__id=None
+    ).values_list("researchers__id", flat=True)
+    researchers = Researcher.objects.select_related("user").filter(
+        id__in=researcher_ids
+    )
 
-    project_ids = community.contributing_communities.values_list('project__unique_id', flat=True)
-    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
-    for c in contributors:
-        communities = c.communities.select_related('community_creator').prefetch_related('admins', 'editors', 'viewers').exclude(id=community.id)
+    # Community contributors
+    project_ids = community.contributing_communities.values_list(
+        "project__unique_id", flat=True
+    )
+    contributors = ProjectContributors.objects.filter(
+        project__unique_id__in=project_ids
+    ).values_list("communities__id", flat=True)
+    communities = (
+        Community.objects.select_related("community_creator")
+        .prefetch_related("admins", "editors", "viewers")
+        .filter(id__in=contributors)
+        .exclude(id=community.id)
+    )
 
     context = {
         'member_role': member_role,
@@ -1341,6 +1361,21 @@ def connect_service_provider(request, pk):
                 )
                 sp_connection.communities.remove(community)
                 sp_connection.save()
+
+            # Set Show/Hide account in Service Provider connections
+            elif request.POST.get('show_sp_connection') == None:
+                community.show_sp_connection = False
+                community.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
+
+            elif request.POST.get('show_sp_connection') == 'on':
+                community.show_sp_connection = True
+                community.save()
+                messages.add_message(
+                    request, messages.SUCCESS, 'Your preferences have been updated!'
+                )
 
             return redirect("community-connect-service-provider", community.id)
 

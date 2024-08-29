@@ -5,6 +5,7 @@ from accounts.utils import get_users_name
 from communities.models import Community, JoinRequest
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from accounts.models import ServiceProviderConnections
 
 register = template.Library()
@@ -79,6 +80,8 @@ def is_user_member(account, user):
         return account.is_user_in_institution(user)
     if isinstance(account, Community):
         return account.is_user_in_community(user)
+    if isinstance(account, ServiceProvider):
+        return account.is_user_in_service_provider(user)
 
 
 @register.simple_tag
