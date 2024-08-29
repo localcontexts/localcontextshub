@@ -36,7 +36,7 @@ from helpers.emails import (
 from .forms import (
     RegistrationForm, ResendEmailActivationForm, CustomPasswordResetForm, UserCreateProfileForm,
     ProfileCreationForm, UserUpdateForm, ProfileUpdateForm, SignUpInvitationForm,
-    SubscriptionForm,
+    SubscriptionForm, BundleTypeForm
 )
 
 from .utils import (
@@ -912,6 +912,7 @@ def subscription(request, pk, account_type, related=None):
 
     renew = False
 
+    form =  BundleTypeForm(request.POST or None)
     if account_type == 'institution' and (
         request.user in get_institution(pk).get_admins()
         or
@@ -937,6 +938,7 @@ def subscription(request, pk, account_type, related=None):
             else None,
             "renew": renew,
             "member_role": member_role,
+            "form": form,
         }
     if account_type == 'researcher':
         researcher = Researcher.objects.get(id=pk)

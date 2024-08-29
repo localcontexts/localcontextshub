@@ -2470,3 +2470,30 @@ if (window.location.href.includes('subscription-form')) {
     })
 });
 };
+
+if (window.location.href.includes('/subscription/')) {
+
+    function openAddModalView() {
+        const addView = document.getElementById('bundleModal')
+
+        addView.classList.replace('hide', 'show')
+
+        event.stopPropagation()
+    }
+
+    function closeBundleModal(e) {
+        const modalContent = document.getElementById('bundleModalContent')
+        const crossButton = document.getElementById('close-model-button')
+        const elementClicked = e.target;
+
+        const elementClickedIsChild = modalContent.contains(elementClicked);
+        const elementClickedIsCrossButton = elementClicked === crossButton;
+
+        const elementClickedIsNotChildOrCrossButton = !elementClickedIsChild || elementClickedIsCrossButton;
+
+        if (elementClickedIsNotChildOrCrossButton) {
+            const modal = document.getElementById('bundleModal');
+            modal.classList.replace('show', 'hide');
+        }
+    }
+}

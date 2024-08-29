@@ -48,6 +48,54 @@
       <div class="vl"><h5>Notices Remaining</h5> {% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</div>
       <div class="vl"><h5>API Keys Remaining</h5> <p>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</p></div>
     </div>
+    <div class="flex-this space-between">
+      <div><h4 class="mb-0">Edit Subscription</h4></div>
+    </div>
+    <p class="mt-0"><small>Manage and edit your subscription plan</small></p>
+    <div class="flex-this">
+      <div>
+          <button type="submit" class="primary-btn action-btn" name="generatebtn" onclick="openAddModalView()">Update Subscription</button>
+      </div>        
+      <div class="ml-2p">
+        <button type="submit" class="primary-btn white-btn" name="generatebtn">Cancel Subscription</button>
+      </div>                
+    </div>
     <p>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></p>
   {% endif %}
+
+
+
+<!-- Bundle Model -->
+
+<div id="bundleModal" class="modal hide" onClick="closeBundleModal()">
+  <span id="bundleModalContent">
+      <!-- ADD MEMBER MODAL VIEW -->
+      <div id="addMemberModalView" class="modal-defaults add-member-modal flex-this column w-100">
+        <div class="flex-this space-between">
+          <div>
+              <h2 class="mt-0">Bundles</h2>
+                  <p class="mb-2p">
+                    Add Bundles to increase your resources.
+                  </p>
+          </div>
+
+          <div >
+              <div class="close-modal-btn" id='close-model-button' onClick="closeBundleModal(event)"><i class="fa-regular fa-xmark fa-xl"></i></div>
+          </div>
+      </div>  
+        
+        <div class="w-100 flex-this column">
+              <form id="addBundleForm" method="POST" action="">
+                  {% csrf_token %}
+
+                  {{ form.as_p }} 
+                  <button type="submit" class="primary-btn action-btn">Submit</button>
+
+              </form>
+          </div>
+
+      </div>
+  </span>
+</div>
+
 {% endblock %}

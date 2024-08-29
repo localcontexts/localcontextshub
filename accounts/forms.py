@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from helpers.emails import send_password_reset_email
 
-from .models import Profile, SignUpInvitation
+from .models import Profile, SignUpInvitation, BundleType
 
 
 class RegistrationForm(UserCreationForm):
@@ -281,3 +281,29 @@ class SubscriptionForm(forms.Form):
         if not inquiry_type:
             raise ValidationError("Please select an inquiry type.")
         return inquiry_type
+
+
+class BundleTypeForm(forms.ModelForm):
+    bundle_type = forms.MultipleChoiceField(
+        choices=BundleType.Bundle_Types,
+        widget=forms.CheckboxSelectMultiple,
+        label="Bundle Types",
+    )
+
+    class Meta:
+        model = BundleType
+        fields = ['bundle_type']
+
+    def __init__(self, *args, **kwargs):
+        super(BundleTypeForm, self).__init__(*args, **kwargs)
+
+        custom_labels = {
+            'user_bundle': 'User Bundle  5 @ US$1500',
+            'api_bundle': 'API Bundle  3 @ US$1500',
+            'project_bundle': 'Project Bundle  10 @ US$1500',
+            'notification_bundle': 'Notification Bundle  10 @ US$1500',
+        }
+
+        self.fields['bundle_type'].choices = [
+            (value, custom_labels.get(value, label)) for value, label in self.fields['bundle_type'].choices
+        ]
