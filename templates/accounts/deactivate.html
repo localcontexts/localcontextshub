@@ -6,7 +6,7 @@
     <div class="flex-this column w-80   mr-1p">
         <div><h3>Deactivate Your Profile</h3></div>
 
-        <div class="w-70 mb-2p">
+        <div class="w-90 mb-2p">
             <p class="no-top-margin">
                 {% if user_role == 'is_creator' %}
                     It looks like you are the main administrator of an account.
@@ -25,29 +25,26 @@
 
             {% if researcher %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-70"><h3>{{ users_name }} | Researcher</h3></div>
-                    <small class="block">You're the creator of this account</small>
+                    <div class="w-50"><h3>{{ users_name }} | Researcher</h3></div>
+                    <ul>
+                        <li>You're the creator of this account</li>
+                    </ul>
                 </div>
             {% endif %}
 
             {% for community in affiliations.communities.all %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-70"><h3>{{ community.community_name }} | Community</h3></div>
+                    <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
                     <ul>
-                        {% user_created_project_in_community profile.user.id community.id as created_a_project %}
                         {% if profile.user.id == community.community_creator.id %}
-                            {% if created_a_project %}
-                                <li>You're the creator of this account.</li>
-                                <li>You've created projects for account.</li>
-                            {% else %}
-                                <li>You're the creator of this account.</li>
-                            {% endif %}
+                            <li>You're the creator of this account.</li>
                         {% else %}
-                            {% if created_a_project %}
-                                <li>You've created projects for account.</li>
-                            {% else %}
-                                <li>You will be removed from this account.</li>
-                            {% endif %}
+                            <li>You will be removed from this account.</li>
+                        {% endif %}
+
+                        {% user_created_project_in_community profile.user.id community.id as created_a_project %}
+                        {% if created_a_project %}
+                            <li>You've created projects for account.</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -55,14 +52,19 @@
 
             {% for institution in affiliations.institutions.all %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-70"><h3>{{ institution.institution_name }} | Institution</h3></div>
-                    <small class="block">
-                        {% if profile.user.id == community.community_creator.id %}
-                            You're the creator of this account
+                    <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                    <ul>
+                        {% if profile.user.id == institution.institution_creator.id %}
+                            <li>You're the creator of this account.</li>
                         {% else %}
-                            You will be removed from this accounts
+                            <li>You will be removed from this account.</li>
                         {% endif %}
-                    </small>
+
+                        {% user_created_project_in_institution profile.user.id institution.id as created_a_project %}
+                        {% if created_a_project %}
+                            <li>You've created projects for account.</li>
+                        {% endif %}
+                    </ul>
                 </div>
             {% endfor %}
 
