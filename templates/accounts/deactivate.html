@@ -1,4 +1,4 @@
-{% extends 'settings-base.html' %}{% load static %}
+{% extends 'settings-base.html' %}{% load static %} {% load custom_acct_tags %}
 
 {% block settings %}
 <form id="deactivateUserForm" method="POST">
@@ -33,13 +33,23 @@
             {% for community in affiliations.communities.all %}
                 <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                     <div class="w-70"><h3>{{ community.community_name }} | Community</h3></div>
-                    <small class="block">
+                    <ul>
+                        {% user_created_project_in_community profile.user.id community.id as created_a_project %}
                         {% if profile.user.id == community.community_creator.id %}
-                            You're the creator of this account
+                            {% if created_a_project %}
+                                <li>You're the creator of this account.</li>
+                                <li>You've created projects for account.</li>
+                            {% else %}
+                                <li>You're the creator of this account.</li>
+                            {% endif %}
                         {% else %}
-                            You will be removed from this account
+                            {% if created_a_project %}
+                                <li>You've created projects for account.</li>
+                            {% else %}
+                                <li>You will be removed from this account.</li>
+                            {% endif %}
                         {% endif %}
-                    </small>
+                    </ul>
                 </div>
             {% endfor %}
 
