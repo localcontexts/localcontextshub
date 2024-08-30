@@ -195,7 +195,7 @@
                     results.forEach(result => {
                     html += `
                         <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
-                        ${result.post_title} (territories)</br />
+                        ${result.post_title}</br />
                         </div>
                     `
                     })
@@ -231,7 +231,7 @@
             const slug = event.target.dataset.slug
             const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
             document.querySelector('#nld-link').setAttribute('href', url)
-            document.querySelector('#selected-title').innerHTML = `<div class="selected-title-ellipsis">${title} (territories)</div>`
+            document.querySelector('#selected-title').innerHTML = `<div class="selected-title-ellipsis">${title}</div>`
 
             // set selected data for selection
             document.querySelector('#selected-title').setAttribute('data-slug', slug)
