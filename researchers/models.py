@@ -24,6 +24,8 @@ class Researcher(models.Model):
     date_connected = models.DateTimeField(auto_now_add=True, null=True)
     is_subscribed = models.BooleanField(default=False)
 
+    show_sp_connection = models.BooleanField(default=True)
+
     def get_projects(self):
         return  self.researcher_created_project.filter(researcher=self).exists()
 
