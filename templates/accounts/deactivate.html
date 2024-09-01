@@ -8,8 +8,8 @@
 
         <div class="w-90 mb-2p">
             <p class="no-top-margin">
-                {% if user_role == 'is_creator' %}
-                    It looks like you are the main administrator of an account.
+                {% if user_role == 'is_creator_or_project_creator' %}
+                    It looks like you are either the main administrator of an account or a project creator.
                     Please email us at
                     <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a>
                     for deactivation assistance.
@@ -22,60 +22,81 @@
                     Your profile and its associated data will be deleted 30 days after deactivation.
                 {% endif %}
             </p>
+            {% if user_role == 'is_creator_or_project_creator' %}
+                {% if researcher %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ users_name }} | Researcher</h3></div>
+                        <ul>
+                            <li>You're the creator of this account</li>
+                            {% user_created_project_as_researcher profile.user.id researcher.id as created_a_project %}
+                            {% if created_a_project %}
+                                <li>You've created projects for account.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-            {% if researcher %}
-                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-50"><h3>{{ users_name }} | Researcher</h3></div>
-                    <ul>
-                        <li>You're the creator of this account</li>
-                        {% user_created_project_as_researcher profile.user.id researcher.id as created_a_project %}
-                        {% if created_a_project %}
-                            <li>You've created projects for account.</li>
-                        {% endif %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            {% for community in affiliations.communities.all %}
-                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
-                    <ul>
-                        {% if profile.user.id == community.community_creator.id %}
-                            <li>You're the creator of this account.</li>
-                        {% else %}
-                            <li>You will be removed from this account.</li>
-                        {% endif %}
-
+                {% for community in affiliations.communities.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                         {% user_created_project_in_community profile.user.id community.id as created_a_project %}
-                        {% if created_a_project %}
-                            <li>You've created projects for account.</li>
-                        {% endif %}
-                    </ul>
-                </div>
-            {% endfor %}
+                        {% if profile.user.id == community.community_creator.id or created_a_project%}
+                            <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
+                            <ul>
+                                {% if profile.user.id == community.community_creator.id %}
+                                    <li>You're the creator of this account.</li>
+                                {% endif %}
 
-            {% for institution in affiliations.institutions.all %}
-                <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
-                    <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
-                    <ul>
-                        {% if profile.user.id == institution.institution_creator.id %}
-                            <li>You're the creator of this account.</li>
-                        {% else %}
-                            <li>You will be removed from this account.</li>
-                        {% endif %}
 
+                                {% if created_a_project %}
+                                    <li>You've created projects for account.</li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% for institution in affiliations.institutions.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                         {% user_created_project_in_institution profile.user.id institution.id as created_a_project %}
-                        {% if created_a_project %}
-                            <li>You've created projects for account.</li>
+                        {% if profile.user.id == institution.institution_creator.id or created_a_project%}
+                            <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                            <ul>
+                                {% if profile.user.id == institution.institution_creator.id %}
+                                    <li>You're the creator of this account.</li>
+                                {% endif %}
+
+
+                                {% if created_a_project %}
+                                    <li>You've created projects for account.</li>
+                                {% endif %}
+                            </ul>
                         {% endif %}
-                    </ul>
-                </div>
-            {% endfor %}
+                    </div>
+                {% endfor %}
+            {% elif user_role == 'is_member' %}
+                {% for community in affiliations.communities.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
+                        <ul>
+                            <li>You will be removed from this account.</li>
+                        </ul>
+                    </div>
+                {% endfor %}
+
+                {% for institution in affiliations.institutions.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                        <ul>
+                            <li>You will be removed from this account.</li>
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
             <br>
             {% csrf_token %}
             <button id="submitDeactivation" class="primary-btn white-btn
-                {% if user_role != 'default' %}disabled-btn pointer-event-none{% endif %}">
+                {% if user_role == 'is_creator_or_project_creator' %}disabled-btn pointer-event-none{% endif %}">
                 Deactivate Profile
             </button>
         </div>
