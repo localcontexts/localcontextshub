@@ -391,15 +391,16 @@ def deactivate_user(request):
     user_role = determine_user_role(user=request.user)
     profile = Profile.objects.select_related('user').get(user=request.user)
     if request.method == "POST":
-        user = request.user
-        user.is_active = False
-        user.save()
-        auth.logout(request)
-        messages.add_message(
-            request, messages.INFO, 'Your account has been deactivated. '
-            'If this was a mistake please contact support@localcontexts.org.'
-        )
-        return redirect('login')
+        if user_role != 'is_creator_or_project_creator':
+            user = request.user
+            user.is_active = False
+            user.save()
+            auth.logout(request)
+            messages.add_message(
+                request, messages.INFO, 'Your account has been deactivated. '
+                'If this was a mistake please contact support@localcontexts.org.'
+            )
+            return redirect('login')
 
     affiliations = UserAffiliation.objects.prefetch_related(
         'communities', 'institutions', 'communities__community_creator',
