@@ -26,7 +26,7 @@ from maintenance_mode.decorators import force_maintenance_mode_off
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 from communities.models import Community, InviteMember
-from helpers.views import determine_user_role
+from helpers.views import determine_user_role, remove_user_from_affiliated_communities_and_institutions
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
@@ -390,15 +390,22 @@ def change_password(request):
 def deactivate_user(request):
     user_role = determine_user_role(user=request.user)
     profile = Profile.objects.select_related('user').get(user=request.user)
-    affiliations = UserAffiliation.objects.prefetch_related(
-        'communities', 'institutions', 'communities__community_creator',
-        'institutions__institution_creator'
-    ).get(user=request.user)
 
     if request.method == "POST":
         if user_role != 'is_creator_or_project_creator':
-            affiliations.delete()
             user = request.user
+
+            # get affiliations between user-community and user-institution
+            member_affiliations = UserAffiliation.objects.prefetch_related(
+                'communities', 'institutions',
+            ).get(user=user)
+
+            # remove user from affiliated accounts
+            remove_user_from_affiliated_communities_and_institutions(user, member_affiliations)
+
+            # remove user-community and user-institution affiliations
+            member_affiliations.delete()
+
             user.is_active = False
             user.save()
             auth.logout(request)
@@ -408,6 +415,10 @@ def deactivate_user(request):
             )
             return redirect('login')
 
+    creator_member_affiliations = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions', 'communities__community_creator',
+        'institutions__institution_creator'
+    ).get(user=request.user)
     researcher = Researcher.objects.none()
     users_name = get_users_name(request.user)
     if Researcher.objects.filter(user=request.user).exists():
@@ -416,7 +427,7 @@ def deactivate_user(request):
     return render(request, 'accounts/deactivate.html', {
         'profile': profile,
         'user_role': user_role,
-        'affiliations': affiliations,
+        'affiliations': creator_member_affiliations,
         'researcher': researcher,
         'users_name': users_name
     })
