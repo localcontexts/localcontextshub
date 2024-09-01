@@ -26,7 +26,10 @@ from maintenance_mode.decorators import force_maintenance_mode_off
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 from communities.models import Community, InviteMember
-from helpers.views import determine_user_role, remove_user_from_affiliated_communities_and_institutions
+from helpers.views import (
+    determine_user_role,
+    remove_user_from_affiliated_communities_and_institutions
+)
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
