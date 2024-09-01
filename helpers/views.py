@@ -1,4 +1,5 @@
 import json
+from typing import Union
 
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
@@ -138,7 +139,25 @@ def determine_user_role(user: User) -> str:
 
     return 'default'
 
-  
+
+def remove_user_from_account(user: User, account: Union[Community, Institution]) -> None:
+    """Removes user from account
+
+    Args:
+        user: The user object.
+        account: A community or institution account.
+
+    Returns:
+        None
+    """
+    if user in account.admins.all():
+        account.admins.remove(user)
+    if user in account.editors.all():
+        account.editors.remove(user)
+    if user in account.viewers.all():
+        account.viewers.remove(user)
+
+
 @xframe_options_sameorigin
 def project_boundary_view(request, project_id):
     project = Project.objects.filter(id=project_id).first()
