@@ -390,8 +390,14 @@ def change_password(request):
 def deactivate_user(request):
     user_role = determine_user_role(user=request.user)
     profile = Profile.objects.select_related('user').get(user=request.user)
+    affiliations = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions', 'communities__community_creator',
+        'institutions__institution_creator'
+    ).get(user=request.user)
+
     if request.method == "POST":
         if user_role != 'is_creator_or_project_creator':
+            affiliations.delete()
             user = request.user
             user.is_active = False
             user.save()
@@ -402,10 +408,6 @@ def deactivate_user(request):
             )
             return redirect('login')
 
-    affiliations = UserAffiliation.objects.prefetch_related(
-        'communities', 'institutions', 'communities__community_creator',
-        'institutions__institution_creator'
-    ).get(user=request.user)
     researcher = Researcher.objects.none()
     users_name = get_users_name(request.user)
     if Researcher.objects.filter(user=request.user).exists():
