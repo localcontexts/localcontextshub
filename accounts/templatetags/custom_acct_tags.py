@@ -83,14 +83,23 @@ def is_user_member(account, user):
 
 @register.simple_tag
 def user_created_project_in_community(user_id: int, community_id: int) -> bool:
-    return ProjectCreator.objects.filter(community=community_id, project__project_creator=user_id).exists()
+    return ProjectCreator.objects.filter(
+        community=community_id,
+        project__project_creator=user_id
+    ).exists()
 
 
 @register.simple_tag
 def user_created_project_in_institution(user_id: int, institution_id: int) -> bool:
-    return ProjectCreator.objects.filter(institution=institution_id, project__project_creator=user_id).exists()
+    return ProjectCreator.objects.filter(
+        institution=institution_id,
+        project__project_creator=user_id
+    ).exists()
 
 
 @register.simple_tag
 def user_created_project_as_researcher(user_id: int, researcher_id: int) -> bool:
-    return ProjectCreator.objects.filter(researcher=researcher_id, project__project_creator=user_id).exists()
+    return ProjectCreator.objects.filter(
+        researcher=researcher_id,
+        project__project_creator=user_id
+    ).exists()
