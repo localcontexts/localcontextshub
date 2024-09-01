@@ -19,9 +19,9 @@ class TestDetermineUserRole(TransactionTestCase):
         CommunityFactory(community_creator=community_creator_user)
         InstitutionFactory(institution_creator=institution_creator_user)
 
-        assert determine_user_role(user=researcher_creator_user) == 'is_creator'
-        assert determine_user_role(user=community_creator_user) == 'is_creator'
-        assert determine_user_role(user=institution_creator_user) == 'is_creator'
+        assert determine_user_role(user=researcher_creator_user) == 'is_creator_or_project_creator'
+        assert determine_user_role(user=community_creator_user) == 'is_creator_or_project_creator'
+        assert determine_user_role(user=institution_creator_user) == 'is_creator_or_project_creator'
 
     def test_community_member_user(self):
         # create community member users
