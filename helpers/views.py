@@ -10,7 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
-from projects.models import Project
+from projects.models import Project, ProjectCreator
 from .downloads import download_otc_notice, download_cc_notices
 import requests
 from .models import NoticeDownloadTracker
@@ -118,21 +118,22 @@ def boundary_view(request):
 
         
 def determine_user_role(user: User) -> str:
-    created_accounts_count = Researcher.objects.filter(user=user).count() + \
-                             Community.objects.filter(community_creator=user).count() + \
-                             Institution.objects.filter(institution_creator=user).count()
+    is_account_creator = Researcher.objects.filter(user=user).exists() or \
+                             Community.objects.filter(community_creator=user).exists() or \
+                             Institution.objects.filter(institution_creator=user).exists()
 
-    if created_accounts_count > 0:
-        return 'is_creator'
+    is_project_creator = ProjectCreator.objects.filter(project__project_creator__id=user.id).exists()
+    if is_account_creator or is_project_creator:
+        return 'is_creator_or_project_creator'
 
-    member_accounts_count = Community.objects.filter(admins__id__contains=user.id).count() + \
-                            Community.objects.filter(editors__id__contains=user.id).count() + \
-                            Community.objects.filter(viewers__id__contains=user.id).count() + \
-                            Institution.objects.filter(admins__id__contains=user.id).count() + \
-                            Institution.objects.filter(editors__id__contains=user.id).count() + \
-                            Institution.objects.filter(viewers__id__contains=user.id).count()
+    is_member = Community.objects.filter(admins__id__contains=user.id).exists() or \
+                            Community.objects.filter(editors__id__contains=user.id).exists() or \
+                            Community.objects.filter(viewers__id__contains=user.id).exists() or \
+                            Institution.objects.filter(admins__id__contains=user.id).exists() or \
+                            Institution.objects.filter(editors__id__contains=user.id).exists() or \
+                            Institution.objects.filter(viewers__id__contains=user.id).exists()
 
-    if member_accounts_count > 0:
+    if is_member > 0:
         return 'is_member'
 
     return 'default'
