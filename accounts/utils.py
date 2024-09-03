@@ -178,9 +178,7 @@ def confirm_subscription(request, user, form, account_type):
         messages.add_message(
             request,
             messages.INFO,
-            "Thank you for your submission, our team will review and be in "
-            "contact with the subscription contract. You will be notified "
-            "once your subscription has been processed.",
+            "Thank you for your interest! Our team will review and be in contact soon."
         )
     else:
         messages.add_message(
