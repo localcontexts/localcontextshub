@@ -3,10 +3,10 @@
 {% block settings %}
 <form id="deactivateUserForm" method="POST">
 
-    <div class="flex-this column w-80   mr-1p">
+    <div class="flex-this column w-100 mr-1p">
         <div><h3>Deactivate Your Profile</h3></div>
 
-        <div class="w-90 mb-2p">
+        <div class="w-100 mb-2p">
             <p class="no-top-margin">
                 {% if user_role == 'is_creator_or_project_creator' %}
                     It looks like you are either the main administrator of an account or a project creator.
@@ -26,11 +26,11 @@
                 {% if researcher %}
                     <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                         <div class="w-50"><h3>{{ users_name }} | Researcher</h3></div>
-                        <ul>
-                            <li>You're the creator of this account</li>
+                        <ul class="ul-no-bullets">
+                            <li><small>You're the creator of this account.</small></li>
                             {% user_created_project_as_researcher profile.user.id researcher.id as created_a_project %}
                             {% if created_a_project %}
-                                <li>You've created projects for account.</li>
+                                <li><small>You've created Projects for account.</small></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -41,14 +41,14 @@
                         {% user_created_project_in_community profile.user.id community.id as created_a_project %}
                         {% if profile.user.id == community.community_creator.id or created_a_project%}
                             <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
-                            <ul>
+                            <ul class="ul-no-bullets">
                                 {% if profile.user.id == community.community_creator.id %}
-                                    <li>You're the creator of this account.</li>
+                                    <li><small>You're the creator of this account.</small></li>
                                 {% endif %}
 
 
                                 {% if created_a_project %}
-                                    <li>You've created projects for account.</li>
+                                    <li><small>You've created Projects for account.</small></li>
                                 {% endif %}
                             </ul>
                         {% endif %}
@@ -60,14 +60,14 @@
                         {% user_created_project_in_institution profile.user.id institution.id as created_a_project %}
                         {% if profile.user.id == institution.institution_creator.id or created_a_project%}
                             <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
-                            <ul>
+                            <ul class="ul-no-bullets">
                                 {% if profile.user.id == institution.institution_creator.id %}
-                                    <li>You're the creator of this account.</li>
+                                    <li><small>You're the creator of this account.</small></li>
                                 {% endif %}
 
 
                                 {% if created_a_project %}
-                                    <li>You've created projects for account.</li>
+                                    <li><small>You've created Projects for account.</small></li>
                                 {% endif %}
                             </ul>
                         {% endif %}
@@ -77,8 +77,8 @@
                 {% for community in affiliations.communities.all %}
                     <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                         <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
-                        <ul>
-                            <li>You will be removed from this account.</li>
+                        <ul class="ul-no-bullets">
+                            <li><small>You will be removed from this account.</small></li>
                         </ul>
                     </div>
                 {% endfor %}
@@ -86,8 +86,8 @@
                 {% for institution in affiliations.institutions.all %}
                     <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
                         <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
-                        <ul>
-                            <li>You will be removed from this account.</li>
+                        <ul class="ul-no-bullets">
+                            <li><small>You will be removed from this account.</small></li>
                         </ul>
                     </div>
                 {% endfor %}
