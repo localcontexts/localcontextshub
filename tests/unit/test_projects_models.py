@@ -52,6 +52,7 @@ class TestProject(TestCase):
         assert isinstance(string, str)
         assert string == self.project.title
 
+
 class TestProjectPerson(TestCase):
     @pytest.mark.django_db
     def setUp(self):
@@ -63,7 +64,7 @@ class TestProjectPerson(TestCase):
         assert isinstance(new_project_person.__str__(), str)
 
 
-class TestProjectnote(TestCase):
+class TestProjectNote(TestCase):
     @pytest.mark.django_db
     def setUp(self):
         self.project_note = ProjectNoteFactory()
@@ -136,7 +137,7 @@ class TestProjectCreator(TestCase):
         self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
 
     def test_which_account_type_created_community(self):
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
+        is_created_by = {'community': False, 'institution': False, 'researcher': False,}
 
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] is True
@@ -156,7 +157,7 @@ class TestProjectCreator(TestCase):
 
     def test_which_account_type_created_researcher(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
+        is_created_by = {'community': False, 'institution': False, 'researcher': False,}
 
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] is True
@@ -208,7 +209,7 @@ class TestProjectCreator(TestCase):
             )
 
 
-class TestProjectnote(TestCase):
+class TestProjectNote(TestCase):
     @pytest.mark.django_db
     def setUp(self):
         self.project_activity = ProjectActivityFactory()
