@@ -206,11 +206,15 @@
       </div>
 
     {% if not results and not items %}
-        <div class="w-100 center-text mt-16 mb-16" style="margin-top: 100px;">
-            <h2>There are no Projects yet</h2>
-            <h3>Let's create a Project!</h3>
-            <p>Click the button above to start.</p>
-        </div>  
+        <div class="dashcard w-100 center-text mt-16 mb-16">
+            <p class="center-text">
+                <strong>There are no Projects yet.</strong>
+                <br>
+                <small>
+                    Let's create a Project! Click the button above to start.
+                </small>
+            </p>
+        </div>
     {% endif %}
 
     {% include 'snippets/pagination.html' %}
