@@ -139,8 +139,8 @@ class TestProjectCreator(TestCase):
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
 
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['community'] == True
+        assert is_created_by['community'] is True
+        is_created_by['community'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
 
@@ -149,8 +149,8 @@ class TestProjectCreator(TestCase):
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
 
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['institution'] == True
+        assert is_created_by['community'] is True
+        is_created_by['institution'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
 
@@ -159,8 +159,8 @@ class TestProjectCreator(TestCase):
         is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
 
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['researcher'] == True
+        assert is_created_by['community'] is True
+        is_created_by['researcher'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
         
