@@ -83,9 +83,7 @@ def test_is_user_contributor():
     # Checking if a ProjectContributors instance exists for the project
     existing_contributor = ProjectContributors.objects.filter(project=project).first()
 
-    if existing_contributor:
-        pass
-    else:
+    if not existing_contributor:
         ProjectContributors.objects.create(project=project)
 
     project_contributors = ProjectContributors.objects.create()
