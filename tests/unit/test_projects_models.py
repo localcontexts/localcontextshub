@@ -130,21 +130,15 @@ class TestProjectCreator(TestCase):
 
     def test_which_account_type_created_institution(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] is True
-        is_created_by['institution'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
 
     def test_which_account_type_created_researcher(self):
         # Set expected account type
-        is_created_by = {'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] is True
-        is_created_by['researcher'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
         
