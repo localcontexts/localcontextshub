@@ -123,11 +123,8 @@ class TestProjectCreator(TestCase):
         self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
 
     def test_which_account_type_created_community(self):
-        is_created_by = {'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
         assert is_created_by['community'] is True
-        is_created_by['community'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
         assert is_user_in_account is False
 
