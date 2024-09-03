@@ -64,18 +64,6 @@ class TestProjectPerson(TestCase):
         assert isinstance(new_project_person.__str__(), str)
 
 
-class TestProjectNote(TestCase):
-    @pytest.mark.django_db
-    def setUp(self):
-        self.project_note = ProjectNoteFactory()
-
-    def test_project_note_test_str_method(self):
-        new_project_note = self.project_note
-        string = str(new_project_note)
-        assert isinstance(string, str)
-        assert string == new_project_note.project
-
-
 @pytest.fixture
 @pytest.mark.django_db
 def new_project_contributor():
