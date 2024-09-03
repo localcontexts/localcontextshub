@@ -144,7 +144,6 @@ class TestProjectCreator(TestCase):
         
     def test_project_creator_str_method(self):
         project_creator = self.project_creator
-        string = project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
 
     def test_user_of_unconfirmed_account_can_see_project(self):
@@ -193,5 +192,4 @@ class TestProjectNote(TestCase):
 
     def test_project_activity_str_method(self):
         new_project_activity = self.project_activity
-        string = new_project_activity.__str__()
         assert isinstance(new_project_activity.__str__(), str)
