@@ -84,9 +84,9 @@ def test_is_user_contributor():
     existing_contributor = ProjectContributors.objects.filter(project=project).first()
 
     if existing_contributor:
-        project_contributors = existing_contributor
+        pass
     else:
-        project_contributors = ProjectContributors.objects.create(project=project)
+        ProjectContributors.objects.create(project=project)
 
     project_contributors = ProjectContributors.objects.create()
     project_contributors.communities.add(community)
