@@ -540,8 +540,8 @@ def api_keys(request, pk):
                         prefix=prefix).update(encrypted_key=encrypted_key)
 
                 else:
-                    message = "Your account is not confirmed. Your " \
-                        "account must be confirmed to create an API Key."
+                    message = "Your account is not certified. Your account must be certified " \
+                        "to create API Keys."
                     messages.add_message(
                         request,
                         messages.ERROR,
