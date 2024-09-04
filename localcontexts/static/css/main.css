@@ -100,6 +100,41 @@ select {
 
 input[name=contributors] { width: 416px; }
 
+/* Toggles */
+.toggle {
+    appearance: none;
+    position: relative;
+    display: inline-block;
+    width: 55px;
+    height: 30px;
+    padding: 3px;
+    border: none;
+    cursor: pointer;
+    border-radius: 15.5px;
+    overflow: hidden;
+    background-color: #6E6E6E;
+    transition: background ease 0.3s;
+}
+
+.toggle::before {
+    content: "";
+    display: block;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 14.5px;
+    transition: transform cubic-bezier(0.7, 1.5, 0.7, 0.9) 0.3s;
+}
+
+.toggle:checked {
+    background-color:  #007385;
+}
+
+.toggle:checked:before {
+    transform: translateX(24px);
+}
+
 /* Project Searchbar */
 
 .searchbar-divider {
@@ -164,20 +199,20 @@ textarea {
     font-size: 15px;
 }
 
-input[type=checkbox] {
+input[type=checkbox]:not(.toggle) {
     border: 2px solid #A09D9D;
     border-radius: 5px;
     min-width: 20px;
     max-width: 20px;
 }
 
-input[type=checkbox]:checked {
+input[type=checkbox]:checked:not(.toggle) {
     background-color: #007385;
     border: 2px solid #007385;
     border-radius: 5px;
 }
 
-input:focus {
+input:focus:not(.toggle) {
     background: #F3FDFF;
     border: 1px solid #007385;
     box-shadow: 0px 0px 1px 0.5px #007385;

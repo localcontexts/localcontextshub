@@ -876,21 +876,6 @@ def connect_service_provider(request, researcher):
                 sp_connection.researchers.remove(researcher)
                 sp_connection.save()
 
-            # Set Show/Hide account in Service Provider connections
-            elif request.POST.get('show_sp_connection') == None:
-                researcher.show_sp_connection = False
-                researcher.save()
-                messages.add_message(
-                    request, messages.SUCCESS, 'Your preferences have been updated!'
-                )
-
-            elif request.POST.get('show_sp_connection') == 'on':
-                researcher.show_sp_connection = True
-                researcher.save()
-                messages.add_message(
-                    request, messages.SUCCESS, 'Your preferences have been updated!'
-                )
-
             return redirect("researcher-connect-service-provider", researcher.id)
 
         context = {
@@ -900,6 +885,37 @@ def connect_service_provider(request, researcher):
             'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
+
+@login_required(login_url="login")
+@get_researcher(pk_arg_name='pk')
+def account_preferences(request, researcher):
+    try:
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_sp_connection') == 'on':
+                researcher.show_sp_connection = True
+                researcher.save()
+
+            elif request.POST.get('show_sp_connection') == None:
+                researcher.show_sp_connection = False
+                researcher.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-researcher", researcher.id)
+
+        context = {
+            'researcher': researcher,
+            'user_can_view': True,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
+
     except:
         raise Http404()
 

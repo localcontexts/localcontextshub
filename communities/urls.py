@@ -17,6 +17,7 @@ urlpatterns = [
 
     # Settings
     path('update/<str:pk>/', views.update_community, name="update-community"),
+    path('preferences/<str:pk>/', views.account_preferences, name="preferences-community"),
     path('reset-community-boundary/<str:pk>/', views.reset_community_boundary, name="reset-community-boundary"),
     path('update-community-boundary/<str:pk>/', views.update_community_boundary, name="update-community-boundary"),
     path('update-community-boundary-data/<str:pk>/',
