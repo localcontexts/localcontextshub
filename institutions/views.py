@@ -1352,13 +1352,10 @@ def delete_project(request, pk, project_uuid):
     institution = get_institution(pk)
     project = Project.objects.get(unique_id=project_uuid)
     subscription = Subscription.objects.get(institution=institution)
-    if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
-        for notification in ActionNotification.objects.filter(
-            reference_id=project.unique_id
-        ):
-            notification.delete()
 
+    delete_action_notification(project.unique_id)
     project.delete()
+
     if subscription.project_count >= 0:
         subscription.project_count +=1
         subscription.save()
@@ -1472,13 +1469,7 @@ def connect_service_provider(request, pk):
                     sp_connection.save()
 
                 # Delete instances of disconnect Notifications
-                if ActionNotification.objects.filter(
-                    reference_id=connection_reference_id
-                ).exists():
-                    for notification in ActionNotification.objects.filter(
-                        reference_id=connection_reference_id
-                    ):
-                        notification.delete()
+                delete_action_notification(connection_reference_id)
 
                 # Send notification of connection to Service Provider
                 target_org = sp_connection.service_provider
@@ -1498,13 +1489,7 @@ def connect_service_provider(request, pk):
                 sp_connection.save()
 
                 # Delete instances of the connection notification
-                if ActionNotification.objects.filter(
-                    reference_id=connection_reference_id
-                ).exists():
-                    for notification in ActionNotification.objects.filter(
-                        reference_id=connection_reference_id
-                    ):
-                        notification.delete()
+                delete_action_notification(connection_reference_id)
 
                 # Send notification of disconneciton to Service Provider
                 target_org = sp_connection.service_provider

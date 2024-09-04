@@ -11,7 +11,7 @@ from tklabels.models import TKLabel
 
 from .models import ActionNotification, UserNotification
 
-
+# ACTION NOTIFICATIONS
 def send_simple_action_notification(sender, target_org, title, notification_type, reference_id):
     target_type_mapping = {
         Community: 'community',
@@ -48,6 +48,12 @@ def send_action_notification_to_project_contribs(
             send_simple_action_notification(
                 None, recipient, title, 'Projects', project.unique_id
             )
+
+
+def delete_action_notification(reference_id):
+    notifications = ActionNotification.objects.filter(reference_id=reference_id)
+    for notification in notifications:
+        notification.delete()
 
 
 # MEMBER INVITES

@@ -12,7 +12,8 @@ from helpers.utils import (
     form_initiation, change_member_role
 )
 from notifications.utils import (
-    UserNotification, send_account_member_invite, send_simple_action_notification
+    UserNotification, send_account_member_invite, send_simple_action_notification,
+    delete_action_notification
 )
 from .utils import handle_service_provider_creation, get_service_provider
 
@@ -304,13 +305,7 @@ def connections(request, pk):
                 )
 
                 # Delete instances of the connection notification
-                if ActionNotification.objects.filter(
-                    reference_id=connection_reference_id
-                ).exists():
-                    for notification in ActionNotification.objects.filter(
-                        reference_id=connection_reference_id
-                    ):
-                        notification.delete()
+                delete_action_notification(connection_reference_id)
 
                 if account_type == "i":
                     sp_connection.institutions.remove(account_id)

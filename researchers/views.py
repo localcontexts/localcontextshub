@@ -10,7 +10,9 @@ from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
 from accounts.utils import get_users_name
-from notifications.utils import send_action_notification_to_project_contribs
+from notifications.utils import (
+    send_action_notification_to_project_contribs, delete_action_notification
+)
 
 from communities.models import Community
 from notifications.models import ActionNotification
@@ -762,13 +764,11 @@ def archive_project(request, researcher_id, project_uuid):
 @login_required(login_url='login')
 def delete_project(request, pk, project_uuid):
     project = Project.objects.get(unique_id=project_uuid)
-
     subscription = Subscription.objects.get(researcher=pk)
-    if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
-        for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
-            notification.delete()
-    
+
+    delete_action_notification(project.unique_id)
     project.delete()
+
     if subscription.project_count >= 0:
         subscription.project_count +=1
         subscription.save()
@@ -870,13 +870,7 @@ def connect_service_provider(request, researcher):
                     sp_connection.save()
 
                 # Delete instances of disconnect Notifications
-                if ActionNotification.objects.filter(
-                    reference_id=connection_reference_id
-                ).exists():
-                    for notification in ActionNotification.objects.filter(
-                        reference_id=connection_reference_id
-                    ):
-                        notification.delete()
+                delete_action_notification(connection_reference_id)
 
                 # Send notification of connection to Service Provider
                 target_org = sp_connection.service_provider
@@ -897,13 +891,7 @@ def connect_service_provider(request, researcher):
                 sp_connection.save()
 
                 # Delete instances of the connection notification
-                if ActionNotification.objects.filter(
-                    reference_id=connection_reference_id
-                ).exists():
-                    for notification in ActionNotification.objects.filter(
-                        reference_id=connection_reference_id
-                    ):
-                        notification.delete()
+                delete_action_notification(connection_reference_id)
 
                 # Send notification of disconneciton to Service Provider
                 target_org = sp_connection.service_provider
