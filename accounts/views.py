@@ -853,6 +853,8 @@ def subscription(request, pk, account_type, related=None):
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
         return redirect("dashboard")
 
+    renew = False
+
     if account_type == 'institution' and (
         request.user in get_institution(pk).get_admins()
         or
@@ -864,18 +866,17 @@ def subscription(request, pk, account_type, related=None):
             subscription = Subscription.objects.get(institution=institution)
         except Subscription.DoesNotExist:
             subscription = None
-        renew = (
-            subscription.end_date < timezone.now() if subscription is not None
-            else False
-        )
+        if subscription is not None:
+            if subscription.end_date and subscription.end_date < timezone.now():
+                renew = True
         context = {
             "institution": institution,
             "subscription": subscription,
             "start_date": subscription.start_date.strftime('%d %B %Y')
-            if subscription is not None
+            if subscription and subscription.start_date is not None
             else None,
             "end_date": subscription.end_date.strftime('%d %B %Y')
-            if subscription is not None
+            if subscription and subscription.end_date is not None
             else None,
             "renew": renew,
             "member_role": member_role,
@@ -886,18 +887,17 @@ def subscription(request, pk, account_type, related=None):
             subscription = Subscription.objects.filter(researcher=researcher).first()
         else:
             subscription = None
-        renew = (
-            subscription.end_date < timezone.now() if subscription is not None
-            else False
-        )
+        if subscription is not None:
+            if subscription.end_date and subscription.end_date < timezone.now():
+                renew = True
         context = {
             "researcher": researcher,
             "subscription": subscription,
             "start_date": subscription.start_date.strftime('%d %B %Y')
-            if subscription is not None
+            if subscription and subscription.start_date is not None
             else None,
             "end_date": subscription.end_date.strftime('%d %B %Y')
-            if subscription is not None
+            if subscription and subscription.end_date is not None
             else None,
             "renew": renew
         }
