@@ -15,7 +15,7 @@ def create_project_dependencies(sender, instance, created, **kwargs):
             ProjectCreator.objects.create(project=instance)
 
 @receiver(post_delete, sender=Project)
-def delete_action_notifications(sender, instance, *args, **kwargs):
+def delete_project_action_notifications(sender, instance, *args, **kwargs):
     if ActionNotification.objects.filter(reference_id=instance.unique_id).exists():
         for notification in ActionNotification.objects.filter(reference_id=instance.unique_id):
             notification.delete()

@@ -10,7 +10,9 @@ from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
 from accounts.utils import get_users_name
-from notifications.utils import send_action_notification_to_project_contribs
+from notifications.utils import (
+    send_action_notification_to_project_contribs, delete_action_notification
+)
 
 from communities.models import Community
 from notifications.models import ActionNotification
@@ -762,13 +764,11 @@ def archive_project(request, researcher_id, project_uuid):
 @login_required(login_url='login')
 def delete_project(request, pk, project_uuid):
     project = Project.objects.get(unique_id=project_uuid)
-
     subscription = Subscription.objects.get(researcher=pk)
-    if ActionNotification.objects.filter(reference_id=project.unique_id).exists():
-        for notification in ActionNotification.objects.filter(reference_id=project.unique_id):
-            notification.delete()
-    
+
+    delete_action_notification(project.unique_id)
     project.delete()
+
     if subscription.project_count >= 0:
         subscription.project_count +=1
         subscription.save()
@@ -850,6 +850,7 @@ def connect_service_provider(request, researcher):
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('connectServiceProvider')
+                connection_reference_id = f"{service_provider_id}:{researcher.id}_r"
 
                 if ServiceProviderConnections.objects.filter(
                         service_provider=service_provider_id).exists():
@@ -868,13 +869,37 @@ def connect_service_provider(request, researcher):
                     sp_connection.researchers.add(researcher)
                     sp_connection.save()
 
+                # Delete instances of disconnect Notifications
+                delete_action_notification(connection_reference_id)
+
+                # Send notification of connection to Service Provider
+                target_org = sp_connection.service_provider
+                name = get_users_name(request.user)
+                title = f"{name} has connected to {target_org.name}"
+                send_simple_action_notification(
+                    None, target_org, title, "Connections", connection_reference_id
+                )
+
             elif "disconnectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('disconnectServiceProvider')
+                connection_reference_id = f"{service_provider_id}:{researcher.id}_r"
+
                 sp_connection = ServiceProviderConnections.objects.get(
                     service_provider=service_provider_id
                 )
                 sp_connection.researchers.remove(researcher)
                 sp_connection.save()
+
+                # Delete instances of the connection notification
+                delete_action_notification(connection_reference_id)
+
+                # Send notification of disconneciton to Service Provider
+                target_org = sp_connection.service_provider
+                name = get_users_name(request.user)
+                title = f"{name} has been disconnected from {target_org.name}"
+                send_simple_action_notification(
+                    None, target_org, title, "Connections", connection_reference_id
+                )
 
             return redirect("researcher-connect-service-provider", researcher.id)
 
