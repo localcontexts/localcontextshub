@@ -1397,7 +1397,6 @@ def connect_service_provider(request, pk):
                 send_simple_action_notification(
                     None, target_org, title, "Connections", connection_reference_id
                 )
-
             return redirect("community-connect-service-provider", community.id)
 
         context = {
@@ -1409,6 +1408,41 @@ def connect_service_provider(request, pk):
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
     except:
         raise Http404()
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def account_preferences(request, pk):
+    try:
+        community = get_community(pk)
+        member_role = check_member_role(request.user, community)
+
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_sp_connection') == 'on':
+                community.show_sp_connection = True
+                community.save()
+
+            elif request.POST.get('show_sp_connection') == None:
+                community.show_sp_connection = False
+                community.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-community", community.id)
+
+        context = {
+            'member_role': member_role,
+            'community': community,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
+
+    except:
+        raise Http404()
+
 
 # show community Labels in a PDF
 @login_required(login_url='login')

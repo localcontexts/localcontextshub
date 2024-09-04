@@ -58,6 +58,22 @@
                     </div>
                 </a>
 
+                <!-- Account Preferences -->
+                <a href="{% if community %}{% url 'preferences-community' community.id %}{% endif %}{% if institution %}{% url 'preferences-institution' institution.id %}{% endif %}{% if researcher %}{% url 'preferences-researcher' researcher.id %}{% endif %}">
+                    <div
+                        class="flex-this side-nav-item {% if '/preferences/' in request.path %} selected {% else %} grey-text {% endif %}"
+                    >
+                        <div class="w-20 icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0">
+                                <strong>Account Preferences</strong><br>Manage your account settings
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
                 {% if community %}
                 <!-- Update Boundary -->
                     <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">

@@ -202,7 +202,7 @@
     margin-right: 2%;
 }
 
-input[type=checkbox] {
+input[type=checkbox]:not(.toggle) {
     transform: scale(1.5);
 }
 

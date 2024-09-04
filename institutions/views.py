@@ -1513,7 +1513,6 @@ def connect_service_provider(request, pk):
                 send_simple_action_notification(
                     None, target_org, title, "Connections", connection_reference_id
                 )
-
             return redirect("institution-connect-service-provider", institution.id)
 
         context = {
@@ -1523,6 +1522,39 @@ def connect_service_provider(request, pk):
             'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+
+    except:
+        raise Http404()
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def account_preferences(request, pk):
+    try:
+        institution = get_institution(pk)
+        member_role = check_member_role(request.user, institution)
+
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_sp_connection') == 'on':
+                institution.show_sp_connection = True
+                institution.save()
+
+            elif request.POST.get('show_sp_connection') == None:
+                institution.show_sp_connection = False
+                institution.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-institution", institution.id)
+
+        context = {
+            'member_role': member_role,
+            'institution': institution,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
 
     except:
         raise Http404()

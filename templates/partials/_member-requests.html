@@ -1,8 +1,8 @@
 <div class="content-card-v2 content-card-space">
     <div class="mb-16">
         <small class="bold">
-            <a 
-                class="darkteal-text" 
+            <a
+                class="darkteal-text"
                 {% if community %}
                     href="{% url 'members' community.id %}"
                 {% endif %}
@@ -12,7 +12,7 @@
                 {% if service_provider %}
                     href="{% url 'service-provider-members' service_provider.id %}"
                 {% endif %}
-            >Members</a> 
+            >Members</a>
             <span class="grey-text"> >> Member {% if not service_provider %}Requests{% elif service_provider %}Invites{% endif %}</span>
         </small>
     </div>
@@ -30,41 +30,41 @@
                 <div>
                     <small class="grey-text bold">Request Sent: {{ join_request.date_sent }}</small>
                 </div>
-                
+
                 {% if member_role == 'admin' %}
                     <div class="flex-this dash-btn-container flex-end">
                         <div class="mt-0 mr-8">
-                            <a 
-                                class="primary-btn white-btn" 
+                            <a
+                                class="primary-btn white-btn"
                                 {% if community %}
-                                    href="{% url 'delete-join-request' community.id join_request.id %}" 
+                                    href="{% url 'delete-join-request' community.id join_request.id %}"
                                 {% endif %}
                                 {% if institution %}
-                                    href="{% url 'institution-delete-join-request' institution.id join_request.id %}" 
+                                    href="{% url 'institution-delete-join-request' institution.id join_request.id %}"
                                 {% endif %}
                             >Delete Request</a>
                         </div>
                         <div><a id="{{join_request.id}}" onclick="acceptJoinRequestModal(this)" class="primary-btn action-btn">Accept Request</a></div>
-                    </div>  
+                    </div>
                 {% endif %}
-                
+
                 <div id="acceptJoinRequestModal_{{join_request.id}}" class="modal hide">
                     <div class="modal-defaults add-member-modal flex-this column w-100">
-                    
+
                         <div class="flex-this flex-end close-modal-btn">
                             <div id="closeModal{{join_request.id}}" class="mr-8 primary-btn white-btn">Close <i class="fa fa-times" aria-hidden="true"></i></div>
                         </div>
                         <div class="w-100">
-                
-                            <h2 class="mt-0 primary-black-text">Accept a join request</h2>  
+
+                            <h2 class="mt-0 primary-black-text">Accept a join request</h2>
                             <p>
                                 To accept this new member, please select their responsibility below.
                             </p>
-                
+
                             <div class="w-100 flex-this column">
                                 <form method="POST" action="">
                                     {% csrf_token %}
-                        
+
                                     <div>
                                         <label>Responsibility</label><br>
                                         <select name="selected_role" class="w-100">
@@ -74,15 +74,15 @@
                                             <option>Editor</option>
                                             {% endif %}
                                             <option>Viewer</option>
-                                        </select> 
+                                        </select>
                                     </div>
 
-                                    <input 
-                                        type="hidden" 
-                                        value="{{join_request.id}}" 
+                                    <input
+                                        type="hidden"
+                                        value="{{join_request.id}}"
                                         name="join_request_id"
                                     >
-                                
+
                                     <div class="flex-this flex-end mt-16">
                                         <button class="primary-btn action-btn">Accept Request</button>
                                     </div>
@@ -91,7 +91,7 @@
                             </div>
 
                         </div>
-                
+
                     </div>
                 </div>
 
@@ -135,7 +135,7 @@
                     <div>
                         <p>
                             <span class="bold">Email:</span><i> {{ join_request.user_from.email }}</i>
-                        </p>                    
+                        </p>
                     </div>
                 {% endif %}
 
@@ -146,7 +146,7 @@
                             {% if join_request.role == 'admin' %} Administrator {% endif %}
                             {% if join_request.role == 'editor' %} Editor {% endif %}
                             {% if join_request.role == 'viewer' %} Viewer {% endif %}
-                        </i>                    
+                        </i>
                     </div>
                 {% endif %}
 
@@ -154,7 +154,7 @@
                     <div>
                         <p>
                             <span class="bold">Message:</span><i> {{ join_request.message }}</i>
-                        </p>                    
+                        </p>
                     </div>
                 {% endif %}
 
@@ -171,13 +171,13 @@
                 <div>
                     <small class="grey-text bold">Request Sent: {{ invite.created }}</small>
                 </div>
-                
+
                 {% if member_role == 'admin' %}
                     <div class="flex-this dash-btn-container flex-end">
                         <div class="mt-0 mr-8">
                             <a class="primary-btn white-btn" href="{% url 'delete-member-invite' invite.id %}">Cancel Invite</a>
                         </div>
-                    </div>  
+                    </div>
                 {% endif %}
 
             </div>
@@ -218,7 +218,7 @@
                     <div>
                         <p>
                             <span class="bold">Email:</span><i> {{ invite.receiver.email }}</i>
-                        </p>                    
+                        </p>
                     </div>
                 {% endif %}
 
@@ -237,7 +237,7 @@
                                 {% if invite.role == 'admin' %} Administrator {% endif %}
                                 {% if invite.role == 'editor' %} Editor {% endif %}
                                 {% if invite.role == 'viewer' %} Viewer {% endif %}
-                            </i>  
+                            </i>
                         </p>
                     </div>
                 {% endif %}
@@ -246,7 +246,7 @@
                     <div>
                         <p>
                             <span class="bold">Message:</span><i> {{ invite.message }}</i>
-                        </p>                    
+                        </p>
                     </div>
                 {% endif %}
 
@@ -254,4 +254,22 @@
 
         </section>
     {% endfor %}
+{% endif %}
+
+{% if not join_requests or not member_invites %}
+    <div class="dashcard w-100 center-text mt-16 mb-16">
+        <p class="center-text">
+            <strong>
+                {% if service_provider %}
+                    No invitations pending.
+                {% else %}
+                    No requests or invitations pending.
+                {% endif %}
+            </strong>
+            <br>
+            <small>
+                To invite someone to join this account, click "Add a New Member" on the member tab.
+            </small>
+        </p>
+    </div>
 {% endif %}

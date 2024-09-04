@@ -14,6 +14,7 @@ urlpatterns = [
 
     # Settings
     path('update/<str:pk>', views.update_researcher, name="update-researcher"),
+    path('preferences/<str:pk>/', views.account_preferences, name="preferences-researcher"),
     path('api-key/<str:pk>/', views.api_keys, name="researcher-api-key"),
     path('connect-service-provider/<str:pk>/', views.connect_service_provider, name="researcher-connect-service-provider"),
 

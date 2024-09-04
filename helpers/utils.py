@@ -595,6 +595,7 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
     name = data.get('name')
     source = data.get('source')
     boundary_data = data.get('boundary')
+    should_update_coordinates = data.get('should_update_coordinates', True)
 
     if name:
         entity.name_of_boundary = name
@@ -604,8 +605,9 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
 
     boundary_coordinates = boundary_data if boundary_data else []
     if entity.boundary:
-        # update boundary when it exists
-        entity.boundary.coordinates = boundary_coordinates
+        if should_update_coordinates:
+            # update boundary when it exists and should be updated
+            entity.boundary.coordinates = boundary_coordinates
     else:
         # create boundary when it does not exist
         entity.boundary = Boundary(coordinates=boundary_coordinates)
