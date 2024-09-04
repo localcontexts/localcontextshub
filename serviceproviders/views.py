@@ -195,10 +195,9 @@ def service_provider_notices(request, pk):
         not_approved_download_notice = None
         not_approved_shared_notice = None
     else:
-        not_approved_download_notice = "Your service provider account needs to be subscribed " \
-            "in order to download this Notice."
-        not_approved_shared_notice = "Your service provider account needs to be subscribed in " \
-            "order to share this Notice."
+        not_approved_download_notice = "Your account needs to be certified to download this " \
+            "Notice."
+        not_approved_shared_notice = "Your account needs to be certified to share this Notice."
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -541,8 +540,8 @@ def api_keys(request, pk):
                         prefix=prefix).update(encrypted_key=encrypted_key)
 
                 else:
-                    message = "Your account is not confirmed. Your " \
-                        "account must be confirmed to create an API Key."
+                    message = "Your account is not certified. Your account must be certified " \
+                        "to create API Keys."
                     messages.add_message(
                         request,
                         messages.ERROR,
