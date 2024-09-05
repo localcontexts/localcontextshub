@@ -113,10 +113,10 @@ def remove_user_from_affiliated_communities_and_institutions(
 
 
 def determine_user_role(user: User) -> str:
-    from projects.models import ProjectCreator # import here to resolve circular imports
+    from projects.models import ProjectCreator  # import here to resolve circular imports
     is_account_creator = Researcher.objects.filter(user=user).exists() or \
-                             Community.objects.filter(community_creator=user).exists() or \
-                             Institution.objects.filter(institution_creator=user).exists()
+                         Community.objects.filter(community_creator=user).exists() or \
+                         Institution.objects.filter(institution_creator=user).exists() # noqa
 
     is_project_creator = ProjectCreator.objects.filter(
         project__project_creator__id=user.id
@@ -129,7 +129,7 @@ def determine_user_role(user: User) -> str:
                 Community.objects.filter(viewers__id__contains=user.id).exists() or \
                 Institution.objects.filter(admins__id__contains=user.id).exists() or \
                 Institution.objects.filter(editors__id__contains=user.id).exists() or \
-                Institution.objects.filter(viewers__id__contains=user.id).exists() # noqa
+                Institution.objects.filter(viewers__id__contains=user.id).exists()  # noqa
 
     if is_member > 0:
         return 'is_member'
