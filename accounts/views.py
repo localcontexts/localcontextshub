@@ -406,9 +406,6 @@ def deactivate_user(request):
             # remove user from affiliated accounts
             remove_user_from_affiliated_communities_and_institutions(user, member_affiliations)
 
-            # remove user-community and user-institution affiliations
-            member_affiliations.delete()
-
             user.is_active = False
             user.save()
             auth.logout(request)
