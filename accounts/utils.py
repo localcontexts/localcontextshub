@@ -8,7 +8,6 @@ from unidecode import unidecode
 from accounts.models import UserAffiliation
 from communities.models import Community
 from institutions.models import Institution
-from projects.models import ProjectCreator
 from researchers.models import Researcher
 
 
@@ -114,6 +113,7 @@ def remove_user_from_affiliated_communities_and_institutions(
 
 
 def determine_user_role(user: User) -> str:
+    from projects.models import ProjectCreator # import here to resolve circular imports
     is_account_creator = Researcher.objects.filter(user=user).exists() or \
                              Community.objects.filter(community_creator=user).exists() or \
                              Institution.objects.filter(institution_creator=user).exists()
