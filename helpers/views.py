@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -10,7 +9,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
-from projects.models import Project, ProjectCreator
+from projects.models import Project
 from .downloads import download_otc_notice, download_cc_notices
 import requests
 from .models import NoticeDownloadTracker
