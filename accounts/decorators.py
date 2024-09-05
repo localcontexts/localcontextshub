@@ -50,7 +50,7 @@ def zero_account_user(view_func):
                 messages.add_message(
                     request,
                     messages.INFO,
-                    "Try creating account from Create an account button.")
+                    "Try creating an account using the Create an account button.")
                 return redirect('dashboard')
             else:
                 return view_func(request, *args, **kwargs)
