@@ -552,7 +552,7 @@ def account_preferences(request, pk):
                 request, messages.SUCCESS, 'Your preferences have been updated!'
             )
 
-            return redirect("preferences-institution", service_provider.id)
+            return redirect("preferences-service-provider", service_provider.id)
 
         context = {
             'member_role': member_role,
