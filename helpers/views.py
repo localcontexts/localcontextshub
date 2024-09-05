@@ -116,28 +116,6 @@ def boundary_view(request):
         print(f'{message}: {e}')
         raise Exception(message)
 
-        
-def determine_user_role(user: User) -> str:
-    is_account_creator = Researcher.objects.filter(user=user).exists() or \
-                             Community.objects.filter(community_creator=user).exists() or \
-                             Institution.objects.filter(institution_creator=user).exists()
-
-    is_project_creator = ProjectCreator.objects.filter(project__project_creator__id=user.id).exists()
-    if is_account_creator or is_project_creator:
-        return 'is_creator_or_project_creator'
-
-    is_member = Community.objects.filter(admins__id__contains=user.id).exists() or \
-                            Community.objects.filter(editors__id__contains=user.id).exists() or \
-                            Community.objects.filter(viewers__id__contains=user.id).exists() or \
-                            Institution.objects.filter(admins__id__contains=user.id).exists() or \
-                            Institution.objects.filter(editors__id__contains=user.id).exists() or \
-                            Institution.objects.filter(viewers__id__contains=user.id).exists()
-
-    if is_member > 0:
-        return 'is_member'
-
-    return 'default'
-
 
 @xframe_options_sameorigin
 def project_boundary_view(request, project_id):
