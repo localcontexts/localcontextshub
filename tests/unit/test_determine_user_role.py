@@ -4,7 +4,7 @@ from factories.researchers_factories import ResearcherFactory
 from factories.communities_factories import CommunityFactory
 from factories.institutions_factories import InstitutionFactory
 
-from helpers.views import determine_user_role
+from accounts.utils import determine_user_role
 
 
 class TestDetermineUserRole(TransactionTestCase):
