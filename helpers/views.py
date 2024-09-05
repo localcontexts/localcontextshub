@@ -7,7 +7,6 @@ from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
-from accounts.models import UserAffiliation
 from communities.models import InviteMember, Community
 from notifications.models import UserNotification
 from localcontexts.utils import dev_prod_or_local
@@ -138,23 +137,6 @@ def determine_user_role(user: User) -> str:
         return 'is_member'
 
     return 'default'
-
-
-def remove_user_from_affiliated_communities_and_institutions(user: User, affiliation: UserAffiliation) -> None:
-    """Removes user from affiliated community and institution accounts
-
-    Args:
-        user: The user object.
-        affiliation: A UserAffiliation
-
-    Returns:
-        None
-    """
-    for community in affiliation.communities.all():
-        remove_user_from_account(user, community)
-
-    for institution in affiliation.institutions.all():
-        remove_user_from_account(user, institution)
 
 
 @xframe_options_sameorigin

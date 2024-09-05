@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.http import url_has_allowed_host_and_scheme
 from unidecode import unidecode
 
+from accounts.models import UserAffiliation
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
@@ -90,3 +91,20 @@ def remove_user_from_account(user: User, account: Union[Community, Institution])
         account.editors.remove(user)
     if user in account.viewers.all():
         account.viewers.remove(user)
+
+
+def remove_user_from_affiliated_communities_and_institutions(user: User, affiliation: UserAffiliation) -> None:
+    """Removes user from affiliated community and institution accounts
+
+    Args:
+        user: The user object.
+        affiliation: A UserAffiliation
+
+    Returns:
+        None
+    """
+    for community in affiliation.communities.all():
+        remove_user_from_account(user, community)
+
+    for institution in affiliation.institutions.all():
+        remove_user_from_account(user, institution)
