@@ -101,3 +101,21 @@
         });
     </script>
 {% endif %}
+
+{% if not institutions and not researchers and not communities %}
+    <div class="dashcard w-100 center-text mt-16" style="margin-bottom:200px;">
+        <p class="center-text">
+            <strong>There are no connections yet.</strong>
+            <br>
+            <small>
+                {% if service_provider %}
+                    Connections will appear here as other Hub accounts connect to your platform{% if not service_provider.is_certified %} once your account is certified{% endif %}.
+                {% elif community %}
+                    Apply Labels to a shared project to establish connections.
+                {% else %}
+                    Notify a community of a project or add other accounts as contributors on a Project to establish connections.
+                {% endif %}
+            </small>
+        </p>
+    </div>
+{% endif %}
