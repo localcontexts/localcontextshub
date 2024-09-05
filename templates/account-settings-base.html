@@ -59,7 +59,7 @@
                 </a>
 
                 <!-- Account Preferences -->
-                <a href="{% if community %}{% url 'preferences-community' community.id %}{% endif %}{% if institution %}{% url 'preferences-institution' institution.id %}{% endif %}{% if researcher %}{% url 'preferences-researcher' researcher.id %}{% endif %}">
+                <a href="{% if community %}{% url 'preferences-community' community.id %}{% endif %}{% if institution %}{% url 'preferences-institution' institution.id %}{% endif %}{% if researcher %}{% url 'preferences-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'preferences-service-provider' service_provider.id %}{% endif %}">
                     <div
                         class="flex-this side-nav-item {% if '/preferences/' in request.path %} selected {% else %} grey-text {% endif %}"
                     >

@@ -144,14 +144,6 @@
                 </div>
             {% endif %}
         </div>
-
-        <!-- Show/Hide Connections -->
-        <div class="mt-16 mb-8">
-            {{ update_form.show_connections }} <label for="show_connections">Show connections in Registry</label>
-        </div>
-        {% if update_form.show_connections.errors %}
-            <div class="msg-red w-50"><small>{{ update_form.show_connections.errors.as_text }}</small></div>
-        {% endif %}
     {% endif %}
 
     <!-- Location -->

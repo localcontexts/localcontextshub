@@ -32,11 +32,9 @@ class CreateServiceProviderForm(forms.ModelForm):
 
 class UpdateServiceProviderForm(forms.ModelForm):
 
-    show_connections = forms.BooleanField(required=False)
-
     class Meta:
         model = ServiceProvider
-        fields = ['image', 'description', 'website', 'documentation', 'show_connections']
+        fields = ['image', 'description', 'website', 'documentation']
         widgets = {
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 3,}),
             'image': forms.ClearableFileInput(
