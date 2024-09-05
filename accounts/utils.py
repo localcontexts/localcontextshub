@@ -1,4 +1,7 @@
+from typing import Union
+
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.utils.http import url_has_allowed_host_and_scheme
 from unidecode import unidecode
 
@@ -69,3 +72,21 @@ def get_next_path(request, default_path: str):
         return next_path
 
     return default_path
+
+
+def remove_user_from_account(user: User, account: Union[Community, Institution]) -> None:
+    """Removes user from account
+
+    Args:
+        user: The user object.
+        account: A community or institution account.
+
+    Returns:
+        None
+    """
+    if user in account.admins.all():
+        account.admins.remove(user)
+    if user in account.editors.all():
+        account.editors.remove(user)
+    if user in account.viewers.all():
+        account.viewers.remove(user)
