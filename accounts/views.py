@@ -26,10 +26,7 @@ from maintenance_mode.decorators import force_maintenance_mode_off
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
 from communities.models import Community, InviteMember
-from helpers.views import (
-    determine_user_role,
-    remove_user_from_affiliated_communities_and_institutions
-)
+
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
@@ -50,7 +47,14 @@ from .forms import (
     ResendEmailActivationForm, SignUpInvitationForm, UserCreateProfileForm, UserUpdateForm
 )
 from .models import Profile, SignUpInvitation, UserAffiliation
-from .utils import (get_next_path, get_users_name, manage_mailing_list, return_registry_accounts)
+from .utils import (
+    get_next_path,
+    get_users_name,
+    manage_mailing_list,
+    return_registry_accounts,
+    determine_user_role,
+    remove_user_from_affiliated_communities_and_institutions
+)
 
 
 @unauthenticated_user
