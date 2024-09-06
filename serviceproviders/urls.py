@@ -10,6 +10,7 @@ urlpatterns = [
 
     # Settings
     path('update/<str:pk>/', views.update_service_provider, name="update-service-provider"),
+    path('preferences/<str:pk>/', views.account_preferences, name="preferences-service-provider"),
     path('api-key/<str:pk>/', views.api_keys, name="service-provider-api-key"),
 
     # Public view

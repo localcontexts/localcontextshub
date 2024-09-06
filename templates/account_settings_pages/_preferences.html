@@ -10,24 +10,45 @@
 <form method="POST">
     {% csrf_token %}
 
-    <!-- Show/Hide Connections -->
-    <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
-        <div>
-            <h4 class="mt-15 mb-0">Show Account in Service Provider Connections</h4>
-            <p class="font-size-14 mt-8">Allow your account to be included on a Service Provider's public Registry page when you connect to their account.</p>
+    {% if not service_provider %}
+        <!-- Show/Hide Hub Account in SP Connections -->
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+            <div class="w-90">
+                <h4 class="mt-15 mb-0">Show Account in Service Provider Connections</h4>
+                <p class="font-size-14 mt-8">Allow your account to be included on a Service Provider's public Registry page when you connect to their account.</p>
+            </div>
+            <div>
+                <input
+                    class="toggle"
+                    type="checkbox"
+                    name="show_sp_connection"
+                    {% if researcher and researcher.show_sp_connection %}checked
+                    {% elif community and community.show_sp_connection %}checked
+                    {% elif institution and institution.show_sp_connection %}checked
+                    {% endif %}
+                >
+            </div>
         </div>
-        <div>
-            <input
-                class="toggle"
-                type="checkbox"
-                name="show_sp_connection"
-                {% if researcher and researcher.show_sp_connection %}checked
-                {% elif community and community.show_sp_connection %}checked
-                {% elif institution and institution.show_sp_connection %}checked
-                {% endif %}
-            >
+    {% endif %}
+
+    {% if service_provider %}
+        <!-- Show/Hide SP Connections in Registry -->
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+            <div class="w-90">
+                <h4 class="mt-15 mb-0">Show Connections in Public View Page</h4>
+                <p class="font-size-14 mt-8">Allow other Hub accounts that have connected to your account to be displayed on your <a class="default-a" href="{% url 'public-service-provider' service_provider.id%}">Public Page</a> in the Registry.</p>
+            </div>
+            <div>
+                <input
+                    class="toggle"
+                    type="checkbox"
+                    name="show_connections"
+                    {% if service_provider.show_connections %}checked
+                    {% endif %}
+                >
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <div>
         <button id="savePreferences" class="primary-btn action-btn mt-2p">Save changes</button>

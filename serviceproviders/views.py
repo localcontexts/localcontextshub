@@ -532,6 +532,40 @@ def update_service_provider(request, pk):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
+def account_preferences(request, pk):
+    try:
+        service_provider = get_service_provider(pk)
+        member_role = check_member_role(request.user, service_provider)
+
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_connections') == 'on':
+                service_provider.show_connections = True
+                service_provider.save()
+
+            elif request.POST.get('show_connections') == None:
+                service_provider.show_connections = False
+                service_provider.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-service-provider", service_provider.id)
+
+        context = {
+            'member_role': member_role,
+            'service_provider': service_provider,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
+
+    except:
+        raise Http404()
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
 def api_keys(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
