@@ -408,7 +408,9 @@ def deactivate_user(request):
             ).get(user=user)
 
             # separates user from their community and institution accounts
-            dissociates_user_from_affiliated_communities_and_institutions(user, member_affiliations)
+            dissociates_user_from_affiliated_communities_and_institutions(
+                user, member_affiliations
+            )
 
             user.is_active = False
             user.save()

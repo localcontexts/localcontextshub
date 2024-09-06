@@ -97,11 +97,15 @@ def remove_user_from_account_and_account_from_user_affiliations(
         account.viewers.remove(user)
 
     # remove account from user affiliations
-    if type(account) == Community:
-        affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=user)
+    if type(account) is Community:
+        affiliation = UserAffiliation.objects.prefetch_related(
+            'communities'
+        ).get(user=user)
         affiliation.communities.remove(account)
-    elif type(account) == Institution:
-        affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=user)
+    elif type(account) is Institution:
+        affiliation = UserAffiliation.objects.prefetch_related(
+            'institutions'
+        ).get(user=user)
         affiliation.institutions.remove(account)
 
 
