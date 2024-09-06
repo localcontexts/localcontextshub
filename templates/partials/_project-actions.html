@@ -575,7 +575,7 @@
                 <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>
                         Project activity
-                        <div class="tooltip ml-5"><strong>i</strong>
+                        <div class="tooltip ml-5">i
                             <span class="tooltiptext">
                                 Project activity is only visible to Project contributors.
                             </span>
@@ -640,7 +640,7 @@
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
-                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;">i
                                     <span class="tooltiptext">
                                         The Project you are viewing is already a sub-project.
                                     </span>
@@ -660,7 +660,7 @@
                             {% else %}
                                 <a class="block a-disabled"> 
                                     <i class="fa-solid fa-tag"></i> Apply Labels
-                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                                         <span class="tooltiptext">
                                             Your community was added as a contributor to this Project. The Project creator needs to notify your community if you wish to apply Labels. Please contact us with any questions.
                                         </span>
@@ -670,7 +670,7 @@
                         {% else %}
                             <a class="block a-disabled"> 
                                 <i class="fa-solid fa-tag"></i> Apply Labels
-                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;">i
                                     <span class="tooltiptext">
                                         Your account needs to be confirmed before you can apply Labels. Please contact us if you have questions.
                                     </span>
@@ -692,7 +692,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-user-group"></i> Notify Communities
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     Your account needs to be confirmed before you can notify communities. Please contact us if you have questions.
                                 </span>
@@ -816,7 +816,7 @@
                 {% else %}
                     <a class="block a-disabled"> 
                         <i class="fa-solid fa-download"></i> Download
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
@@ -831,7 +831,7 @@
             {% else %}
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-share-nodes"></i> Share
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             Private Projects cannot be shared.
                         </span>
@@ -839,7 +839,7 @@
                 </a>
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-download"></i> Download
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             Private Projects cannot be downloaded.
                         </span>
@@ -865,7 +865,7 @@
                         {% endif %}
                     ><i class="fa-solid fa-box-archive"></i> {% if project_archived %} Unarchive {% else %} Archive {% endif %}
 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 Projects that are archived will only appear in your archived project list. Projects can be unarchived at any time.
                             </span>
@@ -879,7 +879,7 @@
                             onclick="openModal('deleteProjectModal', 'closeProjectDeletionModal')"
                         ><i class="fa-solid fa-trash"></i> Delete
 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 Permanently remove this project. Projects with Labels cannot be deleted.
                             </span>
@@ -912,7 +912,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-trash"></i> Delete
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     Projects with Labels cannot be deleted.
                                 </span>
@@ -931,7 +931,7 @@
                 {% if communities or institutions or user_researcher %}
                     <div class="actions-card content-card-space flex-this column">
                         <h3 class="mt-0">View As 
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     You are viewing what this Project looks like publicly. To access the action page as a contributor on this Project, select an account below.
                                 </span>
@@ -958,7 +958,7 @@
             {% else %}
                 <div class="actions-card content-card-space flex-this column">
                     <h3 class="mt-0">View As 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 You are viewing the action page of this Project, which is only accessible to contributors. Use this button to see what this Project looks like publicly.
                             </span>
@@ -982,7 +982,7 @@
             <div class="actions-card-notifified content-card-space flex-this column">
                 <div class="flex-this">
                     <h3 class="mt-0 mb-0">Communities Notified</h3>
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             <i class="bold">Seen</i><br> The community has acknowledged the Project but has not made a decision about applying Labels.<br>
                             <i class="bold">No Labels Pending</i><br> The community will not apply Labels to the Project.<br>
