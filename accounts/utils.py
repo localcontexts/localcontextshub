@@ -75,8 +75,11 @@ def get_next_path(request, default_path: str):
     return default_path
 
 
-def remove_user_from_account(user: User, account: Union[Community, Institution]) -> None:
-    """Removes user from account
+def remove_user_from_account_and_account_from_user_affiliations(
+        user: User,
+        account: Union[Community, Institution]
+) -> None:
+    """Removes user from account and account from that user's affiliations
 
     Args:
         user: The user object.
@@ -85,12 +88,21 @@ def remove_user_from_account(user: User, account: Union[Community, Institution])
     Returns:
         None
     """
+    # remove user from account
     if user in account.admins.all():
         account.admins.remove(user)
     if user in account.editors.all():
         account.editors.remove(user)
     if user in account.viewers.all():
         account.viewers.remove(user)
+
+    # remove account from user affiliations
+    if type(account) == Community:
+        affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=user)
+        affiliation.communities.remove(account)
+    elif type(account) == Institution:
+        affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=user)
+        affiliation.institutions.remove(account)
 
 
 def remove_user_from_affiliated_communities_and_institutions(
@@ -106,10 +118,10 @@ def remove_user_from_affiliated_communities_and_institutions(
         None
     """
     for community in affiliation.communities.all():
-        remove_user_from_account(user, community)
+        remove_user_from_account_and_account_from_user_affiliations(user, community)
 
     for institution in affiliation.institutions.all():
-        remove_user_from_account(user, institution)
+        remove_user_from_account_and_account_from_user_affiliations(user, institution)
 
 
 def determine_user_role(user: User) -> str:
