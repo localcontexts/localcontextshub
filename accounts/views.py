@@ -53,7 +53,7 @@ from .utils import (
     manage_mailing_list,
     return_registry_accounts,
     determine_user_role,
-    remove_user_from_affiliated_communities_and_institutions
+    dissociates_user_from_affiliated_communities_and_institutions
 )
 
 
@@ -407,8 +407,8 @@ def deactivate_user(request):
                 'communities', 'institutions',
             ).get(user=user)
 
-            # remove user from affiliated accounts
-            remove_user_from_affiliated_communities_and_institutions(user, member_affiliations)
+            # separates user from their community and institution accounts
+            dissociates_user_from_affiliated_communities_and_institutions(user, member_affiliations)
 
             user.is_active = False
             user.save()

@@ -105,10 +105,12 @@ def remove_user_from_account_and_account_from_user_affiliations(
         affiliation.institutions.remove(account)
 
 
-def remove_user_from_affiliated_communities_and_institutions(
+def dissociates_user_from_affiliated_communities_and_institutions(
         user: User, affiliation: UserAffiliation
 ) -> None:
-    """Removes user from affiliated community and institution accounts
+    """Separates user from affiliated community and institution accounts.
+       After this has completed, both the user and their community/institution accounts
+       will still exist. However, they will no longer be associated with each other.
 
     Args:
         user: The user object.
