@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -75,59 +75,62 @@ def get_next_path(request, default_path: str):
     return default_path
 
 
-def remove_user_from_account_and_account_from_user_affiliations(
-        user: User,
-        account: Union[Community, Institution]
+def remove_user_from_account(
+    user: User,
+    account: Optional[Union[Community, Institution]] = None
 ) -> None:
-    """Removes user from account and account from that user's affiliations
+    """Removes the user from a specific community or institution account, 
+    or from all affiliated accounts if no specific account is provided.
 
     Args:
         user: The user object.
-        account: A community or institution account.
+        account: A specific community or institution account. If not provided, 
+                 the user will be removed from all affiliated accounts.
 
     Returns:
         None
+    
+    Example usage:
+     # Remove the user from a specific community
+        remove_user_from_account(user, specific_community)
+     # Remove the user from all affiliated accounts (communities and institutions)
+        remove_user_from_account(user)
     """
-    # remove user from account
-    if user in account.admins.all():
-        account.admins.remove(user)
-    if user in account.editors.all():
-        account.editors.remove(user)
-    if user in account.viewers.all():
-        account.viewers.remove(user)
 
-    # remove account from user affiliations
-    if type(account) is Community:
-        affiliation = UserAffiliation.objects.prefetch_related(
-            'communities'
-        ).get(user=user)
-        affiliation.communities.remove(account)
-    elif type(account) is Institution:
-        affiliation = UserAffiliation.objects.prefetch_related(
-            'institutions'
-        ).get(user=user)
-        affiliation.institutions.remove(account)
+    # Fetch the user's affiliation
+    affiliation = UserAffiliation.objects.prefetch_related('communities', 'institutions').get(user=user)
 
+    if account:
+        # Remove the user from the specific account provided
+        if user in account.admins.all():
+            account.admins.remove(user)
+        if user in account.editors.all():
+            account.editors.remove(user)
+        if user in account.viewers.all():
+            account.viewers.remove(user)
 
-def dissociates_user_from_affiliated_communities_and_institutions(
-        user: User, affiliation: UserAffiliation
-) -> None:
-    """Separates user from affiliated community and institution accounts.
-       After this has completed, both the user and their community/institution accounts
-       will still exist. However, they will no longer be associated with each other.
+        # Remove the account from the user's affiliations
+        if isinstance(account, Community):
+            affiliation.communities.remove(account)
+        elif isinstance(account, Institution):
+            affiliation.institutions.remove(account)
 
-    Args:
-        user: The user object.
-        affiliation: A UserAffiliation
+    else:
+        # No specific account provided, so remove the user from all affiliated accounts
+        accounts = list(affiliation.communities.all()) + list(affiliation.institutions.all())
 
-    Returns:
-        None
-    """
-    for community in affiliation.communities.all():
-        remove_user_from_account_and_account_from_user_affiliations(user, community)
+        for acc in accounts:
+            if user in acc.admins.all():
+                acc.admins.remove(user)
+            if user in acc.editors.all():
+                acc.editors.remove(user)
+            if user in acc.viewers.all():
+                acc.viewers.remove(user)
 
-    for institution in affiliation.institutions.all():
-        remove_user_from_account_and_account_from_user_affiliations(user, institution)
+            if isinstance(acc, Community):
+                affiliation.communities.remove(acc)
+            elif isinstance(acc, Institution):
+                affiliation.institutions.remove(acc)
 
 
 def determine_user_role(user: User) -> str:

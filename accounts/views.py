@@ -53,7 +53,7 @@ from .utils import (
     manage_mailing_list,
     return_registry_accounts,
     determine_user_role,
-    dissociates_user_from_affiliated_communities_and_institutions
+    remove_user_from_account,
 )
 
 
@@ -395,22 +395,21 @@ def change_password(request):
 
 @login_required(login_url='login')
 def deactivate_user(request):
-    user_role = determine_user_role(user=request.user)
-    profile = Profile.objects.select_related('user').get(user=request.user)
+    user = request.user
+    user_role = determine_user_role(user=user)
+    profile = Profile.objects.select_related('user').get(user=user)
+    affiliations = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions', 'communities__community_creator',
+        'institutions__institution_creator'
+    ).get(user=user)
+    users_name = get_users_name(user)
+    researcher = Researcher.objects.filter(user=user).first()
 
     if request.method == "POST":
         if user_role != 'is_creator_or_project_creator':
-            user = request.user
 
-            # get affiliations between user-community and user-institution
-            member_affiliations = UserAffiliation.objects.prefetch_related(
-                'communities', 'institutions',
-            ).get(user=user)
-
-            # separates user from their community and institution accounts
-            dissociates_user_from_affiliated_communities_and_institutions(
-                user, member_affiliations
-            )
+            # removes user from their community and institution accounts
+            remove_user_from_account(user)
 
             user.is_active = False
             user.save()
@@ -421,19 +420,10 @@ def deactivate_user(request):
             )
             return redirect('login')
 
-    creator_member_affiliations = UserAffiliation.objects.prefetch_related(
-        'communities', 'institutions', 'communities__community_creator',
-        'institutions__institution_creator'
-    ).get(user=request.user)
-    researcher = Researcher.objects.none()
-    users_name = get_users_name(request.user)
-    if Researcher.objects.filter(user=request.user).exists():
-        researcher = Researcher.objects.get(user=request.user)
-
     return render(request, 'accounts/deactivate.html', {
         'profile': profile,
         'user_role': user_role,
-        'affiliations': creator_member_affiliations,
+        'affiliations': affiliations,
         'researcher': researcher,
         'users_name': users_name
     })

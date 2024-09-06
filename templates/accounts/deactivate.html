@@ -9,7 +9,7 @@
         <div class="w-100 mb-2p">
             <p class="no-top-margin">
                 {% if user_role == 'is_creator_or_project_creator' %}
-                    It looks like you are either the main administrator of an account or a project creator.
+                    It looks like you are either the main administrator of an account or a Project creator.
                     Please email us at
                     <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a>
                     for deactivation assistance.
@@ -30,7 +30,7 @@
                             <li><small>You're the creator of this account.</small></li>
                             {% user_created_project_as_researcher profile.user.id researcher.id as created_a_project %}
                             {% if created_a_project %}
-                                <li><small>You've created Projects for account.</small></li>
+                                <li><small>You've created Projects in this account.</small></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -48,7 +48,7 @@
 
 
                                 {% if created_a_project %}
-                                    <li><small>You've created Projects for account.</small></li>
+                                    <li><small>You've created Projects in this account.</small></li>
                                 {% endif %}
                             </ul>
                         {% endif %}
@@ -67,7 +67,7 @@
 
 
                                 {% if created_a_project %}
-                                    <li><small>You've created Projects for account.</small></li>
+                                    <li><small>You've created Projects in this account.</small></li>
                                 {% endif %}
                             </ul>
                         {% endif %}
