@@ -79,17 +79,17 @@ def remove_user_from_account(
     user: User,
     account: Optional[Union[Community, Institution]] = None
 ) -> None:
-    """Removes the user from a specific community or institution account, 
+    """Removes the user from a specific community or institution account,
     or from all affiliated accounts if no specific account is provided.
 
     Args:
         user: The user object.
-        account: A specific community or institution account. If not provided, 
+        account: A specific community or institution account. If not provided,
                  the user will be removed from all affiliated accounts.
 
     Returns:
         None
-    
+
     Example usage:
      # Remove the user from a specific community
         remove_user_from_account(user, specific_community)
