@@ -98,7 +98,9 @@ def remove_user_from_account(
     """
 
     # Fetch the user's affiliation
-    affiliation = UserAffiliation.objects.prefetch_related('communities', 'institutions').get(user=user)
+    affiliation = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions'
+    ).get(user=user)
 
     if account:
         # Remove the user from the specific account provided
