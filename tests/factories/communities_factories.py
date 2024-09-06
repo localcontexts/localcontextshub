@@ -1,8 +1,11 @@
+import faker
 import factory
 from django.core.files.base import ContentFile
 from communities.models import Community, InviteMember, JoinRequest, Boundary
 from factories.accounts_factories import UserFactory
 from factories.institutions_factories import InstitutionFactory
+
+fake = faker.Faker()
 
 
 class CommunityBoundaryFactory(factory.django.DjangoModelFactory):
@@ -22,7 +25,7 @@ class CommunityFactory(factory.django.DjangoModelFactory):
 
     boundary = factory.SubFactory(CommunityBoundaryFactory)
     community_creator = factory.SubFactory(UserFactory)
-    community_name = factory.Faker('company')
+    community_name = factory.LazyAttribute(lambda x: fake.unique.company())
     community_entity = factory.Faker('company_suffix')
     contact_name = factory.Faker('name')
     contact_email = factory.Faker('email')

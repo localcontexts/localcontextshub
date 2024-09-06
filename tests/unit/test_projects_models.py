@@ -52,6 +52,7 @@ class TestProject(TestCase):
         assert isinstance(string, str)
         assert string == self.project.title
 
+
 class TestProjectPerson(TestCase):
     @pytest.mark.django_db
     def setUp(self):
@@ -61,18 +62,6 @@ class TestProjectPerson(TestCase):
         new_project_person = self.project_person
         string = new_project_person.__str__()
         assert isinstance(new_project_person.__str__(), str)
-
-
-class TestProjectnote(TestCase):
-    @pytest.mark.django_db
-    def setUp(self):
-        self.project_note = ProjectNoteFactory()
-
-    def test_project_note_test_str_method(self):
-        new_project_note = self.project_note
-        string = str(new_project_note)
-        assert isinstance(string, str)
-        assert string == new_project_note.project
 
 
 @pytest.fixture
@@ -94,10 +83,8 @@ def test_is_user_contributor():
     # Checking if a ProjectContributors instance exists for the project
     existing_contributor = ProjectContributors.objects.filter(project=project).first()
 
-    if existing_contributor:
-        project_contributors = existing_contributor
-    else:
-        project_contributors = ProjectContributors.objects.create(project=project)
+    if not existing_contributor:
+        ProjectContributors.objects.create(project=project)
 
     project_contributors = ProjectContributors.objects.create()
     project_contributors.communities.add(community)
@@ -136,37 +123,27 @@ class TestProjectCreator(TestCase):
         self.project_creator_of_confirmed_account.community.community_creator = self.confirmed_account_user
 
     def test_which_account_type_created_community(self):
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['community'] == True
+        assert is_created_by['community'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
-        assert is_user_in_account == False
+        assert is_user_in_account is False
 
     def test_which_account_type_created_institution(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['institution'] == True
+        assert is_created_by['community'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
-        assert is_user_in_account == False
+        assert is_user_in_account is False
 
     def test_which_account_type_created_researcher(self):
         # Set expected account type
-        is_created_by = { 'community': False, 'institution': False, 'researcher': False,}
-
         is_created_by = self.project_creator.which_account_type_created()
-        assert is_created_by['community'] == True
-        is_created_by['researcher'] == True
+        assert is_created_by['community'] is True
         is_user_in_account = self.project_creator.is_user_in_creator_account(self.user, is_created_by)
-        assert is_user_in_account == False
+        assert is_user_in_account is False
         
     def test_project_creator_str_method(self):
         project_creator = self.project_creator
-        string = project_creator.__str__()
         assert isinstance(project_creator.__str__(), str)
 
     def test_user_of_unconfirmed_account_can_see_project(self):
@@ -208,12 +185,11 @@ class TestProjectCreator(TestCase):
             )
 
 
-class TestProjectnote(TestCase):
+class TestProjectNote(TestCase):
     @pytest.mark.django_db
     def setUp(self):
         self.project_activity = ProjectActivityFactory()
 
     def test_project_activity_str_method(self):
         new_project_activity = self.project_activity
-        string = new_project_activity.__str__()
         assert isinstance(new_project_activity.__str__(), str)
