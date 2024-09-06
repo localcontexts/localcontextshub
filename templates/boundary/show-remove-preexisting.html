@@ -35,7 +35,7 @@
         background-color: #fff;
         border: 1px solid #1f293700;
         border-radius: 4px;
-        max-width: 560px;
+        max-width: 700px;
         color: black;
     }
     #edit_name_icon {
@@ -87,7 +87,7 @@
 
     <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
         <div style="display: flex">
-            <input disabled class='name_of_boundary' value="{{ entity.name_of_boundary }}"
+            <input disabled class='name_of_boundary w-100' value="{{ entity.name_of_boundary }}"
                    onchange="shapeFileChange(this)"
                    onblur="disableNameInput(this)"
             >
