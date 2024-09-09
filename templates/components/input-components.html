@@ -1,0 +1,14 @@
+<!--
+ Dropdowns, combo boxes, buttons, toggle switches, text fields, date pickers, checkboxes, radio buttons, confirmation dialogues
+-->
+
+{% if component == 'button' %}
+    <a class="btn btn-{{style}} {% if rounded %}rounded{% endif %}" href="{{ href }}">
+        {% if label %}
+            {{ label }}
+        {% endif %}
+        {% if icon %}
+            <i class="{{ icon }} {% if label %}ml-8{% endif %}" aria-hidden="true"></i>
+        {% endif %}
+    </a>
+{% endif %}
