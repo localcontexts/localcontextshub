@@ -465,9 +465,9 @@ def leave_account(request, account_type, account_id):
     if account:
         # Check if the user holds a role in the account
         if (request.user in account.admins.all() or
-            request.user in account.editors.all() or
-            request.user in account.viewers.all()):
-            
+                request.user in account.editors.all() or
+                request.user in account.viewers.all()):
+
             remove_user_from_account(request.user, account)
         else:
             # Return a 403 Forbidden response if the user does not hold a role in the account
