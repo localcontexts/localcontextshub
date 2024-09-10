@@ -103,6 +103,9 @@ class Subscription(models.Model):
         ('large', 'Large'),
         ('cc_notice_only', 'CC Notice Only'),
         ('cc_notices', 'CC Notices'),
+        ('member', 'Member'),
+        ('service_provide', 'Service Provider'),
+        ('founding_supporter', 'Founding Supporter')
     ]
 
     institution = models.ForeignKey(
