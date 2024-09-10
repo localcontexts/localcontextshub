@@ -4,21 +4,18 @@ from django.contrib import messages
 from django.http import Http404
 from django.db.models import Q
 from itertools import chain
+
+from accounts.utils import remove_user_from_account
 from .decorators import member_required
 
-from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
 from notifications.utils import *
 from .utils import *
 
-from .models import *
-from projects.models import *
-from communities.models import Community, JoinRequest
-from notifications.models import ActionNotification
+from communities.models import JoinRequest
 from helpers.models import *
 
-from django.contrib.auth.models import User
 from accounts.models import UserAffiliation
 
 from projects.forms import *
@@ -468,18 +465,7 @@ def remove_member(request, pk, member_id):
         return redirect('restricted')
 
     member = User.objects.get(id=member_id)
-    # what role does member have
-    # remove from role
-    if member in institution.admins.all():
-        institution.admins.remove(member)
-    if member in institution.editors.all():
-        institution.editors.remove(member)
-    if member in institution.viewers.all():
-        institution.viewers.remove(member)
-
-    # remove institution from userAffiliation instance
-    affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=member)
-    affiliation.institutions.remove(institution)
+    remove_user_from_account(user=member, account=institution)
 
     # Delete join request for this institution if exists
     if JoinRequest.objects.filter(user_from=member, institution=institution).exists():
