@@ -415,13 +415,6 @@ def delete_join_request(request, pk, join_id):
 @member_required(roles=['admin'])
 def remove_member(request, pk, member_id):
     community = get_community(pk)
-
-    callee_role = check_member_role(request.user, community)
-    member_to_remove_is_self = str(request.user.id) == member_id
-    callee_is_admin = callee_role == 'admin'
-    if not callee_is_admin and not member_to_remove_is_self:
-        return redirect('restricted')
-
     member = User.objects.get(id=member_id)
     remove_user_from_account(user=member, account=community)
 
