@@ -449,6 +449,7 @@ def manage_organizations(request):
         }
     )
 
+
 @login_required(login_url='login')
 def leave_account(request, account_type, account_id):
     # Define a dictionary to map account types to their respective models
@@ -463,8 +464,8 @@ def leave_account(request, account_type, account_id):
 
     if account:
         # Check if the user holds a role in the account
-        if (request.user in account.admins.all() or 
-            request.user in account.editors.all() or 
+        if (request.user in account.admins.all() or
+            request.user in account.editors.all() or
             request.user in account.viewers.all()):
             
             remove_user_from_account(request.user, account)
