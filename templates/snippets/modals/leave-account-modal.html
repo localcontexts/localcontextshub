@@ -24,10 +24,10 @@
                 <a 
                     id="leaveAccountBtn" 
                     {% if community %} 
-                        href="{% url 'remove-member' community.id request.user.id %}" 
+                        href="{% url 'leave-account' 'community' community.id %}" 
                     {% endif %}
                     {% if institution %} 
-                        href="{% url 'remove-institution-member' institution.id request.user.id %}" 
+                        href="{% url 'leave-account' 'institution' institution.id %}" 
                     {% endif %}
                     class="primary-btn white-btn mr-1p"
                 >Yes, leave account</a>    

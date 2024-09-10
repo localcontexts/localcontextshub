@@ -14,8 +14,8 @@ from django.contrib.auth.views import (PasswordChangeForm, PasswordResetView, Se
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -448,6 +448,31 @@ def manage_organizations(request):
             'users_name': users_name
         }
     )
+
+@login_required(login_url='login')
+def leave_account(request, account_type, account_id):
+    # Define a dictionary to map account types to their respective models
+    account_models = {
+        "institution": Institution,
+        "community": Community,
+    }
+
+    # Get the model class based on the account_type or return a 404 if not found
+    model = account_models.get(account_type)
+    account = get_object_or_404(model, id=account_id) if model else None
+
+    if account:
+        # Check if the user holds a role in the account
+        if (request.user in account.admins.all() or 
+            request.user in account.editors.all() or 
+            request.user in account.viewers.all()):
+            
+            remove_user_from_account(request.user, account)
+        else:
+            # Return a 403 Forbidden response if the user does not hold a role in the account
+            return HttpResponseForbidden("You do not have permission to perform this action.")
+
+    return redirect('manage-orgs')
 
 
 @login_required(login_url='login')
