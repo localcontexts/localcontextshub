@@ -1,15 +1,6 @@
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from itertools import chain
-
-from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
-from helpers.models import *
-from notifications.models import *
-from bclabels.models import BCLabel
-from tklabels.models import TKLabel
-from projects.models import *
 
 from helpers.forms import *
 from bclabels.forms import *
@@ -17,11 +8,10 @@ from tklabels.forms import *
 from projects.forms import *
 from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
 
-from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
 from tklabels.utils import data as labels_data
-from accounts.utils import get_users_name
+from accounts.utils import remove_user_from_account
 from notifications.utils import *
 from helpers.downloads import download_labels_zip
 from helpers.emails import *
@@ -433,18 +423,7 @@ def remove_member(request, pk, member_id):
         return redirect('restricted')
 
     member = User.objects.get(id=member_id)
-    # what role does member have
-    # remove from role
-    if member in community.admins.all():
-        community.admins.remove(member)
-    if member in community.editors.all():
-        community.editors.remove(member)
-    if member in community.viewers.all():
-        community.viewers.remove(member)
-
-    # remove community from userAffiliation instance
-    affiliation = UserAffiliation.objects.get(user=member)
-    affiliation.communities.remove(community)
+    remove_user_from_account(user=member, account=community)
 
     # Delete join request for this community if exists
     if JoinRequest.objects.filter(user_from=member, community=community).exists():
