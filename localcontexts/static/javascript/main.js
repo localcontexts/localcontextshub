@@ -1949,9 +1949,9 @@ function openModal(modalId, closeBtnId) {
     })
 }
 
-function toggleProjectInfo(self, idToToggle) {
+function toggleSectionInfo(self, idToToggle) {
     let div = document.getElementById(idToToggle)
-    let allDivs = document.querySelectorAll('.project-header-div')
+    let allDivs = document.querySelectorAll('.section-header-div')
     let lastDiv = allDivs[allDivs.length - 1]
 
     if (div.style.height == "0px") {

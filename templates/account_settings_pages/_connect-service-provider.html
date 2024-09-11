@@ -21,41 +21,53 @@
 </style>
 
 <div>
-    <h3 class="mt-0">Linked Service Providers</h3>
-    <p class="mt-0">Connect to internal service providers.</p>
-</div>
-{% include 'partials/_alerts.html' %}
-
-<div class="flex-this mb-16">
-    <div class="w-60">
-        <form class="default-searchbar w-100" method="GET" action="">
-            <input type="search" name="q" placeholder="Search" autocomplete="off">
-            <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
-        </form>
-    </div>
+    <h2 class="mt-0">Linked Service Providers</h2>
+    <p class="mt-0">A Service Provider is an organization that offers data or collection management platforms. By connecting to a Service Provider below, you can allow that system to view your Local Contexts Projects.</p>
 </div>
 
-{% for service_provider in service_providers %}
-    <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
-        <div class="w-70 ml-16">
-            <p class="bold">{{ service_provider.name }}</p>
+<div>
+    <h3>Connected Service Providers</h3>
+    {% if connected_service_providers %}
+        {% for service_provider in connected_service_providers %}
+            <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-16">
+                <div class="w-70">
+                    <p>{{ service_provider.name }}</p>
+                </div>
+                <button name="disconnectServiceProviderbtn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}" class="primary-btn white-btn">Disconnect <i class="fa-solid fa-link-simple-slash"></i></button>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="italic">No service providers are currently connected. Please click the plus button below to search for and connect with service providers.</p>
+    {% endif %}
+</div>
+
+<div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+    <h3>Add Service Providers</h2>
+    <h3 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'addServiceProvidersDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+</div>
+<div id="addServiceProvidersDiv" class="mb-16" style="height: 0px; overflow: hidden;">
+    <div class="mb-16">
+        <p>Search for a service provider</p>
+        <div class="w-60">
+            <form class="default-searchbar w-100" method="GET" action="">
+                <input type="search" name="q" placeholder="Search" autocomplete="off">
+                <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+            </form>
         </div>
-
-        {% if institution %}
-            {% is_connected_service_provider service_provider institution as connected_sp %}
-        {% elif community %}
-            {% is_connected_service_provider service_provider community as connected_sp %}
-        {% elif researcher %}
-            {% is_connected_service_provider service_provider researcher as connected_sp %}
-        {% endif %}
-
-        {% if connected_sp %}
-            <button name="disconnectServiceProviderbtn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}" class="mr-16 primary-btn disconnect-btn">Disconnect <i class="fa-solid fa-link-simple-slash"></i></button>
-        {% else %}
-            <button name="connectServiceProviderbtn" class="mr-16 primary-btn green-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
-        {% endif %}
     </div>
-{% endfor %}
+
+    <p class="mb-8"><small>Displaying {{ other_service_providers.count }} service provider(s)</small></p>
+    {% for service_provider in other_service_providers %}
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-16">
+            <div class="w-70">
+                <p>{{ service_provider.name }}</p>
+            </div>
+
+            <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
+        </div>
+    {% endfor %}
+</div>
+
 
 <!-- Connect Service Provider Modal -->
 <div id="connectServiceProvidermodal" class="modal hide">
@@ -119,6 +131,40 @@
     </div>
 
 </div>
+
+<!-- Service Provider Settings Modal -->
+<div id="serviceProviderSettingsmodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Connect Service Provider</h2>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <p class="mt-0">When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:</p>
+            <ul>
+                <li>See basic account information</li>
+                <li>See your Projects</li>
+            </ul>
+            <p>Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.</p>
+
+            <div class="flex-this column gap-half">
+                <form id="connectServiceProviderForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueServiceProviderConnectBtn" class="primary-btn action-btn w-100" name="connectServiceProvider" value="">Connect with this Service Provider</button>
+                </form>
+                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% include 'partials/_alerts.html' %}
 
 <script>
     const connectBtns = document.querySelectorAll(`[name="connectServiceProviderbtn"]`);
