@@ -1,8 +1,11 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 from .models import Project, ProjectContributors, ProjectCreator, ProjectArchived
 from helpers.models import EntitiesNotified
 from notifications.models import ActionNotification
+from communities.models import Community
+from institutions.models import Institution
+from researchers.models import Researcher
 
 @receiver(post_save, sender=Project)
 def create_project_dependencies(sender, instance, created, **kwargs):
@@ -30,3 +33,17 @@ def delete_archived_instances(sender, instance, *args, **kwargs):
 def delete_source_project_uuid(sender, instance, *args, **kwargs):
     source_projects = Project.objects.filter(source_project_uuid=instance.unique_id)
     source_projects.update(source_project_uuid=None)
+
+# When an account is deleted, delete any Projects that account created
+@receiver(pre_delete, sender=Community)
+@receiver(pre_delete, sender=Institution)
+@receiver(pre_delete, sender=Researcher)
+def delete_related_project(sender, instance, **kwargs):
+    project_creator = ProjectCreator.objects.filter(
+        community=instance if sender == Community else None,
+        institution=instance if sender == Institution else None,
+        researcher=instance if sender == Researcher else None
+    ).first()
+
+    if project_creator and project_creator.project:
+        project_creator.project.delete()

@@ -1162,14 +1162,15 @@ i[data-tooltip]:hover:after {
 .tooltip {
     position: relative;
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background-color: #EF6C00;
     border-radius: 50%;
     color: #fff;
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 /* Tooltip text */
@@ -1200,6 +1201,7 @@ i[data-tooltip]:hover:after {
     padding: 10px;
     display: inline-block;
     font-size: 14px;
+    font-weight: normal;
 }
 
 /* Tooltip arrow */
