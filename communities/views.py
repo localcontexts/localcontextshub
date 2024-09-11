@@ -1329,41 +1329,50 @@ def connect_service_provider(request, pk):
         member_role = check_member_role(request.user, community)
         if request.method == "GET":
             service_providers = ServiceProvider.objects.filter(is_certified=True)
-            connected_service_providers = ServiceProviderConnections.objects.filter(
+            connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 communities=community
-            )
+            ).values_list('service_provider', flat=True)
+            connected_service_providers = service_providers.filter(id__in=connected_service_providers_ids)
+            other_service_providers = ServiceProvider.objects.filter(is_certified=True).exclude(id__in=connected_service_providers_ids)
 
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
-                service_provider_id = request.POST.get('connectServiceProvider')
-                connection_reference_id = f"{service_provider_id}:{community.id}_c"
+                if community.is_approved:
+                    service_provider_id = request.POST.get('connectServiceProvider')
+                    connection_reference_id = f"{service_provider_id}:{community.id}_c"
 
-                if ServiceProviderConnections.objects.filter(
-                        service_provider=service_provider_id).exists():
-                    # Connect community to existing Service Provider connection
-                    sp_connection = ServiceProviderConnections.objects.get(
-                        service_provider=service_provider_id
+                    if ServiceProviderConnections.objects.filter(
+                            service_provider=service_provider_id).exists():
+                        # Connect community to existing Service Provider connection
+                        sp_connection = ServiceProviderConnections.objects.get(
+                            service_provider=service_provider_id
+                        )
+                        sp_connection.communities.add(community)
+                        sp_connection.save()
+                    else:
+                        # Create new Service Provider Connection and add community
+                        service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                        sp_connection = ServiceProviderConnections.objects.create(
+                            service_provider = service_provider
+                        )
+                        sp_connection.communities.add(community)
+                        sp_connection.save()
+
+                    # Delete instances of disconnect Notifications
+                    delete_action_notification(connection_reference_id)
+
+                    # Send notification of connection to Service Provider
+                    target_org = sp_connection.service_provider
+                    title = f"{community.community_name} has connected to {target_org.name}"
+                    send_simple_action_notification(
+                        None, target_org, title, "Connections", connection_reference_id
                     )
-                    sp_connection.communities.add(community)
-                    sp_connection.save()
+
                 else:
-                    # Create new Service Provider Connection and add community
-                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
-                    sp_connection = ServiceProviderConnections.objects.create(
-                        service_provider = service_provider
+                    messages.add_message(
+                        request, messages.ERROR,
+                        'Your account must be confirmed to connect to Service Providers.'
                     )
-                    sp_connection.communities.add(community)
-                    sp_connection.save()
-
-                # Delete instances of disconnect Notifications
-                delete_action_notification(connection_reference_id)
-
-                # Send notification of connection to Service Provider
-                target_org = sp_connection.service_provider
-                title = f"{community.community_name} has connected to {target_org.name}"
-                send_simple_action_notification(
-                    None, target_org, title, "Connections", connection_reference_id
-                )
 
             elif "disconnectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('disconnectServiceProvider')
@@ -1385,12 +1394,13 @@ def connect_service_provider(request, pk):
                 send_simple_action_notification(
                     None, target_org, title, "Connections", connection_reference_id
                 )
+
             return redirect("community-connect-service-provider", community.id)
 
         context = {
             'member_role': member_role,
             'community': community,
-            'service_providers': service_providers,
+            'other_service_providers': other_service_providers,
             'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)

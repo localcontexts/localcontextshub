@@ -1957,6 +1957,7 @@ function toggleSectionInfo(self, idToToggle) {
     if (div.style.height == "0px") {
         self.innerHTML = '<i class="fa-solid fa-minus fa-xl darkteal-text"></i>'
         div.style.height = 'auto'
+        div.style.overflow = 'visible'
         self.parentElement.classList.add('border-bottom-solid-teal')
 
         if (self.parentElement != lastDiv) {
@@ -1964,6 +1965,7 @@ function toggleSectionInfo(self, idToToggle) {
         }
     } else {
         div.style.height = '0px'
+        div.style.overflow = 'hidden'
         self.innerHTML = '<i class="fa-solid fa-plus fa-xl darkteal-text"></i>'
         self.parentElement.classList.remove('border-bottom-solid-teal')
 

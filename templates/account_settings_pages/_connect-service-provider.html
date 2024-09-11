@@ -63,7 +63,18 @@
                 <p>{{ service_provider.name }}</p>
             </div>
 
-            <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
+            {% if institution and institution.is_subscribed %}
+                <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
+            {% elif researcher and researcher.is_subscribed %}
+                <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
+            {% else %}
+                <div class="btn-with-helptext">
+                    <a class="primary-btn disabled-btn">Connect <i class="fa-solid fa-link-simple"></i></a>
+                    <span class="btn-help-text">
+                        Your account needs to be {% if community %}confirmed{% else %}subscribed{% endif %} to connect to Service Providers.
+                    </span>
+                </div>
+            {% endif %}
         </div>
     {% endfor %}
 </div>
