@@ -96,6 +96,18 @@ class SignUpInvitation(models.Model):
 
 
 class Subscription(models.Model):
+    SUBSCRIPTION_CHOICES = [
+        ('individual', 'Individual'),
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('large', 'Large'),
+        ('cc_notice_only', 'CC Notice Only'),
+        ('cc_notices', 'CC Notices'),
+        ('member', 'Member'),
+        ('service_provide', 'Service Provider'),
+        ('founding_supporter', 'Founding Supporter')
+    ]
+
     institution = models.ForeignKey(
         Institution,
         on_delete=models.CASCADE,
@@ -143,6 +155,7 @@ class Subscription(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
     date_last_updated = models.DateTimeField(auto_now=True)
+    subscription_type = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES)
 
     def clean(self):
         count = sum([

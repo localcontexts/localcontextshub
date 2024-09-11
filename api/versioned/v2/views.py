@@ -358,6 +358,7 @@ class SubscriptionAPI(APIView):
             start_date = request.data.get('start_date')
             end_date = request.data.get('end_date')
             date_last_updated = request.data.get('date_last_updated')
+            subscription_type = request.data.get('subscription_type')
 
             account_type_to_field = {
                 'i': 'institution_id',
@@ -369,12 +370,27 @@ class SubscriptionAPI(APIView):
                 'community_id': Community,
                 'researcher_id': Researcher
             }
+            subscription_type_map = {
+                'Individual': 'individual',
+                'Small': 'small',
+                'Medium': 'medium',
+                'Large': 'large',
+                'CC Notice Only': 'cc_notice_only',
+                'CC Notices': 'cc_notices',
+            }
 
             field_name = account_type_to_field.get(account_type)
             model_class = field_to_model.get(field_name)
             if not field_name:
                 return Response(
                     {'error': 'Failed to create Subscription. Invalid account_type provided.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            mapped_subscription_type = subscription_type_map.get(subscription_type)
+            if not mapped_subscription_type:
+                return Response(
+                    {'error': 'Invalid subscription_type provided.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -387,7 +403,8 @@ class SubscriptionAPI(APIView):
                     'notification_count': notification_count,
                     'start_date': start_date,
                     'end_date': end_date,
-                    'date_last_updated': date_last_updated
+                    'date_last_updated': date_last_updated,
+                    'subscription_type': mapped_subscription_type
                 }
             }
             with transaction.atomic():
@@ -405,6 +422,7 @@ class SubscriptionAPI(APIView):
                     subscription.start_date = start_date
                     subscription.end_date = end_date
                     subscription.date_last_updated = date_last_updated
+                    subscription.subscription_type = mapped_subscription_type  
                     subscription.save() 
                     return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
 
