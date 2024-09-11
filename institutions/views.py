@@ -1442,9 +1442,11 @@ def connect_service_provider(request, pk):
         member_role = check_member_role(request.user, institution)
         if request.method == "GET":
             service_providers = ServiceProvider.objects.filter(is_certified=True)
-            connected_service_providers = ServiceProviderConnections.objects.filter(
+            connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 institutions=institution
-            )
+            ).values_list('service_provider', flat=True)
+            connected_service_providers = service_providers.filter(id__in=connected_service_providers_ids)
+            other_service_providers = ServiceProvider.objects.filter(is_certified=True).exclude(id__in=connected_service_providers_ids)
 
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
@@ -1503,7 +1505,7 @@ def connect_service_provider(request, pk):
         context = {
             'member_role': member_role,
             'institution': institution,
-            'service_providers': service_providers,
+            'other_service_providers': other_service_providers,
             'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
@@ -1523,11 +1525,14 @@ def account_preferences(request, pk):
             # Set Show/Hide account in Service Provider connections
             if request.POST.get('show_sp_connection') == 'on':
                 institution.show_sp_connection = True
-                institution.save()
 
             elif request.POST.get('show_sp_connection') == None:
                 institution.show_sp_connection = False
-                institution.save()
+
+            # Set project privacy settings for Service Provider connections
+            institution.sp_privacy = request.POST.get('sp_privacy')
+
+            institution.save()
 
             messages.add_message(
                 request, messages.SUCCESS, 'Your preferences have been updated!'

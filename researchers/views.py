@@ -923,11 +923,14 @@ def account_preferences(request, researcher):
             # Set Show/Hide account in Service Provider connections
             if request.POST.get('show_sp_connection') == 'on':
                 researcher.show_sp_connection = True
-                researcher.save()
 
             elif request.POST.get('show_sp_connection') == None:
                 researcher.show_sp_connection = False
-                researcher.save()
+
+            # Set project privacy settings for Service Provider connections
+            researcher.sp_privacy = request.POST.get('sp_privacy')
+
+            researcher.save()
 
             messages.add_message(
                 request, messages.SUCCESS, 'Your preferences have been updated!'

@@ -1410,11 +1410,14 @@ def account_preferences(request, pk):
             # Set Show/Hide account in Service Provider connections
             if request.POST.get('show_sp_connection') == 'on':
                 community.show_sp_connection = True
-                community.save()
 
             elif request.POST.get('show_sp_connection') == None:
                 community.show_sp_connection = False
-                community.save()
+
+            # Set project privacy settings for Service Provider connections
+            community.sp_privacy = request.POST.get('sp_privacy')
+
+            community.save()
 
             messages.add_message(
                 request, messages.SUCCESS, 'Your preferences have been updated!'
