@@ -11,6 +11,7 @@ from projects.utils import *
 from helpers.utils import *
 from notifications.utils import *
 from .utils import *
+from accounts.utils import remove_user_from_account
 
 from .models import *
 from projects.models import *
@@ -461,18 +462,8 @@ def delete_join_request(request, pk, join_id):
 def remove_member(request, pk, member_id):
     institution = get_institution(pk)
     member = User.objects.get(id=member_id)
-    # what role does member have
-    # remove from role
-    if member in institution.admins.all():
-        institution.admins.remove(member)
-    if member in institution.editors.all():
-        institution.editors.remove(member)
-    if member in institution.viewers.all():
-        institution.viewers.remove(member)
-
-    # remove institution from userAffiliation instance
-    affiliation = UserAffiliation.objects.prefetch_related('institutions').get(user=member)
-    affiliation.institutions.remove(institution)
+    
+    remove_user_from_account(member, institution)
 
     # Delete join request for this institution if exists
     if JoinRequest.objects.filter(user_from=member, institution=institution).exists():

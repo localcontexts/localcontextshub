@@ -444,7 +444,10 @@ def validate_recaptcha(request_object):
     return result.get('success', False) and result.get('score', 0.0) >= settings.RECAPTCHA_REQUIRED_SCORE
 
 
-def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Project']):
+def create_or_update_boundary(
+        post_data: dict,
+        entity: Union['Community', 'Project']
+):
     share_boundary_publicly = post_data.get('share-boundary-publicly')
 
     if share_boundary_publicly:
@@ -459,6 +462,7 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
     name = data.get('name')
     source = data.get('source')
     boundary_data = data.get('boundary')
+    should_update_coordinates = data.get('should_update_coordinates', True)
 
     if name:
         entity.name_of_boundary = name
@@ -468,8 +472,9 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
 
     boundary_coordinates = boundary_data if boundary_data else []
     if entity.boundary:
-        # update boundary when it exists
-        entity.boundary.coordinates = boundary_coordinates
+        if should_update_coordinates:
+            # update boundary when it exists and should be updated
+            entity.boundary.coordinates = boundary_coordinates
     else:
         # create boundary when it does not exist
         entity.boundary = Boundary(coordinates=boundary_coordinates)

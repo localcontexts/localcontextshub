@@ -14,8 +14,8 @@ from django.contrib.auth.views import (PasswordChangeForm, PasswordResetView, Se
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -25,8 +25,8 @@ from django.views.generic import View
 from maintenance_mode.decorators import force_maintenance_mode_off
 from rest_framework_api_key.models import APIKey
 from unidecode import unidecode
-
 from communities.models import Community, InviteMember
+
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
@@ -34,6 +34,7 @@ from helpers.emails import (
 )
 from helpers.models import HubActivity
 from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
+
 from institutions.models import Institution
 from localcontexts.utils import dev_prod_or_local
 from projects.models import Project
@@ -46,7 +47,14 @@ from .forms import (
     ResendEmailActivationForm, SignUpInvitationForm, UserCreateProfileForm, UserUpdateForm
 )
 from .models import Profile, SignUpInvitation, UserAffiliation
-from .utils import (get_next_path, get_users_name, manage_mailing_list, return_registry_accounts)
+from .utils import (
+    get_next_path,
+    get_users_name,
+    manage_mailing_list,
+    return_registry_accounts,
+    determine_user_role,
+    remove_user_from_account,
+)
 
 
 @unauthenticated_user
@@ -387,18 +395,38 @@ def change_password(request):
 
 @login_required(login_url='login')
 def deactivate_user(request):
-    profile = Profile.objects.select_related('user').get(user=request.user)
+    user = request.user
+    user_role = determine_user_role(user=user)
+    profile = Profile.objects.select_related('user').get(user=user)
+    affiliations = UserAffiliation.objects.prefetch_related(
+        'communities', 'institutions', 'communities__community_creator',
+        'institutions__institution_creator'
+    ).get(user=user)
+    users_name = get_users_name(user)
+    researcher = Researcher.objects.filter(user=user).first()
+
     if request.method == "POST":
-        user = request.user
-        user.is_active = False
-        user.save()
-        auth.logout(request)
-        messages.add_message(
-            request, messages.INFO, 'Your account has been deactivated. '
-            'If this was a mistake please contact support@localcontexts.org.'
-        )
-        return redirect('login')
-    return render(request, 'accounts/deactivate.html', {'profile': profile})
+        if user_role != 'is_creator_or_project_creator':
+
+            # removes user from their community and institution accounts
+            remove_user_from_account(user)
+
+            user.is_active = False
+            user.save()
+            auth.logout(request)
+            messages.add_message(
+                request, messages.INFO, 'Your account has been deactivated. '
+                'If this was a mistake please contact support@localcontexts.org.'
+            )
+            return redirect('login')
+
+    return render(request, 'accounts/deactivate.html', {
+        'profile': profile,
+        'user_role': user_role,
+        'affiliations': affiliations,
+        'researcher': researcher,
+        'users_name': users_name
+    })
 
 
 @login_required(login_url='login')
@@ -420,6 +448,32 @@ def manage_organizations(request):
             'users_name': users_name
         }
     )
+
+
+@login_required(login_url='login')
+def leave_account(request, account_type, account_id):
+    # Define a dictionary to map account types to their respective models
+    account_models = {
+        "institution": Institution,
+        "community": Community,
+    }
+
+    # Get the model class based on the account_type or return a 404 if not found
+    model = account_models.get(account_type)
+    account = get_object_or_404(model, id=account_id) if model else None
+
+    if account:
+        # Check if the user holds a role in the account
+        if (request.user in account.admins.all() or
+                request.user in account.editors.all() or
+                request.user in account.viewers.all()):
+
+            remove_user_from_account(request.user, account)
+        else:
+            # Return a 403 Forbidden response if the user does not hold a role in the account
+            return HttpResponseForbidden("You do not have permission to perform this action.")
+
+    return redirect('manage-orgs')
 
 
 @login_required(login_url='login')

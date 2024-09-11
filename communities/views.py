@@ -21,7 +21,7 @@ from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
 from helpers.utils import *
 from tklabels.utils import data as labels_data
-from accounts.utils import get_users_name
+from accounts.utils import get_users_name, remove_user_from_account
 from notifications.utils import *
 from helpers.downloads import download_labels_zip
 from helpers.emails import *
@@ -426,18 +426,8 @@ def delete_join_request(request, pk, join_id):
 def remove_member(request, pk, member_id):
     community = get_community(pk)
     member = User.objects.get(id=member_id)
-    # what role does member have
-    # remove from role
-    if member in community.admins.all():
-        community.admins.remove(member)
-    if member in community.editors.all():
-        community.editors.remove(member)
-    if member in community.viewers.all():
-        community.viewers.remove(member)
-
-    # remove community from userAffiliation instance
-    affiliation = UserAffiliation.objects.get(user=member)
-    affiliation.communities.remove(community)
+    
+    remove_user_from_account(member, community)
 
     # Delete join request for this community if exists
     if JoinRequest.objects.filter(user_from=member, community=community).exists():
