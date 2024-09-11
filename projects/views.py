@@ -5,6 +5,7 @@ from projects.models import Boundary
 from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
 from helpers.models import Notice
+from django.http import Http404
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
 from django.http import Http404, HttpResponse
