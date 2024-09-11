@@ -29,6 +29,11 @@ urlpatterns = [
     path('update-profile/', views.update_profile, name='update-profile'),
     path('confirm-email/<uidb64>/<token>/', views.confirm_email, name='confirm_email'),
     path('manage/', views.manage_organizations, name='manage-orgs'),
+    path(
+        'leave-account/<str:account_type><int:account_id>',
+        views.leave_account,
+        name='leave-account'
+        ),
     path('link-account/', views.link_account, name='link-account'),
     path('change-password/', views.change_password, name='change-password'),
     path('deactivate/', views.deactivate_user, name='deactivate-user'),
