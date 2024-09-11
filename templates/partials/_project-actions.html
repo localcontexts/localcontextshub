@@ -91,7 +91,7 @@
                 <h2>Project details</h2>
                 <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="projectDetailsDiv" style="height: auto; overflow: hidden;">
+            <div id="projectDetailsDiv" style="height: auto; overflow: visible;">
                 <div class="flex-this">
                     <div class="project-left-sidebar"><p class="bold">Description</p></div>
                     <div><p>{{ project.description|linebreaks }}</p></div>
@@ -307,7 +307,7 @@
                     <h2 id="notices">Project Notices</h2>
                     <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectNoticesDiv" style="height: auto; overflow: hidden;">
+                <div id="projectNoticesDiv" style="height: auto; overflow: visible;">
                     {% for notice in notices %}
                         <div class="flex-this">
                             <div class="project-left-sidebar">
@@ -348,7 +348,7 @@
                     <h2 id="labels">Project Labels</h2>
                     <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectLabelsDiv" style="height: auto; overflow: hidden;">
+                <div id="projectLabelsDiv" style="height: auto; overflow: visible;">
 
                     {% for community, labels in label_groups.items %}
                         <div class="label-group">
@@ -409,7 +409,7 @@
                     <h2>Sub Projects</h2>
                     <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="subProjectsDiv" style="height: auto; overflow: hidden;">
+                <div id="subProjectsDiv" style="height: auto; overflow: visible;">
 
                     <div><p><strong>{{sub_projects.count}}</strong> Sub Projects </p></div>
 
@@ -446,7 +446,7 @@
                 <h2>Related Projects</h2>
                 <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
+            <div id="relatedProjectsDiv" style="height: auto; overflow: visible;">
 
                 <div class="flex-this space-between center-text mt-16">
                     <div>
@@ -461,7 +461,7 @@
                                     <a
                                     {% if subscription.project_count == 0 %}
 
-                                            class="disabled-btn primary-btn white-btn"
+                                            class="disabled-btn primary-btn"
                                         {% else %}
                                             class="primary-btn white-btn"
 
