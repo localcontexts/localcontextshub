@@ -1784,6 +1784,12 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     )
     search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
 
+    def save_model(self, request, obj, form, change):
+        if obj.is_certified and 'is_certified' in form.changed_data and not obj.certified_by:
+            obj.certified_by = request.user
+        obj.save()
+
+
 class ServiceProviderConnectionsAdmin(admin.ModelAdmin):
     list_display = (
         'service_provider',
