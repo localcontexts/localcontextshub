@@ -40,6 +40,25 @@ from localcontexts.utils import dev_prod_or_local
 from projects.models import Project
 from researchers.models import Researcher
 from researchers.utils import is_user_researcher
+from helpers.utils import accept_member_invite
+from helpers.utils import validate_email, validate_recaptcha
+
+from helpers.emails import (send_activation_email, generate_token,
+                            resend_activation_email, send_welcome_email,
+                            send_email_verification, send_invite_user_email,
+                            add_to_newsletter_mailing_list,
+                            get_newsletter_member_info,
+                            unsubscribe_from_mailing_list,
+                            add_to_active_users_mailing_list,
+                            remove_from_active_users_mailing_list)
+from .models import SignUpInvitation, Profile, UserAffiliation
+from .forms import (RegistrationForm, ResendEmailActivationForm,
+                    CustomPasswordResetForm, UserCreateProfileForm,
+                    ProfileCreationForm, UserUpdateForm, ProfileUpdateForm,
+                    SignUpInvitationForm)
+
+from .utils import (get_next_path, get_users_name, return_registry_accounts,
+                    manage_mailing_list)
 
 from .decorators import unauthenticated_user
 from .forms import (
@@ -105,6 +124,9 @@ class ActivateAccountView(View):
         if user is not None and generate_token.check_token(user, token):
             user.is_active = True
             user.save()
+
+            add_to_active_users_mailing_list(request, user.email, None)
+
             messages.add_message(
                 request, messages.INFO,
                 'Profile activation successful. You are now able to login.'
@@ -295,6 +317,7 @@ def create_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
+            add_to_active_users_mailing_list(request, request.user.email, request.user.get_full_name()) #update mailing list with name
             return redirect('select-account')
     else:
         user_form = UserCreateProfileForm(instance=request.user)
@@ -410,6 +433,8 @@ def deactivate_user(request):
 
             # removes user from their community and institution accounts
             remove_user_from_account(user)
+            #update mailing list with name
+            remove_from_active_users_mailing_list(request, user.email, user.get_full_name()) 
 
             user.is_active = False
             user.save()
@@ -427,6 +452,7 @@ def deactivate_user(request):
         'researcher': researcher,
         'users_name': users_name
     })
+
 
 
 @login_required(login_url='login')
