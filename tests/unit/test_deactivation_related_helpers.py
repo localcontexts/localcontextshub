@@ -6,11 +6,13 @@ from factories.researchers_factories import ResearcherFactory
 from factories.projects_factories import ProjectCreatorFactory
 from factories.projects_factories import ProjectFactory
 
+from accounts.models import UserAffiliation
 from accounts.templatetags.custom_acct_tags import (
     user_created_project_in_community,
     user_created_project_in_institution, 
     user_created_project_as_researcher
 )
+from accounts.utils import remove_user_from_account
 
 
 class TestDeactivationRelatedHelpers(TransactionTestCase):
@@ -89,5 +91,26 @@ class TestDeactivationRelatedHelpers(TransactionTestCase):
             researcher_id=researcher_without_project.id
         ) is False
 
-    def test_remove_user_from_account(self):
-        pass
+    def test_remove_admin_user_from_community(self):
+        admin_user = UserFactory()
+        community = CommunityFactory()
+        community.admins.add(admin_user)
+        affiliation = UserAffiliation.objects.prefetch_related(
+            'communities'
+        ).get(user=admin_user)
+        affiliation.communities.add(community)
+
+        # verify admin_user is an admin
+        assert community.admins.contains(admin_user) is True
+        # verify community is in affiliation.communities
+        assert affiliation.communities.contains(community) is True
+
+        remove_user_from_account(
+            user=admin_user,
+            account=community
+        )
+
+        # verify admin_user is no longer an admin
+        assert community.admins.contains(admin_user) is False
+        # verify community is no longer in affiliation.communities
+        assert affiliation.communities.contains(community) is False
