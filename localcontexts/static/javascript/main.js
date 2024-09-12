@@ -2330,7 +2330,7 @@ if (window.location.href.includes('subscription-inquiry')) {
     document.addEventListener('DOMContentLoaded', function() {
     const nameInputField = document.getElementById('organizationInput')
     const suggestionsContainer = document.getElementById('suggestionsContainer')
-    
+
     let delayTimer
 
     nameInputField.addEventListener('input', () => {
@@ -2341,44 +2341,50 @@ if (window.location.href.includes('subscription-inquiry')) {
             let queryURL = 'https://api.ror.org/organizations?query='
 
             delayTimer = setTimeout(() => {
-            
+
                 var matchingInstitutions = nonRorInstitutes.filter(function(item) {
-                return item.fields.institution_name.toLowerCase().includes(inputValue.toLowerCase());
+                    return item.fields.institution_name.toLowerCase().includes(inputValue.toLowerCase());
                 });
                 var matchingCommunities = communities.filter(function(item){
-                return item.fields.community_name.toLowerCase().includes(inputValue.toLowerCase());
-            });
-            
-            fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
-                .then(response => response.json())
-                .then(data => {
-                    showSuggestions(data.items, matchingInstitutions, matchingCommunities, inputValue)
-                    
-                })
-                .catch(error => { console.error(error)})
+                    return item.fields.community_name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+                var matchingServiceProviders = serviceProviders.filter(function(item){
+                    return item.fields.name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+
+                fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showSuggestions(data.items, matchingInstitutions, matchingCommunities, matchingServiceProviders, inputValue)
+
+                    })
+                    .catch(error => { console.error(error)})
+
             }, 300) // Delay in milliseconds before making the request
         } else { clearSuggestions() }
     })
 
-    function showSuggestions(items, matchingInstitutions, matchingCommunities, userInput) {
+    function showSuggestions(items, matchingInstitutions, matchingCommunities, matchingServiceProviders, userInput) {
         // Clear previous suggestions
         clearSuggestions()
         // Get the first 5 most relevant itemss
-        const combinedItems = [...matchingInstitutions, ...matchingCommunities, ...items];
+        const combinedItems = [...matchingInstitutions, ...matchingCommunities, ...matchingServiceProviders, ...items];
 
         const filteredItems = combinedItems.filter(item =>
             (typeof item === 'object' && item.name?.toLowerCase().includes(userInput.toLowerCase())) ||
             (typeof item === 'object' && item.fields?.institution_name?.toLowerCase().includes(userInput.toLowerCase())) ||
-            (typeof item === 'object' && item.fields?.community_name?.toLowerCase().includes(userInput.toLowerCase())) 
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.name?.toLowerCase().includes(userInput.toLowerCase()))
         );
 
         // Check if any item exactly matches the user input
         const exactMatch = combinedItems.some(item =>
             (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
             (typeof item === 'object' && item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase()) ||
-            (typeof item === 'object' && item.fields?.community_name?.toLowerCase() === userInput.toLowerCase())
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.name?.toLowerCase() === userInput.toLowerCase())
         );
-        const relevantItems = filteredItems.slice(0, 5);        
+        const relevantItems = filteredItems.slice(0, 5);
         // If no exact match, show 'not found in ROR List' message
         if (!exactMatch) {
             const suggestionItem = document.createElement('div');
@@ -2391,17 +2397,17 @@ if (window.location.href.includes('subscription-inquiry')) {
                 suggestionsContainer.appendChild(suggestionItem);
         }
         displaySuggestions(relevantItems);
-    
+
     }
-  
+
       function displaySuggestions(items) {
         items.forEach(item => {
           const suggestionItem = document.createElement('div');
           suggestionItem.classList.add('suggestion-item');
-  
+
           let displayName = '';
           let displayDetails = '';
-  
+
           if (typeof item === 'object' && item.hasOwnProperty('name')) {
             displayName = item.name;
             displayDetails = `${item.types.join(", ")}, ${item.country.country_name} Institution`;
@@ -2411,17 +2417,20 @@ if (window.location.href.includes('subscription-inquiry')) {
         } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "communities.community") {
             displayName = item.fields.community_name;
             displayDetails = `${item.fields.country ? item.fields.country + " " : ""}Community`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "serviceproviders.serviceprovider") {
+            displayName = item.fields.name;
+            displayDetails = `Service Provider`;
         }
           suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
-  
+
           suggestionItem.addEventListener('click', () => {
             nameInputField.value = displayName;
             clearSuggestions();
           });
-  
+
           suggestionsContainer.appendChild(suggestionItem);
         });
     }
-    
+
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
     })}

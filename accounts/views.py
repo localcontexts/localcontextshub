@@ -802,8 +802,11 @@ def subscription_inquiry(request):
         "json", Institution.objects.filter(is_ror=False)
     )
     communities = serializers.serialize("json", Community.approved.all())
-    communities = escape_single_quotes(communities)
+    service_providers = serializers.serialize("json", ServiceProvider.certified.all())
+
     non_ror_institutes = escape_single_quotes(non_ror_institutes)
+    communities = escape_single_quotes(communities)
+    service_providers = escape_single_quotes(service_providers)
 
     if request.method == "POST":
         if validate_recaptcha(request) and form.is_valid():
@@ -841,5 +844,6 @@ def subscription_inquiry(request):
             "form": form,
             "non_ror_institutes": non_ror_institutes,
             "communities": communities,
+            "service_providers": service_providers,
         },
     )

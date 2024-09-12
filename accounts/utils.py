@@ -96,7 +96,7 @@ def institute_account_subscription(
             messages.add_message(
                 request,
                 messages.INFO,
-                "Your Account already exists on Hub. Please login.",
+                "This account already exists. Please login to view or join the account.",
             )
             return redirect("dashboard")
         elif account_exist and institution:
@@ -117,8 +117,7 @@ def institute_account_subscription(
         messages.add_message(
             request,
             messages.INFO,
-            "Your Account already exists on Hub. "
-            "Please login to create the insitute.",
+            "This account already exists. Please login to view or join the account.",
         )
         return redirect("select-account")
     elif institution and not account_exist:

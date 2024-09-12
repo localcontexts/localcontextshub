@@ -4,6 +4,11 @@ from django.core.validators import MaxLengthValidator
 import uuid
 import os
 
+
+class CertifiedManager(models.Manager):
+    def get_queryset(self):
+        return super(CertifiedManager, self).get_queryset().filter(is_certified=True)
+
 def service_provider_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
@@ -33,6 +38,7 @@ class ServiceProvider(models.Model):
 
     # Managers
     objects = models.Manager()
+    certified = CertifiedManager()
 
     def __str__(self):
         return str(self.name)
