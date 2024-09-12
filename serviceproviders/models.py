@@ -29,6 +29,7 @@ class ServiceProvider(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
+    certified_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="service_provider_approver")
     show_connections = models.BooleanField(default=True)
 
     # Managers

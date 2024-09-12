@@ -189,10 +189,7 @@ class InactiveUser(models.Model):
 
 class ServiceProviderConnections(models.Model):
     service_provider = models.ForeignKey(
-        ServiceProvider,
-        on_delete=models.CASCADE,
-        default=None,
-        null=True,
+        ServiceProvider, on_delete=models.CASCADE, default=None, null=True,
         related_name="service_provider_connection"
     )
     communities = models.ManyToManyField(

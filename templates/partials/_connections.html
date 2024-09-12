@@ -102,7 +102,7 @@
     </script>
 {% endif %}
 
-{% if not institutions and not researchers and not communities %}
+{% if not institutions and not researchers and not communities and '/connections/' in request.path%}
     <div class="dashcard w-100 center-text mt-16" style="margin-bottom:200px;">
         <p class="center-text">
             <strong>There are no connections yet.</strong>

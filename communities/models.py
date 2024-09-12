@@ -47,6 +47,11 @@ class Boundary(models.Model):
 
 
 class Community(models.Model):
+    PRIVACY_LEVEL = (
+        ('public', 'Public/Contributor'),
+        ('all', 'All'),
+    )
+
     community_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     community_name = models.CharField(max_length=80, null=True, unique=True)
     community_entity = models.CharField(max_length=200, null=True, blank=True)
@@ -66,12 +71,13 @@ class Community(models.Model):
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
 
-    show_sp_connection = models.BooleanField(default=True)
-
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
     boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
     share_boundary_publicly = models.BooleanField(default=True)
+
+    show_sp_connection = models.BooleanField(default=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
 
     # Managers
     objects = models.Manager()

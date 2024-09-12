@@ -13,14 +13,19 @@ class SubscribedManager(models.Manager):
 def get_file_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
-    return os.path.join('institutions/support-files', filename)  
+    return os.path.join('institutions/support-files', filename)
 
 def institution_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
-    return os.path.join('users/institution-images', filename)  
+    return os.path.join('users/institution-images', filename)
 
 class Institution(models.Model):
+    PRIVACY_LEVEL = (
+        ('public', 'Public/Contributor'),
+        ('all', 'All'),
+    )
+
     institution_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     institution_name = models.CharField(max_length=100, null=True, unique=True)
     contact_name = models.CharField(max_length=80, null=True, blank=True)
@@ -41,6 +46,7 @@ class Institution(models.Model):
     is_subscribed = models.BooleanField(default=False)
 
     show_sp_connection = models.BooleanField(default=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
 
     # Managers
     objects = models.Manager()
@@ -57,13 +63,13 @@ class Institution(models.Model):
         viewers = self.viewers.count()
         total_members = admins + editors + viewers + 1
         return total_members
-    
+
     def get_admins(self):
         return self.admins.all()
 
     def get_editors(self):
         return self.editors.all()
-    
+
     def get_viewers(self):
         return self.viewers.all()
 

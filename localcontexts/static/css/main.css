@@ -327,6 +327,7 @@ input:focus:not(.toggle) {
 
 
 /* PADDING */
+.pad-16 { padding: 16px; }
 .no-top-pad { padding-top: 0; }
 .no-bottom-pad { padding-bottom: 0px; }
 .pad-top-1 { padding-top: 1%; }
@@ -1473,6 +1474,7 @@ i[data-tooltip]:hover:after {
     width: 100%;
     position: absolute;
     background-color: #fff;
+    z-index: 1;
 }
 
 .dropdown-select .options div {
