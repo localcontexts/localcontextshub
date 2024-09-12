@@ -67,13 +67,13 @@ on the site letting users know site is under construction. Superuser will still 
 *Maintenance mode should be turned on for production deplyment and turned off when deployment is complete.*
 
 ## Production Deployment and Migration
-Every push to `develop` and `staging` will automatically trigger a new version build of either instance. Production (`master`)is a manual deployment. Migrations should be done before pushing to `master`.
+Every push to `develop` and `staging` will automatically trigger a new version build of either instance. Production (`production`)is a manual deployment. Migrations should be done before pushing to `production`.
 In order to make migrations or migrate the production database:
 1. `source env-local<instance>.sh`
 2. CLOUD PROXY CONNECTION STRING
 3. `python manage.py makemigrations`
 4. `python manage.py migrate`
-5. Merge `staging` into `master`
+5. Merge `staging` into `production`
 
 ## Running the Server
 ```python manage.py runserver```
