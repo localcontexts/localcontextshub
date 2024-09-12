@@ -118,6 +118,39 @@ def add_to_newsletter_mailing_list(email, name, variables):
             "vars": variables}
     )
 
+'''
+    ADD TO OR UPDATE ACTIVE HUB USER IN MAILING LIST IN PROD ONLY
+'''
+def add_to_active_users_mailing_list(request, email, name):
+    environment = dev_prod_or_local(request.get_host())
+    if environment == "PROD":
+        return requests.post(
+            "https://api.mailgun.net/v3/lists/hub_users@localcontextshub.org/members",
+            auth=("api", settings.MAILGUN_API_KEY),
+            data={"subscribed": True,
+                "upsert": True,
+                "address": email,
+                "name": name,
+            }
+        )
+    
+'''
+    REMOVE ACTIVE HUB USER FROM MAILING LIST IN PROD ONLY
+'''
+def remove_from_active_users_mailing_list(request, email, name):
+    environment = dev_prod_or_local(request.get_host())
+    if environment == "PROD":
+        return requests.post(
+            "https://api.mailgun.net/v3/lists/hub_users@localcontextshub.org/members",
+            auth=("api", settings.MAILGUN_API_KEY),
+            data={"subscribed": False,
+                "upsert": True,
+                "address": email,
+                "name": name,
+            }
+        )
+
+
 # Get member info from newsletter mailing list
 def get_newsletter_member_info(email):
     return requests.get(
