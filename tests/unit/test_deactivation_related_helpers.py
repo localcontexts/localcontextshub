@@ -162,3 +162,40 @@ class TestDeactivationRelatedHelpers(TransactionTestCase):
         assert community.viewers.contains(viewer_user) is False
         # verify community is no longer in affiliation.communities
         assert affiliation.communities.contains(community) is False
+
+    def test_remove_user_from_all_accounts(self):
+        community = CommunityFactory()
+        institution = InstitutionFactory()
+
+        user = UserFactory()
+
+        community.admins.add(user)
+        community.editors.add(user)
+        community.viewers.add(user)
+
+        institution.admins.add(user)
+        institution.editors.add(user)
+        institution.viewers.add(user)
+
+        affiliation = UserAffiliation.objects.prefetch_related(
+            'communities', 'institutions'
+        ).get(user=user)
+
+        affiliation.communities.add(community)
+        affiliation.institutions.add(institution)
+
+        # verify state before
+        assert community.admins.contains(user) is True
+        assert community.editors.contains(user) is True
+        assert community.viewers.contains(user) is True
+        assert affiliation.communities.contains(community) is True
+        assert affiliation.institutions.contains(institution) is True
+
+        remove_user_from_account(user=user)
+
+        # verify state after
+        assert community.admins.contains(user) is False
+        assert community.editors.contains(user) is False
+        assert community.viewers.contains(user) is False
+        assert affiliation.communities.contains(community) is False
+        assert affiliation.institutions.contains(institution) is False
