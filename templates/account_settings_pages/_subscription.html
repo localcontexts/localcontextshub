@@ -35,11 +35,11 @@
     </div>
     <p class="mt-0">See an overview of the activities happening within your subscription</p>
     <div class="flex-this subscription-activity subscription-details w-80">
-      <div><h5>Users Added</h5> <p>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</p></div>
-      <div class="vl"><h5>Projects Created</h5> <p>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</p></div>
-      <div class="vl"><h5>Notifications Sent</h5> <p>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</p></div>
-      <div class="vl"><h5>Notices and Labels</h5> <p>Unlimited</p></div>
-      <div class="vl"><h5>API Keys</h5> <p>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div><h5>Users Remaining</h5> <p>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Projects Remaining</h5> <p>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notifications Remaining</h5> <p>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notices Remaining</h5> {% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</div>
+      <div class="vl"><h5>API Keys Remaining</h5> <p>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</p></div>
     </div>
     <p>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></p>
   {% endif %}
