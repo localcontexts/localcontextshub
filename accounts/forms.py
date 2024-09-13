@@ -297,13 +297,13 @@ class BundleTypeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(BundleTypeForm, self).__init__(*args, **kwargs)
 
-        custom_labels = {
-            'user_bundle': 'User Bundle  5 @ US$1500',
-            'api_bundle': 'API Bundle  3 @ US$1500',
-            'project_bundle': 'Project Bundle  10 @ US$1500',
-            'notification_bundle': 'Notification Bundle  10 @ US$1500',
+        self.bundle_details = {
+            'User': {'label': 'User Bundle  5 @ US$1500', 'quantity': 5},
+            'API': {'label': 'API Bundle  3 @ US$1500', 'quantity': 3},
+            'Project': {'label': 'Project Bundle  10 @ US$1500', 'quantity': 10},
+            'Notification': {'label': 'Notification Bundle  10 @ US$1500', 'quantity': 10},
         }
 
         self.fields['bundle_type'].choices = [
-            (value, custom_labels.get(value, label)) for value, label in self.fields['bundle_type'].choices
+            (value, self.bundle_details[value]['label']) for value, _ in self.fields['bundle_type'].choices
         ]

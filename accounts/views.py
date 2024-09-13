@@ -48,7 +48,8 @@ from institutions.utils import get_institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import (
-    accept_member_invite, validate_email, validate_recaptcha, check_member_role
+    accept_member_invite, validate_email, validate_recaptcha, check_member_role,
+    create_bundle_call, get_access_token_of_SF
 )
 from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from helpers.models import HubActivity
@@ -949,6 +950,29 @@ def subscription(request, pk, account_type, related=None):
         if subscription is not None:
             if subscription.end_date and subscription.end_date < timezone.now():
                 renew = True
+
+        if request.method == "POST":
+            if form.is_valid():
+                try:
+                    access_token = get_access_token_of_SF(request, bundle_data)
+                    for bundle in  form.cleaned_data['bundle_type']:
+                        bundle_data = BundleTypeForm().bundle_details[bundle]
+                        quantity = bundle_data['quantity']
+                        bundle_data = {
+                            "hubId": str(request.user.id) +"_r",
+                            "isBundle": True,
+                            "BundleType": bundle,
+                            "Quantity": quantity,
+                        }
+                        create_bundle_call(request, bundle_data, access_token)
+                except Exception as e:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        "An unexpected error has occurred here."
+                        " Please contact support@localcontexts.org.",
+                    )
+                    return redirect("subscription", researcher.id, 'researcher')
         context = {
             "researcher": researcher,
             "subscription": subscription,
@@ -958,7 +982,8 @@ def subscription(request, pk, account_type, related=None):
             "end_date": subscription.end_date.strftime('%d %B %Y')
             if subscription and subscription.end_date is not None
             else None,
-            "renew": renew
+            "renew": renew,
+            "form": form,
         }
     return render(
         request, 'account_settings_pages/_subscription.html',

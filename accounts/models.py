@@ -213,10 +213,10 @@ class ServiceProviderConnections(models.Model):
 
 class BundleType(models.Model):
     Bundle_Types = (  
-        ('user_bundle', 'User Bundle'),
-        ('api_bundle', 'API Bundle'),
-        ('project_bundle', 'Project Bundle'),
-        ('notification_bundle', 'Notification Bundle'),  
+        ('User', 'User Bundle'),
+        ('API', 'API Bundle'),
+        ('Project', 'Project Bundle'),
+        ('Notification', 'Notification Bundle'),  
     )
     institution = models.ForeignKey(
         Institution,
