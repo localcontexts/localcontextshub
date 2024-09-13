@@ -1,7 +1,7 @@
 {% load static %}
-<div class="dashcard flex-this">
+<div class="dashcard flex-this" style="height: 225px;">
     <!-- Left Side: Nav and Account Info -->
-    <div class="w-75">
+    <div class="w-75 flex-this column">
         <!-- Top Nav -->
         <div class="loc grey-text bold mb-8">
             <small>
@@ -178,7 +178,7 @@
     </div>
 
     <!-- Right Side: Dashcard buttons and Count Cards -->
-    <div class="w-25">
+    <div class="w-25 flex-this column">
 
         <!-- Buttons -->
         <div class="flex-this gap-half mb-8">
@@ -242,7 +242,7 @@
         </div>
 
         <!-- Account Cards -->
-        <div>
+        <div class="h-100" style="overflow: hidden;">
             {% if researcher %}
                 {% include 'snippets/account-count-cards.html' with scope=researcher %}
             {% elif community %}

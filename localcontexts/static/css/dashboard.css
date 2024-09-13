@@ -24,6 +24,7 @@
 .dashcard {
     margin-top: 5px;
     padding: 16px;
+    max-height: 225px;
 }
 
 .dashcard-img-container, 
@@ -32,7 +33,7 @@
 
 .dashcard-img-container, .profile-img {
     width: 286px;
-    height: 160.88px;
+    height: 160px;
     position: relative;
 }
 
@@ -40,8 +41,8 @@
 .researcher-img-container img { object-fit: cover; }
 
 .researcher-img-container, .researcher-img-container img {
-    width: 190px;
-    height: 190px;
+    width: 160px;
+    height: 160px;
 }
 
 .certified-overlay {
