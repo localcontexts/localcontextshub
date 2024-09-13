@@ -1,14 +1,105 @@
-{% extends 'settings-base.html' %}{% load static %}
+{% extends 'settings-base.html' %}{% load static %} {% load custom_acct_tags %}
 
 {% block settings %}
 <form id="deactivateUserForm" method="POST">
 
-    <div><h3>Deactivate Your Profile</h3></div>
+    <div class="flex-this column w-100 mr-1p">
+        <div><h3>Deactivate Your Profile</h3></div>
 
-    <div class="mb-2p">
-        <p class="mt-0">Please note that you will not be able to sign-in after deactivation. Your profile and its associated data will be deleted 30 days after deactivation.</p>
+        <div class="w-100 mb-2p">
+            <p class="no-top-margin">
+                {% if user_role == 'is_creator_or_project_creator' %}
+                    It looks like you are either the main administrator of an account or a Project creator.
+                    Please email us at
+                    <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a>
+                    for deactivation assistance.
+                {% elif user_role == 'is_member' %}
+                    It looks like you are a member of an account.
+                    When you deactivate your profile, you will be removed from all accounts and unable to log in.
+                    Your profile and its associated data will be deleted 30 days after deactivation.
+                {% else %}
+                    You will not be able to log in after you deactivate your profile.
+                    Your profile and its associated data will be deleted 30 days after deactivation.
+                {% endif %}
+            </p>
+            {% if user_role == 'is_creator_or_project_creator' %}
+                {% if researcher %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ users_name }} | Researcher</h3></div>
+                        <ul class="ul-no-bullets">
+                            <li><small>You're the creator of this account.</small></li>
+                            {% user_created_project_as_researcher profile.user.id researcher.id as created_a_project %}
+                            {% if created_a_project %}
+                                <li><small>You've created Projects in this account.</small></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% for community in affiliations.communities.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        {% user_created_project_in_community profile.user.id community.id as created_a_project %}
+                        {% if profile.user.id == community.community_creator.id or created_a_project%}
+                            <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
+                            <ul class="ul-no-bullets">
+                                {% if profile.user.id == community.community_creator.id %}
+                                    <li><small>You're the creator of this account.</small></li>
+                                {% endif %}
+
+
+                                {% if created_a_project %}
+                                    <li><small>You've created Projects in this account.</small></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% for institution in affiliations.institutions.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        {% user_created_project_in_institution profile.user.id institution.id as created_a_project %}
+                        {% if profile.user.id == institution.institution_creator.id or created_a_project%}
+                            <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                            <ul class="ul-no-bullets">
+                                {% if profile.user.id == institution.institution_creator.id %}
+                                    <li><small>You're the creator of this account.</small></li>
+                                {% endif %}
+
+
+                                {% if created_a_project %}
+                                    <li><small>You've created Projects in this account.</small></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% elif user_role == 'is_member' %}
+                {% for community in affiliations.communities.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ community.community_name }} | Community</h3></div>
+                        <ul class="ul-no-bullets">
+                            <li><small>You will be removed from this account.</small></li>
+                        </ul>
+                    </div>
+                {% endfor %}
+
+                {% for institution in affiliations.institutions.all %}
+                    <div class="flex-this space-between border-top-bottom-grey w-100 align-center">
+                        <div class="w-50"><h3>{{ institution.institution_name }} | Institution</h3></div>
+                        <ul class="ul-no-bullets">
+                            <li><small>You will be removed from this account.</small></li>
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <br>
             {% csrf_token %}
-            <button id="submitDeactivation" class="primary-btn white-btn">Deactivate Profile</button>
+            <button id="submitDeactivation" class="primary-btn white-btn
+                {% if user_role == 'is_creator_or_project_creator' %}disabled-btn pointer-event-none{% endif %}">
+                Deactivate Profile
+            </button>
+        </div>
     </div>
 
     <div id="deactivationModal" class="modal hide">
