@@ -334,6 +334,7 @@ def public_institution_view(request, pk):
 def update_institution(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    envi = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
         update_form = UpdateInstitutionForm(
@@ -356,6 +357,7 @@ def update_institution(request, pk):
         "institution": institution,
         "update_form": update_form,
         "member_role": member_role,
+        "envi": envi,
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
 
@@ -1587,6 +1589,7 @@ def api_keys(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
     remaining_api_key_count = 0
+    envi = dev_prod_or_local(request.get_host())
     
     try:
         if institution.is_subscribed:
@@ -1645,7 +1648,8 @@ def api_keys(request, pk):
             "form" : form,
             "account_keys" : account_keys,
             "member_role" : member_role,
-            "remaining_api_key_count" : remaining_api_key_count,
+            "subscription_api_key_count" : remaining_api_key_count,
+            "envi": envi,
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except:

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (PasswordChangeForm, PasswordResetView, SetPasswordForm)
@@ -41,10 +42,12 @@ from .utils import (
     get_next_path, get_users_name, return_registry_accounts, manage_mailing_list,
     institute_account_subscription, escape_single_quotes
 )
+from institutions.utils import get_institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
-from helpers.utils import (accept_member_invite, validate_email, validate_recaptcha)
-
+from helpers.utils import (
+    accept_member_invite, validate_email, validate_recaptcha, check_member_role
+)
 from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
 from helpers.models import HubActivity
 from projects.models import Project
@@ -842,4 +845,63 @@ def subscription_inquiry(request):
             "non_ror_institutes": non_ror_institutes,
             "communities": communities,
         },
+    )
+
+
+@login_required(login_url="login")
+def subscription(request, pk, account_type, related=None):
+    if dev_prod_or_local(request.get_host()) == "SANDBOX":
+        return redirect("dashboard")
+
+    renew = False
+
+    if account_type == 'institution' and (
+        request.user in get_institution(pk).get_admins()
+        or
+        request.user == get_institution(pk).institution_creator
+    ):
+        institution = get_institution(pk)
+        member_role = check_member_role(request.user, institution)
+        try:
+            subscription = Subscription.objects.get(institution=institution)
+        except Subscription.DoesNotExist:
+            subscription = None
+        if subscription is not None:
+            if subscription.end_date and subscription.end_date < timezone.now():
+                renew = True
+        context = {
+            "institution": institution,
+            "subscription": subscription,
+            "start_date": subscription.start_date.strftime('%d %B %Y')
+            if subscription and subscription.start_date is not None
+            else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y')
+            if subscription and subscription.end_date is not None
+            else None,
+            "renew": renew,
+            "member_role": member_role,
+        }
+    if account_type == 'researcher':
+        researcher = Researcher.objects.get(id=pk)
+        if researcher.is_subscribed:
+            subscription = Subscription.objects.filter(researcher=researcher).first()
+        else:
+            subscription = None
+        if subscription is not None:
+            if subscription.end_date and subscription.end_date < timezone.now():
+                renew = True
+        context = {
+            "researcher": researcher,
+            "subscription": subscription,
+            "start_date": subscription.start_date.strftime('%d %B %Y')
+            if subscription and subscription.start_date is not None
+            else None,
+            "end_date": subscription.end_date.strftime('%d %B %Y')
+            if subscription and subscription.end_date is not None
+            else None,
+            "renew": renew
+        }
+    return render(
+        request, 'account_settings_pages/_subscription.html',
+        context
     )

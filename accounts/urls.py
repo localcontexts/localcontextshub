@@ -71,4 +71,9 @@ urlpatterns = [
         ),
         name="password_reset_complete"
     ),
+    path(
+        "subscription/<str:pk>/<str:account_type>/",
+        views.subscription,
+        name="subscription"
+    ),
 ]
