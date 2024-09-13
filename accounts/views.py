@@ -26,8 +26,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from unidecode import unidecode
 
-from communities.models import Community, InviteMember
-
 from helpers.emails import (
     add_to_newsletter_mailing_list, generate_token, get_newsletter_member_info,
     resend_activation_email, send_activation_email, send_email_verification,
