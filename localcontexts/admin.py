@@ -7,6 +7,7 @@ from django.db.models.base import Model as Model
 from django.db.models.functions import Extract, Concat
 from django.db.models import Count, Q, Value, F, CharField, Case, When
 from django.contrib import admin
+from django.contrib.admin.models import LogEntry
 from django.urls import path
 from django.utils.translation import gettext as _
 from django.utils.html import format_html, format_html_join
@@ -17,23 +18,14 @@ from django.utils.encoding import force_bytes
 from django.apps import apps
 from django.template.response import TemplateResponse
 from django.http import Http404, HttpRequest, HttpResponse
-from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db import models
-from django.db.models import Case, CharField, Count, F, Q, Value, When
-from django.db.models.functions import Concat, Extract
-from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from rest_framework_api_key.models import AbstractAPIKey
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
-from django.template.response import TemplateResponse
-from django.urls import path
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
 from api.models import AccountAPIKey
@@ -1770,6 +1762,18 @@ class DjangoJobExecutionAdmin(admin.ModelAdmin):
 
 admin_site.register(DjangoJobExecution, DjangoJobExecutionAdmin)
 
+class LogEntryAdmin(admin.ModelAdmin):
+    readonly_fields = ('user', 'content_type', 'object_id', 'object_repr', 'action_flag', 'change_message')
+    search_fields = ('user__username', 'user__email', 'object_repr')
+
+    # Disallow superusers to delete Log Entries
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
+
+admin_site.register(LogEntry, LogEntryAdmin)
+
 
 class InactiveUserAdmin(admin.ModelAdmin):
     list_display = ('user', 'username', 'email', 'date_joined')
@@ -1783,6 +1787,12 @@ class ServiceProviderAdmin(admin.ModelAdmin):
         'name', 'account_creator', 'contact_name', 'contact_email', 'is_certified', 'created',
     )
     search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.is_certified and 'is_certified' in form.changed_data and not obj.certified_by:
+            obj.certified_by = request.user
+        obj.save()
+
 
 class ServiceProviderConnectionsAdmin(admin.ModelAdmin):
     list_display = (

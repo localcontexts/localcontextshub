@@ -12,6 +12,7 @@ from projects.utils import *
 from helpers.utils import *
 from notifications.utils import *
 from .utils import *
+from accounts.utils import remove_user_from_account
 
 from .models import *
 from projects.models import *
@@ -334,6 +335,7 @@ def public_institution_view(request, pk):
 def update_institution(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
+    envi = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
         update_form = UpdateInstitutionForm(
@@ -356,6 +358,7 @@ def update_institution(request, pk):
         "institution": institution,
         "update_form": update_form,
         "member_role": member_role,
+        "envi": envi,
     }
     return render(request, 'account_settings_pages/_update-account.html', context)
 
@@ -608,25 +611,13 @@ def remove_member(request, pk, member_id):
         subscription = Subscription.objects.get(institution=institution)
     except Subscription.DoesNotExist:
         subscription = None
-    # what role does member have
-    # remove from role
+
 
     if subscription is not None and subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
         subscription.users_count += 1
         subscription.save()
     
-    if member in institution.admins.all():
-        institution.admins.remove(member)
-    elif member in institution.editors.all():
-        institution.editors.remove(member)    
-    elif member in institution.viewers.all():
-        institution.viewers.remove(member)
-
-    # remove institution from userAffiliation instance
-    affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
-        user=member
-    )
-    affiliation.institutions.remove(institution)
+    remove_user_from_account(member, institution)
 
     # Delete join request for this institution if exists
     if JoinRequest.objects.filter(user_from=member, institution=institution).exists():
@@ -1442,41 +1433,49 @@ def connect_service_provider(request, pk):
         member_role = check_member_role(request.user, institution)
         if request.method == "GET":
             service_providers = ServiceProvider.objects.filter(is_certified=True)
-            connected_service_providers = ServiceProviderConnections.objects.filter(
+            connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 institutions=institution
-            )
+            ).values_list('service_provider', flat=True)
+            connected_service_providers = service_providers.filter(id__in=connected_service_providers_ids)
+            other_service_providers = ServiceProvider.objects.filter(is_certified=True).exclude(id__in=connected_service_providers_ids)
 
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
-                service_provider_id = request.POST.get('connectServiceProvider')
-                connection_reference_id = f"{service_provider_id}:{institution.id}_i"
+                if institution.is_subscribed:
+                    service_provider_id = request.POST.get('connectServiceProvider')
+                    connection_reference_id = f"{service_provider_id}:{institution.id}_i"
 
-                if ServiceProviderConnections.objects.filter(
-                        service_provider=service_provider_id).exists():
-                    # Connect institution to existing Service Provider connection
-                    sp_connection = ServiceProviderConnections.objects.get(
-                        service_provider=service_provider_id
+                    if ServiceProviderConnections.objects.filter(
+                            service_provider=service_provider_id).exists():
+                        # Connect institution to existing Service Provider connection
+                        sp_connection = ServiceProviderConnections.objects.get(
+                            service_provider=service_provider_id
+                        )
+                        sp_connection.institutions.add(institution)
+                        sp_connection.save()
+                    else:
+                        # Create new Service Provider Connection and add institution
+                        service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                        sp_connection = ServiceProviderConnections.objects.create(
+                            service_provider = service_provider
+                        )
+                        sp_connection.institutions.add(institution)
+                        sp_connection.save()
+
+                    # Delete instances of disconnect Notifications
+                    delete_action_notification(connection_reference_id)
+
+                    # Send notification of connection to Service Provider
+                    target_org = sp_connection.service_provider
+                    title = f"{institution.institution_name} has connected to {target_org.name}"
+                    send_simple_action_notification(
+                        None, target_org, title, "Connections", connection_reference_id
                     )
-                    sp_connection.institutions.add(institution)
-                    sp_connection.save()
                 else:
-                    # Create new Service Provider Connection and add institution
-                    service_provider = ServiceProvider.objects.get(id=service_provider_id)
-                    sp_connection = ServiceProviderConnections.objects.create(
-                        service_provider = service_provider
+                    messages.add_message(
+                        request, messages.ERROR,
+                        'Your account must be subscribed to connect to Service Providers.'
                     )
-                    sp_connection.institutions.add(institution)
-                    sp_connection.save()
-
-                # Delete instances of disconnect Notifications
-                delete_action_notification(connection_reference_id)
-
-                # Send notification of connection to Service Provider
-                target_org = sp_connection.service_provider
-                title = f"{institution.institution_name} has connected to {target_org.name}"
-                send_simple_action_notification(
-                    None, target_org, title, "Connections", connection_reference_id
-                )
 
             elif "disconnectServiceProvider" in request.POST:
                 service_provider_id = request.POST.get('disconnectServiceProvider')
@@ -1498,12 +1497,13 @@ def connect_service_provider(request, pk):
                 send_simple_action_notification(
                     None, target_org, title, "Connections", connection_reference_id
                 )
+
             return redirect("institution-connect-service-provider", institution.id)
 
         context = {
             'member_role': member_role,
             'institution': institution,
-            'service_providers': service_providers,
+            'other_service_providers': other_service_providers,
             'connected_service_providers': connected_service_providers,
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
@@ -1523,11 +1523,14 @@ def account_preferences(request, pk):
             # Set Show/Hide account in Service Provider connections
             if request.POST.get('show_sp_connection') == 'on':
                 institution.show_sp_connection = True
-                institution.save()
 
             elif request.POST.get('show_sp_connection') == None:
                 institution.show_sp_connection = False
-                institution.save()
+
+            # Set project privacy settings for Service Provider connections
+            institution.sp_privacy = request.POST.get('sp_privacy')
+
+            institution.save()
 
             messages.add_message(
                 request, messages.SUCCESS, 'Your preferences have been updated!'
@@ -1575,6 +1578,7 @@ def api_keys(request, pk):
     institution = get_institution(pk)
     member_role = check_member_role(request.user, institution)
     remaining_api_key_count = 0
+    envi = dev_prod_or_local(request.get_host())
     
     try:
         if institution.is_subscribed:
@@ -1633,7 +1637,8 @@ def api_keys(request, pk):
             "form" : form,
             "account_keys" : account_keys,
             "member_role" : member_role,
-            "remaining_api_key_count" : remaining_api_key_count,
+            "subscription_api_key_count" : remaining_api_key_count,
+            "envi": envi,
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except:

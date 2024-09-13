@@ -8,10 +8,15 @@ import os
 def researcher_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
-    return os.path.join('users/researcher-images', filename)  
+    return os.path.join('users/researcher-images', filename)
 
 
 class Researcher(models.Model):
+    PRIVACY_LEVEL = (
+        ('public', 'Public/Contributor'),
+        ('all', 'All'),
+    )
+
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     orcid = models.CharField(max_length=300, null=True, blank=True)
     image = models.ImageField(upload_to=researcher_img_path, blank=True, null=True)
@@ -25,12 +30,13 @@ class Researcher(models.Model):
     is_subscribed = models.BooleanField(default=False)
 
     show_sp_connection = models.BooleanField(default=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
 
     def get_projects(self):
         return  self.researcher_created_project.filter(researcher=self).exists()
 
     def __str__(self):
         return str(self.user)
-    
+
     class Meta:
         indexes = [models.Index(fields=['id', 'user', 'image'])]

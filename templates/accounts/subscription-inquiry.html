@@ -4,6 +4,7 @@
 <script type="text/javascript">
   var nonRorInstitutes = JSON.parse('{{ non_ror_institutes | safe }}')
   var communities = JSON.parse('{{ communities | safe}}')
+  var serviceProviders = JSON.parse('{{ service_providers | safe}}')
 
   grecaptcha.ready(function () {
     grecaptcha

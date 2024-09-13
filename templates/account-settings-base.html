@@ -73,6 +73,17 @@
                     </a>
                 {% endif %}
 
+                {% if institution or researcher and envi != "SANDBOX" %}
+                <a class="side-nav-a" href="{% if institution %}{% url 'subscription' institution.id 'institution' %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
+                        <div class="flex-this  side-nav-item {% if 'subscription' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 margin-right-8"><i class="fa fa-calendar-check-o fa-3x" aria-hidden="true"></i></div>
+                            <div class="w-80">
+                                <p class="mt-0"><strong>Subscription</strong><br>Subscription details and activity</p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+
                 <!-- Manage API Keys -->
                 <a href="{% if community %}{% url 'community-api-key' community.id %}{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}{% if service_provider %}{% url 'service-provider-api-key' service_provider.id %}{% endif %}">
                     <div class="flex-this side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
@@ -98,7 +109,7 @@
                         </div>
                     </a>
                 {% endif %}
-
+                
             </div>
 
 

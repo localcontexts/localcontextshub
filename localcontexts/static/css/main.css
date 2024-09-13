@@ -327,6 +327,7 @@ input:focus:not(.toggle) {
 
 
 /* PADDING */
+.pad-16 { padding: 16px; }
 .no-top-pad { padding-top: 0; }
 .no-bottom-pad { padding-bottom: 0px; }
 .pad-top-1 { padding-top: 1%; }
@@ -1162,14 +1163,15 @@ i[data-tooltip]:hover:after {
 .tooltip {
     position: relative;
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background-color: #EF6C00;
     border-radius: 50%;
     color: #fff;
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 /* Tooltip text */
@@ -1204,6 +1206,7 @@ i[data-tooltip]:hover:after {
     padding: 10px;
     display: inline-block;
     font-size: 14px;
+    font-weight: normal;
 }
 
 /* Tooltip arrow */
@@ -1433,6 +1436,7 @@ i[data-tooltip]:hover:after {
     width: 100%;
     position: absolute;
     background-color: #fff;
+    z-index: 1;
 }
 
 .dropdown-select .options div {

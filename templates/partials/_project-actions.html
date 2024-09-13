@@ -87,11 +87,11 @@
         </div>
 
         <div>
-            <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+            <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Project details</h2>
-                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="projectDetailsDiv" style="height: auto; overflow: hidden;">
+            <div id="projectDetailsDiv" style="height: auto; overflow: visible;">
                 <div class="flex-this">
                     <div class="project-left-sidebar"><p class="bold">Description</p></div>
                     <div><p>{{ project.description|linebreaks }}</p></div>
@@ -303,11 +303,11 @@
             </div>
 
             {% if notices %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="notices">Project Notices</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectNoticesDiv" style="height: auto; overflow: hidden;">
+                <div id="projectNoticesDiv" style="height: auto; overflow: visible;">
                     {% for notice in notices %}
                         <div class="flex-this">
                             <div class="project-left-sidebar">
@@ -344,11 +344,11 @@
             {% endif %}
 
             {% if project.has_bclabels or project.has_tklabels %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="labels">Project Labels</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectLabelsDiv" style="height: auto; overflow: hidden;">
+                <div id="projectLabelsDiv" style="height: auto; overflow: visible;">
 
                     {% for community, labels in label_groups.items %}
                         <div class="label-group">
@@ -405,11 +405,11 @@
             {% endif %}
 
             {% if not project.source_project_uuid %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>Sub Projects</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="subProjectsDiv" style="height: auto; overflow: hidden;">
+                <div id="subProjectsDiv" style="height: auto; overflow: visible;">
 
                     <div><p><strong>{{sub_projects.count}}</strong> Sub Projects </p></div>
 
@@ -442,11 +442,11 @@
             {% endif %}
 
 
-            <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+            <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Related Projects</h2>
-                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
+            <div id="relatedProjectsDiv" style="height: auto; overflow: visible;">
 
                 <div class="flex-this space-between center-text mt-16">
                     <div>
@@ -461,7 +461,7 @@
                                     <a
                                     {% if subscription.project_count == 0 %}
 
-                                            class="disabled-btn primary-btn white-btn"
+                                            class="disabled-btn primary-btn"
                                         {% else %}
                                             class="primary-btn white-btn"
 
@@ -586,16 +586,16 @@
             {% include 'projects/project-comment.html'%}
 
             {% if activities %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>
                         Project activity
-                        <div class="tooltip ml-5"><strong>i</strong>
+                        <div class="tooltip ml-5">i
                             <span class="tooltiptext">
                                 Project activity is only visible to Project contributors.
                             </span>
                         </div> 
                     </h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectActivityDiv" style="height: 0px; overflow: hidden;">
                     {% for activity in activities %}
@@ -690,7 +690,7 @@
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
-                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;">i
                                     <span class="tooltiptext">
                                         The Project you are viewing is already a sub-project
                                     </span>
@@ -710,7 +710,7 @@
                             {% else %}
                                 <a class="block a-disabled"> 
                                     <i class="fa-solid fa-tag"></i> Apply Labels
-                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                                         <span class="tooltiptext">
                                             Your community was added as a contributor to this Project. The Project creator needs to notify your community if you wish to apply Labels. Please contact us with any questions.
                                         </span>
@@ -720,7 +720,7 @@
                         {% else %}
                             <a class="block a-disabled"> 
                                 <i class="fa-solid fa-tag"></i> Apply Labels
-                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                <div class="tooltip ml-5" style="margin-top: 6px;">i
                                     <span class="tooltiptext">
                                         Your account needs to be confirmed before you can apply Labels. Please contact us if you have questions.
                                     </span>
@@ -752,7 +752,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-user-group"></i> Notify Communities
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     Your institution account needs an active subscription to notify communities.
                                 </span>
@@ -897,7 +897,7 @@
                 {% else %}
                     <a class="block a-disabled"> 
                         <i class="fa-solid fa-download"></i> Download
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
@@ -914,7 +914,7 @@
             {% else %}
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-share-nodes"></i> Share
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             Private Projects cannot be shared.
                         </span>
@@ -922,7 +922,7 @@
                 </a>
                 <a class="block a-disabled"> 
                     <i class="fa-solid fa-download"></i> Download
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             Private Projects cannot be downloaded.
                         </span>
@@ -948,7 +948,7 @@
                         {% endif %}
                     ><i class="fa-solid fa-box-archive"></i> {% if project_archived %} Unarchive {% else %} Archive {% endif %}
 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 Projects that are archived will only appear in your archived project list. Projects can be unarchived at any time.
                             </span>
@@ -962,7 +962,7 @@
                             onclick="openModal('deleteProjectModal', 'closeProjectDeletionModal')"
                         ><i class="fa-solid fa-trash"></i> Delete
 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 Permanently remove this project. Projects with Labels cannot be deleted.
                             </span>
@@ -995,7 +995,7 @@
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-trash"></i> Delete
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     Projects with Labels cannot be deleted.
                                 </span>
@@ -1014,7 +1014,7 @@
                 {% if communities or institutions or user_researcher %}
                     <div class="actions-card content-card-space flex-this column">
                         <h3 class="mt-0">View As 
-                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                            <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
                                     You are viewing what this Project looks like publicly. To access the action page as a contributor on this Project, select an account below.
                                 </span>
@@ -1041,7 +1041,7 @@
             {% else %}
                 <div class="actions-card content-card-space flex-this column">
                     <h3 class="mt-0">View As 
-                        <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                        <div class="tooltip ml-5" style="margin-top: 6px;">i
                             <span class="tooltiptext">
                                 You are viewing the action page of this Project, which is only accessible to contributors. Use this button to see what this Project looks like publicly.
                             </span>
@@ -1065,7 +1065,7 @@
             <div class="actions-card-notifified content-card-space flex-this column">
                 <div class="flex-this">
                     <h3 class="mt-0 mb-0">Communities Notified</h3>
-                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                    <div class="tooltip ml-5" style="margin-top: 6px;">i
                         <span class="tooltiptext">
                             <i class="bold">Seen</i><br> The community has acknowledged the Project but has not made a decision about applying Labels.<br>
                             <i class="bold">No Labels Pending</i><br> The community will not apply Labels to the Project.<br>
