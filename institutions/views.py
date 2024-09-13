@@ -12,6 +12,7 @@ from projects.utils import *
 from helpers.utils import *
 from notifications.utils import *
 from .utils import *
+from accounts.utils import remove_user_from_account
 
 from .models import *
 from projects.models import *
@@ -610,25 +611,13 @@ def remove_member(request, pk, member_id):
         subscription = Subscription.objects.get(institution=institution)
     except Subscription.DoesNotExist:
         subscription = None
-    # what role does member have
-    # remove from role
+
 
     if subscription is not None and subscription.users_count >= 0 and member in (institution.admins.all() or institution.editors.all()):
         subscription.users_count += 1
         subscription.save()
     
-    if member in institution.admins.all():
-        institution.admins.remove(member)
-    elif member in institution.editors.all():
-        institution.editors.remove(member)    
-    elif member in institution.viewers.all():
-        institution.viewers.remove(member)
-
-    # remove institution from userAffiliation instance
-    affiliation = UserAffiliation.objects.prefetch_related("institutions").get(
-        user=member
-    )
-    affiliation.institutions.remove(institution)
+    remove_user_from_account(member, institution)
 
     # Delete join request for this institution if exists
     if JoinRequest.objects.filter(user_from=member, institution=institution).exists():

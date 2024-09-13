@@ -4,6 +4,7 @@ from django.db.models import Q
 from accounts.utils import get_users_name
 from communities.models import Community, JoinRequest
 from institutions.models import Institution
+from projects.models import ProjectCreator
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
 from accounts.models import ServiceProviderConnections
@@ -95,3 +96,27 @@ def is_connected_service_provider(sp_account, account):
     if isinstance(account, Researcher):
         return ServiceProviderConnections.objects.filter(
             researchers=account, service_provider=sp_account).exists()
+
+
+@register.simple_tag
+def user_created_project_in_community(user_id: int, community_id: int) -> bool:
+    return ProjectCreator.objects.filter(
+        community=community_id,
+        project__project_creator=user_id
+    ).exists()
+
+
+@register.simple_tag
+def user_created_project_in_institution(user_id: int, institution_id: int) -> bool:
+    return ProjectCreator.objects.filter(
+        institution=institution_id,
+        project__project_creator=user_id
+    ).exists()
+
+
+@register.simple_tag
+def user_created_project_as_researcher(user_id: int, researcher_id: int) -> bool:
+    return ProjectCreator.objects.filter(
+        researcher=researcher_id,
+        project__project_creator=user_id
+    ).exists()
