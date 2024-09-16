@@ -244,13 +244,13 @@
         <!-- Account Cards -->
         <div class="h-100" style="overflow: hidden;">
             {% if researcher %}
-                {% include 'snippets/account-count-cards.html' with scope=researcher %}
+                {% include 'snippets/account-count-cards.html' with account=researcher %}
             {% elif community %}
-                {% include 'snippets/account-count-cards.html' with scope=community %}
+                {% include 'snippets/account-count-cards.html' with account=community %}
             {% elif institution %}
-                {% include 'snippets/account-count-cards.html' with scope=institution %}
+                {% include 'snippets/account-count-cards.html' with account=institution %}
             {% elif service_provider %}
-                {% include 'snippets/account-count-cards.html' with scope=service_provider %}
+                {% include 'snippets/account-count-cards.html' with account=service_provider %}
             {% endif %}
         </div>
 

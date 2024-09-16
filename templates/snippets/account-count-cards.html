@@ -1,26 +1,58 @@
-{% load static %}
+{% load static %}{% load custom_acct_tags %}
+
+{% account_count_cards account as counts %}
+
 <div class="flex-this column bold h-100" style="overflow:hidden">
-    <div class="stats-card flex-this flex-start">
-        <p class="card-count">00</p>
-        <div class="card-text">
-            <h4 class="card-heading">Projects with Labels<i class="close-btn fa-solid fa-xmark"></i></h4>
-            <p class="card-helptext">This number represents the amount of Labels that have been applied to Projects.</p>
+    {% if not account == service_provider %}
+        <!-- Labels Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if counts.labels < 10 %}0{{ counts.labels }}{% else %}{{ counts.labels }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Projects with Labels<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Labels that have been applied to Projects.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
         </div>
-        <div class="tooltip ml-auto">i</div>
-    </div>
-    <div class="stats-card flex-this flex-start">
-        <p class="card-count">00</p>
-        <div class="card-text">
-            <h4 class="card-heading">Projects with Notices<i class="close-btn fa-solid fa-xmark"></i></h4>
-            <p class="card-helptext">This number represents the amount of Notices that are currently applied to Projects.</p>
+
+        <!-- Notices Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if counts.notices < 10 %}0{{ counts.notices }}{% else %}{{ counts.notices }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Projects with Notices<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Notices that are currently applied to Projects.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
         </div>
-        <div class="tooltip ml-auto">i</div>
-    </div>
+
+    {% elif account == service_provider %}
+        <!-- Members Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if service_provider.get_member_count < 10 %}0{{ service_provider.get_member_count }}{% else %}{{ service_provider.get_member_count }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Members<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Members this account has.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
+        </div>
+
+    {% endif %}
+
+    <!-- Connections Count -->
     <div class="stats-card flex-this flex-start">
-        <p class="card-count">00</p>
+        <p class="card-count">
+            {% if counts.connections < 10 %}0{{ counts.connections }}{% else %}{{ counts.connections }}{% endif %}
+        </p>
         <div class="card-text">
-            <h4 class="card-heading">Projects with Connections<i class="close-btn fa-solid fa-xmark"></i></h4>
-            <p class="card-helptext">This number represents the amount of connections this account has created through Projects.</p>
+            <h4 class="card-heading">
+                {% if not account == service_provider %}Projects with {% endif %}Connections
+                <i class="close-btn fa-solid fa-xmark"></i></h4>
+            <p class="card-helptext">This number represents the amount of connections this account has{% if not account == service_provider %} created through Projects{% endif %}.</p>
         </div>
         <div class="tooltip ml-auto">i</div>
     </div>
@@ -55,8 +87,7 @@
 
     .stats-card .tooltip {
         flex-shrink: 0;
-        opacity: 1;
-        height: 16px;
+        height: 18px;
         background-color: white;
         transition: opacity 500ms ease-in, height 500ms ease-in;
     }
@@ -110,6 +141,10 @@
         margin-top:3px;
         margin-bottom:3px;
         padding:0px;
+    }
+
+    .stats-card.open .tooltip {
+        display: none;
     }
 
     .stats-card .close-btn, .stats-card .card-helptext,
