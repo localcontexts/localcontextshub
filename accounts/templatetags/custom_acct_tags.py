@@ -149,7 +149,7 @@ def account_count_cards(account):
                 'project__unique_id', flat=True
             ),
         ))
-        project_ids = list(set(projects_list)) # remove duplicate ids
+        project_ids = list(set(projects_list))  # remove duplicate ids
         projects = Project.objects.filter(unique_id__in=project_ids)
 
         labels_count = projects.filter(
@@ -159,8 +159,8 @@ def account_count_cards(account):
         notices_count = projects.filter(project_notice__archived=False).distinct().count()
 
         connections_count = projects.annotate(
-                institution_count=Count('project_contributors__institutions'
-            )).exclude(
+                institution_count=Count('project_contributors__institutions')
+            ).exclude(
                 Q(project_contributors__communities=None) &
                 Q(project_contributors__researchers=None) &
                 Q(institution_count=1)
@@ -188,8 +188,8 @@ def account_count_cards(account):
         notices_count = projects.filter(project_notice__archived=False).distinct().count()
 
         connections_count = projects.annotate(
-                researcher_count=Count('project_contributors__researchers'
-            )).exclude(
+                researcher_count=Count('project_contributors__researchers')
+            ).exclude(
                 Q(project_contributors__communities=None) &
                 Q(project_contributors__institutions=None) &
                 Q(researcher_count=1)
@@ -217,8 +217,8 @@ def account_count_cards(account):
         notices_count = projects.filter(project_notice__archived=False).distinct().count()
 
         connections_count = projects.annotate(
-                community_count=Count('project_contributors__communities'
-            )).exclude(
+                community_count=Count('project_contributors__communities')
+            ).exclude(
                 Q(project_contributors__researchers=None) &
                 Q(project_contributors__institutions=None) &
                 Q(community_count=1)
@@ -228,30 +228,28 @@ def account_count_cards(account):
         try:
             institutions = ServiceProviderConnections.objects.filter(
                     service_provider=account
-                ).annotate(institution_count = Count('institutions')).values_list(
+                ).annotate(institution_count=Count('institutions')).values_list(
                     'institution_count', flat=True
                 ).first()
             communities = ServiceProviderConnections.objects.filter(
                     service_provider=account
-                ).annotate(community_count = Count('communities')).values_list(
+                ).annotate(community_count=Count('communities')).values_list(
                     'community_count', flat=True
                 ).first()
             researchers = ServiceProviderConnections.objects.filter(
                     service_provider=account
-                ).annotate(researcher_count = Count('researchers')).values_list(
+                ).annotate(researcher_count=Count('researchers')).values_list(
                     'researcher_count', flat=True
                 ).first()
             connections_count = institutions + communities + researchers
 
-        except:
-            connections_count = 0
+        except Exception:
+            return {'connections': 0}
 
         return {'connections': connections_count}
 
-    counts = {
+    return {
         'labels': labels_count,
         'notices': notices_count,
         'connections': connections_count
     }
-
-    return counts

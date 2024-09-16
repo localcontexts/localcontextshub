@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from helpers.utils import check_member_role
 from .utils import get_service_provider
 
+
 def member_required(roles=[]):
     def decorator(view_func):
         @wraps(view_func)

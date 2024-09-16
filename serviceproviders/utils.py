@@ -28,7 +28,7 @@ def handle_service_provider_creation(request, form, subscription_form, env):
                 service_provider_id=data.id,
                 action_account_type="service_provider",
             )
-    except Exception as e:
+    except Exception:
         messages.add_message(
             request,
             messages.ERROR,
@@ -36,6 +36,7 @@ def handle_service_provider_creation(request, form, subscription_form, env):
             " Please contact support@localcontexts.org.",
         )
         return redirect('dashboard')
+
 
 def get_service_provider(pk):
     return ServiceProvider.objects.select_related(
