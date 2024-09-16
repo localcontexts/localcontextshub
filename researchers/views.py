@@ -47,7 +47,11 @@ def preparation_step(request):
         'researcher': researcher,
         'environment': environment
     }
-    return render(request, 'accounts/preparation.html', context)
+    if not Researcher.objects.filter(user=request.user):
+        return render(request, 'accounts/preparation.html', context)
+    else:
+        researcher_id = Researcher.objects.get(user=request.user).id
+        return redirect('researcher-notices', researcher_id)
 
 @login_required(login_url='login')
 def connect_researcher(request):
