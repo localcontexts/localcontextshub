@@ -1432,7 +1432,7 @@ def connect_service_provider(request, pk):
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)
         if request.method == "GET":
-            service_providers = get_certified_service_providers()
+            service_providers = get_certified_service_providers(request)
             connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 institutions=institution
             ).values_list('service_provider', flat=True)

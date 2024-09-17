@@ -2,6 +2,7 @@ import json
 import urllib
 import zipfile
 from typing import Union
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 
 import requests
 from django.conf import settings
@@ -812,7 +813,7 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         send_service_provider_email(request, data)
         return response
 
-def get_certified_service_providers():
+def get_certified_service_providers(request):
     service_providers = ServiceProvider.objects.filter(
         Q(is_certified=True) &
         (
@@ -820,4 +821,13 @@ def get_certified_service_providers():
             ~Q(certification_type='manual')
         )
     )
-    return service_providers
+
+    q = request.GET.get('q')
+    if q:
+        vector = SearchVector('name')
+        query = SearchQuery(q)
+        results = service_providers.filter(name__icontains=q)
+    else:
+        results = service_providers
+
+    return results

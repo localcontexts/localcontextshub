@@ -842,7 +842,7 @@ def connections(request, researcher):
 def connect_service_provider(request, researcher):
     try:
         if request.method == "GET":
-            service_providers = get_certified_service_providers()
+            service_providers = get_certified_service_providers(request)
             connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 researchers=researcher
             ).values_list('service_provider', flat=True)
