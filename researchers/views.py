@@ -14,13 +14,8 @@ from projects.utils import (
     paginate
     )
 from helpers.utils import (
-    crud_notices,
-    create_or_update_boundary,
-    get_notice_defaults,
-    get_notice_translations,
-    check_subscription,
-    validate_recaptcha,
-    form_initiation
+    crud_notices, create_or_update_boundary, get_notice_defaults, get_notice_translations,
+    check_subscription, validate_recaptcha, form_initiation, get_certified_service_providers
     )
 from accounts.utils import get_users_name
 from notifications.utils import (
@@ -1178,8 +1173,12 @@ def connect_service_provider(request, researcher):
             connected_service_providers_ids = ServiceProviderConnections.objects.filter(
                 researchers=researcher
             ).values_list('service_provider', flat=True)
-            connected_service_providers = service_providers.filter(id__in=connected_service_providers_ids)
-            other_service_providers = service_providers.exclude(id__in=connected_service_providers_ids)
+            connected_service_providers = service_providers.filter(
+                id__in=connected_service_providers_ids
+            )
+            other_service_providers = service_providers.exclude(
+                id__in=connected_service_providers_ids
+            )
 
         elif request.method == "POST":
             if "connectServiceProvider" in request.POST:
