@@ -36,7 +36,7 @@
         </div>
 
         <!-- Button and OTC Notice -->
-        <div class="dashcard-btn-container ml-auto">
+        <div class="dashcard-btn-container ml-auto gap-half">
 
             {% if '/registry/' in request.path or '/connections/' in request.path %}
                 <!-- View Public Page -->
@@ -65,7 +65,7 @@
 
             {% if '/dashboard/' in request.path %}
                 <!-- View Account -->
-                <div class="mr-16">
+                <div>
                     <a
                         class="primary-btn action-btn"
                         href="{% url 'service-provider-notices' service_provider.id %}"

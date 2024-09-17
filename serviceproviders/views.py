@@ -24,7 +24,6 @@ from accounts.models import UserAffiliation, ServiceProviderConnections
 from institutions.models import Institution
 from communities.models import Community
 from researchers.models import Researcher
-from notifications.models import ActionNotification
 from .models import ServiceProvider
 
 from helpers.forms import OpenToCollaborateNoticeURLForm, HubActivity
@@ -181,7 +180,7 @@ def public_service_provider_view(request, pk):
             "institutions": institutions,
         }
         return render(request, "public.html", context)
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -191,8 +190,9 @@ def public_service_provider_view(request, pk):
 def service_provider_notices(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
-    urls = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider
-                                                            ).values_list("url", "name", "id")
+    urls = OpenToCollaborateNoticeURL.objects.filter(
+        service_provider=service_provider
+    ).values_list("url", "name", "id")
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
     if service_provider.is_certified:
@@ -298,7 +298,7 @@ def connections(request, pk):
 
         elif request.method == "POST":
             if "disconnectAccount" in request.POST:
-                connection_reference_id = f"{service_provider.id}:{request.POST.get('disconnectAccount')}"
+                connection_reference_id = f"{service_provider.id}:{request.POST.get('disconnectAccount')}"  # noqa
                 account_id, account_type = request.POST.get('disconnectAccount').split('_')
                 sp_connection = ServiceProviderConnections.objects.get(
                     service_provider=service_provider
@@ -317,7 +317,6 @@ def connections(request, pk):
                     send_simple_action_notification(
                         None, institution, title, "Activity", connection_reference_id
                     )
-
 
                 elif account_type == "c":
                     sp_connection.communities.remove(account_id)
@@ -355,7 +354,7 @@ def connections(request, pk):
         }
         return render(request, "serviceproviders/connections.html", context)
 
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -403,9 +402,7 @@ def service_provider_members(request, pk):
                 else:
                     username_to_check = selected_username
 
-                if not username_to_check in users.values_list(
-                    'username', flat=True
-                ):
+                if not username_to_check in users.values_list('username', flat=True):
                     message = "Invalid user selection. Please select user from the list."
                     messages.add_message(request, messages.INFO, message)
                 else:
@@ -415,7 +412,7 @@ def service_provider_members(request, pk):
                     invitation_exists = InviteMember.objects.filter(
                         receiver=selected_user,
                         service_provider=service_provider
-                    ).exists() # Check to see if invitation already exists
+                    ).exists()  # Check to see if invitation already exists
 
                     # If invitation request does not exist, save form
                     if not invitation_exists:
@@ -544,7 +541,7 @@ def account_preferences(request, pk):
                 service_provider.show_connections = True
                 service_provider.save()
 
-            elif request.POST.get('show_connections') == None:
+            elif request.POST.get('show_connections') is None:
                 service_provider.show_connections = False
                 service_provider.save()
 
@@ -560,7 +557,7 @@ def account_preferences(request, pk):
         }
         return render(request, 'account_settings_pages/_preferences.html', context)
 
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -584,13 +581,12 @@ def api_keys(request, pk):
 
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
-                if (service_provider.is_certified and
-                    remaining_api_key_count == 0):
+                if (service_provider.is_certified and remaining_api_key_count == 0):
                     messages.add_message(
-                        request,
-                        messages.ERROR,
+                        request, messages.ERROR,
                         'Your account has reached its API Key limit.'
                     )
+
                     return redirect(
                         "service-provider-api-key", service_provider.id
                     )
@@ -599,8 +595,8 @@ def api_keys(request, pk):
                 if service_provider.is_certified and form.is_valid():
                     data = form.save(commit=False)
                     api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        service_provider_id = service_provider.id
+                        name=data.name,
+                        service_provider_id=service_provider.id
                     )
                     prefix = key.split(".")[0]
                     encrypted_key = encrypt_api_key(key)
@@ -633,14 +629,14 @@ def api_keys(request, pk):
                 )
 
         context = {
-            "service_provider" : service_provider,
-            "form" : form,
-            "account_keys" : account_keys,
-            "member_role" : member_role,
-            "remaining_api_key_count" : remaining_api_key_count,
+            "service_provider": service_provider,
+            "form": form,
+            "account_keys": account_keys,
+            "member_role": member_role,
+            "remaining_api_key_count": remaining_api_key_count,
         }
         return render(
             request, 'account_settings_pages/_api-keys.html', context
         )
-    except:
+    except Exception:
         raise Http404()

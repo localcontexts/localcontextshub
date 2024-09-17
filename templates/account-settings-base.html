@@ -1,25 +1,8 @@
 {% extends 'auth-base.html' %} {% block title %} Update Account {% endblock %}
 {% block main %} {% load static %}
 
-    {% if community %}
-        {% include 'partials/infocards/_community-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if institution %}
-        {% include 'partials/infocards/_institution-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if researcher %}
-        {% include 'partials/infocards/_researcher-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if service_provider %}
-        {% include 'partials/infocards/_service-provider-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
+    {% include 'partials/infocards/_account-dashcard.html' %}
+    {% include 'partials/_subnav.html' %}
 
     <div
         class="content-card-v2 content-card-space flex-this column settings-height"

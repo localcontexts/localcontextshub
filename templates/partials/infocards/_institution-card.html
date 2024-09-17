@@ -32,7 +32,7 @@
         </div>
 
         <!-- Buttons and OTC Notice -->
-        <div class="dashcard-btn-container ml-auto">
+        <div class="dashcard-btn-container ml-auto gap-half">
             {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
                 <!-- View Public Page -->
                 <div>
@@ -60,7 +60,7 @@
 
             {% if '/dashboard/' in request.path %}
                 <!-- View Account -->
-                <div class="mr-16">
+                <div>
                     {% if institution_projects %}
                         {% if request.user in institution.get_distinct_creators  %}
                             <a

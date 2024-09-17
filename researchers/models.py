@@ -33,7 +33,7 @@ class Researcher(models.Model):
     sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
 
     def get_projects(self):
-        return  self.researcher_created_project.filter(researcher=self).exists()
+        return self.researcher_created_project.filter(researcher=self).exists()
 
     def __str__(self):
         return str(self.user)
