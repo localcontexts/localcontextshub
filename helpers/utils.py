@@ -16,6 +16,7 @@ from helpers.models import (
     LabelTranslationVersion,
     HubActivity,
 )
+from django.db.models import Q
 from xhtml2pdf import pisa
 
 from communities.models import Community, JoinRequest, InviteMember, Boundary
@@ -810,3 +811,13 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         )
         send_service_provider_email(request, data)
         return response
+
+def get_certified_service_providers():
+    service_providers = ServiceProvider.objects.filter(
+        Q(is_certified=True) &
+        (
+            (Q(certification_type='manual') & ~Q(documentation=None)) |
+            ~Q(certification_type='manual')
+        )
+    )
+    return service_providers
