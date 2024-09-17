@@ -1,0 +1,195 @@
+{% load static %}{% load custom_acct_tags %}
+
+{% account_count_cards account as counts %}
+
+<div class="flex-this column bold h-100" style="overflow:hidden">
+    {% if not account == service_provider %}
+        <!-- Labels Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if counts.labels < 10 %}0{{ counts.labels }}{% else %}{{ counts.labels }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Projects with Labels<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Labels that have been applied to Projects.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
+        </div>
+
+        <!-- Notices Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if counts.notices < 10 %}0{{ counts.notices }}{% else %}{{ counts.notices }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Projects with Notices<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Notices that are currently applied to Projects.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
+        </div>
+
+    {% elif account == service_provider %}
+        <!-- Members Count -->
+        <div class="stats-card flex-this flex-start">
+            <p class="card-count">
+                {% if service_provider.get_member_count < 10 %}0{{ service_provider.get_member_count }}{% else %}{{ service_provider.get_member_count }}{% endif %}
+            </p>
+            <div class="card-text">
+                <h4 class="card-heading">Members<i class="close-btn fa-solid fa-xmark"></i></h4>
+                <p class="card-helptext">This number represents the amount of Members this account has.</p>
+            </div>
+            <div class="tooltip ml-auto">i</div>
+        </div>
+
+    {% endif %}
+
+    <!-- Connections Count -->
+    <div class="stats-card flex-this flex-start">
+        <p class="card-count">
+            {% if counts.connections < 10 %}0{{ counts.connections }}{% else %}{{ counts.connections }}{% endif %}
+        </p>
+        <div class="card-text">
+            <h4 class="card-heading">
+                {% if not account == service_provider %}Projects with {% endif %}Connections
+                <i class="close-btn fa-solid fa-xmark"></i></h4>
+            <p class="card-helptext">This number represents the amount of connections this account has{% if not account == service_provider %} created through Projects{% endif %}.</p>
+        </div>
+        <div class="tooltip ml-auto">i</div>
+    </div>
+</div>
+
+<style>
+
+    .stats-card {
+        width: 100%;
+        height: 35px;
+        opacity: 1;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        align-items: flex-start;
+        color: white;
+        padding: 8px;
+        border-radius: 5px;
+        transition: opacity 500ms ease, height 500ms ease;
+
+        &:first-child {
+            background-color: #EF6C00;
+        }
+
+        &:nth-child(2) {
+            background-color: #108670;
+        }
+
+        &:nth-child(3) {
+            background-color: #007385;
+        }
+    }
+
+    .stats-card .tooltip {
+        flex-shrink: 0;
+        height: 18px;
+        background-color: white;
+        transition: opacity 500ms ease-in, height 500ms ease-in;
+    }
+
+    .stats-card:first-child .tooltip {
+        color: #EF6C00;
+    }
+
+    .stats-card:nth-child(2) .tooltip {
+        color: #108670;
+    }
+
+    .stats-card:nth-child(3) .tooltip {
+        color: #007385;
+    }
+
+    .stats-card p.card-count {
+        font-size: 24px;
+        line-height: 16px;
+        margin: 0;
+    }
+
+    .stats-card .card-text{
+        margin-left: 16px;
+    }
+
+    .stats-card .card-heading, .stats-card .card-helptext {
+        margin: 0px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .stats-card .close-btn {
+        cursor: pointer;
+    }
+
+    .stats-card.open {
+        height: 100%;
+    }
+
+    .stats-card.open .card-helptext, .stats-card.open .close-btn {
+        font-weight: normal;
+        font-size: 14px;
+        opacity: 1;
+        height: auto;
+        transition: opacity 500ms ease-in, height 500ms ease-in;
+    }
+
+    .stats-card.closed {
+        height: 10px;
+        margin-top:3px;
+        margin-bottom:3px;
+        padding:0px;
+    }
+
+    .stats-card.open .tooltip {
+        display: none;
+    }
+
+    .stats-card .close-btn, .stats-card .card-helptext,
+    .stats-card.closed .card-count, .stats-card.closed .card-text {
+        opacity: 0;
+        height: 0px;
+        overflow: hidden;
+    }
+
+    .stats-card.closed .tooltip, .stats-card.open .tooltip {
+        height: 16px;
+        opacity: 0;
+        visibility: hidden;
+        overflow: hidden;
+    }
+
+</style>
+
+<script>
+    const cardTooltips = document.querySelectorAll('.stats-card .tooltip')
+
+    cardTooltips.forEach(cardTooltip => {
+        cardTooltip.addEventListener('click', (e) => {
+            var countCards = document.querySelectorAll(".stats-card")
+            selectedCard = e.target.closest(".stats-card");
+            selectedCard.classList.add("open");
+
+            countCards.forEach(card => {
+                if (card === selectedCard) {
+                    closeBtn = card.querySelector(".close-btn")
+                    card.classList.add("open");
+                    closeBtn.addEventListener('click', resetCards);
+                } else {
+                    card.classList.add("closed");
+                }
+            })
+        })
+    })
+
+    function resetCards() {
+        var countCards = document.querySelectorAll(".stats-card")
+        countCards.forEach(card => {
+            card.classList.remove("closed");
+            card.classList.remove("open");
+        })
+    }
+
+</script>

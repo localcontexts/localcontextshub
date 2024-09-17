@@ -1,0 +1,258 @@
+{% load static %}
+<div class="dashcard flex-this" style="height: 225px;">
+    <!-- Left Side: Nav and Account Info -->
+    <div class="w-75 flex-this column">
+        <!-- Top Nav -->
+        <div class="loc grey-text bold mb-8">
+            <small>
+                <a href="{% url 'dashboard' %}" class="default-a">
+                    {% firstof request.user.first_name request.user %}
+                </a> >>
+                {% if researcher %}
+                    {% firstof researcher.user.get_full_name researcher.user.username %}
+                {% elif community %}
+                    {{ community.community_name }}
+                {% elif institution %}
+                    {{ institution.institution_name }}
+                {% elif service_provider %}
+                    {{ service_provider.name }}
+                {% endif %}
+            </small>
+        </div>
+
+        <!-- Image, headers, description -->
+        <div class="flex-this">
+
+            <!-- Account Image -->
+            {% if researcher %}
+                <div class="{% if researcher %}researcher-img-container{% else %}dashcard-img-container{% endif %}">
+                    <img
+                    loading="lazy"
+                    class="profile-img"
+                    src="{% if researcher.image %}{{ researcher.image.url }}{% else %}{% static 'images/placeholders/researcher-place.jpg' %}{% endif %}"
+                    alt="{{ researcher.researcher_name }} image"
+                    />
+                </div>
+            {% else %}
+                <div class="dashcard-img-container">
+                    <img loading="lazy"
+                        class="profile-img"
+                        src="
+                            {% if community and community.image %}{{ community.image.url }}
+                            {% elif community and not community.image %}{% static 'images/placeholders/community-place.jpg' %}
+                            {% elif institution and institution.image %}{{ institution.image.url }}
+                            {% elif institution and not institution.image %}{% static 'images/placeholders/institution-place.jpg' %}
+                            {% elif service_provider and service_provider.image %}{{ service_provider.image.url }}
+                            {% elif service_provider and not service_provider.image %}{% static 'images/placeholders/service-provider-place.jpg' %}
+                            {% endif %}
+                            "
+                        alt="
+                            {% if community %}{{ community.community_name }}
+                            {% elif institution %}{{ institution.institution_name }}
+                            {% elif service_provider %}{{ service_provider.name }}
+                            {% endif %} image
+                            "
+                    >
+                    {% if service_provider and service_provider.is_certified %}
+                        <div class="certified-overlay">
+                            <img
+                                src="{% static 'images/logos/sp-badge-orange.png' %}"
+                                width="157px"
+                                height="47px"
+                            >
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Account Information -->
+            <div class="flex-this column dashcard-text-container">
+                <!-- Account Name -->
+                <div class="mb-8 subscribed-icon-wrapper">
+                    <h3 class="dashcard-h3 darkteal-text">
+                        {% if researcher %}
+                            {% firstof researcher.user.get_full_name researcher.user.username %}
+                        {% elif community %}
+                            {{ community.community_name }}
+                        {% elif institution %}
+                            {{ institution.institution_name }}
+                        {% elif service_provider %}
+                            {{ service_provider.name }}
+                        {% endif %}
+                    </h3>
+                    {% if institution.is_subscribed or researcher.is_subscribed %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+                    {% elif community.is_approved %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Account Type and Location -->
+                <div class="mb-8">
+                    <p class="dashcard-subheader m-0">
+                        {% if researcher %}
+                            Researcher | Location: {{ researcher.user.user_profile.get_location }}
+                        {% elif community %}
+                            Community |
+                            {% if member_role == 'admin' %}Administrator
+                            {% elif member_role == 'editor' %}Editor
+                            {% elif member_role == 'viewer' %}Viewer
+                            {% endif %} |
+                            Location: {{ community.get_location }}
+                        {% elif institution %}
+                            Institution |
+                            {% if member_role == 'admin' %}Administrator
+                            {% elif member_role == 'editor' %}Editor
+                            {% elif member_role == 'viewer' %}Viewer
+                            {% endif %} |
+                            Location: {{ institution.get_location }}
+                        {% elif service_provider %}
+                            Service Provider
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- ORCID display -->
+                {% if researcher and researcher.orcid %}
+                    <div class="mb-8" itemscope itemtype="https://schema.org/Person">
+                        <a
+                            class="default-a flex-this"
+                            itemprop="sameAs"
+                            target="orcid.widget"
+                            rel="me noopener noreferrer"
+                            style="vertical-align:top;"
+                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
+                                content="{{ researcher.orcid }}"
+                                href="{{ researcher.orcid }}"
+                            {% elif 'X' in researcher.orcid %}
+                                content="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                                href="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                            {% else %}
+                                content="https://orcid.org/{{ researcher.orcid }}"
+                                href="https://orcid.org/{{ researcher.orcid }}"
+                            {% endif %}
+                        >
+                            <img
+                                loading="lazy"
+                                class="m-auto ml-0 mr-1p"
+                                src="https://orcid.org/sites/default/files/images/orcid_16x16.png"
+                                width="16px"
+                                height="16px"
+                                alt="ORCID iD icon"
+                            >
+                            {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}{{ researcher.orcid }}
+                            {% elif 'X' in researcher.orcid %}https://sandbox.orcid.org/{{ researcher.orcid }}
+                            {% else %}https://orcid.org/{{ researcher.orcid }}
+                            {% endif %}
+                        </a>
+                    </div>
+                {% elif researcher and not researcher.orcid %}
+                    <div class="mb-8">
+                        <img
+                            loading="lazy"
+                            class="m-auto ml-0 mr-1p"
+                            src="https://orcid.org/sites/default/files/images/orcid_16x16.png"
+                            width="16px"
+                            height="16px"
+                            alt="ORCID iD icon"
+                        >
+                            <small>No ORCiD specified</small>
+                    </div>
+                {% endif %}
+
+                <!-- Account Description -->
+                <div>
+                    <p class="dashcard-description description-sm">
+                        {% if researcher and researcher.description %}{{ researcher.description }}
+                        {% elif community and community.description %}{{ community.description }}
+                        {% elif institution and institution.description %}{{ institution.description }}
+                        {% elif service_provider and service_provider.description %}{{ service_provider.description }}
+                        {% else %}No description provided.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Right Side: Dashcard buttons and Count Cards -->
+    <div class="w-25 flex-this column">
+
+        <!-- Buttons -->
+        <div class="flex-this gap-half mb-8">
+            <!-- Notifications -->
+            <div class="w-100">
+                {% if researcher %}
+                    {% include 'snippets/notifications.html' with scope=researcher %}
+                {% elif community %}
+                    {% include 'snippets/notifications.html' with scope=community %}
+                {% elif institution %}
+                    {% include 'snippets/notifications.html' with scope=institution %}
+                {% elif service_provider %}
+                    {% include 'snippets/notifications.html' with scope=service_provider %}
+                {% endif %}
+            </div>
+
+            <!-- Settings -->
+            {% if researcher %}
+                <div class="w-100">
+                    <a
+                        href="{% url 'update-researcher' researcher.id %}"
+                        class="darkteal-text primary-btn white-btn"
+                    >
+                        Settings<i class="fa fa-cog" aria-hidden="true"></i>
+                    </a>
+                </div>
+            {% elif community %}
+                {% if request.user == community.community_creator or member_role == 'admin' %}
+                    <div class="w-100">
+                        <a
+                            href="{% url 'update-community' community.id %}"
+                            class="darkteal-text primary-btn white-btn"
+                        >
+                            Settings<i class="fa fa-cog" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            {% elif institution %}
+                {% if request.user == institution.institution_creator or member_role == 'admin' %}
+                    <div class="w-100">
+                        <a
+                            href="{% url 'update-institution' institution.id %}"
+                            class="darkteal-text primary-btn white-btn"
+                        >
+                            Settings<i class="fa fa-cog" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            {% elif service_provider %}
+                {% if request.user == service_provider.account_creator %}
+                    <div class="w-100">
+                        <a
+                            href="{% url 'update-service-provider' service_provider.id%}"
+                            class="darkteal-text primary-btn white-btn"
+                        >
+                            Settings <i class="fa fa-cog" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Account Cards -->
+        <div class="h-100" style="overflow: hidden;">
+            {% if researcher %}
+                {% include 'snippets/account-count-cards.html' with account=researcher %}
+            {% elif community %}
+                {% include 'snippets/account-count-cards.html' with account=community %}
+            {% elif institution %}
+                {% include 'snippets/account-count-cards.html' with account=institution %}
+            {% elif service_provider %}
+                {% include 'snippets/account-count-cards.html' with account=service_provider %}
+            {% endif %}
+        </div>
+
+    </div>
+</div>

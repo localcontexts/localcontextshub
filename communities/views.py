@@ -1411,7 +1411,7 @@ def account_preferences(request, pk):
             if request.POST.get('show_sp_connection') == 'on':
                 community.show_sp_connection = True
 
-            elif request.POST.get('show_sp_connection') == None:
+            elif request.POST.get('show_sp_connection') is None:
                 community.show_sp_connection = False
 
             # Set project privacy settings for Service Provider connections
