@@ -32,7 +32,7 @@
         </div>
 
         <!-- Buttons -->
-        <div class="dashcard-btn-container ml-auto">
+        <div class="dashcard-btn-container ml-auto gap-half">
             {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
                 <!-- View Public Page -->
                 <div>
@@ -47,7 +47,7 @@
 
             {% if '/dashboard/' in request.path %}
                 <!-- View Account -->
-                <div class="mr-16">
+                <div>
                     {% if approved_label %}
                         {% if request.user in community.get_collaborator or request.user == community.community_creator %}
                             <a

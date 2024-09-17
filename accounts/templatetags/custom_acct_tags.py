@@ -1,10 +1,11 @@
 from django import template
-from django.db.models import Q
+from django.db.models import Q, Count
+from itertools import chain
 
 from accounts.utils import get_users_name
 from communities.models import Community, JoinRequest
 from institutions.models import Institution
-from projects.models import ProjectCreator
+from projects.models import ProjectCreator, Project
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
 from accounts.models import ServiceProviderConnections
@@ -120,3 +121,135 @@ def user_created_project_as_researcher(user_id: int, researcher_id: int) -> bool
         researcher=researcher_id,
         project__project_creator=user_id
     ).exists()
+
+
+@register.simple_tag
+def account_count_cards(account):
+    '''
+        For Project Lists:
+            1. account projects +
+            2. projects account has been notified of
+            3. projects where account is contributor
+
+        Counts:
+            1. Projects with Labels
+            2. Projects with Notices
+            3. Projects with Connections other than the account itself
+    '''
+
+    if isinstance(account, Institution):
+        projects_list = list(chain(
+            account.institution_created_project.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.institutions_notified.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.contributing_institutions.all().values_list(
+                'project__unique_id', flat=True
+            ),
+        ))
+        project_ids = list(set(projects_list))  # remove duplicate ids
+        projects = Project.objects.filter(unique_id__in=project_ids)
+
+        labels_count = projects.filter(
+            Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)
+        ).distinct().count()
+
+        notices_count = projects.filter(project_notice__archived=False).distinct().count()
+
+        connections_count = projects.annotate(
+                institution_count=Count('project_contributors__institutions')
+            ).exclude(
+                Q(project_contributors__communities=None) &
+                Q(project_contributors__researchers=None) &
+                Q(institution_count=1)
+            ).distinct().count()
+
+    elif isinstance(account, Researcher):
+        projects_list = list(chain(
+            account.researcher_created_project.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.researchers_notified.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.contributing_researchers.all().values_list(
+                'project__unique_id', flat=True
+            ),
+        ))
+        project_ids = list(set(projects_list))
+        projects = Project.objects.filter(unique_id__in=project_ids)
+
+        labels_count = projects.filter(
+            Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)
+        ).distinct().count()
+
+        notices_count = projects.filter(project_notice__archived=False).distinct().count()
+
+        connections_count = projects.annotate(
+                researcher_count=Count('project_contributors__researchers')
+            ).exclude(
+                Q(project_contributors__communities=None) &
+                Q(project_contributors__institutions=None) &
+                Q(researcher_count=1)
+            ).distinct().count()
+
+    elif isinstance(account, Community):
+        projects_list = list(chain(
+            account.community_created_project.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.communities_notified.all().values_list(
+                'project__unique_id', flat=True
+            ),
+            account.contributing_communities.all().values_list(
+                'project__unique_id', flat=True
+            ),
+        ))
+        project_ids = list(set(projects_list))
+        projects = Project.objects.filter(unique_id__in=project_ids)
+
+        labels_count = projects.filter(
+            Q(bc_labels__isnull=False) | Q(tk_labels__isnull=False)
+        ).distinct().count()
+
+        notices_count = projects.filter(project_notice__archived=False).distinct().count()
+
+        connections_count = projects.annotate(
+                community_count=Count('project_contributors__communities')
+            ).exclude(
+                Q(project_contributors__researchers=None) &
+                Q(project_contributors__institutions=None) &
+                Q(community_count=1)
+            ).distinct().count()
+
+    elif isinstance(account, ServiceProvider):
+        try:
+            institutions = ServiceProviderConnections.objects.filter(
+                    service_provider=account
+                ).annotate(institution_count=Count('institutions')).values_list(
+                    'institution_count', flat=True
+                ).first()
+            communities = ServiceProviderConnections.objects.filter(
+                    service_provider=account
+                ).annotate(community_count=Count('communities')).values_list(
+                    'community_count', flat=True
+                ).first()
+            researchers = ServiceProviderConnections.objects.filter(
+                    service_provider=account
+                ).annotate(researcher_count=Count('researchers')).values_list(
+                    'researcher_count', flat=True
+                ).first()
+            connections_count = institutions + communities + researchers
+
+        except Exception:
+            return {'connections': 0}
+
+        return {'connections': connections_count}
+
+    return {
+        'labels': labels_count,
+        'notices': notices_count,
+        'connections': connections_count
+    }
