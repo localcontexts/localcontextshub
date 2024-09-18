@@ -8,7 +8,6 @@ from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
-from django.contrib.postgres.fields import ArrayField
 
 
 class Profile(models.Model):
@@ -211,12 +210,13 @@ class ServiceProviderConnections(models.Model):
         verbose_name = "Service Provider Connection"
         verbose_name_plural = "Service Provider Connections"
 
+
 class BundleType(models.Model):
-    Bundle_Types = (  
+    Bundle_Types = (
         ('User', 'User Bundle'),
         ('API', 'API Bundle'),
         ('Project', 'Project Bundle'),
-        ('Notification', 'Notification Bundle'),  
+        ('Notification', 'Notification Bundle'),
     )
     institution = models.ForeignKey(
         Institution,

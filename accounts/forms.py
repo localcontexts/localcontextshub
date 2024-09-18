@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from helpers.emails import send_password_reset_email
 
-from .models import Profile, SignUpInvitation, BundleType
+from .models import Profile, SignUpInvitation
 
 
 class RegistrationForm(UserCreationForm):

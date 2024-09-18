@@ -913,7 +913,7 @@ def subscription(request, pk, account_type, related=None):
 
     renew = False
 
-    form =  BundleTypeForm(request.POST or None)
+    form = BundleTypeForm(request.POST or None)
     if account_type == 'institution' and (
         request.user in get_institution(pk).get_admins()
         or
@@ -933,11 +933,11 @@ def subscription(request, pk, account_type, related=None):
             if form.is_valid():
                 try:
                     access_token = get_access_token_of_SF(request)
-                    for bundle in  form.cleaned_data['bundle_type']:
+                    for bundle in form.cleaned_data['bundle_type']:
                         bundle_data = BundleTypeForm().bundle_details[bundle]
                         quantity = bundle_data['quantity']
                         bundle_data = {
-                            "hubId": str(request.user.id) +"_i",
+                            "hubId": str(request.user.id) + "_i",
                             "isBundle": True,
                             "BundleType": bundle,
                             "Quantity": quantity,
@@ -945,7 +945,7 @@ def subscription(request, pk, account_type, related=None):
                         BundleType.objects.create(institution=institution, bundle_type=bundle)
                         create_bundle_call(request, bundle_data, access_token)
                     return redirect("subscription", institution.id, 'institution')
-                except Exception as e:
+                except Exception:
                     messages.add_message(
                         request,
                         messages.ERROR,
@@ -980,18 +980,18 @@ def subscription(request, pk, account_type, related=None):
             if form.is_valid():
                 try:
                     access_token = get_access_token_of_SF(request)
-                    for bundle in  form.cleaned_data['bundle_type']:
+                    for bundle in form.cleaned_data['bundle_type']:
                         bundle_data = BundleTypeForm().bundle_details[bundle]
                         quantity = bundle_data['quantity']
                         bundle_data = {
-                            "hubId": str(request.user.id) +"_r",
+                            "hubId": str(request.user.id) + "_r",
                             "isBundle": True,
                             "BundleType": bundle,
                             "Quantity": quantity,
                         }
                         BundleType.objects.create(researcher=researcher, bundle_type=bundle)
                         create_bundle_call(request, bundle_data, access_token)
-                except Exception as e:
+                except Exception:
                     messages.add_message(
                         request,
                         messages.ERROR,
