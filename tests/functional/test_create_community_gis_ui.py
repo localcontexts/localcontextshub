@@ -247,3 +247,7 @@ class TestFeatures(UiFeatureHelper):
 
         # verify user is on the upload shapefile page
         assert self.py.url().endswith(self.confirm_community_path)
+
+    def test_placeholder(self):
+        url = urllib.parse.urljoin(self.live_server_url, 'placeholder-url')
+        self.py.visit(url)
