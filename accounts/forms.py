@@ -283,16 +283,12 @@ class SubscriptionForm(forms.Form):
         return inquiry_type
 
 
-class BundleTypeForm(forms.ModelForm):
+class BundleTypeForm(forms.Form):
     bundle_type = forms.MultipleChoiceField(
-        choices=BundleType.Bundle_Types,
+        choices=[],
         widget=forms.CheckboxSelectMultiple,
         label="Bundle Types",
     )
-
-    class Meta:
-        model = BundleType
-        fields = ['bundle_type']
 
     def __init__(self, *args, **kwargs):
         super(BundleTypeForm, self).__init__(*args, **kwargs)
@@ -305,5 +301,5 @@ class BundleTypeForm(forms.ModelForm):
         }
 
         self.fields['bundle_type'].choices = [
-            (value, self.bundle_details[value]['label']) for value, _ in self.fields['bundle_type'].choices
+            (key, details['label']) for key, details in self.bundle_details.items()
         ]

@@ -250,15 +250,11 @@ class BundleType(models.Model):
         related_name="service_provider_bundle",
         blank=True,
     )
-    bundle_type = bundle_type = ArrayField(
-        models.CharField(max_length=30, choices=Bundle_Types),
-        size=4,
-        blank=True
-    )
+    bundle_type = models.CharField(max_length=30, choices=Bundle_Types)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user.username} - {self.bundle_type} - {self.created_at}"
+        return f"{self.bundle_type} - {self.created_at}"
 
     class Meta:
         ordering = ['-created_at']

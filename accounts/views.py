@@ -51,7 +51,7 @@ from helpers.utils import (
     accept_member_invite, validate_email, validate_recaptcha, check_member_role,
     create_bundle_call, get_access_token_of_SF
 )
-from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
+from .models import SignUpInvitation, Profile, UserAffiliation, Subscription, BundleType
 from helpers.models import HubActivity
 from projects.models import Project
 from communities.models import InviteMember, Community
@@ -928,6 +928,31 @@ def subscription(request, pk, account_type, related=None):
         if subscription is not None:
             if subscription.end_date and subscription.end_date < timezone.now():
                 renew = True
+
+        if request.method == "POST":
+            if form.is_valid():
+                try:
+                    access_token = get_access_token_of_SF(request)
+                    for bundle in  form.cleaned_data['bundle_type']:
+                        bundle_data = BundleTypeForm().bundle_details[bundle]
+                        quantity = bundle_data['quantity']
+                        bundle_data = {
+                            "hubId": str(request.user.id) +"_i",
+                            "isBundle": True,
+                            "BundleType": bundle,
+                            "Quantity": quantity,
+                        }
+                        BundleType.objects.create(institution=institution, bundle_type=bundle)
+                        create_bundle_call(request, bundle_data, access_token)
+                    return redirect("subscription", institution.id, 'institution')
+                except Exception as e:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        "An unexpected error has occurred here."
+                        " Please contact support@localcontexts.org.",
+                    )
+                    return redirect("subscription", institution.id, 'institute')
         context = {
             "institution": institution,
             "subscription": subscription,
@@ -941,7 +966,7 @@ def subscription(request, pk, account_type, related=None):
             "member_role": member_role,
             "form": form,
         }
-    if account_type == 'researcher':
+    elif account_type == 'researcher':
         researcher = Researcher.objects.get(id=pk)
         if researcher.is_subscribed:
             subscription = Subscription.objects.filter(researcher=researcher).first()
@@ -954,7 +979,7 @@ def subscription(request, pk, account_type, related=None):
         if request.method == "POST":
             if form.is_valid():
                 try:
-                    access_token = get_access_token_of_SF(request, bundle_data)
+                    access_token = get_access_token_of_SF(request)
                     for bundle in  form.cleaned_data['bundle_type']:
                         bundle_data = BundleTypeForm().bundle_details[bundle]
                         quantity = bundle_data['quantity']
@@ -964,6 +989,7 @@ def subscription(request, pk, account_type, related=None):
                             "BundleType": bundle,
                             "Quantity": quantity,
                         }
+                        BundleType.objects.create(researcher=researcher, bundle_type=bundle)
                         create_bundle_call(request, bundle_data, access_token)
                 except Exception as e:
                     messages.add_message(

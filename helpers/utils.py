@@ -630,7 +630,7 @@ def retrieve_native_land_all_slug_data() -> dict:
     return response.json()
 
 
-def get_access_token_of_SF(request, data):
+def get_access_token_of_SF(request, data=None):
     salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {
         "grant_type": "client_credentials",
