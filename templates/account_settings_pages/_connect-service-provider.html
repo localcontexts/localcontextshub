@@ -2,15 +2,6 @@
 
 {% block account_settings %}
 <style>
-    .disconnect-btn {
-        background-color: #DDDDDD;
-        border: 1px solid #DDDDDD;
-    }
-
-    .disconnect-btn:hover {
-        background-color: #e7e7e7;
-    }
-
     #settings-tooltip.tooltiptext::after{
         left: 122%;
     }
@@ -22,9 +13,12 @@
 
 <div>
     <h2 class="mt-0">Linked Service Providers</h2>
-    <p class="mt-0">A Service Provider is an organization that offers data or collection management platforms. By connecting to a Service Provider below, you can allow that system to view your Local Contexts Projects.</p>
+    <p class="mt-0">
+        A Service Provider is an organization that offers data or collection management platforms. By connecting to a Service Provider below, you can allow that system to view your Local Contexts Projects.
+    </p>
 </div>
 
+<!-- Connected Service Providers -->
 <div>
     <h3>Connected Service Providers</h3>
     {% if connected_service_providers %}
@@ -33,48 +27,110 @@
                 <div class="w-70">
                     <p>{{ service_provider.name }}</p>
                 </div>
-                <button name="disconnectServiceProviderbtn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}" class="primary-btn white-btn">Disconnect <i class="fa-solid fa-link-simple-slash"></i></button>
+                <button
+                    name="disconnectServiceProviderbtn"
+                    data-name="{{ service_provider.name }}"
+                    data-id="{{ service_provider.id }}"
+                    class="primary-btn white-btn"
+                >
+                    Disconnect <i class="fa-solid fa-link-simple-slash"></i>
+                </button>
             </div>
         {% endfor %}
     {% else %}
-        <p class="italic">No service providers are currently connected. Please click the plus button below to search for and connect with service providers.</p>
+        <p class="italic">
+            No service providers are currently connected. Please click the plus button below to search for and connect with service providers.
+        </p>
     {% endif %}
 </div>
 
+<!-- Add Service Providers -->
 <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
     <h3>Add Service Providers</h2>
-    <h3 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'addServiceProvidersDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+    <h3 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'addServiceProvidersDiv')">
+        <i class="fa-solid fa-{% if request.GET.q %}minus{% else %}plus{% endif %} fa-xl darkteal-text"></i>
+    </h3>
 </div>
-<div id="addServiceProvidersDiv" class="mb-16" style="height: 0px; overflow: hidden;">
+<div
+    id="addServiceProvidersDiv"
+    class="mb-16"
+    {% if request.GET.q %}
+        style="height:auto; overflow: visible;"
+    {% else %}
+        style="height: 0px; overflow: hidden;"
+    {% endif %}
+>
+    <!-- Search -->
     <div class="mb-16">
         <p>Search for a service provider</p>
         <div class="w-60">
             <form class="default-searchbar w-100" method="GET" action="">
-                <input type="search" name="q" placeholder="Search" autocomplete="off">
-                <button class="search-btn"><i class="fa fa-search fa-lg" aria-hidden="true"></i></button>
+                <input
+                    type="search"
+                    name="q"
+                    placeholder="Search"
+                    autocomplete="off"
+                    {% if request.GET.q %}value="{{ request.GET.q }}"{% endif %}
+                >
+                <button class="search-btn">
+                    <i class="fa fa-search fa-lg" aria-hidden="true"></i>
+                </button>
             </form>
         </div>
     </div>
 
-    <p class="mb-8"><small>Displaying {{ other_service_providers.count }} service provider(s)</small></p>
+    <p class="mb-8">
+        <small>Displaying {{ other_service_providers.count }} service provider(s)</small>
+    </p>
     {% for service_provider in other_service_providers %}
         <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-16">
-            <div class="w-70">
+            <div class="w-85">
                 <p>{{ service_provider.name }}</p>
             </div>
 
-            {% if institution and institution.is_subscribed %}
-                <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
-            {% elif researcher and researcher.is_subscribed %}
-                <button name="connectServiceProviderbtn" class="primary-btn action-btn" data-name="{{ service_provider.name }}" data-id="{{ service_provider.id }}">Connect <i class="fa-solid fa-link-simple"></i></button>
-            {% else %}
-                <div class="btn-with-helptext">
-                    <a class="primary-btn disabled-btn">Connect <i class="fa-solid fa-link-simple"></i></a>
-                    <span class="btn-help-text">
-                        Your account needs to be {% if community %}confirmed{% else %}subscribed{% endif %} to connect to Service Providers.
-                    </span>
-                </div>
-            {% endif %}
+            <div class="w-15">
+                {% if institution.is_subscribed or researcher.is_subscribed or community.is_approved %}
+                    {% if not service_provider.certification_type == 'manual'%}
+                        <button
+                            name="connectServiceProviderbtn"
+                            class="primary-btn action-btn w-100"
+                            data-name="{{ service_provider.name }}"
+                            data-id="{{ service_provider.id }}"
+                        >
+                            Connect <i class="fa-solid fa-link-simple"></i>
+                        </button>
+                    {% elif service_provider.certification_type == 'manual' %}
+                        <a
+                            class="primary-btn action-btn w-100"
+                            href="{{ service_provider.documentation }}"
+                            target="_blank"
+                        >
+                            More Info <i class="fa fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    {% if not service_provider.certification_type == 'manual'%}
+                        <div class="btn-with-helptext">
+                            <a
+                                class="primary-btn disabled-btn w-100"
+                            >
+                                Connect <i class="fa-solid fa-link-simple"></i>
+                            </a>
+                            <span class="btn-help-text">
+                                Your account needs to be {% if community %}confirmed{% else %}subscribed{% endif %} to connect to Service Providers.
+                            </span>
+                        </div>
+                    {% elif service_provider.certification_type == 'manual' %}
+                        <a
+                            class="primary-btn action-btn w-100"
+                            href="{{ service_provider.documentation }}"
+                            target="_blank"
+                        >
+                            More Info <i class="fa fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     {% endfor %}
 </div>
@@ -92,19 +148,32 @@
         </div>
 
         <div class="w-100">
-            <p class="mt-0">When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:</p>
+            <p class="mt-0">
+                When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:
+            </p>
             <ul>
                 <li>See basic account information</li>
                 <li>See your Projects</li>
             </ul>
-            <p>Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.</p>
+            <p>
+                Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.
+            </p>
 
             <div class="flex-this column gap-half">
                 <form id="connectServiceProviderForm" method="POST">
                     {% csrf_token %}
-                    <button id="continueServiceProviderConnectBtn" class="primary-btn action-btn w-100" name="connectServiceProvider" value="">Connect with this Service Provider</button>
+                    <button
+                        id="continueServiceProviderConnectBtn"
+                        class="primary-btn action-btn w-100"
+                        name="connectServiceProvider"
+                        value=""
+                    >
+                        Connect with this Service Provider
+                    </button>
                 </form>
-                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">
+                    Cancel
+                </div>
             </div>
 
         </div>
@@ -124,7 +193,9 @@
         </div>
 
         <div class="w-100">
-            <p class="mt-0">Are you sure you want to disconnect from <span id="disconnectServiceProvidername" class="bold"></span>? They will no longer be able to:</p>
+            <p class="mt-0">
+                Are you sure you want to disconnect from <span id="disconnectServiceProvidername" class="bold"></span>? They will no longer be able to:
+            </p>
             <ul>
                 <li>See basic account information</li>
                 <li>See your Projects</li>
@@ -133,9 +204,18 @@
             <div class="flex-this column gap-half">
                 <form id="disconnectServiceProviderForm" method="POST">
                     {% csrf_token %}
-                    <button id="continueServiceProviderDisconnectBtn" class="primary-btn action-btn w-100" name="disconnectServiceProvider" value="">Yes, disconnect from this Service Provider</button>
+                    <button
+                        id="continueServiceProviderDisconnectBtn"
+                        class="primary-btn action-btn w-100"
+                        name="disconnectServiceProvider"
+                        value=""
+                    >
+                        Yes, disconnect from this Service Provider
+                    </button>
                 </form>
-                <div id="closeDisconnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+                <div id="closeDisconnectServiceProvidermodal" class="primary-btn white-btn w-100">
+                    Cancel
+                </div>
             </div>
 
         </div>
@@ -155,19 +235,32 @@
         </div>
 
         <div class="w-100">
-            <p class="mt-0">When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:</p>
+            <p class="mt-0">
+                When you link your Hub account, <span id="connectServiceProvidername" class="bold"></span> will be able to:
+            </p>
             <ul>
                 <li>See basic account information</li>
                 <li>See your Projects</li>
             </ul>
-            <p>Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.</p>
+            <p>
+                Once linked, you can disconnect this link in the Service Providers settings tab in your account settings.
+            </p>
 
             <div class="flex-this column gap-half">
                 <form id="connectServiceProviderForm" method="POST">
                     {% csrf_token %}
-                    <button id="continueServiceProviderConnectBtn" class="primary-btn action-btn w-100" name="connectServiceProvider" value="">Connect with this Service Provider</button>
+                    <button
+                        id="continueServiceProviderConnectBtn"
+                        class="primary-btn action-btn w-100"
+                        name="connectServiceProvider"
+                        value=""
+                    >
+                        Connect with this Service Provider
+                    </button>
                 </form>
-                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">Cancel</div>
+                <div id="closeConnectServiceProvidermodal" class="primary-btn white-btn w-100">
+                    Cancel
+                </div>
             </div>
 
         </div>

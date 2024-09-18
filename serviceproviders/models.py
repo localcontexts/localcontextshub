@@ -17,6 +17,11 @@ def service_provider_img_path(self, filename):
 
 
 class ServiceProvider(models.Model):
+    CERTIFICATION_CHOICES = (
+        ('manual', 'Manual'),
+        ('oauth', 'OAuth'),
+    )
+
     account_creator = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True
     )
@@ -36,6 +41,7 @@ class ServiceProvider(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
+    certification_type = models.CharField(max_length=20, choices=CERTIFICATION_CHOICES, blank=True, null=True)
     certified_by = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL,
         related_name="service_provider_approver"
