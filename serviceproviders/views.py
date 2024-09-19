@@ -11,7 +11,10 @@ from helpers.utils import (
     InviteMember, validate_recaptcha, check_member_role, encrypt_api_key,
     form_initiation, change_member_role
 )
-from notifications.utils import UserNotification, send_account_member_invite
+from notifications.utils import (
+    UserNotification, send_account_member_invite, send_simple_action_notification,
+    delete_action_notification
+)
 from .utils import handle_service_provider_creation, get_service_provider
 
 from django.contrib.auth.models import User
@@ -96,6 +99,30 @@ def public_service_provider_view(request, pk):
             service_provider=service_provider
         )
 
+        # Do connections exist
+        sp_connections = ServiceProviderConnections.objects.filter(
+            service_provider=service_provider
+        ).exclude(institutions__id=None, communities__id=None, researchers__id=None)
+
+        if sp_connections:
+            institution_ids = sp_connections.values_list('institutions__id', flat=True)
+            community_ids = sp_connections.values_list('communities__id', flat=True)
+            researcher_ids = sp_connections.values_list('researchers__id', flat=True)
+
+            communities = Community.objects.filter(
+                    id__in=community_ids
+                ).exclude(show_sp_connection=False)
+            researchers = Researcher.objects.filter(
+                    id__in=researcher_ids
+                ).exclude(show_sp_connection=False)
+            institutions = Institution.objects.filter(
+                    id__in=institution_ids
+                ).exclude(show_sp_connection=False)
+        else:
+            communities = None
+            researchers = None
+            institutions = None
+
         if request.user.is_authenticated:
             user_service_providers = (
                 UserAffiliation.objects.prefetch_related("service_providers")
@@ -134,6 +161,10 @@ def public_service_provider_view(request, pk):
                 "service_provider": service_provider,
                 "otc_notices": otc_notices,
                 "env": environment,
+                "sp_connections": sp_connections,
+                "communities": communities,
+                "researchers": researchers,
+                "institutions": institutions,
             }
             return render(request, "public.html", context)
 
@@ -141,11 +172,15 @@ def public_service_provider_view(request, pk):
             "service_provider": service_provider,
             "form": form,
             "user_service_providers": user_service_providers,
+            "sp_connections": sp_connections,
             "otc_notices": otc_notices,
             "env": environment,
+            "communities": communities,
+            "researchers": researchers,
+            "institutions": institutions,
         }
         return render(request, "public.html", context)
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -155,18 +190,18 @@ def public_service_provider_view(request, pk):
 def service_provider_notices(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
-    urls = OpenToCollaborateNoticeURL.objects.filter(service_provider=service_provider
-                                                            ).values_list("url", "name", "id")
+    urls = OpenToCollaborateNoticeURL.objects.filter(
+        service_provider=service_provider
+    ).values_list("url", "name", "id")
     form = OpenToCollaborateNoticeURLForm(request.POST or None)
 
     if service_provider.is_certified:
         not_approved_download_notice = None
         not_approved_shared_notice = None
     else:
-        not_approved_download_notice = "Your service provider account needs to be subscribed " \
-            "in order to download this Notice."
-        not_approved_shared_notice = "Your service provider account needs to be subscribed in " \
-            "order to share this Notice."
+        not_approved_download_notice = "Your account needs to be certified to download this " \
+            "Notice."
+        not_approved_shared_notice = "Your account needs to be certified to share this Notice."
 
     # sets permission to download OTC Notice
     if dev_prod_or_local(request.get_host()) == "SANDBOX":
@@ -263,19 +298,48 @@ def connections(request, pk):
 
         elif request.method == "POST":
             if "disconnectAccount" in request.POST:
+                connection_reference_id = f"{service_provider.id}:{request.POST.get('disconnectAccount')}"  # noqa
                 account_id, account_type = request.POST.get('disconnectAccount').split('_')
                 sp_connection = ServiceProviderConnections.objects.get(
                     service_provider=service_provider
                 )
 
-                if account_type == "institution":
+                # Delete instances of the connection notification
+                delete_action_notification(connection_reference_id)
+
+                if account_type == "i":
                     sp_connection.institutions.remove(account_id)
 
-                elif account_type == "community":
+                    # Send notification of disconnection to account
+                    institution = Institution.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, institution, title, "Activity", connection_reference_id
+                    )
+
+                elif account_type == "c":
                     sp_connection.communities.remove(account_id)
 
-                elif account_type == "researcher":
+                    # Send notification of disconnection to account
+                    community = Community.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, community, title, "Activity", connection_reference_id
+                    )
+
+                elif account_type == "r":
                     sp_connection.researchers.remove(account_id)
+                    # name = get_users_name(request.user)
+
+                    # Send notification of disconnection to account
+                    researcher = Researcher.objects.get(id=account_id)
+                    title = f"{service_provider.name} (Service Provider) has removed your "\
+                        "connection"
+                    send_simple_action_notification(
+                        None, researcher, title, "Activity", connection_reference_id
+                    )
 
                 sp_connection.save()
 
@@ -290,7 +354,7 @@ def connections(request, pk):
         }
         return render(request, "serviceproviders/connections.html", context)
 
-    except:
+    except Exception:
         raise Http404()
 
 
@@ -338,9 +402,7 @@ def service_provider_members(request, pk):
                 else:
                     username_to_check = selected_username
 
-                if not username_to_check in users.values_list(
-                    'username', flat=True
-                ):
+                if not username_to_check in users.values_list('username', flat=True):
                     message = "Invalid user selection. Please select user from the list."
                     messages.add_message(request, messages.INFO, message)
                 else:
@@ -350,7 +412,7 @@ def service_provider_members(request, pk):
                     invitation_exists = InviteMember.objects.filter(
                         receiver=selected_user,
                         service_provider=service_provider
-                    ).exists() # Check to see if invitation already exists
+                    ).exists()  # Check to see if invitation already exists
 
                     # If invitation request does not exist, save form
                     if not invitation_exists:
@@ -467,6 +529,40 @@ def update_service_provider(request, pk):
 
 @login_required(login_url="login")
 @member_required(roles=["admin", "editor"])
+def account_preferences(request, pk):
+    try:
+        service_provider = get_service_provider(pk)
+        member_role = check_member_role(request.user, service_provider)
+
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_connections') == 'on':
+                service_provider.show_connections = True
+                service_provider.save()
+
+            elif request.POST.get('show_connections') is None:
+                service_provider.show_connections = False
+                service_provider.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-service-provider", service_provider.id)
+
+        context = {
+            'member_role': member_role,
+            'service_provider': service_provider,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
+
+    except Exception:
+        raise Http404()
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
 def api_keys(request, pk):
     service_provider = get_service_provider(pk)
     member_role = check_member_role(request.user, service_provider)
@@ -485,13 +581,12 @@ def api_keys(request, pk):
 
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
-                if (service_provider.is_certified and
-                    remaining_api_key_count == 0):
+                if (service_provider.is_certified and remaining_api_key_count == 0):
                     messages.add_message(
-                        request,
-                        messages.ERROR,
+                        request, messages.ERROR,
                         'Your account has reached its API Key limit.'
                     )
+
                     return redirect(
                         "service-provider-api-key", service_provider.id
                     )
@@ -500,8 +595,8 @@ def api_keys(request, pk):
                 if service_provider.is_certified and form.is_valid():
                     data = form.save(commit=False)
                     api_key, key = AccountAPIKey.objects.create_key(
-                        name = data.name,
-                        service_provider_id = service_provider.id
+                        name=data.name,
+                        service_provider_id=service_provider.id
                     )
                     prefix = key.split(".")[0]
                     encrypted_key = encrypt_api_key(key)
@@ -509,8 +604,8 @@ def api_keys(request, pk):
                         prefix=prefix).update(encrypted_key=encrypted_key)
 
                 else:
-                    message = "Your account is not confirmed. Your " \
-                        "account must be confirmed to create an API Key."
+                    message = "Your account is not certified. Your account must be certified " \
+                        "to create API Keys."
                     messages.add_message(
                         request,
                         messages.ERROR,
@@ -534,14 +629,14 @@ def api_keys(request, pk):
                 )
 
         context = {
-            "service_provider" : service_provider,
-            "form" : form,
-            "account_keys" : account_keys,
-            "member_role" : member_role,
-            "remaining_api_key_count" : remaining_api_key_count,
+            "service_provider": service_provider,
+            "form": form,
+            "account_keys": account_keys,
+            "member_role": member_role,
+            "remaining_api_key_count": remaining_api_key_count,
         }
         return render(
             request, 'account_settings_pages/_api-keys.html', context
         )
-    except:
+    except Exception:
         raise Http404()

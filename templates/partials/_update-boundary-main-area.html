@@ -39,7 +39,14 @@
         background-color: #fff;
         border: 1px solid #1f293700;
         border-radius: 4px;
-        max-width: 560px;
+        max-width: 640px;
+        color: black;
+    }
+
+    #edit_name_icon {
+        margin-left: 10px;
+        margin-top: 11px;
+        color: grey;
     }
 </style>
 
@@ -64,6 +71,17 @@
 
       enableContinueButton()
     }
+
+    function enableNameInput(self) {
+      self.classList.add('disabled')
+      const name_of_boundary = document.querySelector('.name_of_boundary')
+      name_of_boundary.disabled = false
+      name_of_boundary.select()
+    }
+    function disableNameInput(self) {
+      self.disabled = true
+      document.querySelector('#edit_name_icon').classList.remove('disabled')
+    }
 </script>
 <div class="flex-this space-between">
     <div><h2 class="mt-0">Community Boundary</h2></div>
@@ -84,12 +102,15 @@
 
             <div class="center-boundary-container-item-vertically" style="width: calc(100% - 300px);">
                 <div style="display: flex">
-                    <input class='name_of_boundary' value="{{ community.name_of_boundary }}" onchange="shapeFileChange(this)"
-                    {% if 'native-land.ca' in community.source_of_boundary %}disabled{% endif %}
+                    <input disabled class='name_of_boundary w-100' value="{{ community.name_of_boundary }}"
+                           onchange="shapeFileChange(this)"
+                           onblur="disableNameInput(this)"
                     >
-                    <div style="margin: auto 0px">
-                        <div style="width: 100px">(territories)</div>
-                    </div>
+                    {% if 'native-land.ca' not in community.source_of_boundary %}
+                        <i id="edit_name_icon" class="fa-solid fa-edit sm pointer"
+                            onclick="enableNameInput(this)"
+                        ></i>
+                    {% endif %}
                 </div>
             </div>
 

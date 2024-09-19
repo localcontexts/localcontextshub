@@ -25,7 +25,7 @@ def restricted_view(request, exception=None):
 @login_required(login_url='login')
 def delete_member_invite(request, pk):
     invite = InviteMember.objects.get(id=pk)
-    
+
     # Delete relevant UserNotification
     if UserNotification.objects.filter(to_user=invite.receiver, from_user=invite.sender, notification_type='invitation', reference_id=pk).exists():
         notification = UserNotification.objects.get(to_user=invite.receiver, notification_type='invitation', reference_id=pk)
@@ -39,7 +39,7 @@ def delete_member_invite(request, pk):
         return redirect('service-provider-member-intives', invite.service_provider.id)
     else:
         return redirect('institution-member-requests', invite.institution.id)
-    
+
 
 @login_required(login_url='login')
 def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None, service_provider_id=None):

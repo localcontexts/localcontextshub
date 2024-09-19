@@ -44,7 +44,19 @@
 {% endif %}
 
 <div class="flex-this mt-2p">
-    {% if institution.is_subscribed or researcher.is_subscribed or community.is_approved or service_provider.is_certified and remaining_api_key_count != 0 %}
+    {% if remaining_api_key_count != 0 and institution.is_subscribed %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and researcher.is_subscribed %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and community.is_approved %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and service_provider.is_certified %}
         <div>
             <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
         </div>
@@ -57,11 +69,11 @@
                 {% elif researcher and not researcher.is_subscribed %}
                     The subscription process for your account is not completed yet.
                 {% elif service_provider and not service_provider.is_certified %}
-                    The certification process for your account is not completed yet.
+                    The certification process for your account is not completed yet. Please contact us for assistance.
                 {% elif community and not community.is_approved %}
                     The confirmation process for your account is not completed yet.
                 {% elif institution.is_subscribed or researcher.is_subscribed and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
-                {% elif service_provider.is_certified and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete your existing key to generate a new one or contact support for assistance.
+                {% elif service_provider.is_certified and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete your existing key to generate a new one or contact us for assistance.
                 {% endif %}
             </span>
         </div>

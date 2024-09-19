@@ -14,6 +14,7 @@ urlpatterns = [
 
     # Settings
     path('update/<str:pk>/', views.update_institution, name="update-institution"),
+    path('preferences/<str:pk>/', views.account_preferences, name="preferences-institution"),
     path('api-key/<str:pk>/', views.api_keys, name="institution-api-key"),
     path('connect-service-provider/<str:pk>/', views.connect_service_provider, name="institution-connect-service-provider"),
 

@@ -2,6 +2,7 @@ import json
 import urllib
 import zipfile
 from typing import Union
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 
 import requests
 from django.conf import settings
@@ -16,6 +17,7 @@ from helpers.models import (
     LabelTranslationVersion,
     HubActivity,
 )
+from django.db.models import Q
 from xhtml2pdf import pisa
 
 from communities.models import Community, JoinRequest, InviteMember, Boundary
@@ -595,6 +597,7 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
     name = data.get('name')
     source = data.get('source')
     boundary_data = data.get('boundary')
+    should_update_coordinates = data.get('should_update_coordinates', True)
 
     if name:
         entity.name_of_boundary = name
@@ -604,8 +607,9 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
 
     boundary_coordinates = boundary_data if boundary_data else []
     if entity.boundary:
-        # update boundary when it exists
-        entity.boundary.coordinates = boundary_coordinates
+        if should_update_coordinates:
+            # update boundary when it exists and should be updated
+            entity.boundary.coordinates = boundary_coordinates
     else:
         # create boundary when it does not exist
         entity.boundary = Boundary(coordinates=boundary_coordinates)
@@ -808,3 +812,22 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         )
         send_service_provider_email(request, data)
         return response
+
+def get_certified_service_providers(request):
+    service_providers = ServiceProvider.objects.filter(
+        Q(is_certified=True) &
+        (
+            (Q(certification_type='manual') & ~Q(documentation=None)) |
+            ~Q(certification_type='manual')
+        )
+    )
+
+    q = request.GET.get('q')
+    if q:
+        vector = SearchVector('name')
+        query = SearchQuery(q)
+        results = service_providers.filter(name__icontains=q)
+    else:
+        results = service_providers
+
+    return results

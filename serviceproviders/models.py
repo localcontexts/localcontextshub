@@ -4,12 +4,24 @@ from django.core.validators import MaxLengthValidator
 import uuid
 import os
 
+
+class CertifiedManager(models.Manager):
+    def get_queryset(self):
+        return super(CertifiedManager, self).get_queryset().filter(is_certified=True)
+
+
 def service_provider_img_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('users/service-provider-images', filename)
 
+
 class ServiceProvider(models.Model):
+    CERTIFICATION_CHOICES = (
+        ('manual', 'Manual'),
+        ('oauth', 'OAuth'),
+    )
+
     account_creator = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True
     )
@@ -29,10 +41,16 @@ class ServiceProvider(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_certified = models.BooleanField(default=False)
+    certification_type = models.CharField(max_length=20, choices=CERTIFICATION_CHOICES, blank=True, null=True)
+    certified_by = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="service_provider_approver"
+    )
     show_connections = models.BooleanField(default=True)
 
     # Managers
     objects = models.Manager()
+    certified = CertifiedManager()
 
     def __str__(self):
         return str(self.name)
@@ -46,7 +64,7 @@ class ServiceProvider(models.Model):
     def get_editors(self):
         return self.editors.all()
 
-    def is_user_in_institution(self, user):
+    def is_user_in_service_provider(self, user):
         if user in self.editors.all() or user == self.account_creator:
             return True
         else:

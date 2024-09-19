@@ -1,25 +1,8 @@
 {% extends 'auth-base.html' %} {% block title %} Update Account {% endblock %}
 {% block main %} {% load static %}
 
-    {% if community %}
-        {% include 'partials/infocards/_community-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if institution %}
-        {% include 'partials/infocards/_institution-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if researcher %}
-        {% include 'partials/infocards/_researcher-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
-
-    {% if service_provider %}
-        {% include 'partials/infocards/_service-provider-dashcard.html' %}
-        {% include 'partials/_subnav.html' %}
-    {% endif %}
+    {% include 'partials/infocards/_account-dashcard.html' %}
+    {% include 'partials/_subnav.html' %}
 
     <div
         class="content-card-v2 content-card-space flex-this column settings-height"
@@ -58,6 +41,22 @@
                     </div>
                 </a>
 
+                <!-- Account Preferences -->
+                <a href="{% if community %}{% url 'preferences-community' community.id %}{% endif %}{% if institution %}{% url 'preferences-institution' institution.id %}{% endif %}{% if researcher %}{% url 'preferences-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'preferences-service-provider' service_provider.id %}{% endif %}">
+                    <div
+                        class="flex-this side-nav-item {% if '/preferences/' in request.path %} selected {% else %} grey-text {% endif %}"
+                    >
+                        <div class="w-20 icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0">
+                                <strong>Account Preferences</strong><br>Manage your account settings
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
                 {% if community %}
                 <!-- Update Boundary -->
                     <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
@@ -69,6 +68,17 @@
                                 <p class="mt-8">
                                     <strong>Boundary</strong><br>Community Location
                                 </p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {% if institution or researcher and envi != "SANDBOX" %}
+                <a class="side-nav-a" href="{% if institution %}{% url 'subscription' institution.id 'institution' %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
+                        <div class="flex-this  side-nav-item {% if 'subscription' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 margin-right-8"><i class="fa fa-calendar-check-o fa-3x" aria-hidden="true"></i></div>
+                            <div class="w-80">
+                                <p class="mt-0"><strong>Subscription</strong><br>Subscription details and activity</p>
                             </div>
                         </div>
                     </a>
@@ -99,7 +109,7 @@
                         </div>
                     </a>
                 {% endif %}
-
+                
             </div>
 
 
