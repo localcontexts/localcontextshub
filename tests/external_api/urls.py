@@ -1,10 +1,10 @@
 from localcontexts.urls import urlpatterns
 from django.urls import path
 
-from . views import placeholder_view
+from . views import native_land_map_list
 
 
 class UrlsWithMockedExternalApi:
     urlpatterns = urlpatterns + [
-        path('placeholder-url/', placeholder_view)
+        path('wp-json/nativeland/v1/map-list/', native_land_map_list)
     ]

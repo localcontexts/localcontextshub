@@ -1,8 +1,9 @@
+import json
+
 from django.http import JsonResponse
 
 
-def placeholder_view(request):
-    data = {
-        'place-holder-key': 'place-holder-value'
-    }
-    return JsonResponse(data)
+def native_land_map_list(request):
+    json_data = open('tests/fixtures/native_land_map_list.json')
+    data = json.load(json_data)
+    return JsonResponse(data, safe=False)
