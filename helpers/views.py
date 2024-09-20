@@ -96,7 +96,7 @@ def community_boundary_view(request, community_id):
 
 
 @login_required(login_url='login')
-def boundary_view(request):
+def boundary_preview(request):
     try:
         boundary = request.GET.get('boundary')
         if boundary:
