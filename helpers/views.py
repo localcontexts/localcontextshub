@@ -92,7 +92,7 @@ def community_boundary_view(request, community_id):
     context = {
         'boundary': boundary
     }
-    return render(request, 'boundary/boundary-view.html', context)
+    return render(request, 'boundary/boundary-preview.html', context)
 
 
 @login_required(login_url='login')
@@ -109,7 +109,7 @@ def boundary_preview(request):
         context = {
             'boundary': boundary
         }
-        return render(request, 'boundary/boundary-view.html', context)
+        return render(request, 'boundary/boundary-preview.html', context)
     except Exception as e:
         message = 'Invalid Boundary Format'
         print(f'{message}: {e}')
@@ -130,4 +130,4 @@ def project_boundary_view(request, project_id):
     context = {
         'boundary': boundary
     }
-    return render(request, 'boundary/boundary-view.html', context)
+    return render(request, 'boundary/boundary-preview.html', context)
