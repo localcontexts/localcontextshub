@@ -248,8 +248,8 @@
                 // do post call to get boundary
                 const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
                 const slug = document.querySelector('#selected-title').getAttribute('data-slug')
-
-                const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+              
+                const url = `{% external_api "https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}" %}`
                 const boundaryResponse = await fetch(url)
                 const boundaryData = await boundaryResponse.json()
                 document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.remove("spinner-container");
