@@ -37,27 +37,35 @@
     </head>
     <body>
         <div id="map"></div>
-
-        {% if boundary|length == 0 %}
-            <div id="no-boundary-container">
-                <div id="no-boundary">
-                    No boundary Present
-                </div>
+        <div id="no-boundary-container">
+            <div id="no-boundary">
+                No boundary Present
             </div>
+        </div>
+        
+        <script>
+            // when boundary is not present, set default
+            let boundary = [
+              [[8.7832, 34.5085]]
+            ]
+            const setInitialZoom = true             
+        </script>
+
+        {% if preview_boundary %}
             <script>
-                // when boundary are not present, set default
-                const boundary = [
-                  [[8.7832, 34.5085]]
-                ]
-                const setInitialZoom = true
-            </script>
-        {% else %}
+                // get boundary data from Local Storage
+                boundary = JSON.parse(
+                  localStorage.getItem('boundary_preview')
+                )
+                const setInitialZoom = false
+            </script>            
+        {% elif boundary|length > 0 %}
             <script>
-                const boundary = {{ boundary }}
+                // Get boundary data from backend
+                boundary = {{ boundary }}
                 const setInitialZoom = false
             </script>
         {% endif %}
-
 
         <script>
             // define map and its initial boundary

@@ -127,4 +127,7 @@ def boundary_preview(request):
     """
     Uses boundary in local storage for preview
     """
-    return render(request, 'boundary/boundary-preview.html')
+    context = {
+        'preview_boundary': True,
+    }
+    return render(request, 'boundary/boundary-preview.html', context)
