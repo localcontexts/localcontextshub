@@ -16,8 +16,10 @@ from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
 
+
 def restricted_view(request, exception=None):
     return render(request, '403.html', status=403)
+
 
 @login_required(login_url='login')
 def delete_member_invite(request, pk):
@@ -53,6 +55,7 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
 
         return download_otc_notice(request)
 
+
 @login_required(login_url='login')
 def download_collections_care_notices(request, institution_id, perm):
     # perm will be a 1 or 0
@@ -62,6 +65,7 @@ def download_collections_care_notices(request, institution_id, perm):
     else:
         NoticeDownloadTracker.objects.create(institution=Institution.objects.get(id=institution_id), user=request.user, collections_care_notices=True)
         return download_cc_notices(request)
+
 
 @login_required(login_url='login')
 def download_community_support_letter(request):
@@ -80,6 +84,9 @@ def download_community_support_letter(request):
 
 @xframe_options_sameorigin
 def community_boundary_view(request, community_id):
+    """
+    Uses boundary in community for view
+    """
     community = Community.objects.filter(id=community_id).first()
     if not community:
         message = 'Community Does Not Exist'
@@ -95,29 +102,11 @@ def community_boundary_view(request, community_id):
     return render(request, 'boundary/boundary-preview.html', context)
 
 
-@login_required(login_url='login')
-def boundary_preview(request):
-    try:
-        boundary = request.GET.get('boundary')
-        if boundary:
-            boundary = json.loads(
-                boundary.replace('(', '[').replace(')', ']')
-            )
-        else:
-            boundary = []
-
-        context = {
-            'boundary': boundary
-        }
-        return render(request, 'boundary/boundary-preview.html', context)
-    except Exception as e:
-        message = 'Invalid Boundary Format'
-        print(f'{message}: {e}')
-        raise Exception(message)
-
-
 @xframe_options_sameorigin
 def project_boundary_view(request, project_id):
+    """
+    Uses boundary in project for view
+    """
     project = Project.objects.filter(id=project_id).first()
     if not project:
         message = 'Project Does Not Exist'
@@ -131,3 +120,11 @@ def project_boundary_view(request, project_id):
         'boundary': boundary
     }
     return render(request, 'boundary/boundary-preview.html', context)
+
+
+@login_required(login_url='login')
+def boundary_preview(request):
+    """
+    Uses boundary in local storage for preview
+    """
+    return render(request, 'boundary/boundary-preview.html')
