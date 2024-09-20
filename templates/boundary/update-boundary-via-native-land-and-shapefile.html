@@ -390,7 +390,7 @@
 
     function setViewLocationsHref(selectionUnit, boundary) {
         // set href for view-boundary-location
-        const href = `{% url 'boundary-view' %}?boundary=${JSON.stringify(boundary)}`
+        const href = `{% url 'boundary-preview' %}?boundary=${JSON.stringify(boundary)}`
         selectionUnit.querySelector('.view-boundary-link').setAttribute('href', href)
     }
 

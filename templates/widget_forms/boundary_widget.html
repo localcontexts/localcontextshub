@@ -85,7 +85,7 @@ function previewBoundary(self) {
   }
 
   // open boundary preview
-  const url = `{% url 'boundary-view' %}?boundary=[${boundary}]`
+  const url = `{% url 'boundary-preview' %}?boundary=[${boundary}]`
   window.open(url, '_blank');
 }
 async function uploadShapeFileData(self) {
