@@ -33,37 +33,50 @@
                 margin-top: 50px;
                 padding: 36px;
             }
+            .invisible {
+                display: none
+            }
         </style>
     </head>
     <body>
         <div id="map"></div>
+
         <div id="no-boundary-container">
             <div id="no-boundary">
                 No boundary Present
             </div>
         </div>
-        
+
         <script>
             // when boundary is not present, set default
             let boundary = [
               [[8.7832, 34.5085]]
             ]
-            const setInitialZoom = true             
+            let setInitialZoom = true
+            
+            function boundaryExists() {
+              // when boundary exists, this is run to modify
+              // the settings
+              setInitialZoom = false
+              document.querySelector('#no-boundary').classList.add('invisible')              
+            }
         </script>
 
         {% if preview_boundary %}
             <script>
                 // get boundary data from Local Storage
-                boundary = JSON.parse(
-                  localStorage.getItem('boundary_preview')
-                )
-                const setInitialZoom = false
-            </script>            
+                if (localStorage.hasOwnProperty('boundary_preview')) {
+                    boundary = JSON.parse(
+                      localStorage.getItem('boundary_preview')
+                    )
+                    boundaryExists()                  
+                }
+            </script>
         {% elif boundary|length > 0 %}
             <script>
                 // Get boundary data from backend
                 boundary = {{ boundary }}
-                const setInitialZoom = false
+                boundaryExists()
             </script>
         {% endif %}
 
