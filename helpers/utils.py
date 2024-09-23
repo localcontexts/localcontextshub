@@ -455,7 +455,7 @@ def create_or_update_boundary(
 
     raw_boundary_payload = post_data.get('boundary-payload')
 
-    if raw_boundary_payload in ['', None]:
+    if raw_boundary_payload in ['', '{}', None]:
         return
 
     data = json.loads(raw_boundary_payload)
