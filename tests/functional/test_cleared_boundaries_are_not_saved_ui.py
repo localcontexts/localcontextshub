@@ -12,7 +12,7 @@ from projects.models import Project
 
 
 @pytest.mark.usefixtures("py")
-class TestBoundaryPreviewFeatures(UiFeatureHelper):
+class TestBoundaryClearedFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
         self.original_source_of_boundary = 'native-land.ca'
