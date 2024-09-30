@@ -58,7 +58,7 @@ from institutions.models import Institution
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
 
-from .decorators import unauthenticated_user, zero_account_user
+from .decorators import unauthenticated_user
 from maintenance_mode.decorators import force_maintenance_mode_off
 
 
@@ -851,7 +851,6 @@ def newsletter_unsubscription(request, emailb64):
         return redirect("login")
 
 
-@zero_account_user
 def subscription_inquiry(request):
     form = SubscriptionForm(request.POST or None)
     form.fields.pop('account_type', None)
