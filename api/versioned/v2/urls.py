@@ -9,9 +9,11 @@ date_modified = MultiProjectListDetail.as_view({
     'get':'multisearch_date'
 })
 
+otc_notice = OpenToCollaborateNotice.as_view({'get': 'list'})
+
 urlpatterns = [
     re_path(r'^$', APIOverview.as_view(), name="api-overview"),
-    path('notices/open_to_collaborate/', OpenToCollaborateNotice.as_view(), name="api-open-to-collaborate"),
+    path('notices/open_to_collaborate/', otc_notice, name="api-open-to-collaborate"),
 
     path('get-user/', GetUserAPIView.as_view(), name='get-user'),
     path('projects/', ProjectList.as_view(), name="api-projects"),

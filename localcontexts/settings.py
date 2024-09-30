@@ -262,7 +262,13 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '2.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'AUTHENTICATION_WHITELIST': ['api.versioned.v2.views.APIKeyAuthentication'],
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]/',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
     'SERVERS': [
+        {
+            'url': 'https://localcontextshub.org/',
+            'description': 'Live instance of the Local Contexts Hub.'
+        },
         {
             'url': 'https://sandbox.localcontextshub.org/',
             'description': 'Sandbox/Testing site for the Local Contexts Hub API.'

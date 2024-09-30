@@ -1,13 +1,15 @@
 from itertools import chain
+import json
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
 
 from . import serializers as v2_serializers
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.permissions import BasePermission
@@ -111,11 +113,13 @@ class IsSuperuser(BasePermission):
         except:
             return False
 
+
+# FILTERS
+'''
+Filter that only allows users to see public projects and their own created projects if they are Active.
+Otherwise, they can only see projects that are not private.
+'''
 class IsActiveCreatorFilter(filters.BaseFilterBackend):
-    """
-    Filter that only allows users to see public projects and their own created projects if they are Active.
-    Otherwise, they can only see projects that are not private.
-    """
     def filter_queryset(self, request, queryset, view):
         try:
             account = request.user
@@ -170,11 +174,12 @@ class ProjectListFilterSet(FilterSet):
    researcher_id = NumberFilter(field_name='project_creator_project__researcher', lookup_expr='exact')
    community_id = NumberFilter(field_name='project_creator_project__community', lookup_expr='exact')
    user_id = NumberFilter(field_name='project_creator', lookup_expr='exact')
-   title = CharFilter(field_name='title', lookup_expr='iregex')
+   title = CharFilter(field_name='title', lookup_expr='iregex', help_text='The title of a Project.')
+   providers_id = CharFilter(help_text='An external identifier for a Project added by the user. Separate from the `unique_id` of a Project.')
 
    class Meta:
        model = Project
-       fields = ['institution_id', 'researcher_id', 'community_id', 'user_id', 'title', 'providers_id', 'unique_id'] 
+       fields = ['institution_id', 'researcher_id', 'community_id', 'user_id', 'title', 'providers_id', 'unique_id']
 
 
 # PUBLIC API CALLS
@@ -182,6 +187,7 @@ class APIOverview(APIView):
     @extend_schema(
         request=None,
         description="Get a list of all possible endpoints.",
+        operation_id= "api_overview",
         responses={
             200: inline_serializer(
                 name = "APIOverview",
@@ -216,13 +222,15 @@ class APIOverview(APIView):
         }
         return Response(api_urls)
 
-class OpenToCollaborateNotice(APIView):
+
+class OpenToCollaborateNotice(GenericViewSet):
     authentication_classes = [APIKeyAuthentication,]
     permission_classes = [IsActive,]
 
     @extend_schema(
         request=None,
-        description="Get a list of all possible endpoints.",
+        description="Get information about the Open to Collaborate Notice.",
+        operation_id="open_to_collaborate",
         responses={
             200: inline_serializer(
                 name = "OpenToCollaborateNotice",
@@ -236,32 +244,77 @@ class OpenToCollaborateNotice(APIView):
                     'usage_guides': serializers.URLField(),
                 }
             ),
-            # 401: OpenApiResponse(
-            #     description='Error: Forbidden',
-            # ),
+            401: OpenApiResponse(
+                description='Error: Permission Denied',
+            ),
+            403: OpenApiResponse(
+                description='Error: Forbidden',
+            ),
         }
     )
 
-    def get(self, request):
-        account = request.user
-        if not account.community:
-            if account.institution:
-                profile_url = reverse('public-institution', request=request, kwargs={'pk': account.institution.id})
-            elif account.researcher:
-                profile_url = reverse('public-researcher', request=request, kwargs={'pk': account.researcher.id})
+    def list(self, request):
+        if not request.user.community:
+            notice_json_data = open('./localcontexts/static/json/Notices.json')
+            notice_data = json.load(notice_json_data) #deserialize
 
-            api_urls = {
-                'notice_type': 'open_to_collaborate',
-                'name': 'Open to Collaborate Notice',
-                'default_text': 'Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.',
-                'profile_url': profile_url,
-                'img_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.png',
-                'svg_url': f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/ci-open-to-collaborate.svg',
-                'usage_guides': 'https://localcontexts.org/support/downloadable-resources/'
+            baseURL = f'https://storage.googleapis.com/{settings.STORAGE_BUCKET}/labels/notices/'
+            for item in notice_data:
+                notice_type = item['noticeType']
+                if notice_type == 'open_to_collaborate':
+                    name = item['noticeName']
+                    img_url = baseURL + item['imgFileName']
+                    svg_url = baseURL + item['svgFileName']
+                    default_text = item['noticeDefaultText']
+
+            with open('./localcontexts/static/json/NoticeTranslations.json', encoding="utf8") as translations_json_data:
+                translations_data = json.load(translations_json_data)
+            translations = []
+
+            for item in translations_data:
+                notice_type = item['noticeType']
+                if notice_type == 'open_to_collaborate':
+                    translated_name = item['noticeName']
+                    language_tag = item['languageTag']
+                    language = item['language']
+                    translated_text = item['noticeDefaultText']
+
+                    notice_translation = {
+                        'translated_name': translated_name,
+                        'language_tag': language_tag,
+                        'language': language,
+                        'language': language,
+                        'translated_text': translated_text
+                    }
+                    translations.append(notice_translation)
+
+            notice = {
+                'notice_type': notice_type,
+                'name': name,
+                'img_url': img_url,
+                'svg_url': svg_url,
+                'default_text': default_text,
+                'notice_translations': translations,
+                'created': '2021-10-05T00:00:00.000Z',
+                'updated': '2021-10-05T00:00:00.000Z'
             }
-            return Response(api_urls)
+
+            if request.user.researcher:
+                account = request.user.researcher
+            elif request.user.institution:
+                account = request.user.institution
+
+            data = {
+                'request': request,
+                'notice': notice,
+                'account': account
+            }
+
+            serializer = v2_serializers.OpenToCollaborationSerializer(data)
+            return Response(serializer.data)
         else:
             raise PermissionDenied("You do not have permission to view this call.")
+
 
 class ProjectList(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
@@ -276,19 +329,13 @@ class ProjectList(generics.ListAPIView):
 
 class ProjectDetail(generics.RetrieveAPIView):
     authentication_classes = [APIKeyAuthentication]
+    serializer_class = v2_serializers.ProjectSerializer
     filter_backends = [IsActiveCreatorFilter]
     lookup_field = 'unique_id'
 
     def get_queryset(self):
         queryset = self.filter_queryset(Project.objects.filter(project_privacy='Public'))
         return queryset
-
-    def get_serializer_class(self):
-        project = self.get_object()
-        if Notice.objects.filter(project=project, archived=False).exists():
-            return v2_serializers.ProjectSerializer
-        else:
-            return v2_serializers.ProjectNoNoticeSerializer
 
     def get_object(self):
         try:
@@ -424,7 +471,6 @@ class SubscriptionAPI(APIView):
             start_date = request.data.get('start_date')
             end_date = request.data.get('end_date')
             date_last_updated = request.data.get('date_last_updated')
-            subscription_type = request.data.get('subscription_type')
 
             account_type_to_field = {
                 'i': 'institution_id',
@@ -436,27 +482,12 @@ class SubscriptionAPI(APIView):
                 'community_id': Community,
                 'researcher_id': Researcher
             }
-            subscription_type_map = {
-                'Individual': 'individual',
-                'Small': 'small',
-                'Medium': 'medium',
-                'Large': 'large',
-                'CC Notice Only': 'cc_notice_only',
-                'CC Notices': 'cc_notices',
-            }
 
             field_name = account_type_to_field.get(account_type)
             model_class = field_to_model.get(field_name)
             if not field_name:
                 return Response(
                     {'error': 'Failed to create Subscription. Invalid account_type provided.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            mapped_subscription_type = subscription_type_map.get(subscription_type)
-            if not mapped_subscription_type:
-                return Response(
-                    {'error': 'Invalid subscription_type provided.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -469,8 +500,7 @@ class SubscriptionAPI(APIView):
                     'notification_count': notification_count,
                     'start_date': start_date,
                     'end_date': end_date,
-                    'date_last_updated': date_last_updated,
-                    'subscription_type': mapped_subscription_type
+                    'date_last_updated': date_last_updated
                 }
             }
             with transaction.atomic():
@@ -488,8 +518,7 @@ class SubscriptionAPI(APIView):
                     subscription.start_date = start_date
                     subscription.end_date = end_date
                     subscription.date_last_updated = date_last_updated
-                    subscription.subscription_type = mapped_subscription_type  
-                    subscription.save() 
+                    subscription.save()
                     return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
 
         except IntegrityError as e:
