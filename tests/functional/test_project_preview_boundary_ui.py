@@ -58,6 +58,13 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
         boundary = self.py.webdriver.execute_script('return boundary')
         assert len(boundary) > 0, 'Boundary preview data should exist'
 
+    def verify_expected_boundary_data_is_not_present(self):
+        # grab the boundary variable from Javascript
+        boundary = self.py.webdriver.execute_script('return boundary')
+        default_boundary_count = 1
+        assert len(boundary) == default_boundary_count, 'Boundary preview data should not exist'
+        self.py.get("#no-boundary-container").should().be_visible()
+
     def test_project_boundary_preview_for_a_community(self):
         self.accept_cookies()
         self.create_project_and_community()
@@ -105,3 +112,18 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
         )
         self.py.visit(boundary_preview_url)
         self.verify_expected_boundary_data_is_present()
+
+    def test_project_boundary_preview_without_selecting_any_boundary_data(self):
+        """
+        The preview should not show boundary data
+        since no preview data was selected
+        """
+        self.accept_cookies()
+        self.create_project_and_institution()
+
+        time.sleep(5) # wait for Javascript actions
+        boundary_preview_url = urllib.parse.urljoin(
+            self.live_server_url, reverse('boundary-preview')
+        )
+        self.py.visit(boundary_preview_url)
+        self.verify_expected_boundary_data_is_not_present()
