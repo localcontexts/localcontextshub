@@ -1,0 +1,146 @@
+{% extends 'register-base.html' %} {% block title %} Create Institution {% endblock %}{% load static %} {% block card %}
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+  </script>
+<div class="flex-this column account-registration-container">
+    <div class="flex-this space-between">
+        <div><h2 class="mt-0 mb-8">Institution Account </h2></div>
+        <div>Or <a class="default-a" href="{% url 'connect-institution' %}">request to join an existing institution</a>  </div>
+    </div>
+
+    <p class="mb-0 mt-0">
+        The institution details provided below will default to a public display in the Local Contexts Registry.
+        Providing your details will give consent to publicly being listed on the Registry.
+        Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+    </p>
+
+    <form action="{%url 'institution-create-subscription-form' institution.id  %}" method="POST" class="flex-this column w-100">
+        {% csrf_token %}
+
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ subscription_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ subscription_form.last_name }}
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <label>Email<span class="orange-text required-label" title="">*</span></label>
+            {{ subscription_form.email }}
+        </div>
+
+        <div class="mt-8">
+            <label>Institution Name<span class="orange-text required-label" title="">*</span></label>
+            {{ subscription_form.organization_name }}
+        </div>
+
+        <div class="w-100">
+            <div class="pad-top-1-5 radio-group mb-1p">
+                <label for="inquiry_type" class="inquiry-label">Inquiry Type<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">An institution inquiry type allows you to select the desired role for the subscription process.</span>
+                </div>
+                <br>
+                <div class="flex-this row ">
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription">
+                        <span class="ml-5">Subscription</span>
+                    </label>
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription -- CC Notices Only">
+                        <span class="ml-5">Collections Care Notices</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-this flex-end mt-8">
+            <div class="flex-this creat-account__container-width__buttons">
+                <input
+                type="hidden"
+                name="g-recaptcha-response"
+                id="g-recaptcha-response"
+                />
+                
+                <div class="mr-8">
+                    <button id="clearFormBtn" class="primary-btn white-btn btn-width__clear-form mt-2p">Clear form <i class="fa-regular fa-eraser"></i></button>
+                </div>
+        
+                <div class="flex-this flex-end">
+                    <button id="createSubscription" class="primary-btn action-btn mt-2p" onclick="disableButton()">
+                      Continue <i class="fa fa-arrow-right"></i>
+                    </button>
+                    <div id="loading-spinner" class="primary-btn action-btn mt-2p hide disabled-btn">
+                      Continue <i class="fa fa-arrow-right"></i>
+                      <i class="fa spinner-container fa-spinner fa-spin fa-2x spinner "></i>
+                    </div>
+                  </div>                 
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const firstNameInput = document.querySelector('input[name="first_name"]');
+        const lastNameInput = document.querySelector('input[name="last_name"]');
+        const emailInput = document.querySelector('input[type="email"]');
+        const organizationInput = document.querySelector('input[name="organization_name"]');
+        const inquiryTypeRadios = document.querySelectorAll('input[name="inquiry_type"]');
+        const submitButton = document.getElementById("createSubscription");
+        const clearFormBtn = document.getElementById('clearFormBtn')
+    
+        // Disable the button by default
+        submitButton.disabled = true;
+    
+        // Add event listeners to inputs
+        firstNameInput.addEventListener("input", validateForm);
+        emailInput.addEventListener("input", validateForm);
+        inquiryTypeRadios.forEach(radio => radio.addEventListener("change", validateForm));
+    
+    function validateForm() {
+        const firstNameFilled = firstNameInput.value.trim() !== "";
+        const emailFilled = emailInput.value.trim() !== "" && isValidEmail(emailInput.value.trim());
+        const inquiryTypeSelected = Array.from(inquiryTypeRadios).some(radio => radio.checked);
+  
+        // Enable the button if all fields are valid
+        if (firstNameFilled && emailFilled && inquiryTypeSelected) {
+          submitButton.disabled = false;
+        } else {
+          submitButton.disabled = true;
+        }
+    }
+  
+    function isValidEmail(email) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    clearFormBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        firstNameInput.value = ''
+        submitButton.disabled = true
+
+        lastNameInput.value = ''
+        emailInput.value = ''
+        inquiryTypeRadios.forEach(radio => {
+            radio.checked = false;
+        });
+    })
+});
+</script>
+{% endblock %}

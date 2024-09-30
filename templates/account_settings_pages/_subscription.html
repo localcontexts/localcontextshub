@@ -18,7 +18,9 @@
   {% elif subscription is None  %}    
   <p class='red-text'>To unlock more activities in your account please subscribe</p>
   <div>
-    <button type="submit" class="primary-btn action-btn" name="generatebtn">Fill out Subscription Form</button>
+    <a href="{% if institution %}{% url 'institution-create-subscription-form' institution.id  %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
+      <button type="submit" class="primary-btn action-btn" name="generatebtn">Fill out Subscription Form</button>
+    </a>
   </div> 
   {% else %}
     <div class="flex-this w-60 subscription-details">
