@@ -6,10 +6,8 @@ from django.urls import reverse
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
 from factories.projects_factories import ProjectFactory
-from communities.models import Community, Boundary
-from helpers.views import boundary_preview
+from communities.models import Community
 from institutions.models import Institution
-from projects.models import Project
 
 
 @pytest.mark.usefixtures("py")
@@ -75,6 +73,30 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
             )
         )
         self.py.visit(community_project_url)
+        self.select_specific_nld_territory()
+
+        time.sleep(5) # wait for Javascript actions
+        boundary_preview_url = urllib.parse.urljoin(
+            self.live_server_url, reverse('boundary-preview')
+        )
+        self.py.visit(boundary_preview_url)
+        self.verify_expected_boundary_data_is_present()
+
+    def test_project_boundary_preview_for_an_institution(self):
+        self.accept_cookies()
+        self.create_project_and_institution()
+
+        # visit project edit page for community
+        institution_project_url = urllib.parse.urljoin(
+            self.live_server_url, reverse(
+                'inst-edit-project',
+                kwargs={
+                    'pk': self.institution.id,
+                    'project_uuid': self.institution_project.unique_id,
+                }
+            )
+        )
+        self.py.visit(institution_project_url)
         self.select_specific_nld_territory()
 
         time.sleep(5) # wait for Javascript actions
