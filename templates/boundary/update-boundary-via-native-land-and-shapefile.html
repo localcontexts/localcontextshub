@@ -389,8 +389,11 @@
     }
 
     function setViewLocationsHref(selectionUnit, boundary) {
+        // set boundary-preview value in localStorage
+        localStorage.setItem('boundary_preview', JSON.stringify(boundary))
+      
         // set href for view-boundary-location
-        const href = `{% url 'boundary-view' %}?boundary=${JSON.stringify(boundary)}`
+        const href = "{% url 'boundary-preview' %}"
         selectionUnit.querySelector('.view-boundary-link').setAttribute('href', href)
     }
 
