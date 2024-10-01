@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
 from factories.projects_factories import ProjectFactory
+from researchers.models import Researcher
 from communities.models import Community
 from institutions.models import Institution
 
@@ -14,8 +15,10 @@ from institutions.models import Institution
 class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
+        self.researcher_project = None
         self.community_project = None
         self.institution_project = None
+        self.researcher = None
         self.community = None
         self.institution = None
 
@@ -30,6 +33,17 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
         selected_territory = 'Panamakas'
         self.py.get(".input-field.search").type(selected_territory)
         self.py.get(".region-results .result-item").click()
+
+    def create_project_and_researcher(self):
+        self.researcher = Researcher(
+            user=self.user,
+        )
+        self.researcher.save()
+        self.researcher_project = ProjectFactory(
+            project_creator=self.user,
+            urls=[]
+        )
+        self.researcher_project.save()
 
     def create_project_and_community(self):
         self.community = Community(
@@ -64,6 +78,30 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
         default_boundary_count = 1
         assert len(boundary) == default_boundary_count, 'Boundary preview data should not exist'
         self.py.get("#no-boundary-container").should().be_visible()
+
+    def test_project_boundary_preview_for_a_researcher(self):
+        self.accept_cookies()
+        self.create_project_and_researcher()
+
+        # visit project edit page for researcher
+        researcher_project_url = urllib.parse.urljoin(
+            self.live_server_url, reverse(
+                'researcher-edit-project',
+                kwargs={
+                    'researcher_id': self.researcher.id,
+                    'project_uuid': self.researcher_project.unique_id,
+                }
+            )
+        )
+        self.py.visit(researcher_project_url)
+        self.select_specific_nld_territory()
+
+        time.sleep(5) # wait for Javascript actions
+        boundary_preview_url = urllib.parse.urljoin(
+            self.live_server_url, reverse('boundary-preview')
+        )
+        self.py.visit(boundary_preview_url)
+        self.verify_expected_boundary_data_is_present()
 
     def test_project_boundary_preview_for_a_community(self):
         self.accept_cookies()
