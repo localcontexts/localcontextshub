@@ -259,25 +259,11 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Local Contexts Hub API',
     'DESCRIPTION': 'The Local Contexts Hub enables the customization of Labels and the application of Notices directly to Indigenous data. The Hub works in tandem with already existing information/collections management systems and tools, generating Labels and Notices.',
-    'VERSION': '2.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'AUTHENTICATION_WHITELIST': ['api.versioned.v2.views.APIKeyAuthentication'],
     'SCHEMA_PATH_PREFIX': r'/api/v[0-9]/',
     'SCHEMA_PATH_PREFIX_TRIM': True,
-    'SERVERS': [
-        {
-            'url': 'https://localcontextshub.org/',
-            'description': 'Live instance of the Local Contexts Hub.'
-        },
-        {
-            'url': 'https://sandbox.localcontextshub.org/',
-            'description': 'Sandbox/Testing site for the Local Contexts Hub API.'
-        },
-        {
-            'url': 'https://localcontextshub.org/',
-            'description': 'Live instance of the Local Contexts Hub.'
-        },
-    ],
+    'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
     'CONTACT': {
         'name': 'Local Contexts Tech Team',
         'email': 'tech@localcontexts.org'
