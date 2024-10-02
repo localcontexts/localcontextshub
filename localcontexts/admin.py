@@ -1590,11 +1590,6 @@ class LabelTranslationVersionAdmin(admin.ModelAdmin):
     )
 
 
-class ProjectStatusAdmin(admin.ModelAdmin):
-    list_display = ('project', 'community', 'seen', 'status')
-    search_fields = ('project__title', 'community__community_name')
-
-
 class NoticeDownloadTrackerAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'institution', 'researcher', 'collections_care_notices',
@@ -1615,7 +1610,6 @@ class NoticeTranslationAdmin(admin.ModelAdmin):
     list_display = ('notice', 'notice_type', 'language')
 
 
-admin_site.register(ProjectStatus, ProjectStatusAdmin)
 admin_site.register(Notice, NoticeAdmin)
 admin_site.register(LabelVersion, LabelVersionAdmin)
 admin_site.register(LabelTranslationVersion, LabelTranslationVersionAdmin)
@@ -1704,6 +1698,10 @@ class ProjectArchivedAdmin(admin.ModelAdmin):
 class ProjectNoteAdmin(admin.ModelAdmin):
     list_display = ('project', 'community')
 
+class ProjectStatusAdmin(admin.ModelAdmin):
+    list_display = ('project', 'community', 'seen', 'status')
+    search_fields = ('project__title', 'community__community_name')
+
 
 admin_site.register(Project, ProjectAdmin)
 admin_site.register(ProjectContributors, ProjectContributorsAdmin)
@@ -1712,6 +1710,7 @@ admin_site.register(ProjectCreator, ProjectCreatorAdmin)
 admin_site.register(ProjectActivity, ProjectActivityAdmin)
 admin_site.register(ProjectArchived, ProjectArchivedAdmin)
 admin_site.register(ProjectNote, ProjectNoteAdmin)
+admin_site.register(ProjectStatus, ProjectStatusAdmin)
 
 
 # RESEARCHERS ADMIN
