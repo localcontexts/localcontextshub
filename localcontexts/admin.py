@@ -10,10 +10,8 @@ from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.urls import path
 from django.utils.translation import gettext as _
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 
 from django.apps import apps
 from django.template.response import TemplateResponse
@@ -23,11 +21,10 @@ from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db import models
 from django.shortcuts import redirect, render
-from rest_framework_api_key.models import AbstractAPIKey
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
-from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
+from rest_framework_api_key.admin import APIKeyModelAdmin
 from api.models import AccountAPIKey
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
