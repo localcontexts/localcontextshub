@@ -355,7 +355,8 @@ class OpenToCollaborateNotice(APIView):
     request=v2_serializers.ProjectOverviewSerializer,
     description="Get a list of all Projects available through the Hub.",
     responses={
-        200: v2_serializers.ProjectOverviewSerializer
+        200: v2_serializers.ProjectOverviewSerializer,
+        403: OpenApiResponse(description='Error: Forbidden'),
     },
 )
 class ProjectList(generics.ListAPIView):
