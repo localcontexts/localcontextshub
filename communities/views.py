@@ -34,7 +34,8 @@ from .decorators import member_required
 from .utils import *
 
 # pdfs
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.urls import reverse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
@@ -1248,7 +1249,8 @@ def apply_labels(request, pk, project_uuid):
                 project_id=project.id
             )
 
-            return redirect('apply-labels', community.id, project.unique_id)
+            # return redirect('community-project-actions', community.id, project.unique_id)
+            return HttpResponseRedirect(f"{reverse('community-project-actions', args=[community.id, project.unique_id])}#labels")
 
     context = {
         'member_role': member_role,
