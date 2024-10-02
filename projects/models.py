@@ -58,7 +58,7 @@ class Project(models.Model):
 
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
-    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    boundary = models.ForeignKey(Boundary, on_delete=models.CASCADE, blank=True, null=True)
 
     def has_labels(self):
         if self.bc_labels.exists() or self.tk_labels.exists():
