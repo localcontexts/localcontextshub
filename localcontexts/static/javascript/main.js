@@ -2448,7 +2448,7 @@ if (window.location.href.includes('subscription-form')) {
         const clearFormBtn = document.getElementById('clearFormBtn')
         
         validateForm()
-
+        submitButton.addEventListener("click", disableButton)
         firstNameInput.addEventListener("input", validateForm);
         emailInput.addEventListener("input", validateForm);
         if (inquiryTypeRadios.length > 0) {
@@ -2468,6 +2468,10 @@ if (window.location.href.includes('subscription-form')) {
           submitButton.disabled = true;
         }
     }
+    function disableButton() {
+          document.getElementById("createSubscription").style.display = "none";
+          document.getElementById("loading-spinner").classList.remove('hide');
+      }
   
     function isValidEmail(email) {
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
