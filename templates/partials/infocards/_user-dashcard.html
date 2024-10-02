@@ -8,7 +8,7 @@
                 <h3 class="mt-0">{{ profile.affiliation }}</h3>
             {% endif %}
 
-            <h4 class="mt-0">{{ profile.get_location }}</h4>
+            {% with profile.get_location as location %}{% if location %} <h4 class="mt-0">{{ location }}</h4> {% endif %}{% endwith %}
 
             {% if profile.languages_spoken %}
                 <div class="flex-this">

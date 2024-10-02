@@ -85,7 +85,7 @@ class Community(models.Model):
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]
-        location = ', '.join(filter(None, components)) or 'None specified'
+        location = ', '.join(filter(None, components)) or None
         return location
 
     def get_member_count(self):

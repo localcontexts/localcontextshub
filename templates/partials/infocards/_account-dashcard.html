@@ -91,21 +91,21 @@
                 <div class="mb-8">
                     <p class="dashcard-subheader m-0">
                         {% if researcher %}
-                            Researcher | Location: {{ researcher.user.user_profile.get_location }}
+                            Researcher {% with researcher.user.user_profile.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                         {% elif community %}
                             Community |
                             {% if member_role == 'admin' %}Administrator
                             {% elif member_role == 'editor' %}Editor
                             {% elif member_role == 'viewer' %}Viewer
-                            {% endif %} |
-                            Location: {{ community.get_location }}
+                            {% endif %}
+                            {% with community.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                         {% elif institution %}
                             Institution |
                             {% if member_role == 'admin' %}Administrator
                             {% elif member_role == 'editor' %}Editor
                             {% elif member_role == 'viewer' %}Viewer
-                            {% endif %} |
-                            Location: {{ institution.get_location }}
+                            {% endif %}
+                            {% with institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                         {% elif service_provider %}
                             Service Provider
                         {% endif %}

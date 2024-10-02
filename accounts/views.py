@@ -595,90 +595,90 @@ def invite_user(request):
 
 def registry(request, filtertype=None):
     default_items_per_page = 20
-    try:
-        c = Community.objects.select_related('community_creator').prefetch_related(
-            'admins', 'editors', 'viewers'
-        ).all().order_by('community_name')
-        i = Institution.objects.select_related('institution_creator').prefetch_related(
-            'admins', 'editors', 'viewers'
-        ).all().order_by('institution_name')
-        r = Researcher.objects.select_related('user').all().order_by('user__username')
-        sp = (ServiceProvider.objects.select_related("account_creator").all().order_by("name"))
+    # try:
+    c = Community.objects.select_related('community_creator').prefetch_related(
+        'admins', 'editors', 'viewers'
+    ).all().order_by('community_name')
+    i = Institution.objects.select_related('institution_creator').prefetch_related(
+        'admins', 'editors', 'viewers'
+    ).all().order_by('institution_name')
+    r = Researcher.objects.select_related('user').all().order_by('user__username')
+    sp = (ServiceProvider.objects.select_related("account_creator").all().order_by("name"))
 
-        if ("q" in request.GET) and (filtertype is not None):
-            q = request.GET.get("q")
-            return redirect("/registry/?q=" + q)
+    if ("q" in request.GET) and (filtertype is not None):
+        q = request.GET.get("q")
+        return redirect("/registry/?q=" + q)
 
-        elif ("q" in request.GET) and (filtertype is None):
-            q = request.GET.get("q")
-            q = unidecode(q)  # removes accents from search query
+    elif ("q" in request.GET) and (filtertype is None):
+        q = request.GET.get("q")
+        q = unidecode(q)  # removes accents from search query
 
-            # Filter's accounts by the search query,
-            # showing results that match with or without accents
-            c = c.filter(community_name__unaccent__icontains=q)
-            i = i.filter(institution_name__unaccent__icontains=q)
-            sp = sp.filter(name__unaccent__icontains=q)
-            r = r.filter(
-                Q(user__username__unaccent__icontains=q)
-                | Q(user__first_name__unaccent__icontains=q)
-                | Q(user__last_name__unaccent__icontains=q)
+        # Filter's accounts by the search query,
+        # showing results that match with or without accents
+        c = c.filter(community_name__unaccent__icontains=q)
+        i = i.filter(institution_name__unaccent__icontains=q)
+        sp = sp.filter(name__unaccent__icontains=q)
+        r = r.filter(
+            Q(user__username__unaccent__icontains=q)
+            | Q(user__first_name__unaccent__icontains=q)
+            | Q(user__last_name__unaccent__icontains=q)
+        )
+
+        cards = return_registry_accounts(c, r, i, sp)
+
+        p = Paginator(cards, default_items_per_page)
+
+    else:
+        if filtertype == "community-all":
+            cards = c
+        elif filtertype == "community-members":
+            cards = c.filter(is_approved=True)
+        elif filtertype == "institution-all":
+            cards = i
+        elif filtertype == "institution-subscribed":
+            cards = i.filter(is_subscribed=True)
+        elif filtertype == "service-provider-all":
+            cards = sp
+        elif filtertype == "service-provider-certified":
+            cards = sp.filter(is_certified=True)
+        elif filtertype == "researcher-all":
+            cards = r
+        elif filtertype == "researcher-subscribed":
+            cards = r.filter(is_subscribed=True)
+        elif filtertype == 'engagement-notice':
+            researchers_with_otc = r.filter(otc_researcher_url__isnull=False).distinct()
+            institutions_with_otc = i.filter(otc_institution_url__isnull=False).distinct()
+            service_providers_with_otc = sp.filter(
+                otc_service_provider_url__isnull=False).distinct()
+            cards = return_registry_accounts(
+                None,
+                researchers_with_otc,
+                institutions_with_otc,
+                service_providers_with_otc
             )
-
+        elif filtertype == 'all':
+            return redirect('registry')
+        else:
             cards = return_registry_accounts(c, r, i, sp)
 
-            p = Paginator(cards, default_items_per_page)
+        p = Paginator(cards, default_items_per_page)
 
-        else:
-            if filtertype == "community-all":
-                cards = c
-            elif filtertype == "community-members":
-                cards = c.filter(is_approved=True)
-            elif filtertype == "institution-all":
-                cards = i
-            elif filtertype == "institution-subscribed":
-                cards = i.filter(is_subscribed=True)
-            elif filtertype == "service-provider-all":
-                cards = sp
-            elif filtertype == "service-provider-certified":
-                cards = sp.filter(is_certified=True)
-            elif filtertype == "researcher-all":
-                cards = r
-            elif filtertype == "researcher-subscribed":
-                cards = r.filter(is_subscribed=True)
-            elif filtertype == 'engagement-notice':
-                researchers_with_otc = r.filter(otc_researcher_url__isnull=False).distinct()
-                institutions_with_otc = i.filter(otc_institution_url__isnull=False).distinct()
-                service_providers_with_otc = sp.filter(
-                    otc_service_provider_url__isnull=False).distinct()
-                cards = return_registry_accounts(
-                    None,
-                    researchers_with_otc,
-                    institutions_with_otc,
-                    service_providers_with_otc
-                )
-            elif filtertype == 'all':
-                return redirect('registry')
-            else:
-                cards = return_registry_accounts(c, r, i, sp)
+    page_num = request.GET.get("page", 1)
+    page = p.page(page_num)
 
-            p = Paginator(cards, default_items_per_page)
+    context = {
+        "researchers": r,
+        "communities": c,
+        "institutions": i,
+        "service_providers": sp,
+        "items": page,
+        "filtertype": filtertype,
+    }
 
-        page_num = request.GET.get("page", 1)
-        page = p.page(page_num)
+    return render(request, "accounts/registry.html", context)
 
-        context = {
-            "researchers": r,
-            "communities": c,
-            "institutions": i,
-            "service_providers": sp,
-            "items": page,
-            "filtertype": filtertype,
-        }
-
-        return render(request, "accounts/registry.html", context)
-
-    except Exception:
-        raise Http404()
+    # except Exception:
+    #     raise Http404()
 
 
 def projects_board(request, filtertype=None):

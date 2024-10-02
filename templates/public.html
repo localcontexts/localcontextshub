@@ -97,7 +97,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <p class="dashcard-subheader">Community | {{ community.get_location }} </p>
+                    <p class="dashcard-subheader">Community {% with community.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}</p>
                 </div>
                 <div><p class="dashcard-description description-sm">{% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}</p></div>
 
@@ -238,7 +238,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <p class="dashcard-subheader">Institution | {{ institution.get_location }} </p>
+                    <p class="dashcard-subheader">Institution {% with institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}</p>
                 </div>
                 <div><p class="dashcard-description description-sm">{% if institution.description %}{{ institution.description }}{% else %} No description provided. {% endif %}</p></div>
 
@@ -470,7 +470,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <p class="dashcard-subheader">Researcher | {{ researcher.user.user_profile.get_location }} </p>
+                    <p class="dashcard-subheader">Researcher {% with researcher.user.user_profile.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %} </p>
                 </div>
                 <div><p class="dashcard-description description-sm">{% if researcher.description %}{{ researcher.description }}{% else %} No description provided. {% endif %}</p></div>
                 {% include 'partials/_alerts.html' %}

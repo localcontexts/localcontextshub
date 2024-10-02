@@ -21,7 +21,8 @@
             </div>
             <div>
                 <p class="dashcard-subheader">
-                    Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %} | Location: {{ institution.get_location }}
+                    Institution | Members: {% if institution.get_member_count < 10 %}0{{ institution.get_member_count }}{% else %}{{ institution.get_member_count }}{% endif %}
+                    {% with institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                 </p>
             </div>
             <div>
