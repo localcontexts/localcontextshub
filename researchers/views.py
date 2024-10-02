@@ -16,7 +16,8 @@ from projects.utils import (
     )
 from helpers.utils import (
     crud_notices, create_or_update_boundary, get_notice_defaults, get_notice_translations,
-    check_subscription, validate_recaptcha, form_initiation, get_certified_service_providers
+    check_subscription, validate_recaptcha, form_initiation, get_certified_service_providers,
+    handle_confirmation_and_subscription, 
     )
 from accounts.utils import get_users_name
 from notifications.utils import (
@@ -1398,3 +1399,44 @@ def api_keys(request, researcher, related=None):
         return render(request, 'account_settings_pages/_api-keys.html', context)
     except Exception as e:
         raise Http404(str(e))
+
+@login_required(login_url="login")
+def create_researcher_subscription(request, pk):
+    researcher = Researcher.objects.get(id=pk)
+    env = dev_prod_or_local(request.get_host())
+    initial_data = {
+        "first_name": request.user._wrapped.first_name,
+        "last_name": request.user._wrapped.last_name,
+        "email": request.user._wrapped.email,
+        "organization_name": researcher.primary_institution,
+    }
+    subscription_form = SubscriptionForm(initial=initial_data)
+    subscription_form.fields['organization_name'].widget.attrs.update({"class": "w-100 readonly-input"})
+
+    if request.method == "POST":
+        if validate_recaptcha(request):
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+                "first_name": request.user._wrapped.first_name,
+                "last_name": request.user._wrapped.last_name,
+                "email": request.user._wrapped.email,
+                "inquiry_type": "Subscription",
+                "account_type": "researcher_account",
+                "organization_name": get_users_name(request.user),
+            }
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
+            if subscription_form.is_valid() and env != 'SANDBOX':
+                handle_confirmation_and_subscription(request, subscription_form, researcher, env)
+                return redirect('dashboard')
+            else:
+                messages.add_message(
+                    request, messages.ERROR, "Something went wrong. Please Try again later.",
+                )
+                return redirect('dashboard')
+    return render(
+        request, "account_settings_pages/_subscription-form.html", {
+            "subscription_form": subscription_form,
+            'researcher': researcher
+        }
+    )

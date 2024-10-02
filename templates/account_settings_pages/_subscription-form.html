@@ -13,17 +13,21 @@
   </script>
 <div class="flex-this column account-registration-container">
     <div class="flex-this space-between">
-        <div><h2 class="mt-0 mb-8">Institution Account </h2></div>
+        <div><h2 class="mt-0 mb-8">{% if institution %} Institution Account {% else %} Researcher Account {% endif %}</h2></div>
         <div>Or <a class="default-a" href="{% url 'connect-institution' %}">request to join an existing institution</a>  </div>
     </div>
 
     <p class="mb-0 mt-0">
+        {% if institution %}
         The institution details provided below will default to a public display in the Local Contexts Registry.
         Providing your details will give consent to publicly being listed on the Registry.
-        Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
+        Read more about our privacy standards {% else %} A researcher is a person who carries out academic or scientific research
+        independently or in an institution, such as archive, library, museum, historical society, gallery, data repository, or university.
+        {% endif %}
+        <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
     </p>
 
-    <form action="{%url 'institution-create-subscription-form' institution.id  %}" method="POST" class="flex-this column w-100">
+    <form action="{% if institution %}{% url 'institution-create-subscription-form' institution.id  %}{% else %}{% url 'researcher-create-subscription-form' researcher.id %}{% endif %}" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
         <div class="w-100 flex-this mt-16">
@@ -47,7 +51,7 @@
             <label>Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ subscription_form.organization_name }}
         </div>
-
+        {% if institution %}
         <div class="w-100">
             <div class="pad-top-1-5 radio-group mb-1p">
                 <label for="inquiry_type" class="inquiry-label">Inquiry Type<span class="orange-text required-label" title="">*</span></label>
@@ -67,7 +71,7 @@
                 </div>
             </div>
         </div>
-
+        {% endif %}
         <div class="flex-this flex-end mt-8">
             <div class="flex-this creat-account__container-width__buttons">
                 <input
@@ -81,10 +85,10 @@
                 </div>
         
                 <div class="flex-this flex-end">
-                    <button id="createSubscription" class="primary-btn action-btn mt-2p" onclick="disableButton()">
+                    <button id="createSubscription" class="primary-btn action-btn mt-2p">
                       Continue <i class="fa fa-arrow-right"></i>
                     </button>
-                    <div id="loading-spinner" class="primary-btn action-btn mt-2p hide disabled-btn">
+                    <div id="loading-spinner" class="primary-btn action-btn mt-2p hide {% if institution %} disabled-btn {% endif %}">
                       Continue <i class="fa fa-arrow-right"></i>
                       <i class="fa spinner-container fa-spinner fa-spin fa-2x spinner "></i>
                     </div>
@@ -95,52 +99,4 @@
     </form>
 
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const firstNameInput = document.querySelector('input[name="first_name"]');
-        const lastNameInput = document.querySelector('input[name="last_name"]');
-        const emailInput = document.querySelector('input[type="email"]');
-        const organizationInput = document.querySelector('input[name="organization_name"]');
-        const inquiryTypeRadios = document.querySelectorAll('input[name="inquiry_type"]');
-        const submitButton = document.getElementById("createSubscription");
-        const clearFormBtn = document.getElementById('clearFormBtn')
-    
-        // Disable the button by default
-        submitButton.disabled = true;
-    
-        // Add event listeners to inputs
-        firstNameInput.addEventListener("input", validateForm);
-        emailInput.addEventListener("input", validateForm);
-        inquiryTypeRadios.forEach(radio => radio.addEventListener("change", validateForm));
-    
-    function validateForm() {
-        const firstNameFilled = firstNameInput.value.trim() !== "";
-        const emailFilled = emailInput.value.trim() !== "" && isValidEmail(emailInput.value.trim());
-        const inquiryTypeSelected = Array.from(inquiryTypeRadios).some(radio => radio.checked);
-  
-        // Enable the button if all fields are valid
-        if (firstNameFilled && emailFilled && inquiryTypeSelected) {
-          submitButton.disabled = false;
-        } else {
-          submitButton.disabled = true;
-        }
-    }
-  
-    function isValidEmail(email) {
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-    clearFormBtn.addEventListener('click', (e) => {
-        e.preventDefault()
-        firstNameInput.value = ''
-        submitButton.disabled = true
-
-        lastNameInput.value = ''
-        emailInput.value = ''
-        inquiryTypeRadios.forEach(radio => {
-            radio.checked = false;
-        });
-    })
-});
-</script>
 {% endblock %}
