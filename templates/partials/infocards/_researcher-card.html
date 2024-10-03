@@ -24,7 +24,8 @@
       </div>
       <div>
         <p class="dashcard-subheader">
-          Researcher | Location: {{ researcher.user.user_profile.get_location }}
+          Researcher
+          {% with researcher.user.user_profile.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
         </p>
       </div>
       <div>

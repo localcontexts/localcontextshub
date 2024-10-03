@@ -48,8 +48,7 @@
                                 </div>
 
                                 <div>
-                                    <p class="dashcard-subheader">Institution | Members: {% if invite.institution.get_member_count < 10 %}0{{ invite.institution.get_member_count }}{% else %}{{ invite.institution.get_member_count }}{% endif %} |
-                                        Location: {{ invite.institution.get_location }}
+                                    <p class="dashcard-subheader">Institution | Members: {% if invite.institution.get_member_count < 10 %}0{{ invite.institution.get_member_count }}{% else %}{{ invite.institution.get_member_count }}{% endif %} {% with invite.institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                                     </p>
                                 </div>
 
@@ -107,8 +106,7 @@
                                 </div>
 
                                 <div>
-                                    <p class="dashcard-subheader">Community | Members: {% if invite.community.get_member_count < 10 %}0{{ invite.community.get_member_count }}{% else %}{{ invite.community.get_member_count }}{% endif %} |
-                                        Location: {{ invite.community.get_location }}
+                                    <p class="dashcard-subheader">Community | Members: {% if invite.community.get_member_count < 10 %}0{{ invite.community.get_member_count }}{% else %}{{ invite.community.get_member_count }}{% endif %}{% with invite.community.get_location as location %}{% if location %} | {{ location }}{% endif %}{% endwith %}
                                     </p>
                                 </div>
 

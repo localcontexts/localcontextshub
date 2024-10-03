@@ -10,10 +10,8 @@ from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.urls import path
 from django.utils.translation import gettext as _
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 
 from django.apps import apps
 from django.template.response import TemplateResponse
@@ -23,11 +21,10 @@ from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db import models
 from django.shortcuts import redirect, render
-from rest_framework_api_key.models import AbstractAPIKey
 
 from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
-from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
+from rest_framework_api_key.admin import APIKeyModelAdmin
 from api.models import AccountAPIKey
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import Group, User
@@ -1593,11 +1590,6 @@ class LabelTranslationVersionAdmin(admin.ModelAdmin):
     )
 
 
-class ProjectStatusAdmin(admin.ModelAdmin):
-    list_display = ('project', 'community', 'seen', 'status')
-    search_fields = ('project__title', 'community__community_name')
-
-
 class NoticeDownloadTrackerAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'institution', 'researcher', 'collections_care_notices',
@@ -1618,7 +1610,6 @@ class NoticeTranslationAdmin(admin.ModelAdmin):
     list_display = ('notice', 'notice_type', 'language')
 
 
-admin_site.register(ProjectStatus, ProjectStatusAdmin)
 admin_site.register(Notice, NoticeAdmin)
 admin_site.register(LabelVersion, LabelVersionAdmin)
 admin_site.register(LabelTranslationVersion, LabelTranslationVersionAdmin)
@@ -1707,6 +1698,10 @@ class ProjectArchivedAdmin(admin.ModelAdmin):
 class ProjectNoteAdmin(admin.ModelAdmin):
     list_display = ('project', 'community')
 
+class ProjectStatusAdmin(admin.ModelAdmin):
+    list_display = ('project', 'community', 'seen', 'status')
+    search_fields = ('project__title', 'community__community_name')
+
 
 admin_site.register(Project, ProjectAdmin)
 admin_site.register(ProjectContributors, ProjectContributorsAdmin)
@@ -1715,6 +1710,7 @@ admin_site.register(ProjectCreator, ProjectCreatorAdmin)
 admin_site.register(ProjectActivity, ProjectActivityAdmin)
 admin_site.register(ProjectArchived, ProjectArchivedAdmin)
 admin_site.register(ProjectNote, ProjectNoteAdmin)
+admin_site.register(ProjectStatus, ProjectStatusAdmin)
 
 
 # RESEARCHERS ADMIN

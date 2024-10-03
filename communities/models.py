@@ -59,7 +59,7 @@ class Community(models.Model):
     contact_email = models.EmailField(max_length=254, null=True, blank=True)
     image = models.ImageField(upload_to=community_img_path, blank=True, null=True)
     support_document = models.FileField(upload_to=get_file_path, blank=True, null=True)
-    description = models.TextField(null=True, blank=True, validators=[MaxLengthValidator(200)])
+    description = models.TextField(null=True, validators=[MaxLengthValidator(200)])
     city_town = models.CharField(max_length=80, blank=True, null=True)
     state_province_region = models.CharField(verbose_name='state or province', max_length=100, blank=True, null=True)
     country = CountryField(blank=True, null=True)
@@ -73,7 +73,7 @@ class Community(models.Model):
 
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
-    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, blank=True, null=True)
     share_boundary_publicly = models.BooleanField(default=True)
 
     show_sp_connection = models.BooleanField(default=True)
@@ -85,7 +85,7 @@ class Community(models.Model):
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]
-        location = ', '.join(filter(None, components)) or 'None specified'
+        location = ', '.join(filter(None, components)) or None
         return location
 
     def get_member_count(self):

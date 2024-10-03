@@ -32,7 +32,7 @@ class Institution(models.Model):
     contact_email = models.EmailField(max_length=254, null=True, blank=True)
     image = models.ImageField(upload_to=institution_img_path, blank=True, null=True)
     support_document = models.FileField(upload_to=get_file_path, blank=True, null=True)
-    description = models.TextField(null=True, blank=True, validators=[MaxLengthValidator(200)])
+    description = models.TextField(null=True, validators=[MaxLengthValidator(200)])
     ror_id = models.CharField(max_length=80, blank=True, null=True)
     city_town = models.CharField(max_length=80, blank=True, null=True)
     state_province_region = models.CharField(verbose_name='state or province', max_length=100, blank=True, null=True)
@@ -54,7 +54,7 @@ class Institution(models.Model):
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country]
-        location = ', '.join(filter(None, components)) or 'None specified'
+        location = ', '.join(filter(None, components)) or None
         return location
 
     def get_member_count(self):

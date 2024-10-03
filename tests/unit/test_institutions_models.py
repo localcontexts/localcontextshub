@@ -27,7 +27,7 @@ class TestInstitute(TestCase):
         new_institution.country = None
         new_institution.save()
 
-        assert new_institution.get_location() == "None specified"
+        assert new_institution.get_location() == None
 
     def test_get_member_count(self):
         new_institution = self.institution
