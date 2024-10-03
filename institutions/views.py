@@ -1579,16 +1579,16 @@ def api_keys(request, pk):
     member_role = check_member_role(request.user, institution)
     remaining_api_key_count = 0
     envi = dev_prod_or_local(request.get_host())
-    
+
     try:
         if institution.is_subscribed:
             subscription = Subscription.objects.get(institution=institution)
             remaining_api_key_count = subscription.api_key_count
-                
+
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
             account_keys = AccountAPIKey.objects.filter(institution=institution).values_list("prefix", "name", "encrypted_key")
-    
+
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
                 if institution.is_subscribed and remaining_api_key_count == 0:
@@ -1613,14 +1613,14 @@ def api_keys(request, pk):
                     else:
                         messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
                         return redirect("institution-api-key", institution.id)
-                
+
                 else:
                     messages.add_message(request, messages.ERROR, 'Your institution is not subscribed. '
                                         'You must have an active subscription to create more API Keys.')
                     return redirect("institution-api-key", institution.id)
 
                 return redirect("institution-api-key", institution.id)
-            
+
             elif "delete_api_key" in request.POST:
                 prefix = request.POST['delete_api_key']
                 api_key = AccountAPIKey.objects.filter(prefix=prefix)
@@ -1637,7 +1637,7 @@ def api_keys(request, pk):
             "form" : form,
             "account_keys" : account_keys,
             "member_role" : member_role,
-            "subscription_api_key_count" : remaining_api_key_count,
+            "remaining_api_key_count" : remaining_api_key_count,
             "envi": envi,
         }
         return render(request, 'account_settings_pages/_api-keys.html', context)
