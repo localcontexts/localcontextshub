@@ -45,8 +45,8 @@ class Institution(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     is_subscribed = models.BooleanField(default=False)
 
-    show_sp_connection = models.BooleanField(default=True)
-    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
+    show_sp_connection = models.BooleanField(default=True, null=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL, null=True)
 
     # Managers
     objects = models.Manager()
