@@ -1587,7 +1587,9 @@ def api_keys(request, pk):
 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
-            account_keys = AccountAPIKey.objects.filter(institution=institution).values_list("prefix", "name", "encrypted_key")
+            account_keys = AccountAPIKey.objects.filter(institution=institution).exclude(
+                Q(expiry_date__lt=timezone.now()) | Q(revoked=True)
+            ).values_list("prefix", "name", "encrypted_key")
 
         elif request.method == "POST":
             if "generate_api_key" in request.POST:

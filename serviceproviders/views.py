@@ -1,8 +1,10 @@
+from datetime import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 from itertools import chain
+from django.db.models import Q
 from .decorators import member_required
 from maintenance_mode.decorators import force_maintenance_mode_off
 
@@ -569,8 +571,8 @@ def api_keys(request, pk):
     remaining_api_key_count = 0
 
     try:
-        account_keys = AccountAPIKey.objects.filter(
-            service_provider=service_provider
+        account_keys = AccountAPIKey.objects.filter(service_provider=service_provider).exclude(
+            Q(expiry_date__lt=timezone.now()) | Q(revoked=True)
         ).values_list("prefix", "name", "encrypted_key")
 
         if service_provider.is_certified and account_keys.count() == 0:
