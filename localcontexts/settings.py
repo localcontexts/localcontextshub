@@ -82,6 +82,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_api_key',
+    'drf_spectacular',
     'django_filters',
     'corsheaders',
     'debug_toolbar',
@@ -249,9 +250,33 @@ STATICFILES_DIRS = [
 API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Local Contexts Hub API',
+    'DESCRIPTION': 'The Local Contexts Hub enables the customization of Labels and the application of Notices directly to Indigenous data. The Hub works in tandem with already existing information/collections management systems and tools, generating Labels and Notices.',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'AUTHENTICATION_WHITELIST': ['api.versioned.v2.views.APIKeyAuthentication'],
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]/',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
+    'CONTACT': {
+        'name': 'Local Contexts Tech Team',
+        'email': 'tech@localcontexts.org'
+    },
+    'TOS': 'https://localcontexts.org/terms-conditions/',
+    'LICENSE': {
+        'name': 'MIT License',
+        'url': 'https://github.com/localcontexts/localcontextshub?tab=License-1-ov-file#readme'
+    },
+    'EXTERNAL_DOCS': {
+        'description': 'Local Contexts GitHub Documentation',
+        'url': 'https://github.com/localcontexts/localcontextshub'
+    },
 }
 
 # Session expires after an hour of inactivity.

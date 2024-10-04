@@ -22,5 +22,13 @@
         "noticeDefaultText": "The TK (Traditional Knowledge) Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated.",
         "imgFileName": "tk-notice.png",
         "svgFileName": "tk-notice.svg"
+    },
+    {
+        "id": 4,
+        "noticeName": "Open to Collaborate Notice",
+        "noticeType": "open_to_collaborate",
+        "noticeDefaultText": "Our institution is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.",
+        "imgFileName": "ci-open-to-collaborate.png",
+        "svgFileName": "ci-open-to-collaborate.svg"
     }
 ]

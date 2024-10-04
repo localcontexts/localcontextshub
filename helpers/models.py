@@ -15,6 +15,7 @@ class Notice(models.Model):
         ('biocultural', 'biocultural'),
         ('traditional_knowledge', 'traditional_knowledge'),
         ('attribution_incomplete', 'attribution_incomplete'),
+        ('open_to_collaborate', 'open_to_collaborate'),
     )
     project = models.ForeignKey('projects.Project', null=True, on_delete=models.CASCADE, related_name="project_notice", db_index=True)
     notice_type = models.CharField(max_length=50, null=True, choices=TYPES)

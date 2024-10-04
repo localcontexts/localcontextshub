@@ -1,4 +1,6 @@
 from django.db.models import Q
+from django.http import Http404
+from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -7,12 +9,15 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
-from .serializers import *
-from projects.models import Project
+from .serializers import (
+    ProjectOverviewSerializer, ProjectSerializer, ProjectNoNoticeSerializer, ProjectDateModified
+)
+from django.contrib.auth.models import User
+from projects.models import Project, ProjectCreator
 from helpers.models import Notice
-from projects.models import ProjectCreator
-from django.http import Http404
-from django.conf import settings
+from institutions.models import Institution
+from researchers.models import Researcher
+
 
 @api_view(['GET'])
 def apiOverview(request, format=None):
@@ -53,7 +58,7 @@ class ProjectList(generics.ListAPIView):
     # '=' exact matches
     # '$' regex search
 
-#TODO: Add option to pass Providers ID using Project Detail search
+
 class ProjectDetail(generics.RetrieveAPIView):
     lookup_field = 'unique_id'
     queryset = Project.objects.exclude(project_privacy='Private')

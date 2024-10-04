@@ -832,7 +832,9 @@ def project_actions(request, pk, project_uuid):
             if not user_can_view or not project.can_user_access(request.user):
                 return redirect('view-project', project.unique_id)
             else:
-                notices = Notice.objects.filter(project=project, archived=False)
+                notices = Notice.objects.filter(project=project, archived=False).exclude(
+                    notice_type='open_to_collaborate'
+                )
                 creator = ProjectCreator.objects.get(project=project)
                 statuses = ProjectStatus.objects.select_related('community').filter(
                     project=project
