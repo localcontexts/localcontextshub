@@ -1,0 +1,26 @@
+<!--
+ Dropdowns, combo boxes, buttons, toggle switches, text fields, date pickers, checkboxes, radio buttons, confirmation dialogues
+-->
+
+{% if component == 'button' %}
+    <div class="btn-container">
+        <a
+            class="btn btn-{{style}} {% if rounded %}rounded{% endif %}"
+            {% if not disabled and not helptext and href %}href="{{ href }}"{% endif %}
+            {% if disabled or helptext %}disabled{% endif %}
+            {% if extra_args %}{{ extra_args }}{% endif %}
+        >
+            {% if label and not rounded %}
+            {{ label }}
+        {% endif %}
+        {% if icon %}
+                <i class="{{ icon }} {% if label and not rounded %}ml-8{% endif %}" aria-hidden="true"></i>
+            {% endif %}
+        </a>
+        {% if helptext %}
+            <span class="help-text">
+                {{helptext}}
+            </span>
+        {% endif %}
+    </div>
+{% endif %}

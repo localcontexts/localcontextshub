@@ -263,7 +263,6 @@ input:focus:not(.toggle) {
 .right-text { text-align: right; }
 .italic { font-style: italic; }
 
-
 /* MARGIN */
 .m-auto { margin: auto; }
 .m-0 { margin: 0 !important; }
@@ -399,6 +398,121 @@ input:focus:not(.toggle) {
 /* HEIGHTS */
 .h-25 { height: 25%; }
 .h-100 { height: 100% }
+
+/* BUTTONS */
+/* All Regular Rectangular buttons (CTA) */
+.btn {
+    min-height: 50px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 21px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    width: 100%
+}
+
+/* Rounded Buttons */
+.btn.rounded {
+    border-radius: 50% !important;
+    width: 50px;
+}
+
+.btn[disabled] {
+    background: #F3F4F6;
+    border: none;
+    color: #4B5563;
+    font-weight: normal;
+    cursor: default;
+}
+
+/* Hover over text for disabled buttons */
+.help-text {
+    display: block;
+    position: absolute;
+    margin-top: 8px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #fff;
+    visibility: hidden;
+    right: 5px;
+    z-index: 1;
+    width: 250px;
+    background-color: #EF6C00;
+}
+
+.btn-container {
+    position: relative;
+}
+
+.btn-container:hover .help-text {
+visibility: visible;
+}
+
+/* Primary CTA - Blue */
+.btn-primary {
+    background-color: #007385;
+    border: 1px solid #007385;
+    color: #fff;
+}
+
+.btn-primary:hover:not([disabled]) {
+    background-color: #338F9D;
+}
+
+.btn-primary:active:not([disabled]) {
+    background-color: #005C6A;
+}
+
+/* Secondary Action - Green */
+.btn-secondary {
+    background-color:#108670;
+    border: 1px solid #108670;
+    color: #fff;
+}
+
+.btn-secondary:hover:not([disabled]) {
+    background-color: #28927E;
+}
+
+.btn-secondary:active:not([disabled]) {
+    background-color: #0D6B5A;
+}
+
+/* Tertiary Action - Orange */
+.btn-tertiary {
+    background-color:#EF6C00;
+    border: 1px solid #EF6C00;
+    color: #fff;
+}
+
+.btn-tertiary:hover:not([disabled]) {
+    background-color: #DD6C10;
+}
+
+.btn-tertiary:active:not([disabled]) {
+    background-color: #DD6300;
+}
+
+/* Ghost Buttons */
+.btn-ghost {
+    background-color: #fff;
+    border: 1px solid #E6F1F3;
+    color: #007385;
+}
+
+.btn-ghost:hover:not([disabled]) {
+    background-color: #E6F1F3;
+    border-radius: 4px;
+    border: 1px solid #0D99FF;
+    box-shadow: 0.5px 0.5px 2px 0.5px #0D99FF;
+}
 
 /* ACTION Buttons / Register,Sign in, etc. */
 .primary-btn, .white-btn {
