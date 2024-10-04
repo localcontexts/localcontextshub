@@ -1544,7 +1544,7 @@ def account_preferences(request, pk):
         }
         return render(request, 'account_settings_pages/_preferences.html', context)
 
-    except:
+    except Institution.DoesNotExist:
         raise Http404()
 
 
