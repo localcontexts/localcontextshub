@@ -590,7 +590,7 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
     entity.share_boundary_publicly = post_data.get('share-boundary-publicly') == 'on'
     raw_boundary_payload = post_data.get('boundary-payload')
 
-    if raw_boundary_payload in ['', None]:
+    if raw_boundary_payload in ['', '{}', None]:
         return
 
     data = json.loads(raw_boundary_payload)
