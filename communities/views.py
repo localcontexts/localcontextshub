@@ -1031,7 +1031,7 @@ def project_actions(request, pk, project_uuid):
         if not member_role or not request.user.is_authenticated or not project.can_user_access(request.user):
             return redirect('view-project', project_uuid)
         else:
-            notices = Notice.objects.filter(project=project, archived=False)
+            notices = Notice.objects.filter(project=project, archived=False).exclude(notice_type='open_to_collaborate')
             creator = ProjectCreator.objects.get(project=project)
             current_status = ProjectStatus.objects.filter(project=project, community=community).first()
             statuses = ProjectStatus.objects.filter(project=project)

@@ -28,7 +28,7 @@ def view_project(request, unique_id):
         return render(request, '404.html', status=404)
 
     sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
-    notices = Notice.objects.filter(project=project, archived=False)
+    notices = Notice.objects.filter(project=project, archived=False).exclude(notice_type='open_to_collaborate')
 
     communities = None
     institutions = None

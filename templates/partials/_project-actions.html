@@ -323,7 +323,7 @@
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.">
                                     {% elif notice.notice_type == 'traditional_knowledge' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center.">
-                                    {% else  %}
+                                    {% elif notice.notice_type == 'attribution_incomplete' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line.">
                                     {% endif %}
                                 </div>

@@ -1,5 +1,7 @@
 from django.urls import path, re_path
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from drf_spectacular.views import (
+    SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+)
 from .views import *
 
 multisearch = MultiProjectListDetail.as_view({
@@ -28,6 +30,7 @@ urlpatterns = [
         name="api-projects-date-modified"
     ),
 
+    # For Developers: Reminder to add the local server to the servers list below for testing.
     path('schema/', SpectacularAPIView.as_view(
             api_version='v2',
             custom_settings= {
@@ -40,7 +43,7 @@ urlpatterns = [
                     {
                         'url': 'https://sandbox.localcontextshub.org/api/v2/',
                         'description': 'Sandbox/Testing site for the Local Contexts Hub API.'
-                    },
+                    }
                 ],
             }
         ), name='schema'

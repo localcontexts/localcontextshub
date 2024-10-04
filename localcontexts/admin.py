@@ -1546,6 +1546,11 @@ class NoticeAdmin(admin.ModelAdmin):
         'institution__institution_name'
     )
 
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == 'notice_type':
+            kwargs['choices'] = [choice for choice in db_field.choices if choice[0] != 'open_to_collaborate']
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
 
 class OpenToCollaborateNoticeURLAdmin(admin.ModelAdmin):
     list_display = ('institution', 'researcher', 'name', 'url', 'added')

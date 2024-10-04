@@ -1100,7 +1100,7 @@ def project_actions(request, pk, project_uuid):
         ):
             return redirect("view-project", project_uuid)
         else:
-            notices = Notice.objects.filter(project=project, archived=False)
+            notices = Notice.objects.filter(project=project, archived=False).exclude(notice_type='open_to_collaborate')
             creator = ProjectCreator.objects.get(project=project)
             statuses = ProjectStatus.objects.select_related("community").filter(
                 project=project
