@@ -17,6 +17,7 @@ from communities.models import Community
 class TestFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
+        os.environ['TEST_LIVE_SERVER_DOMAIN'] = self.live_server_url
         self.alert_dialog = Alert(self.py.webdriver)
         self.community_name = 'placeholder'
         self.fake = faker.Faker()

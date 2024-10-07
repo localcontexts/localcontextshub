@@ -103,7 +103,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('unique_id', 'providers_id', 'source_project_uuid', 'project_page', 'title', 'project_privacy', 'date_added', 'date_modified', 'created_by', 'notice', 'sub_projects', 'related_projects', 'project_boundary_geojson')
+        fields = ('unique_id', 'providers_id', 'publication_doi', 'project_data_guid', 'source_project_uuid', 'project_page', 'title', 'project_privacy', 'date_added', 'date_modified', 'created_by', 'notice', 'sub_projects', 'related_projects', 'project_boundary_geojson')
 
     def get_related_projects(self, obj):
         return [project.unique_id for project in obj.related_projects.all()]
@@ -121,7 +121,7 @@ class ProjectNoNoticeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('unique_id', 'providers_id', 'source_project_uuid', 'project_page', 'title', 'project_privacy', 'date_added', 'date_modified', 'created_by', 'bc_labels', 'tk_labels', 'sub_projects', 'related_projects', 'project_boundary_geojson')
+        fields = ('unique_id', 'providers_id', 'publication_doi', 'project_data_guid', 'source_project_uuid', 'project_page', 'title', 'project_privacy', 'date_added', 'date_modified', 'created_by', 'bc_labels', 'tk_labels', 'sub_projects', 'related_projects', 'project_boundary_geojson')
     
     def get_related_projects(self, obj):
         return [project.unique_id for project in obj.related_projects.all()]

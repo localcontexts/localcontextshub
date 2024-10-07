@@ -2,13 +2,16 @@ import urllib.parse
 
 import pytest
 
-from django.contrib.auth.hashers import make_password
 from django.urls import reverse
+from django.contrib.auth.hashers import make_password
+from django.test.utils import override_settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from factories.accounts_factories import UserFactory
+from external_api.urls import UrlsWithMockedExternalApi
 
 
+@override_settings(ROOT_URLCONF=UrlsWithMockedExternalApi)
 @pytest.mark.usefixtures("py")
 class UiFeatureHelper(StaticLiveServerTestCase):
     def login(self,):

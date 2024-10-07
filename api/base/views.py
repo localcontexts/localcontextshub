@@ -52,7 +52,7 @@ class ProjectList(generics.ListAPIView):
     serializer_class = ProjectOverviewSerializer
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['^providers_id', '=unique_id', 'title']
+    search_fields = ['^providers_id', '=unique_id', 'title', 'publication_doi', 'project_data_guid']
 
     # '^' starts-with search
     # '=' exact matches
