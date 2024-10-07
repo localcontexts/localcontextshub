@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -1326,11 +1327,9 @@ def api_keys(request, researcher, related=None):
 
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
-            account_keys = AccountAPIKey.objects.filter(researcher=researcher).values_list(
-                "prefix",
-                "name",
-                "encrypted_key"
-                )
+            account_keys = AccountAPIKey.objects.filter(researcher=researcher).exclude(
+                Q(expiry_date__lt=timezone.now()) | Q(revoked=True)
+            ).values_list("prefix", "name", "encrypted_key")
 
         elif request.method == "POST":
             if "generate_api_key" in request.POST:

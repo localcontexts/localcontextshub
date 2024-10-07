@@ -1519,12 +1519,14 @@ def reset_community_boundary(request, pk):
 def api_keys(request, pk):
     community = get_community(pk)
     member_role = check_member_role(request.user, community)
-    
-    try:       
+
+    try:
         if request.method == 'GET':
             form = APIKeyGeneratorForm(request.GET or None)
-            account_keys = AccountAPIKey.objects.filter(community=community).values_list("prefix", "name", "encrypted_key")
-    
+            account_keys = AccountAPIKey.objects.filter(community=community).exclude(
+                Q(expiry_date__lt=timezone.now()) | Q(revoked=True)
+            ).values_list("prefix", "name", "encrypted_key")
+
         elif request.method == "POST":
             if "generate_api_key" in request.POST:
                 form = APIKeyGeneratorForm(request.POST)

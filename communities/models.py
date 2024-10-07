@@ -76,8 +76,8 @@ class Community(models.Model):
     boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, blank=True, null=True)
     share_boundary_publicly = models.BooleanField(default=True)
 
-    show_sp_connection = models.BooleanField(default=True)
-    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL)
+    show_sp_connection = models.BooleanField(default=True, null=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL, null=True)
 
     # Managers
     objects = models.Manager()

@@ -8,7 +8,7 @@
 <p class="mt-0">Generating API Keys enables access to the Local Contexts Hub database. Keep these keys confidential. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
 
 <div class="flex-this">
-    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span> 
+    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span>
         {% if institution and institution.is_subscribed %}
             {% if remaining_api_key_count == -1 %}Unlimited{% else %}{{ remaining_api_key_count }}{% endif %}
         {% elif researcher and researcher.is_subscribed %}
@@ -91,7 +91,7 @@
             </div>
             <div>
                 <div id='closegenerateAPIKeymodal' class="close-modal-btn pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
-            </div>            
+            </div>
         </div>
 
         <div class="w-100">
@@ -113,7 +113,7 @@
             <div class="flex-this space-between w-100">
                 <div class="w-100">
                     <button type="submit" class="primary-btn action-btn mt-2p w-100" name="generate_api_key">Generate API Key</button>
-                </div>                    
+                </div>
             </div>
 
         </form>
@@ -130,7 +130,7 @@
         <div class="flex-this space-between">
             <div class="flex-this">
                 <h2 class="primary-black-text mt-0">Are you sure?</h2>
-            </div>           
+            </div>
         </div>
 
         <div class="w-100">
@@ -165,7 +165,7 @@
     const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
     deleteBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            if (deleteAPIKeymodal.classList.contains('hide')) { 
+            if (deleteAPIKeymodal.classList.contains('hide')) {
                 deleteAPIKeymodal.classList.replace('hide', 'show');
                 continueAPIKeyDeletionBtn.value = btn.dataset.target;
                 deleteKeyname.innerHTML = btn.dataset.name;
