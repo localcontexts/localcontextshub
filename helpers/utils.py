@@ -774,6 +774,10 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         elif isinstance(user, ServiceProvider):
             subscription_params['service_provider'] = user
             user.is_certified = True
+        
+        elif isinstance(user, Community):
+            subscription_params['community'] = user
+            user.is_member=True
 
         user.save()
         response = Subscription.objects.create(**subscription_params)
@@ -812,6 +816,18 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         )
         send_service_provider_email(request, data)
         return response
+    
+    elif isinstance(user, Community) and env != 'SANDBOX':
+        response = confirm_subscription(
+            request, user,
+            subscription_form, 'community_account'
+        )
+        data = Community.objects.get(
+            community_name = user.community_name
+        )
+        send_hub_admins_account_creation_email(request, data)
+        return response
+
 
 def get_certified_service_providers(request):
     service_providers = ServiceProvider.objects.filter(

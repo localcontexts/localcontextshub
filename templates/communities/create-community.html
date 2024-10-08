@@ -1,5 +1,16 @@
 {% extends 'register-base.html' %} {% block title %} Create Community {% endblock %}{% load static %} {% block card %}
-    
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+</script>
 <div class="flex-this column w-90">
     <div class="flex-this space-between">
         <div>
@@ -10,12 +21,24 @@
 
     <p class="mt-0">Community accounts created in Local Contexts can be discoverable in the Local Contexts registery, the information displayed will be the information you provide on behalf of the community below. Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>.</p>
     
-    <form action="" method="POST" class="flex-this column w-100">
+    <form action="{% url 'create-community' %}" method="POST" class="flex-this column w-100">
         {% csrf_token %}
+
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ user_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
 
         <div class="flex-this column mt-8">
             <div>
-                <label class="pad-top-1-5">Name of the Community</label><br>
+                <label class="pad-top-1-5">Name of the Community<span class="orange-text required-label" title="">*</span></label><br>
                 {{ form.community_name }}
             </div>
 
@@ -66,6 +89,18 @@
             </div>
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
+        
+        <div class="w-100 flex-this">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_email }}
+            </div>
+        </div>
 
         <div class="flex-this space-between">
             <div>
@@ -76,6 +111,11 @@
             </div>
     
             <div class="mt-8">
+                <input
+                type="hidden"
+                name="g-recaptcha-response"
+                id="g-recaptcha-response"
+                />
                 <button class="primary-btn action-btn mt-2p">Continue <i class="fa fa-arrow-right"></i></button>
             </div>
         </div>

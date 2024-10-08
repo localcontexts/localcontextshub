@@ -254,6 +254,9 @@ def confirm_subscription(request, user, form, account_type):
     elif account_type == "service_provider_account":
         hub_id = str(user.id) + "_sp"
         isbusiness = True
+    elif account_type == "community_account":
+        hub_id = str(user.id) + "_c"
+        isbusiness = False
     else:
         raise ValueError("Invalid account type")
 

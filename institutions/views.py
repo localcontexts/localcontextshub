@@ -115,7 +115,6 @@ def preparation_step(request):
 def create_institution(request):
     form = CreateInstitutionForm()
     user_form = form_initiation(request)
-    subscription_form = SubscriptionForm()
     env = dev_prod_or_local(request.get_host())
     
     if request.method == "POST":
@@ -144,7 +143,7 @@ def create_institution(request):
                 return redirect('dashboard')
     return render(
         request, "institutions/create-institution.html", {
-            "form": form, "subscription_form": subscription_form, "user_form": user_form,
+            "form": form, "user_form": user_form,
         }
     )
 
@@ -153,7 +152,6 @@ def create_institution(request):
 def create_custom_institution(request):
     noror_form = CreateInstitutionNoRorForm()
     user_form = form_initiation(request)
-    subscription_form = SubscriptionForm()
     env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
@@ -186,7 +184,6 @@ def create_custom_institution(request):
         "institutions/create-custom-institution.html",
         {
             "noror_form": noror_form,
-            "subscription_form": subscription_form,
             "user_form": user_form,
         },
     )

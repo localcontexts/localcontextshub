@@ -120,13 +120,28 @@ def preparation_step(request):
 @login_required(login_url='login')
 def create_community(request):
     form = CreateCommunityForm(request.POST or None)
+    user_form = form_initiation(request)
+    env = dev_prod_or_local(request.get_host())
+
     if request.method == "POST":
-        if form.is_valid():
+        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             data = form.save(commit=False)
             data.community_creator = request.user
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+                "first_name": user_form.cleaned_data['first_name'],
+                "last_name": user_form.cleaned_data['last_name'],
+                "email": request.user._wrapped.email,
+                "account_type": "community_account",
+                "inquiry_type": "Membership",
+                "organization_name": form.cleaned_data['community_name'],
+            }
+            
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
 
             # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+            if env == 'SANDBOX':
                 data.is_approved = True
                 data.save()
 
@@ -135,24 +150,10 @@ def create_community(request):
                 affiliation.communities.add(data)
                 affiliation.save()
                 return redirect('dashboard')
-            else:
-                data.save()
-
-                # Add to user affiliations
-                affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=request.user)
-                affiliation.communities.add(data)
-                affiliation.save()
-
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="New Community",
-                    community_id=data.id,
-                    action_account_type='community'
-                )
-                request.session['new_community_id'] = data.id
+            elif subscription_form.is_valid():
+                handle_community_creation(request, data,  subscription_form, env)
                 return redirect('community-boundary')
-    return render(request, 'communities/create-community.html', {'form': form})
+    return render(request, 'communities/create-community.html', {'form': form, 'user_form': user_form})
 
 
 @has_new_community_id
@@ -175,28 +176,6 @@ def upload_boundary_file(request):
         'community_id': community.id,
     }
     return render(request, 'boundary/upload-boundary-file.html', context)
-
-
-# Confirm Community
-@has_new_community_id
-@login_required(login_url='login')
-def confirm_community(request):
-    community = Community.objects.select_related('community_creator').get(
-        id=request.session.get('new_community_id')
-    )
-
-    form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
-    if request.method == "POST":
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.save()
-            send_hub_admins_account_creation_email(request, data)
-
-            # remove new_community_id from session to prevent
-            # future access with this particular new_community_id
-            del request.session['new_community_id']
-            return redirect('dashboard')
-    return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
 
 
 def public_community_view(request, pk):
