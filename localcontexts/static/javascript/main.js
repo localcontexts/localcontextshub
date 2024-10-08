@@ -13,6 +13,12 @@ if (passwordField) {
     passwordField.addEventListener('focusout', (event) => { helpTextDiv.style.display = 'none' })
 }
 
+// Email validation function
+function isValidEmail(email) {
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 var registerUserBtn = document.getElementById('registerUserBtn')
 if (registerUserBtn) { registerUserBtn.addEventListener('click', () => disableSubmitRegistrationBtn()) }
 
@@ -2468,15 +2474,12 @@ if (window.location.href.includes('subscription-form')) {
           submitButton.disabled = true;
         }
     }
+
     function disableButton() {
           document.getElementById("createSubscription").style.display = "none";
           document.getElementById("loading-spinner").classList.remove('hide');
       }
-  
-    function isValidEmail(email) {
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
+    
     clearFormBtn.addEventListener('click', (e) => {
         e.preventDefault()
         firstNameInput.value = ''
