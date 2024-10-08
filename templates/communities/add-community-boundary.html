@@ -184,18 +184,19 @@
     </div>
 
     <script>
-        fetch('{% external_api "https://native-land.ca/wp-json/nativeland/v1/map-list" %}').then(resp => resp.json()).then(response => {
+        fetch('{% external_api "https://raw.githubusercontent.com/biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json" %}').
+        then(resp => resp.json()).then(response => {
 
             document.querySelector('#region-container input.search').addEventListener("keyup", (event) => {
                 let html = ''
                 const textInput = event.target.value
                 const inputLength = textInput.length
                 if (inputLength >= 3) {
-                    var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
+                    var results = response.filter(item => item.name.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
                     results.forEach(result => {
                     html += `
-                        <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
-                        ${result.post_title}</br />
+                        <div class="result-item" data-slug="${result.slug}" data-title="${result.name}" onclick="selectSlug()">
+                        ${result.name}</br />
                         </div>
                     `
                     })
