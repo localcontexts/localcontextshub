@@ -9,6 +9,6 @@ from . views import (
 
 class UrlsWithMockedExternalApi:
     urlpatterns = urlpatterns + [
-        path('wp-json/nativeland/v1/map-list/', native_land_map_list),
+        path('biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json', native_land_map_list),
         path('wp-json/nativeland/v1/api/index.php', native_land_boundary_response)
     ]

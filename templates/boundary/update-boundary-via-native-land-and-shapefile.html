@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load custom_api_tags %}
 <style>
     .region-container{
         margin-top: 20px;
@@ -255,7 +255,7 @@
     let BoundaryPayLoad = {}
     let InitialShareBoundaryPublicly = {% if entity.share_boundary_publicly %}true{% else %}false{% endif %}
 
-    fetch('https://raw.githubusercontent.com/biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json').
+    fetch('{% external_api "https://raw.githubusercontent.com/biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json" %}').
     then(resp => resp.json()).then(response => {
 
     document.querySelector('.region-container input.search').addEventListener("keyup", (event) => {
