@@ -33,6 +33,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
     def select_specific_nld_territory(self, nld_terriroty: str):
         time.sleep(5)   # wait for ajax call for NLD to load
         self.py.get(".input-field.search").type(nld_terriroty)
+        time.sleep(5)
         self.py.get(".region-results .result-item").click()
 
     def create_project_and_community(self):
