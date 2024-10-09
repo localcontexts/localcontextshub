@@ -250,7 +250,7 @@
                 const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
                 const slug = document.querySelector('#selected-title').getAttribute('data-slug')
               
-                const url = `{% url 'nld-data' %}/${slug}`
+                const url = `{% url 'nld-data' %}?slug=${slug}`
                 const boundaryResponse = await fetch(url)
                 const boundaryData = await boundaryResponse.json()
                 document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.remove("spinner-container");

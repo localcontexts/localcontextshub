@@ -352,7 +352,7 @@
         * */
         try {
             // do post call to get boundary
-            const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+            const url = `{% url 'nld-data' %}?slug=${slug}`
             showSpinner()
             const boundaryResponse = await fetch(url)
             const boundaryData = await boundaryResponse.json()
