@@ -136,7 +136,7 @@ def boundary_preview(request):
 
 
 @login_required(login_url='login')
-def native_land_data(request, slug):
+def native_land_data(request, slug: str):
     """
     Returns data associated with particular slug
     """
