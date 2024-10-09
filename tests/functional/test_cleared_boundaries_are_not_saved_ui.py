@@ -11,6 +11,7 @@ from institutions.models import Institution
 from projects.models import Project
 
 
+@pytest.mark.skip(reason="disable until NLD update")
 @pytest.mark.usefixtures("py")
 class TestBoundaryClearedFeatures(UiFeatureHelper):
     def setUp(self):
