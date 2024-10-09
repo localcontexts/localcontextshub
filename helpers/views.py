@@ -136,10 +136,14 @@ def boundary_preview(request):
 
 
 @login_required(login_url='login')
-def native_land_data(request, slug: str):
+def native_land_data(request):
     """
     Returns data associated with particular slug
     """
+    slug = request.GET.get('slug')
+    if slug is None:
+        return Http404('Slug Variable Is Not Defined In Request')
+
     # get all slug data from cache
     all_slug_data = cache.get('all_slug_data')
 
