@@ -310,7 +310,7 @@
             const boundaryData = await boundaryResponse.json()
             hideSpinner()
 
-            if (boundaryData.coordinates.length === 0 && boundaryData.coordinates[0].length) {
+            if (!boundaryData.coordinates[0].length) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
                 raiseError(selectionUnit, errorMessage)
                 throw new Error(errorMessage)

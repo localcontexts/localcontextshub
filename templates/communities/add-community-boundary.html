@@ -256,7 +256,7 @@
                 document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.remove("spinner-container");
                 document.getElementById("community-boundary-continue-btn").classList.remove("disabled-btn");
 
-                if (boundaryData.coordinates.length === 0 && boundaryData.coordinates[0].length) {
+                if (!boundaryData.coordinates[0].length) {
                     const errorMessage = 'Selected location does not have any Native Land boundary'
                     alert(errorMessage)
                     throw new Error(errorMessage)
