@@ -310,21 +310,20 @@
             const boundaryData = await boundaryResponse.json()
             hideSpinner()
 
-            if (boundaryData.length === 0) {
+            if (boundaryData.coordinates.length === 0 && boundaryData.coordinates[0].length) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
                 raiseError(selectionUnit, errorMessage)
                 throw new Error(errorMessage)
             }
 
-            const boundary = boundaryData[0]
-            const boundaryCoordinates = boundary.geometry.coordinates[0]
+            const boundaryCoordinates = boundaryData.coordinates[0][0]
             // reorder so (lon, lat)'s become (lat, lon)'s
             boundaryCoordinates.map(row=>row.reverse())
 
             // set Boundary with payload
             BoundaryPayLoad = {
-                source: boundary.properties.description,
-                name: boundary.properties.Name,
+                source: boundaryData.description,
+                name: slug,
                 boundary: boundaryCoordinates
             }
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
