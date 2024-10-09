@@ -30,7 +30,7 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
 
     def select_specific_nld_territory(self):
         time.sleep(5)   # wait for ajax call for NLD to load
-        selected_territory = 'Panamakas'
+        selected_territory = 'panamakas'
         self.py.get(".input-field.search").type(selected_territory)
         self.py.get(".region-results .result-item").click()
 
