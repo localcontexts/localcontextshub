@@ -230,7 +230,7 @@
         function selectSlug() {
             const title = event.target.dataset.title
             const slug = event.target.dataset.slug
-            const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+            const url = `https://native-land.ca/maps/territories/${slug}`
             document.querySelector('#nld-link').setAttribute('href', url)
             document.querySelector('#selected-title').innerHTML = `<div class="selected-title-ellipsis">${title}</div>`
 
