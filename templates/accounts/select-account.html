@@ -132,7 +132,16 @@
 
     <p>Create a new account or Join an existing account. Not sure which account type to create? <a class="default-a" href="mailto:support@localcontexts.org">Contact us</a>.</p>
     <div class="flex-this gap-1">
-        <a id="create-account" class="primary-btn disabled-btn">Create</a>
+        {% if envi == 'SANDBOX' %}
+            <div class="btn-with-helptext">
+                <a id="create-account" class="primary-btn disabled-btn">Create</a>
+                <span id="helptext" class="btn-help-text hide" style="left: 0%;">
+                    Creating this account is unavailable in the Sandbox
+                </span>
+            </div>
+        {% else %}
+            <a id="create-account" class="primary-btn disabled-btn">Create</a>
+        {% endif %}
         <a id="join-account" class="primary-btn disabled-btn">Join</a>
     </div>
 
@@ -143,10 +152,15 @@
     var joinBtn = document.getElementById('join-account');
     var accountCards = document.getElementsByClassName('account-card');
     var i;
+    var envi = "{{ envi }}"
+    var helptext = document.getElementById('helptext');
 
     function showButtons(e) {
         for (i = 0; i < accountCards.length; i++) {
             accountCards[i].classList.remove('card-selected');
+        }
+        if (helptext) {
+            helptext.classList.add('hide');
         }
 
         selectedCard = e.closest('.account-card');
@@ -181,13 +195,18 @@
             joinBtn.classList.remove('action-btn');
             joinBtn.classList.add('disabled-btn');
         }
-        else if (e.value == 'service-provider') {
+        else if (e.value == 'service-provider' && !(envi == 'SANDBOX')) {
             createBtn.classList.remove('disabled-btn');
             createBtn.classList.add('action-btn');
             createBtn.setAttribute('href', '{% url "prep-service-provider" %}');
 
             joinBtn.classList.remove('action-btn');
             joinBtn.classList.add('disabled-btn');
+        }
+        else if (e.value == 'service-provider' && envi == 'SANDBOX') {
+            createBtn.classList.remove('action-btn');
+            createBtn.classList.add('disabled-btn');
+            helptext.classList.remove('hide');
         }
     }
 </script>
