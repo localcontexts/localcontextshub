@@ -110,7 +110,7 @@ class TestFeatures(UiFeatureHelper):
 
     def test_select_native_land_digital_territory_with_share_publicly(self):
         self.navigate_to_search_native_land_digital_database_page()
-        selected_territory = 'Panamakas'
+        selected_territory = 'panamakas'
 
         # select an nld territory
         self.select_specific_nld_territory(selected_territory)
@@ -127,12 +127,12 @@ class TestFeatures(UiFeatureHelper):
         created_community = Community.objects.get(community_name=self.community_name)
         assert created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be True'
         assert created_community.name_of_boundary == selected_territory
-        assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas/'
+        assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas'
         assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
 
     def test_select_native_land_digital_territory_without_share_publicly(self):
         self.navigate_to_search_native_land_digital_database_page()
-        selected_territory = 'Panamakas'
+        selected_territory = 'panamakas'
 
         # select an nld territory
         self.select_specific_nld_territory(selected_territory)
@@ -148,7 +148,7 @@ class TestFeatures(UiFeatureHelper):
         created_community = Community.objects.get(community_name=self.community_name)
         assert not created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be False'
         assert created_community.name_of_boundary == selected_territory
-        assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas/'
+        assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas'
         assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
 
     def test_clicking_upload_shapefile_on_nld_page_navigates_to_upload_shapefile_page(self):

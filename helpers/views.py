@@ -1,8 +1,9 @@
 import json
 
+from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.conf import settings
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
@@ -15,9 +16,12 @@ import requests
 from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
+from .utils import retrieve_native_land_all_slug_data
+
 
 def restricted_view(request, exception=None):
     return render(request, '403.html', status=403)
+
 
 @login_required(login_url='login')
 def delete_member_invite(request, pk):
@@ -53,6 +57,7 @@ def download_open_collaborate_notice(request, perm, researcher_id=None, institut
 
         return download_otc_notice(request)
 
+
 @login_required(login_url='login')
 def download_collections_care_notices(request, institution_id, perm):
     # perm will be a 1 or 0
@@ -62,6 +67,7 @@ def download_collections_care_notices(request, institution_id, perm):
     else:
         NoticeDownloadTracker.objects.create(institution=Institution.objects.get(id=institution_id), user=request.user, collections_care_notices=True)
         return download_cc_notices(request)
+
 
 @login_required(login_url='login')
 def download_community_support_letter(request):
@@ -80,6 +86,9 @@ def download_community_support_letter(request):
 
 @xframe_options_sameorigin
 def community_boundary_view(request, community_id):
+    """
+    Uses boundary in community for view
+    """
     community = Community.objects.filter(id=community_id).first()
     if not community:
         message = 'Community Does Not Exist'
@@ -92,32 +101,14 @@ def community_boundary_view(request, community_id):
     context = {
         'boundary': boundary
     }
-    return render(request, 'boundary/boundary-view.html', context)
-
-
-@login_required(login_url='login')
-def boundary_view(request):
-    try:
-        boundary = request.GET.get('boundary')
-        if boundary:
-            boundary = json.loads(
-                boundary.replace('(', '[').replace(')', ']')
-            )
-        else:
-            boundary = []
-
-        context = {
-            'boundary': boundary
-        }
-        return render(request, 'boundary/boundary-view.html', context)
-    except Exception as e:
-        message = 'Invalid Boundary Format'
-        print(f'{message}: {e}')
-        raise Exception(message)
+    return render(request, 'boundary/boundary-preview.html', context)
 
 
 @xframe_options_sameorigin
 def project_boundary_view(request, project_id):
+    """
+    Uses boundary in project for view
+    """
     project = Project.objects.filter(id=project_id).first()
     if not project:
         message = 'Project Does Not Exist'
@@ -130,4 +121,46 @@ def project_boundary_view(request, project_id):
     context = {
         'boundary': boundary
     }
-    return render(request, 'boundary/boundary-view.html', context)
+    return render(request, 'boundary/boundary-preview.html', context)
+
+
+@login_required(login_url='login')
+def boundary_preview(request):
+    """
+    Uses boundary in local storage for preview
+    """
+    context = {
+        'preview_boundary': True,
+    }
+    return render(request, 'boundary/boundary-preview.html', context)
+
+
+@login_required(login_url='login')
+def native_land_data(request):
+    """
+    Returns data associated with particular slug
+    """
+    slug = request.GET.get('slug')
+    if slug is None:
+        return Http404('Slug Variable Is Not Defined In Request')
+
+    # get all slug data from cache
+    all_slug_data = cache.get('all_slug_data')
+
+    # when cache doesn't exist, then retrieve actual data and cache it
+    if all_slug_data is None:
+        try:
+            all_slug_data = retrieve_native_land_all_slug_data()
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError
+        ):
+            return Http404('Unable to Retrieve All NLD Slug Data')
+        cache.set('all_slug_data', all_slug_data)
+
+    slug_data = all_slug_data.get(slug)
+    if slug_data is None:
+        return Http404(f'Unable to Retrieve Specific NLD Slug Data for {slug}')
+
+    return JsonResponse(slug_data)
