@@ -1,20 +1,14 @@
 [
     {
-        "post_title": "Prinzus",
-        "post_id": 27229,
-        "category": "Territories",
+        "name": "Prinzus",
         "slug": "prinzus"
     },
     {
-        "post_title": "Bawikas",
-        "post_id": 27226,
-        "category": "Territories",
+        "name": "Bawikas",
         "slug": "bawikas"
     },
     {
-        "post_title": "Panamakas",
-        "post_id": 27222,
-        "category": "Territories",
+        "name": "Panamakas",
         "slug": "panamakas"
     }
 ]
