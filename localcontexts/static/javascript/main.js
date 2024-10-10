@@ -13,6 +13,12 @@ if (passwordField) {
     passwordField.addEventListener('focusout', (event) => { helpTextDiv.style.display = 'none' })
 }
 
+// Email validation function
+function isValidEmail(email) {
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 var registerUserBtn = document.getElementById('registerUserBtn')
 if (registerUserBtn) { registerUserBtn.addEventListener('click', () => disableSubmitRegistrationBtn()) }
 
@@ -2436,3 +2442,54 @@ if (window.location.href.includes('subscription-inquiry')) {
 
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
     })}
+
+if (window.location.href.includes('subscription-form')) {
+    document.addEventListener("DOMContentLoaded", function () {
+        const firstNameInput = document.querySelector('input[name="first_name"]');
+        const lastNameInput = document.querySelector('input[name="last_name"]');
+        const emailInput = document.querySelector('input[type="email"]');
+        const organizationInput = document.querySelector('input[name="organization_name"]');
+        const inquiryTypeRadios = document.querySelectorAll('input[name="inquiry_type"]');
+        const submitButton = document.getElementById("createSubscription");
+        const clearFormBtn = document.getElementById('clearFormBtn')
+        
+        validateForm()
+        submitButton.addEventListener("click", disableButton)
+        firstNameInput.addEventListener("input", validateForm);
+        emailInput.addEventListener("input", validateForm);
+        if (inquiryTypeRadios.length > 0) {
+            inquiryTypeRadios.forEach(radio => radio.addEventListener("change", validateForm));
+        }
+        
+    function validateForm() {
+        const firstNameFilled = firstNameInput.value.trim() !== "";
+        const emailFilled = emailInput.value.trim() !== "" && isValidEmail(emailInput.value.trim());
+        const inquiryTypeSelected = inquiryTypeRadios.length > 0
+            ? Array.from(inquiryTypeRadios).some(radio => radio.checked)
+            : true;
+        // Enable the button if all fields are valid
+        if (firstNameFilled && emailFilled && inquiryTypeSelected) {
+          submitButton.disabled = false;
+        } else {
+          submitButton.disabled = true;
+        }
+    }
+
+    function disableButton() {
+          document.getElementById("createSubscription").style.display = "none";
+          document.getElementById("loading-spinner").classList.remove('hide');
+      }
+    
+    clearFormBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        firstNameInput.value = ''
+        submitButton.disabled = true
+
+        lastNameInput.value = ''
+        emailInput.value = ''
+        inquiryTypeRadios.forEach(radio => {
+            radio.checked = false;
+        });
+    })
+});
+};

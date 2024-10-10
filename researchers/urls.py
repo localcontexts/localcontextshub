@@ -21,6 +21,11 @@ urlpatterns = [
         views.connect_service_provider,
         name="researcher-connect-service-provider"
         ),
+    path(
+        'subscription-form/<str:pk>/',
+        views.create_researcher_subscription,
+        name="researcher-create-subscription-form"
+        ),
 
     # Notices
     path('notices/<str:pk>', views.researcher_notices, name="researcher-notices"),

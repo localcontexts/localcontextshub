@@ -17,6 +17,7 @@ urlpatterns = [
     path('preferences/<str:pk>/', views.account_preferences, name="preferences-institution"),
     path('api-key/<str:pk>/', views.api_keys, name="institution-api-key"),
     path('connect-service-provider/<str:pk>/', views.connect_service_provider, name="institution-connect-service-provider"),
+    path('subscription-form/<str:pk>/', views.create_institution_subscription, name="institution-create-subscription-form"),
 
     # Notices
     path('notices/<str:pk>/', views.institution_notices, name="institution-notices"),
