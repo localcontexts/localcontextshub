@@ -215,7 +215,8 @@ def landing(request):
 
 @login_required(login_url="login")
 def select_account(request):
-    return render(request, "accounts/select-account.html")
+    envi = dev_prod_or_local(request.get_host())
+    return render(request, "accounts/select-account.html", {"envi": envi})
 
 
 class CustomSocialSignupView(SignupView):

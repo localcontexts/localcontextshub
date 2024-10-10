@@ -1429,6 +1429,7 @@ def connections(request, pk):
 @member_required(roles=["admin", "editor"])
 def connect_service_provider(request, pk):
     try:
+        envi = dev_prod_or_local(request.get_host())
         institution = get_institution(pk)
         member_role = check_member_role(request.user, institution)
         if request.method == "GET":
@@ -1505,6 +1506,7 @@ def connect_service_provider(request, pk):
             'institution': institution,
             'other_service_providers': other_service_providers,
             'connected_service_providers': connected_service_providers,
+            'envi': envi
         }
         return render(request, 'account_settings_pages/_connect-service-provider.html', context)
 
