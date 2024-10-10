@@ -1,4 +1,4 @@
-{% extends 'register-base.html' %} {% block title %} Add Community {% endblock %} {% load static %} {% block card %}
+{% extends 'register-base.html' %} {% block title %} Add Community {% endblock %} {% load static %} {% block card %} {% load custom_api_tags %}
     <style>
         #define-community-top-text{
             width: 94%;
@@ -184,18 +184,19 @@
     </div>
 
     <script>
-        fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+        fetch('{% external_api "https://raw.githubusercontent.com/biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json" %}').
+        then(resp => resp.json()).then(response => {
 
             document.querySelector('#region-container input.search').addEventListener("keyup", (event) => {
                 let html = ''
                 const textInput = event.target.value
                 const inputLength = textInput.length
                 if (inputLength >= 3) {
-                    var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
+                    var results = response.filter(item => item.name.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
                     results.forEach(result => {
                     html += `
-                        <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug()">
-                        ${result.post_title}</br />
+                        <div class="result-item" data-slug="${result.slug}" data-title="${result.name}" onclick="selectSlug()">
+                        ${result.name}</br />
                         </div>
                     `
                     })
@@ -229,7 +230,7 @@
         function selectSlug() {
             const title = event.target.dataset.title
             const slug = event.target.dataset.slug
-            const url = `https://native-land.ca/wp-content/themes/Native-Land-Theme/embed/embed.html?maps=territories&name=${slug}`
+            const url = `https://native-land.ca/maps/territories/${slug}`
             document.querySelector('#nld-link').setAttribute('href', url)
             document.querySelector('#selected-title').innerHTML = `<div class="selected-title-ellipsis">${title}</div>`
 
@@ -248,27 +249,26 @@
                 // do post call to get boundary
                 const href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
                 const slug = document.querySelector('#selected-title').getAttribute('data-slug')
-
-                const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+              
+                const url = `{% url 'nld-data' %}?slug=${slug}`
                 const boundaryResponse = await fetch(url)
                 const boundaryData = await boundaryResponse.json()
                 document.querySelector("#community-boundary-continue-btn .fa-spinner").classList.remove("spinner-container");
                 document.getElementById("community-boundary-continue-btn").classList.remove("disabled-btn");
 
-                if (boundaryData.length === 0) {
+                if (!boundaryData.coordinates[0].length) {
                     const errorMessage = 'Selected location does not have any Native Land boundary'
                     alert(errorMessage)
                     throw new Error(errorMessage)
                 }
-
-                const boundary = boundaryData[0]
-                const boundaryCoordinates = boundary.geometry.coordinates[0]
+              
+                const boundaryCoordinates = boundaryData.coordinates[0][0]
                 // reorder so (lon, lat)'s become (lat, lon)'s
                 boundaryCoordinates.map(row=>row.reverse())
 
                 const payload = {
-                    source: boundary.properties.description,
-                    name: boundary.properties.Name,
+                    source: boundaryData.description,
+                    name: slug,
                     boundary: boundaryCoordinates,
                     share_boundary_publicly: document.getElementById("share-boundary-publicly").checked
                 }

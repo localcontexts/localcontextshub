@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load custom_api_tags %}
 <style>
     .region-container{
         margin-top: 20px;
@@ -230,18 +230,19 @@
 <script>
     let BoundaryPayLoad = {}
 
-    fetch('https://native-land.ca/wp-json/nativeland/v1/map-list').then(resp => resp.json()).then(response => {
+    fetch('{% external_api "https://raw.githubusercontent.com/biocodellc/localcontexts_json/main/data/nativeland_slug_name_list.json" %}').
+    then(resp => resp.json()).then(response => {
 
     document.querySelector('.region-container input.search').addEventListener("keyup", (event) => {
         let html = ''
         const textInput = event.target.value
         const inputLength = textInput.length
         if (inputLength >= 3) {
-            var results = response.filter(item => item.post_title.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
+            var results = response.filter(item => item.name.toLowerCase().indexOf(textInput.toLowerCase()) > -1);
             results.forEach(result => {
             html += `
-                <div class="result-item" data-slug="${result.slug}" data-title="${result.post_title}" onclick="selectSlug(this)">
-                ${result.post_title}</br />
+                <div class="result-item" data-slug="${result.slug}" data-title="${result.name}" onclick="selectSlug(this)">
+                ${result.name}</br />
                 </div>
             `
             })
@@ -303,27 +304,26 @@
         * */
         try {
             // do post call to get boundary
-            const url = `https://native-land.ca/wp-json/nativeland/v1/api/index.php?maps=territories&name=${slug}`
+            const url = `{% url 'nld-data' %}?slug=${slug}`
             showSpinner()
             const boundaryResponse = await fetch(url)
             const boundaryData = await boundaryResponse.json()
             hideSpinner()
 
-            if (boundaryData.length === 0) {
+            if (!boundaryData.coordinates[0].length) {
                 const errorMessage = 'Selected location does not have any Native Land boundary'
                 raiseError(selectionUnit, errorMessage)
                 throw new Error(errorMessage)
             }
 
-            const boundary = boundaryData[0]
-            const boundaryCoordinates = boundary.geometry.coordinates[0]
+            const boundaryCoordinates = boundaryData.coordinates[0][0]
             // reorder so (lon, lat)'s become (lat, lon)'s
             boundaryCoordinates.map(row=>row.reverse())
 
             // set Boundary with payload
             BoundaryPayLoad = {
-                source: boundary.properties.description,
-                name: boundary.properties.Name,
+                source: boundaryData.description,
+                name: slug,
                 boundary: boundaryCoordinates
             }
             setViewLocationsHref(selectionUnit, boundaryCoordinates)
@@ -338,8 +338,11 @@
     }
 
     function setViewLocationsHref(selectionUnit, boundary) {
-        // set href for view-boundary-location
-        const href = `{% url 'boundary-view' %}?boundary=${JSON.stringify(boundary)}`
+      // set boundary-preview value in localStorage
+      localStorage.setItem('boundary_preview', JSON.stringify(boundary))
+
+      // set href for view-boundary-location
+        const href = "{% url 'boundary-preview' %}"
         selectionUnit.querySelector('.view-boundary-link').setAttribute('href', href)
     }
 

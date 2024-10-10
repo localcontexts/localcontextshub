@@ -84,8 +84,11 @@ function previewBoundary(self) {
     return
   }
 
+  // set boundary-preview value in localStorage
+  localStorage.setItem('boundary_preview', JSON.stringify(boundary))  
+  
   // open boundary preview
-  const url = `{% url 'boundary-view' %}?boundary=[${boundary}]`
+  const url = "{% url 'boundary-preview' %}"
   window.open(url, '_blank');
 }
 async function uploadShapeFileData(self) {
