@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -332,7 +331,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SITE_ID = 1
-TESTING = len(sys.argv) > 1 and 'pytest' in sys.argv[0]
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
 LOGIN_REDIRECT_URL= '/dashboard/'
