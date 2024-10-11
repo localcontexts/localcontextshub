@@ -332,7 +332,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SITE_ID = 1
-TESTING = len(sys.argv) > 1 and sys.argv[0] == 'pytest'
+TESTING = len(sys.argv) > 1 and 'pytest' in sys.argv[0]
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
 LOGIN_REDIRECT_URL= '/dashboard/'
