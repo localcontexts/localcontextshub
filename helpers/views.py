@@ -1,8 +1,9 @@
 import json
 
+from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.conf import settings
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
@@ -16,7 +17,7 @@ from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
 from serviceproviders.models import ServiceProvider
-from .utils import validate_is_subscribed
+from .utils import validate_is_subscribed, retrieve_native_land_all_slug_data
 from .exceptions import UnsubscribedAccountException
 
 def restricted_view(request, exception=None):
@@ -155,3 +156,34 @@ def boundary_preview(request):
         'preview_boundary': True,
     }
     return render(request, 'boundary/boundary-preview.html', context)
+
+
+@login_required(login_url='login')
+def native_land_data(request):
+    """
+    Returns data associated with particular slug
+    """
+    slug = request.GET.get('slug')
+    if slug is None:
+        return Http404('Slug Variable Is Not Defined In Request')
+
+    # get all slug data from cache
+    all_slug_data = cache.get('all_slug_data')
+
+    # when cache doesn't exist, then retrieve actual data and cache it
+    if all_slug_data is None:
+        try:
+            all_slug_data = retrieve_native_land_all_slug_data()
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError
+        ):
+            return Http404('Unable to Retrieve All NLD Slug Data')
+        cache.set('all_slug_data', all_slug_data)
+
+    slug_data = all_slug_data.get(slug)
+    if slug_data is None:
+        return Http404(f'Unable to Retrieve Specific NLD Slug Data for {slug}')
+
+    return JsonResponse(slug_data)
