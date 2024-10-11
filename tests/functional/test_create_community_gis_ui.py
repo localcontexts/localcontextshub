@@ -86,6 +86,7 @@ class TestFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
+        time.sleep(5)
 
         # verify user is on select add boundary method page
         assert self.py.url().endswith(self.select_add_boundary_method_path)
