@@ -616,6 +616,20 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
     entity.boundary.save()
 
 
+def retrieve_native_land_all_slug_data() -> dict:
+    """
+    Does request to obtain all NLD slug data list
+    which includes the groups of coordinates for each slug
+    """
+    url = (
+        'https://raw.githubusercontent.com/biocodellc/'
+        'localcontexts_json/refs/heads/main/data/'
+        'nativeland_slug_coordinates_description_dict.json'
+    )
+    response = requests.get(url)
+    return response.json()
+
+
 def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=True):
     salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {

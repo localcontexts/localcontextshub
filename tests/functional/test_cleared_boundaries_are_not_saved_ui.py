@@ -126,7 +126,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         # select NLD territory
-        selected_territory = 'Panamakas'
+        selected_territory = 'panamakas'
         self.select_specific_nld_territory(selected_territory)
 
         # clear boundary
@@ -161,7 +161,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         # select NLD territory
-        selected_territory = 'Panamakas'
+        selected_territory = 'panamakas'
         self.select_specific_nld_territory(selected_territory)
 
         # clear boundary

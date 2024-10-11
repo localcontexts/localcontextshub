@@ -330,6 +330,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 SITE_ID = 1
 
 SOCIALACCOUNT_LOGIN_ON_GET=True

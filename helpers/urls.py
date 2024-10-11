@@ -11,4 +11,5 @@ urlpatterns = [
     path('community-boundary-view/<int:community_id>', views.community_boundary_view, name="community-boundary-view"),
     path('project-boundary-view/<int:project_id>', views.project_boundary_view, name="project-boundary-view"),
     path('boundary-preview/', views.boundary_preview, name="boundary-preview"),
+    path('nld-data/', views.native_land_data, name="nld-data"),
 ]

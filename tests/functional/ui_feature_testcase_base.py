@@ -1,3 +1,4 @@
+import os
 import urllib.parse
 
 import pytest
@@ -15,6 +16,8 @@ from external_api.urls import UrlsWithMockedExternalApi
 @pytest.mark.usefixtures("py")
 class UiFeatureHelper(StaticLiveServerTestCase):
     def login(self,):
+        os.environ['TEST_LIVE_SERVER_DOMAIN'] = self.live_server_url
+
         # create user
         unhashed_pw = 'pw'
         self.user_password_hashed = make_password(unhashed_pw)
