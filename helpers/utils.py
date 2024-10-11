@@ -570,6 +570,9 @@ def extract_error_line(traceback_info):
 
 
 def validate_recaptcha(request_object):
+    if settings.TESTING:
+        return True
+    
     recaptcha_response = request_object.POST.get("g-recaptcha-response")
     url = "https://www.google.com/recaptcha/api/siteverify"
     values = {

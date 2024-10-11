@@ -86,7 +86,7 @@ class TestFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
-        time.sleep(20) # wait for response
+        time.sleep(5) # wait for response
 
         # verify user is on select add boundary method page
         assert self.py.url().endswith(self.select_add_boundary_method_path), f"Expected URL to end with {self.select_add_boundary_method_path}, but got {self.py.url()}"
@@ -105,7 +105,7 @@ class TestFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
-        time.sleep(20) # wait for response
+        time.sleep(5) # wait for response
 
         # verify user is on select add boundary method page
         assert self.py.url().endswith(self.select_add_boundary_method_path), f"Expected URL to end with {self.select_add_boundary_method_path}, but got {self.py.url()}"
