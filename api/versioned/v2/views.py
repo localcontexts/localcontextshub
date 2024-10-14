@@ -565,6 +565,8 @@ class SubscriptionAPI(APIView):
             start_date = request.data.get('start_date')
             end_date = request.data.get('end_date')
             date_last_updated = request.data.get('date_last_updated')
+            subscription_type = request.data.get('subscription_type')
+            isBundle = request.data.get('isBundle')
 
             account_type_to_field = {
                 'i': 'institution_id',
@@ -599,14 +601,14 @@ class SubscriptionAPI(APIView):
             }
             with transaction.atomic():
                 subscription, created = Subscription.objects.get_or_create(**filter_kwargs)
-                if created:
+                if created and not isBundle:
                     subscriber = get_object_or_404(model_class, id=hub_id)
                     subscriber.is_subscribed = True
                     subscriber.save()
                     return Response(
                         {'success': 'The record is created.'}, status=HTTP_201_CREATED
                     )
-                else:
+                elif isBundle:
                     subscription.users_count = user_count
                     subscription.api_key_count = api_key_count
                     subscription.project_count = project_count
@@ -616,6 +618,8 @@ class SubscriptionAPI(APIView):
                     subscription.date_last_updated = date_last_updated
                     subscription.save()
                     return Response({'success': 'The record is updated.'},status=HTTP_200_OK)
+                else:
+                    return Response({'error': 'Failed to create Subscription. Invalid subscrption arguments provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
         except IntegrityError as e:
             if 'violates foreign key constraint' in str(e):
