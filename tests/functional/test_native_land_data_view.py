@@ -27,7 +27,7 @@ class TestFeatures(TransactionTestCase):
         """
         expected_message = 'Slug Variable Is Not Defined In Request'
         response = self.client.get(
-            reverse('nld-data', {})
+            reverse('nld-data')
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.context['exception'], expected_message)
