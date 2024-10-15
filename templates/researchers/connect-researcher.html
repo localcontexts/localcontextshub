@@ -11,7 +11,7 @@
         });
     });
   </script>    
-<!-- import ORCiD Widget -->
+<!-- import ORCID Widget -->
     <script src="{% static 'javascript/orcid-widget.js' %}" type="text/javascript" defer></script>
 
     <div class="flex-this column w-90">
@@ -28,9 +28,9 @@
 
             <div>
                 <div class="flex-this space-between">
-                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="default-a" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
+                    <div class="w-50"><p>We encourage you to have an ORCID ID. <br>You can <a class="default-a" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCID here</a>.</p></div>
 
-                    <!-- Show ORCiD widget based on hostname -->
+                    <!-- Show ORCID widget based on hostname -->
                     <div 
                         id="orcidWidget" 
                         {% if env == "PROD" %}
@@ -51,7 +51,7 @@
                 </div>
 
                 {% if env == "DEV" or env == "SANDBOX" %}
-                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="default-a" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                    <small class="bold">Please note that since this is a test site, the ORCID used will be the <a class="default-a" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
                 {% endif %}            
             </div>
 
