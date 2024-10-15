@@ -9,7 +9,6 @@ urlpatterns = [
     path('community-boundary/', views.community_boundary, name="community-boundary"),
     path('add-community-boundary/', views.add_community_boundary, name="add-community-boundary"),
     path('upload-boundary-file/', views.upload_boundary_file, name="upload-boundary-file"),
-    path('confirm-community/', views.confirm_community, name="confirm-community"),
     path('registration-boundary', views.registration_boundary, name="registration-boundary"),
 
     # Public view
