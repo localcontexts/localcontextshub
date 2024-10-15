@@ -67,3 +67,23 @@ class TestFeatures(TransactionTestCase):
                 data=get_variables
             )
             self.assertEqual(response.context['exception'], expected_message)
+
+    def test_no_error_raised_when_getting_data_for_slug(self):
+        """
+        No error is raised when getting data for slug
+        """
+        slug = 'placeholder_slug'
+        get_variables = {
+            'slug': slug,
+        }
+        with patch('helpers.views.retrieve_native_land_all_slug_data') as mock_function:
+            specific_slug_data = {'foo': 'bar'}
+            mock_function.return_value = {
+                slug: specific_slug_data
+            }
+            response = self.client.get(
+                reverse('nld-data'),
+                data=get_variables
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json(), specific_slug_data)
