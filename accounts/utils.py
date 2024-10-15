@@ -225,10 +225,8 @@ def institute_account_subscription(
                 request,
                 messages.INFO,
                 (
-                    "Thank you for your submission, "
-                    "our team will review and be in "
-                    "contact with the subscription contact. "
-                    "You will be notified once your "
+                    "Thank you for your submission, our team will review and be in "
+                    "contact with the subscription contact. You will be notified once your "
                     "subscription has been processed."
                 ),
             )
@@ -275,9 +273,7 @@ def confirm_subscription(request, user, form, account_type):
         messages.add_message(
             request,
             messages.ERROR,
-            "An unexpected error has occurred."
-            " Please contact support@localcontexts.org.")
-
+            "An unexpected error has occurred. Please contact support@localcontexts.org.")
     return redirect('dashboard')
 
 

@@ -17,7 +17,7 @@ HELPTEXT_CHOICES = {
     'name': "The name of a Notice or Label.",
     'profile_url': "The URL of an account's public page in the Registry.",
     'ror_id': "The URL of an Institution's ROR ID. If the Institution does not have a ROR ID, this field will be `NULL`.",
-    'orcid': "The URL of a Researcher's ORCiD. If a Researcher has not linked an ORCiD to their profile, this field will be `NULL`.",
+    'orcid': "The URL of a Researcher's ORCID. If a Researcher has not linked an ORCID to their profile, this field will be `NULL`.",
     'email': "The email of a Project's contact or non-Hub contributor.",
     'institutions': "An array of `institution` objects.",
     'communities': "An array of `community` objects.",

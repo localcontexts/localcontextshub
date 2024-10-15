@@ -77,7 +77,7 @@ def register(request):
                     messages.error(request, 'A user with this username already exists.')
                     return redirect('register')
                 elif not validate_email(email=user.email):
-                    messages.error(request, "The email you entered is invalid")
+                    messages.error(request, "The email you entered is invalid.")
                     return redirect("register")
                 else:
                     user.is_active = False
@@ -180,8 +180,7 @@ def login(request):
             else:
                 if not user.last_login:
                     messages.error(
-                        request, 'Your account is not active yet. '
-                        'Please verify your email.'
+                        request, 'Your account is not active yet. Please verify your email.'
                     )
                     if SignUpInvitation.objects.filter(email=user.email).exists():
                         for invite in SignUpInvitation.objects.filter(email=user.email):

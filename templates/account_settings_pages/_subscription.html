@@ -4,7 +4,11 @@
   <div class="flex-this space-between">
     <div><h3 class="mt-0">Subscription</h3></div>
   </div>
-  <p class="mt-0 {% if subscription is None %} red-text {% endif %}">Subscriptions enable any museum, repository, university, or other organizations to work collaboratively with Indigenous communities on the Local Contexts Hub. <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank"> Read more about subscriptions </a>.</p>
+  <p class="mt-0 {% if subscription is None %} red-text {% endif %}">
+    With a subscription, your account will have full access to the Hub’s functionality, including collaboration with Indigenous communities. Read more about subscriptions on our <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank">website</a>.
+    <br><br>
+    If you are interested in a subscription or discussing which subscription tier may be the best fit for you, please complete the form below.
+  </p>
   {% if subscription is not None %}
   <div class="flex-this space-between">
     <div><h4 class="mb-0 mt-0">Subscription Details</h4></div>
@@ -18,10 +22,9 @@
       </a>
     </div> 
   {% elif subscription is None  %}    
-  <p class='red-text'>To unlock more activities in your account please subscribe</p>
   <div>
     <a href="{% if institution %}{% url 'institution-create-subscription-form' institution.id  %}{% else %}{% url 'researcher-create-subscription-form' researcher.id %}{% endif %}">
-      <button type="submit" class="primary-btn action-btn" name="generatebtn">Fill out Subscription Form</button>
+      <button type="submit" class="primary-btn action-btn" name="generatebtn">Subscription Interest Form</button>
     </a>
   </div> 
   {% else %}
