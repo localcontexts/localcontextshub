@@ -944,17 +944,17 @@ def subscription(request, pk, account_type, related=None):
                         }
                         BundleType.objects.create(institution=institution, bundle_type=bundle)
                         create_bundle_call(request, bundle_data, access_token)
-                        messages.add_message(
-                            request,
-                            messages.INFO,
-                            (
-                                "Thank you for your submission, "
-                                "our team will review and be in "
-                                "contact with the bundle contract. "
-                                "You will be notified once your "
-                                "request has been processed."
-                            ),
-                        )
+                    messages.add_message(
+                        request,
+                        messages.INFO,
+                        (
+                            "Thank you for your submission, "
+                            "our team will review and be in "
+                            "contact with the bundle contract. "
+                            "You will be notified once your "
+                            "request has been processed."
+                        ),
+                    )
                     return redirect("subscription", institution.id, 'institution')
                 except Exception:
                     messages.add_message(
@@ -1002,17 +1002,17 @@ def subscription(request, pk, account_type, related=None):
                         }
                         BundleType.objects.create(researcher=researcher, bundle_type=bundle)
                         create_bundle_call(request, bundle_data, access_token)
-                        messages.add_message(
-                            request,
-                            messages.INFO,
-                            (
-                                "Thank you for your submission, "
-                                "our team will review and be in "
-                                "contact with the bundle contract. "
-                                "You will be notified once your "
-                                "request has been processed."
-                            ),
-                        )
+                    messages.add_message(
+                        request,
+                        messages.INFO,
+                        (
+                            "Thank you for your submission, "
+                            "our team will review and be in "
+                            "contact with the bundle contract. "
+                            "You will be notified once your "
+                            "request has been processed."
+                        ),
+                    )
                     return redirect("subscription", researcher.id, 'researcher')
                 except Exception:
                     messages.add_message(
