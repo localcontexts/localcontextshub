@@ -1,3 +1,4 @@
+import requests
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -31,7 +32,7 @@ class TestFeatures(TransactionTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.context['exception'], expected_message)
 
-    def test_error_raised_when_slug_is_not_in_nld_data(self):
+    def test_error_raised_when_slug_is_not_in_all_nld_data(self):
         """
         When the retrieve_native_land_all_slug_data returns an empty dictionary
         which does not contain the slug, an error should be raised.
@@ -43,6 +44,24 @@ class TestFeatures(TransactionTestCase):
         }
         with patch('helpers.views.retrieve_native_land_all_slug_data') as mock_function:
             mock_function.return_value = {}
+            response = self.client.get(
+                reverse('nld-data'),
+                data=get_variables
+            )
+            self.assertEqual(response.context['exception'], expected_message)
+
+    def test_error_raised_when_error_occurs_retrieving_all_nld_data(self):
+        """
+        When the retrieve_native_land_all_slug_data fails
+        an error should be raised.
+        """
+        slug = 'placeholder_slug'
+        expected_message = f'Unable to Retrieve All NLD Slug Data'
+        get_variables = {
+            'slug': slug,
+        }
+        with patch('helpers.views.retrieve_native_land_all_slug_data') as mock_function:
+            mock_function.side_effect = requests.exceptions.HTTPError('Some Error Occurred')
             response = self.client.get(
                 reverse('nld-data'),
                 data=get_variables
