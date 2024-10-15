@@ -38,7 +38,7 @@
                             {% join_request_comm community.id request.user as request_exists %}
                             {% if request_exists or community in user_communities %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
-                            {% else %}
+                            {% elif community.is_member %}
                                 <div class="mt-8 mb-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
@@ -92,7 +92,7 @@
             <div class="flex-this column dashcard-text-container">
                 <div class="subscribed-icon-wrapper">
                     <h3 class="dashcard-h3">{{ community }}</h3>
-                    {% if community and community.is_approved %}
+                    {% if community and community.is_member %}
                         <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
                     {% endif %}
                 </div>

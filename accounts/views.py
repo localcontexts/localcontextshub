@@ -633,7 +633,7 @@ def registry(request, filtertype=None):
             if filtertype == "community-all":
                 cards = c
             elif filtertype == "community-members":
-                cards = c.filter(is_approved=True)
+                cards = c.filter(is_member=True)
             elif filtertype == "institution-all":
                 cards = i
             elif filtertype == "institution-subscribed":

@@ -1499,7 +1499,7 @@ admin_site.register(BCLabel, BCLabelAdmin)
 class CommunityAdmin(admin.ModelAdmin):
     form = CommunityModelForm
     list_display = (
-        'community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved',
+        'community_name', 'community_creator', 'contact_name', 'contact_email', 'is_member',
         'created', 'country'
     )
     search_fields = (

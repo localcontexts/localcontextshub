@@ -15,8 +15,8 @@
         <div class="flex-this column w-50">
             <div class="subscribed-icon-wrapper">
                 <h3 class="dashcard-h3 darkteal-text">{{ community.community_name }}</h3>
-                {% if community.is_approved %}
-                    <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
+                {% if community.is_member %}
+                    <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Member"></i>
                 {% endif %}
             </div>
             <div>
