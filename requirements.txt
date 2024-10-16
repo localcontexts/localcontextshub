@@ -24,6 +24,7 @@ django-cors-headers==3.11.0
 django-countries==7.5.1
 django-dbbackup==4.0.2
 django-debug-toolbar==3.2.4
+django-geojson==4.1.0
 django-guardian==2.3.0
 django-maintenance-mode==0.16.0
 django-storages==1.11.1
