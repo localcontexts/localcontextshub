@@ -1,6 +1,7 @@
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 from django.contrib.auth.models import User
 from helpers.models import LabelNote
 from notifications.models import ActionNotification
@@ -81,6 +82,18 @@ def send_simple_email(email, subject, template):
             "subject": subject,
             "html": template}
     )
+
+# Send error info
+def send_subscription_fail_email(request, subject, template):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        return requests.post(
+            settings.MAILGUN_BASE_URL,
+            auth=("api", settings.MAILGUN_API_KEY),
+            data={"from": "Local Contexts Hub <no-reply@localcontextshub.org>",
+                "to": "support@localcontexts.org",
+                "subject": subject,
+                "html": template}
+        )
 
 # Send email with attachment
 def send_email_with_attachment(file, to_email, subject, template):
@@ -196,18 +209,34 @@ def send_hub_admins_account_creation_email(request, data):
     def get_email_and_template():
         if isinstance(data, Community):
             subject = f'New Community Account: {data.community_name}'
-            template = render_to_string('snippets/emails/internal/community-application.html', {'data': data})
+            template = render_to_string(
+                'snippets/emails/internal/community-application.html', 
+                {'data': data}
+            )
             return subject, template, data.support_document
         elif isinstance(data, Institution):
             subject_prefix = "New Institution Account"
             subject_suffix = "(non-ROR)" if not data.is_ror else ""
             subject = f'{subject_prefix}: {data.institution_name} {subject_suffix}'
-            template = render_to_string('snippets/emails/internal/institution-application.html', {'data': data})
+            template = render_to_string(
+                'snippets/emails/internal/institution-application.html',
+                {'data': data}
+            )
             return subject, template, None
         elif isinstance(data, Researcher):
             name = get_users_name(data.user)
             subject = f'New Researcher Account: {name}'
-            template = render_to_string('snippets/emails/internal/researcher-account-connection.html', { 'researcher': data })
+            template = render_to_string(
+                'snippets/emails/internal/researcher-account-connection.html',
+                { 'researcher': data }
+            )
+            return subject, template, None
+        elif isinstance(data, ServiceProvider):
+            subject = f'New Service Provider Account: {data.name}'
+            template = render_to_string(
+                'snippets/emails/internal/service-provider-application.html',
+                {'data': data}
+            )
             return subject, template, None
         else:
             return None, None, None
@@ -263,6 +292,32 @@ def send_institution_email(request, institution):
             subject, 
             'new_institution_account', 
             data, 
+            cc_emails,
+            "Local Contexts Hub <support@localcontexts.org>"
+        )
+
+def send_service_provider_email(request, service_provider):
+    if dev_prod_or_local(request.get_host()) == 'PROD':
+        name = get_users_name(request.user)
+        subject = f'Service Provider Account: {service_provider.name}'
+        data = {
+            'account_creator_name': name,
+            'service_provider_name': service_provider.name
+        }
+
+        cc_emails = [
+            settings.SUPPORT_EMAIL,
+            settings.CC_EMAIL_LH
+        ]
+        if service_provider.contact_email:
+            cc_emails.append(service_provider.contact_email)
+
+        # Send email to institution
+        send_mailgun_template_email(
+            request.user.email,
+            subject,
+            'new_service_provider_account',
+            data,
             cc_emails,
             "Local Contexts Hub <support@localcontexts.org>"
         )
@@ -381,6 +436,8 @@ def send_contact_email(request, to_email, from_name, from_email, message, accoun
             account_name = account.community_name
         if isinstance(account, Researcher):
             account_name = 'your researcher account'
+        if isinstance(account, ServiceProvider):
+            account_name = account.name
 
         data = { "from_name": from_name, "message": message, "account_name": account_name }
 
@@ -410,6 +467,8 @@ def send_member_invite_email(request, data, account):
             org_name = account.institution_name
         if isinstance(account, Community):
             org_name = account.community_name
+        if isinstance(account, ServiceProvider):
+            org_name = account.name
         
         if data.role == 'admin':
             role = 'Administrator'
@@ -456,7 +515,12 @@ def send_email_notice_placed(request, project, community, account):
             'community_name': community.community_name,
             'login_url': login_url
         }
-        send_mailgun_template_email(community.community_creator.email, subject, 'notice_placed', data)
+        send_mailgun_template_email(
+            community.community_creator.email, 
+            subject, 
+            'notice_placed', 
+            data
+        )
 
 #Project status has been changed
 def send_action_notification_project_status(request, project, communities):
@@ -468,7 +532,12 @@ def send_action_notification_project_status(request, project, communities):
     for community in communities:
         community = get_community(community)
         title = f"{request.user} has edited a Project: '{project}'."
-        ActionNotification.objects.create(community=community, sender=request.user, notification_type="Projects", title=title, reference_id=project.unique_id)
+        ActionNotification.objects.create(
+            community=community, 
+            sender=request.user, 
+            notification_type="Projects", 
+            title=title, reference_id=project.unique_id
+        )
 
 """
     EMAILS FOR COMMUNITY APP
@@ -486,7 +555,12 @@ def send_email_labels_applied(request, project, community):
             'project_title': project.title,
             'login_url': login_url
         }
-        send_mailgun_template_email(project.project_creator.email, subject, 'labels_applied', data)
+        send_mailgun_template_email(
+            project.project_creator.email, 
+            subject, 
+            'labels_applied', 
+            data
+        )
 
 
 # Label has been approved or not
@@ -519,7 +593,7 @@ def send_email_label_approved(request, label, note_id):
         }
         send_mailgun_template_email(label.created_by.email, subject, 'label_approved', data)
 
-# You are now a member of institution/community email
+# You are now a member of institution/community/service provider email
 def send_membership_email(request, account, receiver, role):
     environment = dev_prod_or_local(request.get_host())
 
@@ -537,6 +611,7 @@ def send_membership_email(request, account, receiver, role):
 
         community = False
         institution = False
+        service_provider = False
 
         if isinstance(account, Community):
             subject = f'You are now a member of {account.community_name}'
@@ -546,13 +621,18 @@ def send_membership_email(request, account, receiver, role):
             subject = f'You are now a member of {account.institution_name}'
             account_name = account.institution_name
             institution = True
+        if isinstance(account, ServiceProvider):
+            subject = f'You are now a member of {account.name}'
+            account_name = account.name
+            service_provider = True
 
         data = {
             'role_str': role_str,
             'account_name': account_name,
             'login_url': login_url,
             'community': community,
-            'institution': institution
+            'institution': institution,
+            'service_provider': service_provider
         }
         send_mailgun_template_email(receiver.email, subject, 'member_info', data)
 
@@ -665,9 +745,23 @@ def send_project_person_email(request, to_email, proj_id, account):
 
 def send_email_verification(request, old_email, new_email, verification_url):
     subject = 'Email Verification Link For Your Local Contexts Hub Profile'
-    data = {'user':request.user.username, 'new_email':new_email, 'old_email':old_email, 'verification_url':verification_url}
+    data = {
+        'user': request.user.username, 
+        'new_email': new_email, 
+        'old_email': old_email, 
+        'verification_url': verification_url
+    }
     send_mailgun_template_email(new_email, subject, 'verify_email_update', data)
     
     old_subject = 'Change of Email For Your Local Contexts Hub Profile'
-    old_email_data = {'user':request.user.username, 'old_email':old_email, 'new_email':new_email}
-    send_mailgun_template_email(old_email, old_subject,'notify_email_on_email_update', old_email_data)
+    old_email_data = {
+        'user': request.user.username, 
+        'old_email': old_email, 
+        'new_email': new_email
+    }
+    send_mailgun_template_email(
+        old_email, 
+        old_subject,
+        'notify_email_on_email_update', 
+        old_email_data
+    )

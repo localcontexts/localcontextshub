@@ -17,16 +17,18 @@ def source_project_title(uuid):
 @register.simple_tag
 def get_all_researchers(researcher_to_exclude):
     if researcher_to_exclude:
-        return Researcher.objects.select_related('user').exclude(id=researcher_to_exclude.id)
+        return Researcher.objects.select_related('user')\
+            .exclude(id=researcher_to_exclude.id)\
+            .exclude(is_subscribed=False)
     else:
-        return Researcher.objects.select_related('user').all()
+        return Researcher.objects.select_related('user').all().exclude(is_subscribed=False)
 
 @register.simple_tag
 def get_all_institutions(institution_to_exclude):
     if institution_to_exclude:
-        return Institution.approved.exclude(id=institution_to_exclude.id)
+        return Institution.subscribed.exclude(id=institution_to_exclude.id)
     else:
-        return Institution.approved.all()
+        return Institution.subscribed.all()
 
 @register.simple_tag
 def get_all_communities(community_to_exclude):

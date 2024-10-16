@@ -18,8 +18,16 @@
 
     <section class="flex-this column">
 
-        {% if not researcher and not user_communities and not user_institutions %}
-            <div class="set-height-empty-dash"></div>
+        {% if not researcher and not user_communities and not user_institutions and not user_service_providers %}
+            <div class="dashcard w-100 center-text mt-16" style="margin-bottom:200px;">
+                <p class="center-text">
+                    <strong>There are no accounts yet.</strong>
+                    <br>
+                    <small>
+                        Click the link above to create an account or browse the registry to join an existing account.
+                    </small>
+                </p>
+            </div>
         {% endif %}
 
         {% if researcher %}
@@ -38,6 +46,11 @@
             {% endfor %}
         {% endif %}
 
-    </section>
+        {% if user_service_providers %}
+            {% for service_provider in user_service_providers %}
+                {% include 'partials/infocards/_service-provider-card.html' %}
+            {% endfor %}
+        {% endif %}
 
+    </section>
 {% endblock %}

@@ -13,6 +13,12 @@
         <ul class="menu ul-no-bullets">
             <li>
                 <a 
+                    class="{% if '/subscription-inquiry/' in request.path %} active-link bold {% endif %} white-text upper" 
+                    href="{% url 'subscription-inquiry' %}"> Subscription
+                </a>
+            </li> 
+            <li>
+                <a 
                     class="{% if '/registry/' in request.path %} active-link bold {% endif %} white-text upper" 
                     href="{% url 'registry' %}"> Registry
                 </a>

@@ -1,0 +1,129 @@
+{% extends 'auth-base.html' %} {% block title %} Update Account {% endblock %}
+{% block main %} {% load static %}
+
+    {% include 'partials/infocards/_account-dashcard.html' %}
+    {% include 'partials/_subnav.html' %}
+
+    <div
+        class="content-card-v2 content-card-space flex-this column settings-height"
+    >
+        <h2 class="mt-0">Account Settings</h2>
+
+        <div class="flex-this w-100 mb-2p" style="flex:1;">
+
+            <!-- Left side of the settings div (sidebar) -->
+            <div class="side-nav-container">
+
+                <!-- Update Account -->
+                <a href="{% if community %}{% url 'update-community' community.id %}{% endif %}{% if institution %}{% url 'update-institution' institution.id %}{% endif %}{% if researcher %}{% url 'update-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'update-service-provider' service_provider.id %}{% endif %}">
+                    <div
+                        class="flex-this side-nav-item {% if '/update/' in request.path %} selected {% else %} grey-text {% endif %}"
+                    >
+                        <div class="w-20 icon">
+                            <i class="fa-solid fa-circle-user fa-3x"></i>
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0">
+                                {% if community %}
+                                    <strong>Community Account</strong><br>Image, description, location
+                                {% endif %}
+                                {% if institution %}
+                                    <strong>Institution Account</strong><br>Image, description, location
+                                {% endif %}
+                                {% if researcher %}
+                                    <strong>Researcher Account</strong><br>Contact email, primary institution, description
+                                {% endif %}
+                                {% if service_provider %}
+                                    <strong>Service Provider Account</strong><br>Image, description
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Account Preferences -->
+                <a href="{% if community %}{% url 'preferences-community' community.id %}{% endif %}{% if institution %}{% url 'preferences-institution' institution.id %}{% endif %}{% if researcher %}{% url 'preferences-researcher' researcher.id %}{% endif %}{% if service_provider %}{% url 'preferences-service-provider' service_provider.id %}{% endif %}">
+                    <div
+                        class="flex-this side-nav-item {% if '/preferences/' in request.path %} selected {% else %} grey-text {% endif %}"
+                    >
+                        <div class="w-20 icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0">
+                                <strong>Account Preferences</strong><br>Manage your account settings
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                {% if community %}
+                <!-- Update Boundary -->
+                    <a href="{% if community %}{% url 'update-community-boundary' community.id %}{% endif %}">
+                        <div class="flex-this side-nav-item {% if '/communities/update-community-boundary/' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 icon">
+                                <i class="fa-solid fa-location-dot fa-3x"></i>
+                            </div>
+                            <div class="w-80">
+                                <p class="mt-8">
+                                    <strong>Boundary</strong><br>Community Location
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {% if institution or researcher and envi != "SANDBOX" %}
+                <a class="side-nav-a" href="{% if institution %}{% url 'subscription' institution.id 'institution' %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
+                        <div class="flex-this  side-nav-item {% if 'subscription' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 margin-right-8"><i class="fa fa-calendar-check-o fa-3x" aria-hidden="true"></i></div>
+                            <div class="w-80">
+                                <p class="mt-0"><strong>Subscription</strong><br>Subscription details and activity</p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+
+                <!-- Manage API Keys -->
+                <a href="{% if community %}{% url 'community-api-key' community.id %}{% endif %}{% if institution %}{% url 'institution-api-key' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-api-key' researcher.id %}{% endif %}{% if service_provider %}{% url 'service-provider-api-key' service_provider.id %}{% endif %}">
+                    <div class="flex-this side-nav-item {% if '/api-key/' in request.path %} selected {% else %} grey-text {% endif %}">
+                        <div class="w-20 icon">
+                            <i class="fa fa-code fa-3x" aria-hidden="true" style="font-size:36px;"></i>
+                        </div>
+                        <div class="w-80">
+                            <p class="mt-0"><strong>API Keys</strong><br>Manage API Keys</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Connect to Service Provider -->
+                {% if not service_provider %}
+                    <a href="{% if community %}{% url 'community-connect-service-provider' community.id %}{% endif %}{% if institution %}{% url 'institution-connect-service-provider' institution.id %}{% endif %}{% if researcher %}{% url 'researcher-connect-service-provider' researcher.id %}{% endif %}">
+                        <div class="flex-this side-nav-item {% if '/connect-service-provider/' in request.path %} selected {% else %} grey-text {% endif %}">
+                            <div class="w-20 m-auto" style="width: fit-content;">
+                                <img width="45" src="{% if '/connect-service-provider/' in request.path %}{% static 'images/logos/sp-logo-white.png' %}{% else %}{% static 'images/logos/sp-logo-grey.png' %}{% endif %}">
+                            </div>
+                            <div class="w-80">
+                                <p class="mt-0"><strong>Service Providers</strong><br>Connect to a Service Provider</p>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+                
+            </div>
+
+
+            <!-- Right side of the settings div (main) -->
+            <div class="flex-this column w-70 ml-16">
+                {% block account_settings %}{% endblock %}
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+

@@ -1,5 +1,6 @@
 from functools import wraps
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 from .models import Community
 from bclabels.utils import check_bclabel_type
@@ -8,7 +9,10 @@ from bclabels.forms import CustomizeBCLabelForm
 from tklabels.forms import CustomizeTKLabelForm
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
-
+from helpers.models import HubActivity
+from accounts.models import UserAffiliation
+from django.db import transaction
+from helpers.utils import handle_confirmation_and_subscription
 
 def get_community(pk):
     return Community.objects.select_related('community_creator').prefetch_related('admins', 'editors', 'viewers').get(
@@ -44,3 +48,31 @@ def has_new_community_id(function):
         return function(request, *args, **kwargs)
 
     return wrap
+
+def handle_community_creation(request, data, subscription_form, env):
+    try:
+        with transaction.atomic():
+            data.save()
+            handle_confirmation_and_subscription(request, subscription_form, data, env)
+            # Add to user affiliations
+            affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=request.user)
+            affiliation.communities.add(data)
+            affiliation.save()
+
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Community",
+                community_id=data.id,
+                action_account_type='community'
+            )
+            request.session['new_community_id'] = data.id
+            
+    except Exception as e:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "An unexpected error has occurred here."
+            " Please contact support@localcontexts.org.",
+        )
+        return redirect('dashboard')

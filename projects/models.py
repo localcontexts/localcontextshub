@@ -19,7 +19,6 @@ class ProjectArchived(models.Model):
     class Meta:
         verbose_name_plural = 'Project Archived'
 
-
 class Project(models.Model):
     TYPES = (
         ('Item', 'Item'),
@@ -53,13 +52,13 @@ class Project(models.Model):
     date_added = models.DateTimeField(auto_now_add=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, null=True)
     source_project_uuid = models.UUIDField(null=True, verbose_name="Source Project UUID", blank=True, db_index=True)
-    related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", related_name="related_projects", db_index=True)
+    related_projects = models.ManyToManyField("self", blank=True, verbose_name="Related Projects", db_index=True)
     bc_labels = models.ManyToManyField("bclabels.BCLabel", verbose_name="BC Labels", blank=True, related_name="project_bclabels", db_index=True)
     tk_labels = models.ManyToManyField("tklabels.TKLabel", verbose_name="TK Labels", blank=True, related_name="project_tklabels", db_index=True)
 
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
-    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    boundary = models.ForeignKey(Boundary, on_delete=models.CASCADE, blank=True, null=True)
 
     def has_labels(self):
         if self.bc_labels.exists() or self.tk_labels.exists():
@@ -97,13 +96,11 @@ class Project(models.Model):
 
     def can_user_access(self, user):
         # returns either True, False, or 'partial'
-        if user == self.project_creator:
-            return True
-        elif self.project_privacy == 'Public':
+        if user == self.project_creator or  self.project_privacy == 'Public' or  self.project_privacy == 'Private':
             return True
         elif self.project_privacy == 'Contributor':
             return discoverable_project_view(self, user)
-        elif self.project_privacy == 'Private':
+        else:
             return False
 
     def get_template_name(self, user):
@@ -114,7 +111,7 @@ class Project(models.Model):
                 return 'partials/_project-actions.html'
             else:
                 return 'partials/_project-contributor-view.html'
-        elif self.project_privacy == 'Private' and user == self.project_creator:
+        elif self.project_privacy == 'Private':
             return 'partials/_project-actions.html'
         else:
             return None
@@ -194,11 +191,10 @@ class ProjectCreator(models.Model):
                 when an account is a parent project or a researcher,
                 it is considered already approved
         """
-        account = self.community or self.institution
-        if account:
-            return account.is_approved
-
-        return True
+        if self.community:
+            return self.community.is_approved
+        else:
+            return True
 
     def validate_user_access(self, user):
         is_created_by = {

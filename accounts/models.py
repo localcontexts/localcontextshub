@@ -1,9 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django_countries.fields import CountryField
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from communities.models import Community
 from institutions.models import Institution
+from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 
 class Profile(models.Model):
@@ -36,14 +40,14 @@ class Profile(models.Model):
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]
-        location = ', '.join(filter(None, components)) or 'None specified'
+        location = ', '.join(filter(None, components)) or None
         return location
 
     def __str__(self):
         return str(self.user)
 
     class Meta:
-        indexes = [models.Index(fields=['user'])]
+        indexes = [models.Index(fields=["user"])]
 
 
 class UserAffiliation(models.Model):
@@ -58,6 +62,9 @@ class UserAffiliation(models.Model):
     institutions = models.ManyToManyField(
         Institution, blank=True, related_name="user_institutions"
     )
+    service_providers = models.ManyToManyField(
+        ServiceProvider, blank=True, related_name="user_service_providers"
+    )
 
     @classmethod
     def create(cls, user):
@@ -68,9 +75,9 @@ class UserAffiliation(models.Model):
         return str(self.user)
 
     class Meta:
-        indexes = [models.Index(fields=['user'])]
-        verbose_name = 'User Affiliation'
-        verbose_name_plural = 'User Affiliations'
+        indexes = [models.Index(fields=["user"])]
+        verbose_name = "User Affiliation"
+        verbose_name_plural = "User Affiliations"
 
 
 class SignUpInvitation(models.Model):
@@ -85,7 +92,89 @@ class SignUpInvitation(models.Model):
     class Meta:
         verbose_name = "Sign Up Invitation"
         verbose_name_plural = "Sign Up Invitations"
-        ordering = ('-date_sent', )
+        ordering = ("-date_sent",)
+
+
+class Subscription(models.Model):
+    SUBSCRIPTION_CHOICES = [
+        ('individual', 'Individual'),
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('large', 'Large'),
+        ('cc_notice_only', 'CC Notice Only'),
+        ('cc_notices', 'CC Notices'),
+        ('member', 'Member'),
+        ('service_provide', 'Service Provider'),
+        ('founding_supporter', 'Founding Supporter')
+    ]
+
+    institution = models.ForeignKey(
+        Institution,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="subscribed_institution",
+        blank=True,
+    )
+    community = models.ForeignKey(
+        Community,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="subscribed_community",
+        blank=True,
+    )
+    researcher = models.ForeignKey(
+        Researcher,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="subscribed_researcher",
+        blank=True,
+    )
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="subscribed_service_provider",
+        blank=True,
+    )
+    users_count = models.IntegerField(
+        help_text="For unlimited counts the value shoud be -1"
+    )
+    api_key_count = models.IntegerField(
+        help_text="For unlimited counts the value shoud be -1"
+    )
+    project_count = models.IntegerField(
+        help_text="For unlimited counts the value shoud be -1"
+    )
+    notification_count = models.IntegerField(
+        help_text="For unlimited counts the value shoud be -1"
+    )
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(blank=True, null=True)
+    date_last_updated = models.DateTimeField(auto_now=True)
+    subscription_type = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES)
+
+    def clean(self):
+        count = sum([
+            bool(self.institution_id),
+            bool(self.community_id),
+            bool(self.researcher_id),
+            bool(self.service_provider_id)
+        ])
+        if count != 1:
+            errormsg = "Exactly one of institution, community, " \
+                "researcher, service provider should be present."
+            raise ValidationError(errormsg)
+
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+        # ordering = ('-date_sent', )
 
 
 class InactiveUser(models.Model):
@@ -96,3 +185,27 @@ class InactiveUser(models.Model):
 
     def __str__(self):
         return self.username
+
+
+class ServiceProviderConnections(models.Model):
+    service_provider = models.ForeignKey(
+        ServiceProvider, on_delete=models.CASCADE, default=None, null=True,
+        related_name="service_provider_connection"
+    )
+    communities = models.ManyToManyField(
+        Community, blank=True, related_name="service_provider_communities"
+    )
+    institutions = models.ManyToManyField(
+        Institution, blank=True, related_name="service_provider_institutions"
+    )
+    researchers = models.ManyToManyField(
+        Researcher, blank=True, related_name="service_provider_researchers"
+    )
+
+    def __str__(self):
+        return str(self.service_provider)
+
+    class Meta:
+        indexes = [models.Index(fields=["service_provider"])]
+        verbose_name = "Service Provider Connection"
+        verbose_name_plural = "Service Provider Connections"

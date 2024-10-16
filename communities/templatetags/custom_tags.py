@@ -1,43 +1,10 @@
 from django import template
 from django.urls import reverse
 from django.templatetags.static import static
-from notifications.models import ActionNotification
-from bclabels.models import BCLabel
-from tklabels.models import TKLabel
-from itertools import chain
 import os
 
 register = template.Library()
 
-# How many total Labels have been applied to projects
-@register.simple_tag
-def get_label_count(community):
-    count = 0
-    # Get all labels in this community
-    # check to see if label exists in projects
-    for label in BCLabel.objects.prefetch_related('project_bclabels').filter(community=community):
-        count = count + label.project_bclabels.count()
-    for label in TKLabel.objects.prefetch_related('project_tklabels').filter(community=community):
-        count = count + label.project_tklabels.count()
-    return count
-
-# How many Projects has this community been notified of
-@register.simple_tag
-def community_notified_count(community):
-    return community.communities_notified.count()
-
-# How many connections gave been created (how many unique institutions or researchers have had a Label applied to a project)
-@register.simple_tag
-def connections_count(community):
-    contributor_ids = list(chain(
-        community.contributing_communities.exclude(institutions__id=None).values_list('institutions__id', flat=True),
-        community.contributing_communities.exclude(researchers__id=None).values_list('researchers__id', flat=True),
-    ))
-    return len(contributor_ids)
-
-# @register.simple_tag
-# def anchor(url_name, section_id, community_id):
-#     return reverse(url_name, kwargs={'pk': community_id}) + "#project-unique-" + str(section_id)
 
 @register.simple_tag
 def get_bclabel_img_url(img_type, *args, **kwargs):

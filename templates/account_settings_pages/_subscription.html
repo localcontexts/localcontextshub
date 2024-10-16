@@ -1,0 +1,53 @@
+{% extends 'account-settings-base.html' %}{% load static %}
+
+{% block account_settings %}
+  <div class="flex-this space-between">
+    <div><h3 class="mt-0">Subscription</h3></div>
+  </div>
+  <p class="mt-0 {% if subscription is None %} red-text {% endif %}">
+    With a subscription, your account will have full access to the Hub’s functionality, including collaboration with Indigenous communities. Read more about subscriptions on our <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank">website</a>.
+    <br><br>
+    If you are interested in a subscription or discussing which subscription tier may be the best fit for you, please complete the form below.
+  </p>
+  {% if subscription is not None %}
+  <div class="flex-this space-between">
+    <div><h4 class="mb-0 mt-0">Subscription Details</h4></div>
+  </div>
+  {% endif %}
+  {% if renew %}
+    <p class="italic red-text"><small>This subscription for this account has expired. Please renew your subscription.</small></p>
+    <div>
+      <a href="{% if institution %}{% url 'institution-create-subscription-form' institution.id  %}{% else %}{% url 'researcher-create-subscription-form' researcher.id %}{% endif %}">
+        <button type="submit" class="primary-btn action-btn" name="generatebtn">Renew Subscription</button>
+      </a>
+    </div> 
+  {% elif subscription is None  %}    
+  <div>
+    <a href="{% if institution %}{% url 'institution-create-subscription-form' institution.id  %}{% else %}{% url 'researcher-create-subscription-form' researcher.id %}{% endif %}">
+      <button type="submit" class="primary-btn action-btn" name="generatebtn">Subscription Interest Form</button>
+    </a>
+  </div> 
+  {% else %}
+    <div class="flex-this w-60 subscription-details">
+      {% comment %} <div><h6>Entity Type</h6> <p><small>Large Organization <span class="tooltip" style="margin-top: 6px; margin-left: 5px;"><strong>i</strong>
+        <span class="tooltiptext">
+            Your institution is Large Organization.
+        </span>
+      </span> </small></p></div> {% endcomment %}
+      <div class="pad-left-2"><h5>Start Date</h5> <p>{{ start_date }}</p></div>
+      <div class="vl pad-left-2"><h5 class="ml-8 ">End Date</h5> <p class="ml-8 ">{{ end_date }}</p></div>
+    </div>
+    <div class="flex-this space-between">
+      <div><h4 class="mb-0">Subscription Activity</h4></div>
+    </div>
+    <p class="mt-0">See an overview of the activities happening within your subscription</p>
+    <div class="flex-this subscription-activity subscription-details w-80">
+      <div><h5>Users Remaining</h5> <p>{% if subscription.users_count != -1 %}{{ subscription.users_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Projects Remaining</h5> <p>{% if subscription.project_count != -1 %}{{ subscription.project_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notifications Remaining</h5> <p>{% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</p></div>
+      <div class="vl"><h5>Notices Remaining</h5> {% if subscription.notification_count != -1 %}{{ subscription.notification_count }}{% else %}Unlimited{% endif %}</div>
+      <div class="vl"><h5>API Keys Remaining</h5> <p>{% if subscription.api_key_count != -1 %}{{ subscription.api_key_count }}{% else %}Unlimited{% endif %}</p></div>
+    </div>
+    <p>Need help? Please contact us at  <a href="mailto:support@localcontexts.org" class="default-a">support@localcontexts.org</a></p>
+  {% endif %}
+{% endblock %}

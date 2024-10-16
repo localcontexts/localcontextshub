@@ -15,7 +15,6 @@ class TestInstitute(TestCase):
         new_institution.city_town = "Test City"
         new_institution.state_province_region = "Test State"
         new_institution.country = "Test Country"
-        new_institution.is_approved = True
         new_institution.save()
 
         expected_location = "Test City, Test State, Test Country"
@@ -28,7 +27,7 @@ class TestInstitute(TestCase):
         new_institution.country = None
         new_institution.save()
 
-        assert new_institution.get_location() == "None specified"
+        assert new_institution.get_location() == None
 
     def test_get_member_count(self):
         new_institution = self.institution

@@ -12,17 +12,21 @@
         }
     }
 </script>
+
 <div class="dashcard">
 
     {% if community %}
+    <!-- Community Public Page -->
+
+        <!-- Nav Bar -->
         <div class="flex-this space-between">
             <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
-                    </a> 
-                    >> {{ community.community_name }}  
-                    >> Public                  
+                    </a>
+                    >> {{ community.community_name }}
+                    >> Public
                 </small>
             </div>
 
@@ -34,11 +38,11 @@
                             {% join_request_comm community.id request.user as request_exists %}
                             {% if request_exists or community in user_communities %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
-                            {% else %}
+                            {% elif community.is_member %}
                                 <div class="mt-8 mb-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
-                            {% endif %}                            
+                            {% endif %}
                         </div>
                         <div class="ml-16">
                             {% if env == "SANDBOX" %}
@@ -53,33 +57,6 @@
                             {% endif %}
                         </div>
                     </div>
-
-                    {% if not env == "SANDBOX" %}
-                        <div id="contactModal" class="modal hide">
-                            <div class="modal-defaults contact-modal flex-this column w-100">
-                                <div class="w-100">
-                                    <div class="flex-this space-between">
-                                        <div class="w-80">
-                                            <h2 class="primary-black-text mt-0">Contact form</h2>  
-                                            <p>This message will be sent to the administrator of {{ community.community_name }}.</p>  
-                                        </div>
-                                        <div>
-                                            <div class="close-modal-btn">
-                                                <i class="fa-regular fa-xmark fa-xl"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <form id="sendMsgForm" method="POST" action="">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <input type="hidden" name="contact_btn">
-                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                    </form>    
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
 
                 {% else %}
                     <div class="loc bold mb-16">
@@ -88,98 +65,126 @@
                         </small>
                     </div>
                 {% endif %}
+
             {% else %}
                 <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
-                            Login
-                        </a> 
-                        to contact
+                            Login</a> to contact
                     </small>
                 </div>
-            {% endif %}                
+            {% endif %}
         </div>
 
+        <!-- Account Dashcard -->
         <div class="flex-this">
 
+            <!-- Image -->
             <div class="dashcard-img-container">
-                <img loading="lazy" 
-                    class="profile-img" 
-                    src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}" 
+                <img loading="lazy"
+                    class="profile-img"
+                    src="{% if community.image %} {{ community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}"
                     alt="{{ community.community_name }} image"
                 >
             </div>
+
+            <!-- Account Information -->
             <div class="flex-this column dashcard-text-container">
-                <div><h3 class="dashcard-h3">{{ community }}</h3></div>
-                <div>
-                    <p class="dashcard-subheader">Community | {{ community.get_location }} </p>
+                <div class="subscribed-icon-wrapper">
+                    <h3 class="dashcard-h3">{{ community }}</h3>
+                    {% if community and community.is_member %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Active"></i>
+                    {% endif %}
                 </div>
-                <div><p class="dashcard-description description-sm">{% if community.description %}{{ community.description }}{% else %} No description provided. {% endif %}</p></div>
+                <p class="dashcard-subheader">
+                    Community {% with community.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
+                </p>
+                <p class="dashcard-description description-sm">
+                    {% if community.description %}{{ community.description }}{% else %} No description provided.{% endif %}
+                </p>
+                {% if community.website %}
+                    <div class="flex-this mt-8 description-sm">
+                        <p class="mt-0 mb-0 mr-16">
+                            <i class="fa-solid fa-globe" title="Website"></i>
+                            <a
+                                class="default-a ml-5"
+                                href="{{ community.website }}"
+                            >
+                                {{ community.community_name }} Website
+                            </a>
+                        </p>
+                    </div>
+                {% endif %}
 
                 {% include 'partials/_alerts.html' %}
-                
+
             </div>
 
         </div>
 
+        <!-- Boundary Section -->
         {% if community.share_boundary_publicly and community.boundary.coordinates %}
-        <div>
-            <h3>Community Location</h3>
-            <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
-            style="width: 100%; height: 450px; border: 1px solid cadetblue;">
-            </iframe>
-            {% if 'native-land.ca' in community.source_of_boundary %}
-                <span class="italic">
-                    This community boundary originates from the
-                    <a href="https://native-land.ca/contact"
-                       class="default-a" target="_blank" rel="noopener">
-                        Native Land Digital database
-                        <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
-                    </a>.
-                </span>
-                <br><br>
-            {% endif %}
-        </div>
+            <div>
+                <h3>Community Location</h3>
+                <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
+                style="width: 100%; height: 450px; border: 1px solid cadetblue;">
+                </iframe>
+                {% if 'native-land.ca' in community.source_of_boundary %}
+                    <span class="italic">
+                        This community boundary originates from the
+                        <a href="https://native-land.ca/contact"
+                        class="default-a" target="_blank" rel="noopener">
+                            Native Land Digital database
+                            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+                        </a>.
+                    </span>
+                    <br><br>
+                {% endif %}
+            </div>
         {% endif %}
 
+        <!-- Labels Section -->
         <div>
-            <div>
-                <h3>Community Labels used</h3>
+            <h3>Community Labels used</h3>
 
-                <div class="public-page-labels flex-this w-100 wrap">
-                    {% if bclabels %}
-                        {% for bclabel in bclabels %}
-                            <div class="condensed-labels center-text mr-16 mb-16">
-                                {% include 'bclabels/which-label.html' %}
-                                <span>{{ bclabel.name }}</span>
-                            </div> 
-                        {% endfor %}
-                    {% endif %}
+            <div class="public-page-labels flex-this w-100 wrap">
+                {% if bclabels %}
+                    {% for bclabel in bclabels %}
+                        <div class="condensed-labels center-text mr-16 mb-16">
+                            {% include 'bclabels/which-label.html' %}
+                            <span>{{ bclabel.name }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
-                    {% if tklabels %}
-                        {% for tklabel in tklabels %}
-                            <div class="condensed-labels center-text mr-16 mb-16">
-                                {% include 'tklabels/which-label.html' %}
-                                <span>{{ tklabel.name }}</span>
-                            </div> 
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                {% if tklabels %}
+                    {% for tklabel in tklabels %}
+                        <div class="condensed-labels center-text mr-16 mb-16">
+                            {% include 'tklabels/which-label.html' %}
+                            <span>{{ tklabel.name }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if not bclabels and not tklabels %} No Labels to display yet {% endif %}
             </div>
         </div>
     {% endif %}
 
     {% if institution %}
+    <!-- Institution Public Page -->
+
+        <!-- Nav Bar -->
         <div class="flex-this space-between">
             <div class="loc grey-text bold  mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
-                    </a> 
+                    </a>
                     >> {{ institution.institution_name }}
-                    >> Public                    
+                    >> Public
                 </small>
             </div>
+
             {% if request.user.is_authenticated %}
                 {% is_user_member institution request.user as user_is_member %}
                 {% if not user_is_member %}
@@ -188,13 +193,13 @@
                             {% join_request_inst institution.id request.user as request_exists %}
                             {% if request_exists or institution in user_institutions %}
                                 <div class="primary-btn disabled-btn">Request sent <i class="fa fa-check" aria-hidden="true"></i></div>
-                            {% else %}
+                            {% elif institution.is_subscribed %}
                                 <div class="mt-8 mb-8">
                                     <a id="openRequestToJoinModalBtn" class="default-a">Request to join</a>
                                 </div>
-                            {% endif %}                                
+                            {% endif %}
                         </div>
-                        
+
                         <div class="ml-16">
                             {% if env == "SANDBOX" %}
                                 <div class="btn-with-helptext">
@@ -209,31 +214,6 @@
                         </div>
                     </div>
 
-                    {% if not env == "SANDBOX" %}
-                        <div id="contactModal" class="modal hide">
-                            <div class="modal-defaults contact-modal flex-this column w-100">
-                                <div class="w-100">
-                                    <div class="flex-this space-between">
-                                        <div class="w-70">
-                                            <h2 class="primary-black-text mt-0">Contact form</h2>  
-                                            <p>This message will be sent to the administrator of {{ institution.institution_name }}.</p>  
-                                        </div>
-                                        <div>
-                                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                        </div>
-                                    </div>
-
-                                    <form id="sendMsgForm" method="POST" action="">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <input type="hidden" name="contact_btn">
-                                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                    </form>    
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
                 {% else %}
                     <div class="loc bold mb-16">
                         <small>
@@ -241,48 +221,76 @@
                         </small>
                     </div>
                 {% endif %}
+
             {% else %}
                 <div class="loc grey-text bold mb-16">
                     <small>
                         <a href="{% url 'login' %}" class="default-a">
-                            Login
-                        </a> 
-                        to contact
+                            Login</a> to contact
                     </small>
                 </div>
-            {% endif %}                
+            {% endif %}
         </div>
 
+        <!-- Account Dashcard -->
         <div class="flex-this">
+
+            <!-- Image -->
             <div class="dashcard-img-container">
-                <img loading="lazy" 
+                <img loading="lazy"
                     class="profile-img"
-                    src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
+                    src="{% if institution.image %} {{ institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}"
                     alt="{{ institution.institution_name }} image"
                 >
             </div>
+
+            <!-- Account Information -->
             <div class="flex-this column dashcard-text-container">
-                <div><h3 class="dashcard-h3">{{ institution }}</h3></div>
-                <div>
-                    <p class="dashcard-subheader">Institution | {{ institution.get_location }} </p>
+                <div class="subscribed-icon-wrapper">
+                    <h3 class="dashcard-h3">{{ institution }}</h3>
+                    {% if institution and institution.is_subscribed %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+                    {% endif %}
                 </div>
-                <div><p class="dashcard-description description-sm">{% if institution.description %}{{ institution.description }}{% else %} No description provided. {% endif %}</p></div>
+                <p class="dashcard-subheader">
+                    Institution {% with institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
+                </p>
+                <p class="dashcard-description description-sm">
+                    {% if institution.description %}{{ institution.description }}{% else %} No description provided.{% endif %}
+                </p>
+                {% if institution.website %}
+                    <div class="flex-this mt-8 description-sm">
+                        <p class="mt-0 mb-0 mr-16">
+                            <i class="fa-solid fa-globe" title="Website"></i>
+                            <a
+                                class="default-a ml-5"
+                                href="{{ institution.website }}"
+                            >
+                                {{ institution.institution_name }} Website
+                            </a>
+                        </p>
+                    </div>
+                {% endif %}
+
                 {% include 'partials/_alerts.html' %}
             </div>
+
         </div>
+
+        <!-- Notices Section -->
         <div class="flex-this">
             <div class="flex-this column w-50">
                 <h3>Notices Used</h3>
                 <div class="flex-this">
-                    {% if bcnotice %} 
+                    {% if bcnotice %}
                         <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
-                    {% if tknotice %} 
+                    {% if tknotice %}
                         <div class="mr-16"><img class="pointer-event-none" loading="lazy" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
-                    {% if attrnotice %} 
+                    {% if attrnotice %}
                         <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
@@ -302,23 +310,151 @@
                                     </a>
                                 </li>
                             {% endfor %}
-                        </ul>                          
-                    </div>          
+                        </ul>
+                    </div>
                 </div>
             {% endif %}
         </div>
     {% endif %}
 
-    {% if researcher %}
+    {% if service_provider %}
+    <!-- Service Provider Public Page -->
+
+        <!-- Nav Bar -->
         <div class="flex-this space-between">
             <div class="loc grey-text bold mb-16">
                 <small>
                     <a href="{% url 'registry' %}" class="default-a">
                         Local Contexts Registry
-                    </a> 
-                    >>    
+                    </a>
+                    >> {{ service_provider.name }}
+                    >> Public
+                </small>
+            </div>
+
+            {% if request.user.is_authenticated %}
+                {% if not service_provider.account_creator == request.user %}
+                    <div class="dashcard-btn-container">
+                        <div class="ml-16">
+                            {% if env == "SANDBOX" %}
+                                <div class="btn-with-helptext">
+                                    <a class="primary-btn disabled-btn">Contact Us</a>
+                                    <span class="btn-help-text">
+                                        Contacting other accounts is not available in the Sandbox.
+                                    </span>
+                                </div>
+                            {% else %}
+                                <a id="openContactModalBtn" class="primary-btn action-btn">Contact Us</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="loc grey-text bold mr-16">
+                    <small>
+                        <a href="{% url 'login' %}" class="default-a">
+                            Login</a> to contact
+                    </small>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Account Dashcard -->
+        <div class="flex-this">
+
+            <!-- Image -->
+            <div class="dashcard-img-container">
+                <img loading="lazy"
+                    class="profile-img"
+                    src="{% if service_provider.image %} {{ service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}"
+                    alt="{{ service_provider.name }} image"
+                >
+                {% if service_provider and service_provider.is_certified %}
+                    <div class="certified-overlay">
+                        <img
+                            src="{% static 'images/logos/sp-badge-orange.png' %}"
+                            width="157px"
+                            height="47px"
+                        >
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Information -->
+            <div class="flex-this column dashcard-text-container">
+                <h3 class="dashcard-h3">{{ service_provider }}</h3>
+                <p class="dashcard-subheader">Service Provider</p>
+                <p class="dashcard-description description-sm">
+                    {% if service_provider.description %}{{ service_provider.description }}{% else %}No description provided.{% endif %}
+                </p>
+                {% if service_provider.website or service_provider.documentation %}
+                    <div class="flex-this mt-8 description-sm">
+                        {% if service_provider.website %}
+                            <p class="mt-0 mb-0 mr-16">
+                                <i class="fa-solid fa-globe" title="Website"></i>
+                                <a
+                                    class="default-a ml-5"
+                                    href="{{ service_provider.website }}"
+                                >
+                                    {{ service_provider.name }} Website
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        {% if service_provider.documentation %}
+                            <p class="mt-0 mb-0">
+                                <i class="fa-solid fa-book" title="Documentation"></i>
+                                <a
+                                    class="default-a ml-5"
+                                    href="{{ service_provider.documentation }}"
+                                >
+                                    {{ service_provider.name }} Documentation
+                                </a>
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% include 'partials/_alerts.html' %}
+            </div>
+
+        </div>
+
+        <!-- OTC Notices -->
+        {% if otc_notices %}
+            <div class="flex-this">
+                <div class="flex-this column">
+                    <h3>Open To Collaboration</h3>
+                    <div class="flex-this">
+                        <div class="mr-8"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="90px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."></div>
+                        <ul>
+                            {% for notice in otc_notices %}
+                                <li>
+                                    <a href="{{ notice.url }}" class="default-a">
+                                        {% if notice.name %} {{ notice.name }} {% else %}{{ notice.url }}{% endif %}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if researcher %}
+    <!-- Researcher Public Page -->
+
+        <!-- Nav Bar -->
+        <div class="flex-this space-between">
+            <div class="loc grey-text bold mb-16">
+                <small>
+                    <a href="{% url 'registry' %}" class="default-a">
+                        Local Contexts Registry
+                    </a>
+                    >>
                     {% firstof researcher.user.get_full_name researcher.user.username %}
-                    >> Public         
+                    >> Public
                 </small>
             </div>
 
@@ -339,71 +475,104 @@
                                 <a id="openContactModalBtn" class="primary-btn action-btn">Contact Me</a>
                             {% endif %}
                         </div>
-                        
                     {% endif %}
                 {% endif %}
-                
-                {% if not env == "SANDBOX" %}
-                    <div id="contactModal" class="modal hide">
-                        <div class="modal-defaults contact-modal flex-this column w-100">
-                            <div class="w-100">
-                                <div class="flex-this space-between">
-                                    <div>
-                                        <h2 class="primary-black-text mt-0">Contact form</h2>  
-                                        <p>This message will be sent to {% firstof researcher.user.get_full_name researcher.user.username %}.</p>  
-                                    </div>
-                                    <div>
-                                        <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-                                    </div>
-                                </div>
-
-                                <form id="sendMsgForm" method="POST" action="">
-                                    {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <input type="hidden" name="contact_btn">
-                                    <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
-                                </form>    
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-
             {% endif %}
-
         </div>
 
+        <!-- Account Dashcard -->
         <div class="flex-this">
 
+            <!-- Image -->
             <div class="researcher-img-container">
-                <img loading="lazy" 
-                    src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}" 
+                <img loading="lazy"
+                    src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}"
                     alt="{{ researcher.researcher_name }} image"
                 >
             </div>
+
+            <!-- Account Information -->
             <div class="flex-this column dashcard-text-container">
-                <div><h3 class="dashcard-h3">{% firstof researcher.user.get_full_name researcher.user.username %}</h3></div>
-                <div>
-                    <p class="dashcard-subheader">Researcher | {{ researcher.user.user_profile.get_location }} </p>
+                <div class="subscribed-icon-wrapper">
+                    <h3 class="dashcard-h3">{% firstof researcher.user.get_full_name researcher.user.username %}</h3>
+                    {% if researcher and researcher.is_subscribed %}
+                        <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+                    {% endif %}
                 </div>
-                <div><p class="dashcard-description description-sm">{% if researcher.description %}{{ researcher.description }}{% else %} No description provided. {% endif %}</p></div>
+                <p class="dashcard-subheader">
+                    Researcher {% with researcher.user.user_profile.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
+                </p>
+                <p class="dashcard-description description-sm">
+                    {% if researcher.description %}{{ researcher.description }}{% else %} No description provided.{% endif %}
+                </p>
+                {% if researcher.website or researcher.orcid %}
+                    <div class="flex-this mt-8 description-sm">
+                        {% if researcher.orcid %}
+                            <div class="flex-this" itemscope itemtype="https://schema.org/Person">
+                                <img
+                                    loading="lazy"
+                                    class="m-auto ml-0 mr-5"
+                                    src="https://orcid.org/sites/default/files/images/orcid_16x16.png"
+                                    width="16px"
+                                    height="16px"
+                                    alt="ORCID iD icon"
+                                >
+                                <a
+                                    class="default-a flex-this"
+                                    itemprop="sameAs"
+                                    target="orcid.widget"
+                                    rel="me noopener noreferrer"
+                                    style="width: max-content;"
+                                    {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}
+                                        content="{{ researcher.orcid }}"
+                                        href="{{ researcher.orcid }}"
+                                    {% elif 'X' in researcher.orcid %}
+                                        content="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                                        href="https://sandbox.orcid.org/{{ researcher.orcid }}"
+                                    {% else %}
+                                        content="https://orcid.org/{{ researcher.orcid }}"
+                                        href="https://orcid.org/{{ researcher.orcid }}"
+                                    {% endif %}
+                                >
+                                    {% if 'https://sandbox.orcid.org/' in researcher.orcid or 'https://orcid.org/' in researcher.orcid %}{{ researcher.orcid }}
+                                    {% elif 'X' in researcher.orcid %}https://sandbox.orcid.org/{{ researcher.orcid }}
+                                    {% else %}https://orcid.org/{{ researcher.orcid }}{% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        {% if researcher.website %}
+                            <p class="mt-0 mb-0 ml-16">
+                                <i class="fa-solid fa-globe" title="Website"></i>
+                                <a
+                                    class="default-a ml-5"
+                                    href="{{ researcher.website }}"
+                                >
+                                    {% firstof researcher.user.get_full_name researcher.user.username %} Website
+                                </a>
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
                 {% include 'partials/_alerts.html' %}
             </div>
 
         </div>
 
+        <!-- Notices Section -->
         <div class="flex-this">
             <div class="flex-this column w-50">
                 <h3>Notices Used</h3>
                 <div class="flex-this">
-                    {% if bcnotice %} 
+                    {% if bcnotice %}
                         <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" width="90px" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
                     {% endif %}
 
-                    {% if tknotice %} 
+                    {% if tknotice %}
                         <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" width="90px" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
                     {% endif %}
 
-                    {% if attrnotice %} 
+                    {% if attrnotice %}
                         <div class="mr-16"><img loading="lazy" class="pointer-event-none" src="{% static 'images/notices/ci-attribution-incomplete.png' %}" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line." width="90px"></div>
                     {% endif %}
                     {% if not bcnotice and not tknotice and not attrnotice %} No Notices to display yet {% endif %}
@@ -423,37 +592,58 @@
                                     </a>
                                 </li>
                             {% endfor %}
-                        </ul>                          
-                    </div>          
+                        </ul>
+                    </div>
                 </div>
             {% endif %}
         </div>
     {% endif %}
 
-    <div>
-        <h3>Public Projects </h3>
+    {% if not service_provider %}
+        <!-- Public Projects Section -->
+        <div>
+            <h3>Public Projects</h3>
 
-        {% if projects %}
-            <table class="projects-table">
-                <tr>
-                    <th><i class="fa-regular fa-line-columns"></i> Title</th>
-                    <th><i class="fa-light fa-user"></i> Creator</th>
-                    <th><i class="fa-light fa-calendar"></i> Last updated</th>
-                    <th>Visibility</th>
-                </tr>
+            {% if projects %}
+                <table class="projects-table">
+                    <tr>
+                        <th><i class="fa-regular fa-line-columns"></i> Title</th>
+                        <th><i class="fa-light fa-user"></i> Creator</th>
+                        <th><i class="fa-light fa-calendar"></i> Last updated</th>
+                        <th>Visibility</th>
+                    </tr>
 
-                {% for project in projects %}
-                    {% include 'projects/project-overview.html' %}
-                {% endfor %}
-            </table>
-        {% else %}
-            No public Projects available
-        {% endif %}                       
-    </div>
+                    {% for project in projects %}
+                        {% include 'projects/project-overview.html' %}
+                    {% endfor %}
+                </table>
+            {% else %}
+                No public Projects available
+            {% endif %}
+        </div>
 
-</div> <!-- dashcard-->
+    {% else %}
+        {% if service_provider.show_connections %}
+            <!-- Connections Section -->
+            <div>
+                <h3>Connections</h3>
+                {% if sp_connections %}
+                    <div>
+                        {% include 'partials/_connections.html' %}
+                    </div>
+                {% else %}
+                    No Connections to display yet
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
 
-    {% if request.user.is_authenticated %}
+</div>
+
+<!-- Modals -->
+{% if request.user.is_authenticated %}
+    {% if not service_provider %}
+        <!-- Request to Join Modal -->
         <div id="requestToJoinModal" class="modal hide" onclick="closeRequestToJoinModal()">
             <div class="modal-defaults join-modal flex-this column w-100">
                 <div class="w-100">
@@ -483,63 +673,99 @@
 
                     </div>
 
-                        <div>
-                            <form id="requestToJoinForm" method="POST" action="">
-                                {% csrf_token %}
+                    <div>
+                        <form id="requestToJoinForm" method="POST" action="">
+                            {% csrf_token %}
 
-                                <div class="flex-this column w-100">
-                                    <div class="mt-8">
-                                        <label>Requested Responsibility</label>
-                                        {% if institution %}
-                                            <div class="tooltip mt-10 ml-5">i
-                                                <span class="tooltiptext" >
-                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
-                                                    <strong>Editor:</strong> Place Notices, create and edit Projects, and notify communities<br><br>
-                                                    <strong>Viewer:</strong> View account’s Projects, Connections, and Members without edit access
-                                                </span>
-                                            </div>
-                                        {% elif community %}
-                                            <div class="tooltip mt-10 ml-5">i
-                                                <span class="tooltiptext">
-                                                    <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
-                                                    <strong>Editor:</strong> Customize, edit, and review account Labels, and create and edit Projects<br><br>
-                                                    <strong>Viewer:</strong> View account’s Labels, Projects, Connections, and Members without edit access
-                                                </span>
-                                            </div>
-                                        {% endif %}
+                            <div class="flex-this column w-100">
+                                <div class="mt-8">
+                                    <label>Requested Responsibility</label>
+                                    {% if institution %}
+                                        <div class="tooltip mt-10 ml-5">i
+                                            <span class="tooltiptext" >
+                                                <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                <strong>Editor:</strong> Place Notices, create and edit Projects, and notify communities<br><br>
+                                                <strong>Viewer:</strong> View account’s Projects, Connections, and Members without edit access
+                                            </span>
+                                        </div>
+                                    {% elif community %}
+                                        <div class="tooltip mt-10 ml-5">i
+                                            <span class="tooltiptext">
+                                                <strong>Administrator:</strong> Add, remove, and update account’s users, and abilities of an Editor<br><br>
+                                                <strong>Editor:</strong> Customize, edit, and review account Labels, and create and edit Projects<br><br>
+                                                <strong>Viewer:</strong> View account’s Labels, Projects, Connections, and Members without edit access
+                                            </span>
+                                        </div>
+                                    {% endif %}
 
-                                        <br>
-                                        {{ join_form.role }}
-                                        {% if join_form.role.errors %}
-                                            <div class="msg-red w-50"><small>{{ join_form.role.errors.as_text }}</small></div> 
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="mt-8">
-                                        <label>Include a message with this request</label><br>
-                                        {{ join_form.message }}
-                                        {% if join_form.message.errors %}
-                                            <div class="msg-red w-50"><small>{{ join_form.message.errors.as_text }}</small></div> 
-                                        {% endif %}
-                                    </div>
+                                    <br>
+                                    {{ join_form.role }}
+                                    {% if join_form.role.errors %}
+                                        <div class="msg-red w-50"><small>{{ join_form.role.errors.as_text }}</small></div>
+                                    {% endif %}
                                 </div>
 
-                                <div class="flex-this space-between mt-8 w-100">
-                                    <p class="w-70 mt-0">
-                                        <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
-                                    </p>
-                                    <div>
-                                        <input type="hidden" name="join_request">
-                                        <button id="sendRequestToJoinBtn" class="primary-btn action-btn">Send Request</button> 
-                                    </div>                                    
+                                <div class="mt-8">
+                                    <label>Include a message with this request</label><br>
+                                    {{ join_form.message }}
+                                    {% if join_form.message.errors %}
+                                        <div class="msg-red w-50"><small>{{ join_form.message.errors.as_text }}</small></div>
+                                    {% endif %}
                                 </div>
+                            </div>
 
-                            </form> 
-                        </div>
+                            <div class="flex-this space-between mt-8 w-100">
+                                <p class="w-70 mt-0">
+                                    <small>By sending this request, you consent for your message and email address to be shared with account administrators.</small>
+                                </p>
+                                <div>
+                                    <input type="hidden" name="join_request">
+                                    <button id="sendRequestToJoinBtn" class="primary-btn action-btn">Send Request</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
 
                 </div>
             </div>
         </div>
     {% endif %}
+
+    {% if not env == "SANDBOX" %}
+        <!-- Contact Modal -->
+        <div id="contactModal" class="modal hide">
+            <div class="modal-defaults contact-modal flex-this column w-100">
+                <div class="w-100">
+                    <div class="flex-this space-between">
+                        <div class="w-70">
+                            <h2 class="primary-black-text mt-0 mb-0">Contact form</h2>
+                        </div>
+                        <div>
+                            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+                        </div>
+                    </div>
+
+                    <form id="sendMsgForm" method="POST" action="">
+                        <p>This message will be sent to the administrator of
+                            {% if institution %}
+                                {{ institution.institution_name }}.
+                            {% elif community %}
+                                {{ community.community_name }}.
+                            {% elif service_provider %}
+                                {{ service_provider.name }}.
+                            {% endif %}
+                        </p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="contact_btn">
+                        <button class="primary-btn action-btn" id="sendMsgBtn">Send message <i class="fa fa-envelope" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endif %}
 
 {% endblock %}

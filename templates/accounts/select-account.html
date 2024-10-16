@@ -1,61 +1,213 @@
 {% extends 'register-base.html' %} {% block title %} Select Account {% endblock %} {% load static %} {% block card %}
 
 <div class="flex-this column">
-    <div>
+    <div class="flex-this space-between w-100">
         <h2 class="mt-0">Choose an account</h2>
-        <p>Local Contexts has three types of accounts. You can choose to join an existing account or create a new account. You can be a member of multiple accounts.</p>
-
-        <div class="flex-this row space-between">
-
-            <div class="account-card mr-1p">
-                <div class="flex-this">
-                    <p><strong>Community Account </strong></p>
-                    <div class="tooltip mt-16 ml-8">i
-                        <span class="tooltiptext">
-                            A community entity might be an Indigenous or local community’s Cultural Department; Tribal and Historical Preservation Office; Community Center; Preservation Office; Community Library, Archive, or Museum; Land Council; or Indigenous Rangers.
-                        </span>
-                    </div>                    
-                </div>
-                <div><img loading="lazy" class="tiny-label pointer-event-none" src="{% static 'images/tk-labels/tk-attribution.png' %}" alt="TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right."></div>
-                <p><strong>Who?</strong> An Indigenous or local community entity or representative</p>
-                <p class="mt-0"><strong>What?</strong> Customize and apply TK and BC Labels, and create Projects</p>
-                <a href="{% url 'connect-community' %}" class="primary-btn white-btn-select">Join</a>
-                <a href="{% url 'prep-community' %}" class="primary-btn white-btn-select">Create</a>
-            </div>
-            <div class="account-card ml-1p mr-1p">
-                <div class="flex-this">
-                    <div><p><strong>Institution Account</strong></p></div>
-                    <div class="tooltip mt-16 ml-8">i
-                        <span class="tooltiptext">An institution might be an archive, library, museum, historical society, gallery, data repository, university, or media production company. If you are an Indigenous institution, choose the community account.</span>
-                    </div>
-                </div>
-                <div class="flex-this">
-                    <div class="mr-1p"><img loading="lazy" 
-                    class="tiny-notice pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-                    <div class="ml-16"><img loading="lazy" class="tiny-notice pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle. "></div>
-                </div>
-                <p><strong>Who?</strong> Cultural or research institution, data repository, and other organizations</p>
-                <p><strong>What?</strong> Create projects and generate Notices</p>
-                <a href="{% url 'connect-institution' %}" class="primary-btn white-btn-select">Join</a>
-                <a href="{% url 'prep-institution' %}" class="primary-btn white-btn-select">Create</a>
-            </div>
-            <div class="account-card ml-1p">
-                <p><strong>Researcher Account</strong></p>
-                <div class="flex-this">
-                    <div class="mr-1p"><img loading="lazy" class="tiny-notice pointer-event-none" src="{% static 'images/notices/tk-notice.png' %}" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."></div>
-                    <div class="ml-16"><img loading="lazy" class="tiny-notice pointer-event-none" src="{% static 'images/notices/bc-notice.png' %}" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center."></div>
-                </div>
-                <p><strong>Who?</strong> An individual who carries out academic or scientific research independently or in an institution </p>
-                <p><strong>What?</strong> Create projects and generate Notices</p>
-                <a href="{% url 'prep-researcher' %}" class="primary-btn white-btn-select">Create</a>
-            </div>
-
-        </div>
-    </div>
-    <div class="mt-16">
-        <p>
-            If you received an invitation to join an account, go straight to your <a href="{% url 'dashboard' %}" class="default-a">Profile</a>
+        <p class="mt-0">
+            Received an invite?
+            <a href="{% url 'member-invitations' %}" class="default-a">Go to Profile</a>
         </p>
     </div>
+    <p class="mt-0">Choose an account type that best suites your situation. Depending on the account you select, either join or create a new account. Users can be a member of multiple accounts.</p>
+
+    <div class="flex-this column space-between" style="gap:12px;">
+
+        <div class="account-card">
+            <div class="flex-this w-100 align-center">
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
+                    value="community"
+                    onclick="showButtons(this);"
+                >
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-label pointer-event-none"
+                    src="{% static 'images/tk-labels/tk-attribution.png' %}"
+                    alt="TK Attribution Label icon. Black tag shape with two stacked white arrows, one pointing left and one pointing right."
+                >
+                <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Community Account</strong></p>
+                        <div class="tooltip ml-8">i
+                            <span class="tooltiptext">
+                                A community may be represented by an entity such as an Indigenous or local community’s Cultural Department; Library, Archive, or Museum; Community Center; Tribal and Historic Preservation Office; Land Council or Corporation; or Indigenous Rangers.
+                            </span>
+                        </div>
+                    </div>
+                    <p class="mb-0 mt-0">
+                        An Indigenous or local community entity or representative who can Customize and apply TK and BC Labels, and create Projects.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-card">
+            <div class="flex-this w-100 align-center">
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
+                    value="institution"
+                    onclick="showButtons(this);"
+                >
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/notices/tk-notice.png' %}"
+                    alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
+                >
+                <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Institution Account</strong></p>
+                        <div class="tooltip ml-8">i
+                            <span class="tooltiptext">
+                                An institution could be an archive, library, museum, historical society, gallery, data repository, university, or media production company. If you are an Indigenous institution, a community account may be a better fit.
+                            </span>
+                        </div>
+                    </div>
+                    <p class="mb-0 mt-0">
+                        Cultural or research institutions, data repositories, and other organizations can create projects and generate Notices.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-card">
+            <div class="flex-this w-100 align-center">
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
+                    value="researcher"
+                    onclick="showButtons(this);"
+                >
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/notices/tk-notice.png' %}"
+                    alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
+                >
+                <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Researcher Account</strong></p>
+                    </div>
+                    <p class="mb-0 mt-0">
+                        An individual who carries out academic or scientific research independently or in an institution can create projects and generate Notices.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-card">
+            <div class="flex-this w-100 align-center">
+                <input
+                    class="w-10"
+                    type="radio"
+                    name="selectAccount"
+                    value="service-provider"
+                    onclick="showButtons(this);"
+                >
+                <img
+                    loading="lazy"
+                    class="w-10 ml-16 mr-16 tiny-notice pointer-event-none"
+                    src="{% static 'images/logos/sp-logo-black.png' %}"
+                    alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center."
+                >
+                <div class="flex-this column w-80">
+                    <div class="flex-this">
+                        <p class="mb-0 mt-0"><strong>Service Provider Account</strong></p>
+                        <div class="tooltip ml-8"><strong>i</strong>
+                            <span class="tooltiptext">
+                                A service provider could be a collections management system, repository workflow platform, or information aggregator.
+                            </span>
+                        </div>
+                    </div>
+                    <p class="mb-0 mt-0">An organization that integrates a connection to the Local Contexts Hub into their platforms to enable other account types to access their Labels and Notices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>Create a new account or Join an existing account. Not sure which account type to create? <a class="default-a" href="mailto:support@localcontexts.org">Contact us</a>.</p>
+    <div class="flex-this gap-1">
+        {% if envi == 'SANDBOX' %}
+            <div class="btn-with-helptext">
+                <a id="create-account" class="primary-btn disabled-btn">Create</a>
+                <span id="helptext" class="btn-help-text hide" style="left: 0%;">
+                    Creating this account is unavailable in the Sandbox
+                </span>
+            </div>
+        {% else %}
+            <a id="create-account" class="primary-btn disabled-btn">Create</a>
+        {% endif %}
+        <a id="join-account" class="primary-btn disabled-btn">Join</a>
+    </div>
+
 </div>
+
+<script>
+    var createBtn = document.getElementById('create-account');
+    var joinBtn = document.getElementById('join-account');
+    var accountCards = document.getElementsByClassName('account-card');
+    var i;
+    var envi = "{{ envi }}"
+    var helptext = document.getElementById('helptext');
+
+    function showButtons(e) {
+        for (i = 0; i < accountCards.length; i++) {
+            accountCards[i].classList.remove('card-selected');
+        }
+        if (helptext) {
+            helptext.classList.add('hide');
+        }
+
+        selectedCard = e.closest('.account-card');
+        selectedCard.classList.add('card-selected');
+
+        createBtn.removeAttribute('href');
+        joinBtn.removeAttribute('href');
+
+        if (e.value == 'community') {
+            createBtn.classList.remove('disabled-btn');
+            createBtn.classList.add('action-btn');
+            createBtn.setAttribute('href', '{% url "prep-community" %}');
+
+            joinBtn.classList.remove('disabled-btn');
+            joinBtn.classList.add('action-btn');
+            joinBtn.setAttribute('href', '{% url "connect-community" %}');
+        }
+        else if (e.value == 'institution') {
+            createBtn.classList.remove('disabled-btn');
+            createBtn.classList.add('action-btn');
+            createBtn.setAttribute('href', '{% url "prep-institution" %}');
+
+            joinBtn.classList.remove('disabled-btn');
+            joinBtn.classList.add('action-btn');
+            joinBtn.setAttribute('href', '{% url "connect-institution" %}');
+        }
+        else if (e.value == 'researcher') {
+            createBtn.classList.remove('disabled-btn');
+            createBtn.classList.add('action-btn');
+            createBtn.setAttribute('href', '{% url "prep-researcher" %}');
+
+            joinBtn.classList.remove('action-btn');
+            joinBtn.classList.add('disabled-btn');
+        }
+        else if (e.value == 'service-provider' && !(envi == 'SANDBOX')) {
+            createBtn.classList.remove('disabled-btn');
+            createBtn.classList.add('action-btn');
+            createBtn.setAttribute('href', '{% url "prep-service-provider" %}');
+
+            joinBtn.classList.remove('action-btn');
+            joinBtn.classList.add('disabled-btn');
+        }
+        else if (e.value == 'service-provider' && envi == 'SANDBOX') {
+            createBtn.classList.remove('action-btn');
+            createBtn.classList.add('disabled-btn');
+            helptext.classList.remove('hide');
+        }
+    }
+</script>
 {% endblock %}

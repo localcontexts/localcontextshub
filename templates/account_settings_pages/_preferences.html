@@ -1,0 +1,130 @@
+{% extends 'account-settings-base.html' %}{% load static %}
+
+{% block account_settings %}
+
+<div>
+    <h3 class="mt-0">Preferences</h3>
+</div>
+{% include 'partials/_alerts.html' %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% if not service_provider %}
+        <!-- SP Privacy Settings -->
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+            <div class="w-75">
+                <h4 class="mt-15 mb-0">Project Privacy for Service Providers</h4>
+                <p class="font-size-14 mt-8">Select the Project types Service Providers can access when you connect to their account.</p>
+            </div>
+            <div class="w-25">
+                <div id="filter" class="dropdown-select w-100">
+                    <div class="container">
+                        <div class="h-100 flex-this align-center">
+                            <p id="selection">
+                                {% if researcher %}{{ researcher.get_sp_privacy_display }}
+                                {% elif community %}{{ community.get_sp_privacy_display }}
+                                {% elif institution %}{{ institution.get_sp_privacy_display }}
+                                {% endif %}
+                            </p>
+                            <i class="fa-solid fa-angle-down pointer ml-auto"></i>
+                        </div>
+                    </div>
+                    <div class="options">
+                        <div>
+                            <input
+                                id="all"
+                                type="radio"
+                                value="all"
+                                name="sp_privacy"
+                                {% if researcher and researcher.sp_privacy == 'all' %}checked
+                                {% elif community and community.sp_privacy == 'all' %}checked
+                                {% elif institution and institution.sp_privacy == 'all' %}checked
+                                {% endif %}
+                            >
+                            <label for="all">All</label>
+                        </div>
+                        <div>
+                            <input
+                                id="public"
+                                type="radio"
+                                value="public"
+                                name="sp_privacy"
+                                {% if researcher and researcher.sp_privacy == 'public' %}checked
+                                {% elif community and community.sp_privacy == 'public' %}checked
+                                {% elif institution and institution.sp_privacy == 'public' %}checked
+                                {% endif %}
+                            >
+                            <label for="public">Public/Contributor</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show/Hide Hub Account in SP Connections -->
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+            <div class="w-90">
+                <h4 class="mt-15 mb-0">Show Account in Service Provider Connections</h4>
+                <p class="font-size-14 mt-8">Allow your account to be included on a Service Provider's public Registry page when you connect to their account.</p>
+            </div>
+            <div>
+                <input
+                    class="toggle"
+                    type="checkbox"
+                    name="show_sp_connection"
+                    {% if researcher and researcher.show_sp_connection %}checked
+                    {% elif community and community.show_sp_connection %}checked
+                    {% elif institution and institution.show_sp_connection %}checked
+                    {% endif %}
+                >
+            </div>
+        </div>
+    {% endif %}
+
+    {% if service_provider %}
+        <!-- Show/Hide SP Connections in Registry -->
+        <div class="flex-this space-between border-top-bottom-grey w-100 align-center pad-top-1 padding-bottom-1">
+            <div class="w-90">
+                <h4 class="mt-15 mb-0">Show Connections in Public View Page</h4>
+                <p class="font-size-14 mt-8">Allow other Hub accounts that have connected to your account to be displayed on your <a class="default-a" href="{% url 'public-service-provider' service_provider.id%}">Public Page</a> in the Registry.</p>
+            </div>
+            <div>
+                <input
+                    class="toggle"
+                    type="checkbox"
+                    name="show_connections"
+                    {% if service_provider.show_connections %}checked
+                    {% endif %}
+                >
+            </div>
+        </div>
+    {% endif %}
+
+    <div>
+        <button id="savePreferences" class="primary-btn action-btn mt-2p">Save changes</button>
+    </div>
+</form>
+
+<script>
+    var selectList = document.getElementById('filter');
+    if (selectList) {
+        selectList.getElementsByClassName('container')[0].onclick = function(evt) {
+            if (selectList.classList.contains('visible'))
+                selectList.classList.remove('visible');
+            else
+                selectList.classList.add('visible');
+        }
+    }
+
+    let radioItems = document.querySelectorAll('input[name="sp_privacy"]')
+    let selection = document.getElementById('selection');
+    radioItems.forEach(function(radioItem) {
+        radioItem.addEventListener('click', function() {
+            selection.textContent = radioItem.labels[0].textContent
+            selectList.classList.remove('visible');
+        });
+    });
+</script>
+
+{% endblock %}

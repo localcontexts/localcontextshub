@@ -28,14 +28,13 @@ def view_project(request, unique_id):
         return render(request, '404.html', status=404)
 
     sub_projects = Project.objects.filter(source_project_uuid=project.unique_id).values_list('unique_id', 'title')
-    notices = Notice.objects.filter(project=project, archived=False)
+    notices = Notice.objects.filter(project=project, archived=False).exclude(notice_type='open_to_collaborate')
 
     communities = None
     institutions = None
     user_researcher = Researcher.objects.none()
     label_groups = return_project_labels_by_community(project)
     can_download = can_download_project(request, creator)
-
     #  If user is logged in AND belongs to account of a contributor
     if request.user.is_authenticated:
         affiliations = UserAffiliation.objects.get(user=request.user)

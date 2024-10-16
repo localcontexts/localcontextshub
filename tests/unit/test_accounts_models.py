@@ -35,7 +35,7 @@ class TestProfile(TestCase):
 def test_get_location():
     user = Profile.objects.create(
         city_town=None, state_province_region=None, country=None)
-    assert user.get_location() == 'None specified'
+    assert user.get_location() == None
 
 class TestSignUpInvitation(TestCase):
     @pytest.mark.django_db

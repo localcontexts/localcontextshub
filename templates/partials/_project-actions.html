@@ -87,11 +87,11 @@
         </div>
 
         <div>
-            <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+            <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Project details</h2>
-                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectDetailsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="projectDetailsDiv" style="height: auto; overflow: hidden;">
+            <div id="projectDetailsDiv" style="height: auto; overflow: visible;">
                 <div class="flex-this">
                     <div class="project-left-sidebar"><p class="bold">Description</p></div>
                     <div><p>{{ project.description|linebreaks }}</p></div>
@@ -304,11 +304,11 @@
             </div>
 
             {% if notices %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="notices">Project Notices</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectNoticesDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectNoticesDiv" style="height: auto; overflow: hidden;">
+                <div id="projectNoticesDiv" style="height: auto; overflow: visible;">
                     {% for notice in notices %}
                         <div class="flex-this">
                             <div class="project-left-sidebar">
@@ -324,7 +324,7 @@
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="BC Notice icon. Black background with the top right corner folded and the letters “BC” in white in center.">
                                     {% elif notice.notice_type == 'traditional_knowledge' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="TK Notice icon. Black background with the top right corner folded and the letters “TK” in white in center.">
-                                    {% else  %}
+                                    {% elif notice.notice_type == 'attribution_incomplete' %}
                                     <img class="pointer-event-none" loading="lazy" src="{{ notice.img_url }}" width="78" height="78" alt="Attribution Incomplete Notice icon. Black square with the top right corner folded and a white square in center with left side in solid line and right side in dotted line.">
                                     {% endif %}
                                 </div>
@@ -345,11 +345,11 @@
             {% endif %}
 
             {% if project.has_bclabels or project.has_tklabels %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2 id="labels">Project Labels</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectLabelsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="projectLabelsDiv" style="height: auto; overflow: hidden;">
+                <div id="projectLabelsDiv" style="height: auto; overflow: visible;">
 
                     {% for community, labels in label_groups.items %}
                         <div class="label-group">
@@ -406,11 +406,11 @@
             {% endif %}
 
             {% if not project.source_project_uuid %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>Sub Projects</h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'subProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
                 </div>
-                <div id="subProjectsDiv" style="height: auto; overflow: hidden;">
+                <div id="subProjectsDiv" style="height: auto; overflow: visible;">
 
                     <div><p><strong>{{sub_projects.count}}</strong> Sub Projects </p></div>
 
@@ -443,11 +443,11 @@
             {% endif %}
 
 
-            <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+            <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                 <h2>Related Projects</h2>
-                <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
+                <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'relatedProjectsDiv')"><i class="fa-solid fa-minus fa-xl darkteal-text"></i></h2>
             </div>
-            <div id="relatedProjectsDiv" style="height: auto; overflow: hidden;">
+            <div id="relatedProjectsDiv" style="height: auto; overflow: visible;">
 
                 <div class="flex-this space-between center-text mt-16">
                     <div>
@@ -457,20 +457,34 @@
                     </div>
                     {% if community or institution or researcher %}
                         {% if member_role == 'admin' or member_role == 'editor' or request.user == project.project_creator or researcher %}
-                            <div class="flex-this">
-                                <div class="mr-8">
-                                    <a 
-                                        class="primary-btn white-btn" 
-                                        {% if community %}
-                                            href="{% url 'create-project' community.id project.unique_id 'related' %}"
+                            <div class="flex-this align-center">
+                                <div class="btn-with-helptext mr-8">
+                                    <a
+                                    {% if subscription.project_count == 0 %}
+
+                                            class="disabled-btn primary-btn"
+                                        {% else %}
+                                            class="primary-btn white-btn"
+
+                                            {% if community %}
+                                                href="{% url 'community-create-project' community.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if institution %}
+                                                href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
+                                            {% endif %}
+                                            {% if researcher %}
+                                                href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
+                                            {% endif %}
+
                                         {% endif %}
-                                        {% if institution %}
-                                            href="{% url 'inst-create-project' institution.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                        {% if researcher %}
-                                            href="{% url 'researcher-create-project' researcher.id project.unique_id 'related' %}"
-                                        {% endif %}
-                                    > Create Related Project <i class="ml-8 fa-solid fa-square-plus"></i></a>                            
+                                    >
+                                        Create Related Project <i class="ml-8 fa-solid fa-square-plus"></i>
+                                    </a>
+                                    {% if subscription.project_count == 0 %}
+                                    <span class="mr-31p btn-help-text">
+                                        Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                    </span>
+                                {% endif %}
                                 </div>
 
                                 <div>
@@ -573,7 +587,7 @@
             {% include 'projects/project-comment.html'%}
 
             {% if activities %}
-                <div class="project-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
+                <div class="section-header-div border-top-solid-teal border-bottom-solid-teal flex-this space-between">
                     <h2>
                         Project activity
                         <div class="tooltip ml-5">i
@@ -582,7 +596,7 @@
                             </span>
                         </div> 
                     </h2>
-                    <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+                    <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectActivityDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
                 </div>
                 <div id="projectActivityDiv" style="height: 0px; overflow: hidden;">
                     {% for activity in activities %}
@@ -610,40 +624,76 @@
             {% if request.user.is_authenticated %}
                 {% if 'projects/actions/' in request.path %}
                     {% if request.user == project.project_creator %}
-                        <a 
-                            class="block" 
-                            {% if community %}
-                                href="{% url 'edit-project' community.id project.unique_id %}"
+                        <a
+                            {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
+                                class="block a-disabled"
+                            {% else %}
+                                class="block"
+                                {% if community %}
+                                    href="{% url 'edit-project' community.id project.unique_id %}"
+                                {% elif institution %}
+                                    href="{% url 'inst-edit-project' institution.id project.unique_id %}"
+                                {% elif researcher %}
+                                    href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
+                                {% endif %}
                             {% endif %}
-                            {% if institution %}
-                                href="{% url 'inst-edit-project' institution.id project.unique_id %}"
+                        >
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Project
+                            {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
+                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                    <span class="tooltiptext">
+                                        The account that created this Project must have an active subscription to edit
+                                    </span>
+                                </div>
                             {% endif %}
-                            {% if researcher %}
-                                href="{% url 'researcher-edit-project' researcher.id project.unique_id %}"
-                            {% endif %}
-                        ><i class="fa-solid fa-pen-to-square"></i> Edit Project</a>
+                        </a>
                     {% endif %}
                     {% if request.user == project.project_creator or member_role == 'admin' or member_role == 'editor' or researcher %}
                         {% if not project.source_project_uuid %}
-                            <a 
-                                class="block" 
-                                {% if community %}
-                                    href="{% url 'create-project' community.id project.unique_id %}"
+                            <a
+                                {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
+                                    class="block a-disabled"
+                                {% else %}
+                                    class="block"
+                                    {% if community %}
+                                        href="{% url 'community-create-project' community.id project.unique_id %}"
+                                    {% elif institution %}
+                                        href="{% url 'inst-create-project' institution.id project.unique_id %}"
+                                    {% elif researcher %}
+                                        href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
+                                    {% endif %}
                                 {% endif %}
-                                {% if institution %}
-                                    href="{% url 'inst-create-project' institution.id project.unique_id %}"
+                            >
+                                <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
+                                {% if researcher and not researcher.is_subscribed or institution and not institution.is_subscribed %}
+                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            The account that created this Project must have an active subscription to create a Project
+                                        </span>
+                                    </div>
                                 {% endif %}
-                                {% if researcher %}
-                                    href="{% url 'researcher-create-project' researcher.id project.unique_id %}"
+                                {% if researcher and researcher.is_subscribed and subscription.notification_count == 0 %}
+                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your account has reached the Project creation limit. Please update your subscription to create more Projects
+                                        </span>
+                                    </div>
                                 {% endif %}
-
-                            ><i class="fa-regular fa-diagram-subtask"></i> Create Sub Project</a>
+                                {% if institution and institution.is_subscribed and subscription.notification_count == 0 %}
+                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your account has reached the Project creation limit. Please update your subscription to create more Projects
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                
+                            </a>
                         {% else %}
                             <a class="block a-disabled">
                                 <i class="fa-regular fa-diagram-subtask"></i> Create Sub Project
                                 <div class="tooltip ml-5" style="margin-top: 6px;">i
                                     <span class="tooltiptext">
-                                        The Project you are viewing is already a sub-project.
+                                        The Project you are viewing is already a sub-project
                                     </span>
                                 </div> 
                             </a>
@@ -683,19 +733,29 @@
                 {% endif %}
 
                 {% if institution %}
-                    {% if institution.is_approved %}
+                    {% if institution.is_subscribed %}
                         {% if member_role == 'admin' or member_role == 'editor' %}
                             <a 
-                                class="block pointer" 
-                                onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                            ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                                class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}" 
+                                {% if subscription.notification_count != 0 %}
+                                    onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                                {% endif %}
+                                ><i class="fa-solid fa-user-group"></i> Notify Communities
+                                {% if subscription.notification_count == 0 %}
+                                    <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                        <span class="tooltiptext">
+                                            Your institution has reached its notification limit. Please upgrade your subscription plan to notify more communities.
+                                        </span>
+                                    </div> 
+                                {% endif %}
+                            </a>
                         {% endif %}
                     {% else %}
                         <a class="block a-disabled"> 
                             <i class="fa-solid fa-user-group"></i> Notify Communities
                             <div class="tooltip ml-5" style="margin-top: 6px;">i
                                 <span class="tooltiptext">
-                                    Your account needs to be confirmed before you can notify communities. Please contact us if you have questions.
+                                    Your institution account needs an active subscription to notify communities.
                                 </span>
                             </div> 
                         </a>
@@ -703,10 +763,31 @@
                 {% endif %}
 
                 {% if researcher %}
-                    <a 
-                        class="block pointer" 
-                        onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
-                    ><i class="fa-solid fa-user-group"></i> Notify Communities</a>
+                    {% if not researcher.is_subscribed %}
+                        <a class="block a-disabled">
+                            <i class="fa-solid fa-user-group"></i> Notify Communities 
+                            <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                <span class="tooltiptext">
+                                    Your researcher account needs an active subscription to notify communities.
+                                </span>
+                            </div> 
+                        </a>
+                    {% else %}
+                        <a
+                            class="block pointer {% if subscription.notification_count == 0 %} a-disabled {% endif %}"
+                            {% if subscription.notification_count != 0 %} 
+                                onclick="openModal('notifyCommunitiesModal', 'closeNotifyModal')"
+                            {% endif %}
+                        ><i class="fa-solid fa-user-group"></i> Notify Communities 
+                            {% if subscription.notification_count == 0 %}
+                                <div class="tooltip ml-5" style="margin-top: 6px;"><strong>i</strong>
+                                    <span class="tooltiptext">
+                                        Your account has reached its notification limit. Please upgrade your subscription plan to notify more communities.
+                                    </span>
+                                </div> 
+                            {% endif %}
+                        </a>
+                    {% endif %}
                 {% endif %}
 
             {% endif %}
@@ -822,7 +903,9 @@
                                 {% if 'sandbox.localcontextshub' in request.get_host %}
                                     Project cannot be downloaded on the sandbox site.
                                 {% else %}
-                                    The account that created this Project needs to be confirmed before download is available.
+                                    The account that created this Project needs to be 
+                                    {% if creator.community %} confirmed {% else %} subscribed {% endif %}
+                                    before download is available.
                                 {% endif %}
                             </span>
                         </div> 
@@ -965,8 +1048,8 @@
                             </span>
                         </div> 
                     </h3>
-                    <a 
-                        class="block" 
+                    <a
+                        class="block"
                         href="{% url 'view-project' project.unique_id %}"
                     ><i class="fa-solid fa-eye"></i> Public View</a>
                 </div> 
@@ -1023,7 +1106,7 @@
 
 </div>
 
-{% if institution.is_approved or researcher %}
+{% if institution.is_subscribed or researcher.is_subscribed %}
     <div id="notifyCommunitiesModal" class="modal hide">
 
         <div class="modal-defaults notice-modal flex-this column w-100">
@@ -1043,7 +1126,10 @@
                             Notify relevant communities about this Project to add them as a potential contributor. 
                             Notified communities can decide if they would like to add their Labels to the Project. 
                             Notified communities will also be able to see and edit Project details, see and add Project comments, and see Project activity.
-                        </p>  
+                        </p> 
+                        <p class="mb-2p">
+                            The remaining count of your notification is <strong>{% if subscription.notification_count == -1 %}Unlimited{% else %}{{subscription.notification_count}}{% endif %}</strong>.
+                        </p> 
                     </div>
 
                     {% if communities %}
@@ -1126,16 +1212,22 @@
 
 {% endif %}
 {% if status is False %}
-<div id="disclaimerAlert" class="modal">
-    <div class="modal-defaults deactivate-modal flex-this column w-100">
-        <div class="w-100">
-            <div>
-                <h5 class="primary-black-text mt-0">This account needs to be confirmed before public view is available to others.</h5>  
-            </div>
-            <div class="flex-this w-100 text-align-center">   
-                <div class="ml-1p primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+    <div id="disclaimerAlert" class="modal">
+        <div class="modal-defaults deactivate-modal flex-this column w-100">
+            <div class="w-100">
+                <div>
+                    <h5 class="primary-black-text mt-0">This account needs to be confirmed before public view is available to others.</h5>  
+                </div>
+                <div class="flex-this w-100 text-align-center">   
+                    <div class="ml-1p primary-btn action-btn" onclick="cancelDisclaimer()">OK</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endif %}
+
+{% include 'partials/_alerts.html' %}
+
+<script>
+    var notification_count = {{ subscription.notification_count }};
+</script>

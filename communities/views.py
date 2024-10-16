@@ -4,18 +4,20 @@ from django.contrib import messages
 from itertools import chain
 
 from django.contrib.auth.models import User
-from accounts.models import UserAffiliation
+from accounts.models import UserAffiliation, ServiceProviderConnections
 from helpers.models import *
 from notifications.models import *
 from bclabels.models import BCLabel
 from tklabels.models import TKLabel
 from projects.models import *
+from api.models import AccountAPIKey
 
 from helpers.forms import *
 from bclabels.forms import *
 from tklabels.forms import *
 from projects.forms import *
 from accounts.forms import ContactOrganizationForm, SignUpInvitationForm
+from api.forms import APIKeyGeneratorForm
 
 from localcontexts.utils import dev_prod_or_local
 from projects.utils import *
@@ -32,7 +34,8 @@ from .decorators import member_required
 from .utils import *
 
 # pdfs
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.urls import reverse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
@@ -117,13 +120,28 @@ def preparation_step(request):
 @login_required(login_url='login')
 def create_community(request):
     form = CreateCommunityForm(request.POST or None)
+    user_form = form_initiation(request)
+    env = dev_prod_or_local(request.get_host())
+
     if request.method == "POST":
-        if form.is_valid():
+        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
             data = form.save(commit=False)
             data.community_creator = request.user
+            mutable_post_data = request.POST.copy()
+            subscription_data = {
+                "first_name": user_form.cleaned_data['first_name'],
+                "last_name": user_form.cleaned_data['last_name'],
+                "email": request.user._wrapped.email,
+                "account_type": "community_account",
+                "inquiry_type": "Membership",
+                "organization_name": form.cleaned_data['community_name'],
+            }
+            
+            mutable_post_data.update(subscription_data)
+            subscription_form = SubscriptionForm(mutable_post_data)
 
             # If in test site, approve immediately, skip confirmation step
-            if dev_prod_or_local(request.get_host()) == 'SANDBOX':
+            if env == 'SANDBOX':
                 data.is_approved = True
                 data.save()
 
@@ -132,24 +150,10 @@ def create_community(request):
                 affiliation.communities.add(data)
                 affiliation.save()
                 return redirect('dashboard')
-            else:
-                data.save()
-
-                # Add to user affiliations
-                affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=request.user)
-                affiliation.communities.add(data)
-                affiliation.save()
-
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="New Community",
-                    community_id=data.id,
-                    action_account_type='community'
-                )
-                request.session['new_community_id'] = data.id
+            elif subscription_form.is_valid():
+                handle_community_creation(request, data,  subscription_form, env)
                 return redirect('community-boundary')
-    return render(request, 'communities/create-community.html', {'form': form})
+    return render(request, 'communities/create-community.html', {'form': form, 'user_form': user_form})
 
 
 @has_new_community_id
@@ -171,29 +175,7 @@ def upload_boundary_file(request):
     context = {
         'community_id': community.id,
     }
-    return render(request, 'communities/upload-boundary-file.html', context)
-
-
-# Confirm Community
-@has_new_community_id
-@login_required(login_url='login')
-def confirm_community(request):
-    community = Community.objects.select_related('community_creator').get(
-        id=request.session.get('new_community_id')
-    )
-
-    form = ConfirmCommunityForm(request.POST or None, request.FILES, instance=community)
-    if request.method == "POST":
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.save()
-            send_hub_admins_account_creation_email(request, data)
-
-            # remove new_community_id from session to prevent
-            # future access with this particular new_community_id
-            del request.session['new_community_id']
-            return redirect('dashboard')
-    return render(request, 'accounts/confirm-account.html', {'form': form, 'community': community,})
+    return render(request, 'boundary/upload-boundary-file.html', context)
 
 
 def public_community_view(request, pk):
@@ -308,7 +290,7 @@ def update_community(request, pk):
         'update_form': update_form,
         'member_role': member_role,
     }
-    return render(request, 'communities/update-community.html', context)
+    return render(request, 'account_settings_pages/_update-account.html', context)
 
 # Members
 @login_required(login_url='login')
@@ -1028,7 +1010,7 @@ def project_actions(request, pk, project_uuid):
         if not member_role or not request.user.is_authenticated or not project.can_user_access(request.user):
             return redirect('view-project', project_uuid)
         else:
-            notices = Notice.objects.filter(project=project, archived=False)
+            notices = Notice.objects.filter(project=project, archived=False).exclude(notice_type='open_to_collaborate')
             creator = ProjectCreator.objects.get(project=project)
             current_status = ProjectStatus.objects.filter(project=project, community=community).first()
             statuses = ProjectStatus.objects.filter(project=project)
@@ -1246,7 +1228,8 @@ def apply_labels(request, pk, project_uuid):
                 project_id=project.id
             )
 
-            return redirect('apply-labels', community.id, project.unique_id)
+            # return redirect('community-project-actions', community.id, project.unique_id)
+            return HttpResponseRedirect(f"{reverse('community-project-actions', args=[community.id, project.unique_id])}#labels")
 
     context = {
         'member_role': member_role,
@@ -1265,19 +1248,39 @@ def apply_labels(request, pk, project_uuid):
 def connections(request, pk):
     community = get_community(pk)
     member_role = check_member_role(request.user, community)
-
     communities = Community.objects.none()
 
-    institution_ids = community.contributing_communities.exclude(institutions__id=None).values_list('institutions__id', flat=True)
-    researcher_ids = community.contributing_communities.exclude(researchers__id=None).values_list('researchers__id', flat=True)
+    # Institution contributors
+    institution_ids = community.contributing_communities.exclude(
+        institutions__id=None
+    ).values_list('institutions__id', flat=True)
+    institutions = (
+        Institution.objects.select_related('institution_creator')
+        .prefetch_related('admins', 'editors', 'viewers')
+        .filter(id__in=institution_ids)
+    )
 
-    institutions = Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').filter(id__in=institution_ids)
-    researchers = Researcher.objects.select_related('user').filter(id__in=researcher_ids)
+    # Researcher contributors
+    researcher_ids = community.contributing_communities.exclude(
+        researchers__id=None
+    ).values_list("researchers__id", flat=True)
+    researchers = Researcher.objects.select_related("user").filter(
+        id__in=researcher_ids
+    )
 
-    project_ids = community.contributing_communities.values_list('project__unique_id', flat=True)
-    contributors = ProjectContributors.objects.filter(project__unique_id__in=project_ids)
-    for c in contributors:
-        communities = c.communities.select_related('community_creator').prefetch_related('admins', 'editors', 'viewers').exclude(id=community.id)
+    # Community contributors
+    project_ids = community.contributing_communities.values_list(
+        "project__unique_id", flat=True
+    )
+    contributors = ProjectContributors.objects.filter(
+        project__unique_id__in=project_ids
+    ).values_list("communities__id", flat=True)
+    communities = (
+        Community.objects.select_related("community_creator")
+        .prefetch_related("admins", "editors", "viewers")
+        .filter(id__in=contributors)
+        .exclude(id=community.id)
+    )
 
     context = {
         'member_role': member_role,
@@ -1287,6 +1290,131 @@ def connections(request, pk):
         'communities': communities,
     }
     return render(request, 'communities/connections.html', context)
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def connect_service_provider(request, pk):
+    try:
+        community = get_community(pk)
+        member_role = check_member_role(request.user, community)
+        if request.method == "GET":
+            service_providers = get_certified_service_providers(request)
+            connected_service_providers_ids = ServiceProviderConnections.objects.filter(
+                communities=community
+            ).values_list('service_provider', flat=True)
+            connected_service_providers = service_providers.filter(id__in=connected_service_providers_ids)
+            other_service_providers = service_providers.exclude(id__in=connected_service_providers_ids)
+
+        elif request.method == "POST":
+            if "connectServiceProvider" in request.POST:
+                if community.is_approved:
+                    service_provider_id = request.POST.get('connectServiceProvider')
+                    connection_reference_id = f"{service_provider_id}:{community.id}_c"
+
+                    if ServiceProviderConnections.objects.filter(
+                            service_provider=service_provider_id).exists():
+                        # Connect community to existing Service Provider connection
+                        sp_connection = ServiceProviderConnections.objects.get(
+                            service_provider=service_provider_id
+                        )
+                        sp_connection.communities.add(community)
+                        sp_connection.save()
+                    else:
+                        # Create new Service Provider Connection and add community
+                        service_provider = ServiceProvider.objects.get(id=service_provider_id)
+                        sp_connection = ServiceProviderConnections.objects.create(
+                            service_provider = service_provider
+                        )
+                        sp_connection.communities.add(community)
+                        sp_connection.save()
+
+                    # Delete instances of disconnect Notifications
+                    delete_action_notification(connection_reference_id)
+
+                    # Send notification of connection to Service Provider
+                    target_org = sp_connection.service_provider
+                    title = f"{community.community_name} has connected to {target_org.name}"
+                    send_simple_action_notification(
+                        None, target_org, title, "Connections", connection_reference_id
+                    )
+
+                else:
+                    messages.add_message(
+                        request, messages.ERROR,
+                        'Your account must be confirmed to connect to Service Providers.'
+                    )
+
+            elif "disconnectServiceProvider" in request.POST:
+                service_provider_id = request.POST.get('disconnectServiceProvider')
+                connection_reference_id = f"{service_provider_id}:{community.id}_c"
+
+                sp_connection = ServiceProviderConnections.objects.get(
+                    service_provider=service_provider_id
+                )
+                sp_connection.communities.remove(community)
+                sp_connection.save()
+
+                # Delete instances of the connection notification
+                delete_action_notification(connection_reference_id)
+
+                # Send notification of disconneciton to Service Provider
+                target_org = sp_connection.service_provider
+                title = f"{community.community_name} has been disconnected from " \
+                        f"{target_org.name}"
+                send_simple_action_notification(
+                    None, target_org, title, "Connections", connection_reference_id
+                )
+
+            return redirect("community-connect-service-provider", community.id)
+
+        context = {
+            'member_role': member_role,
+            'community': community,
+            'other_service_providers': other_service_providers,
+            'connected_service_providers': connected_service_providers,
+        }
+        return render(request, 'account_settings_pages/_connect-service-provider.html', context)
+    except:
+        raise Http404()
+
+
+@login_required(login_url="login")
+@member_required(roles=["admin", "editor"])
+def account_preferences(request, pk):
+    try:
+        community = get_community(pk)
+        member_role = check_member_role(request.user, community)
+
+        if request.method == "POST":
+
+            # Set Show/Hide account in Service Provider connections
+            if request.POST.get('show_sp_connection') == 'on':
+                community.show_sp_connection = True
+
+            elif request.POST.get('show_sp_connection') is None:
+                community.show_sp_connection = False
+
+            # Set project privacy settings for Service Provider connections
+            community.sp_privacy = request.POST.get('sp_privacy')
+
+            community.save()
+
+            messages.add_message(
+                request, messages.SUCCESS, 'Your preferences have been updated!'
+            )
+
+            return redirect("preferences-community", community.id)
+
+        context = {
+            'member_role': member_role,
+            'community': community,
+        }
+        return render(request, 'account_settings_pages/_preferences.html', context)
+
+    except:
+        raise Http404()
+
 
 # show community Labels in a PDF
 @login_required(login_url='login')
@@ -1334,11 +1462,11 @@ def update_community_boundary(request, pk):
     member_role = check_member_role(request.user, community)
     context = {
         'community': community,
-        'main_area': 'boundary',
+        # 'main_area': 'boundary',
         'member_role': member_role,
         'set_boundary_url': reverse('update-community-boundary-data', kwargs={'pk': community.id})
     }
-    return render(request, 'communities/update-community.html', context)
+    return render(request, 'account_settings_pages/_community-boundary.html', context)
 
 
 @login_required(login_url='login')
@@ -1346,24 +1474,10 @@ def update_community_boundary(request, pk):
 def update_community_boundary_data(request, pk):
     community = get_community(pk)
     data = json.loads(request.body)
-
-    name = data.get('name')
-    source = data.get('source')
-    boundary = data.get('boundary')
-    share_boundary_publicly = data.get('share_boundary_publicly', False)
-
-    if name:
-        community.name_of_boundary = name
-
-    if source:
-        community.source_of_boundary = source
-
-    if 'share_boundary_publicly' in data:
-        community.share_boundary_publicly = share_boundary_publicly
-
-    if boundary:
-        community.create_or_update_boundary(boundary)
-
+    community.name_of_boundary = data.get('name')
+    community.source_of_boundary = data.get('source')
+    boundary_data = data.get('boundary')
+    community.create_or_update_boundary(boundary_data)
     community.save()
     return HttpResponse(status=204)
 
@@ -1377,3 +1491,59 @@ def reset_community_boundary(request, pk):
     community.create_or_update_boundary([])
     community.save()
     return HttpResponse(status=204)
+
+# Create API Key
+@login_required(login_url="login")
+@member_required(roles=["admin"])
+def api_keys(request, pk):
+    community = get_community(pk)
+    member_role = check_member_role(request.user, community)
+
+    try:
+        if request.method == 'GET':
+            form = APIKeyGeneratorForm(request.GET or None)
+            account_keys = AccountAPIKey.objects.filter(community=community).exclude(
+                Q(expiry_date__lt=timezone.now()) | Q(revoked=True)
+            ).values_list("prefix", "name", "encrypted_key")
+
+        elif request.method == "POST":
+            if "generate_api_key" in request.POST:
+                form = APIKeyGeneratorForm(request.POST)
+
+                if community.is_approved:
+                    if form.is_valid():
+                        api_key, key = AccountAPIKey.objects.create_key(
+                            name = form.cleaned_data["name"],
+                            community_id = community.id
+                        )
+                        prefix = key.split(".")[0]
+                        encrypted_key = urlsafe_base64_encode(force_bytes(key))
+                        AccountAPIKey.objects.filter(prefix=prefix).update(encrypted_key=encrypted_key)
+                    else:
+                        messages.add_message(request, messages.ERROR, 'Please enter a valid API Key name.')
+                        return redirect("community-api-key", community.id)
+
+                else:
+                    messages.add_message(request, messages.ERROR, 'Your community is not yet confirmed. '
+                                        'Your account must be confirmed to create API Keys.')
+                    return redirect("community-api-key", community.id)
+
+                return redirect("community-api-key", community.id)
+            
+            elif "delete_api_key" in request.POST:
+                prefix = request.POST['delete_api_key']
+                api_key = AccountAPIKey.objects.filter(prefix=prefix)
+                api_key.delete()
+                messages.add_message(request, messages.SUCCESS, 'API Key deleted.')
+
+                return redirect("community-api-key", community.id)
+
+        context = {
+            "community" : community,
+            "form" : form,
+            "account_keys" : account_keys,
+            "member_role" : member_role
+        }
+        return render(request, 'account_settings_pages/_api-keys.html', context)
+    except:
+        raise Http404()
