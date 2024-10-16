@@ -1,0 +1,38 @@
+{% autoescape off %}
+<h3>
+    {% firstof data.account_creator.get_full_name data.account_creator.username %}
+    has created a service provider account.
+</h3>
+
+<table cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Account creator:</th>
+        <td>{% firstof data.account_creator.get_full_name data.account_creator.username %}</td>
+    </tr>
+    <tr>
+        <th>Contact email(s):</th>
+        <td>
+            {% if data.contact_email %}
+                {% if data.contact_email == data.account_creator.email %} 
+                    {{ data.account_creator.email }}
+                {% else %}
+                    Account creator email: {{ data.account_creator.email }}<br>
+                    Additional contact email: {{ data.contact_email }}
+                {% endif %}
+            {% else %}
+                {{ data.account_creator.email }}
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Service Provider name:</th>
+        <td>{{ data.name }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{{ data.description }}</td>
+    </tr>
+</table>
+
+
+{% endautoescape %}

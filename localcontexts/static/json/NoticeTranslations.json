@@ -70,5 +70,29 @@
         "noticeDefaultText": "Ko tā te Pānui Whakamārama TK, he āta whakaatu, tērā ētahi tikanga ā-iwi me ōna haepapa ki runga i te whakamahinga, i te horapatanga hoki o tēnei taonga. Kei roto hoki pea i tēnei Pānui TK, ko te kōrero e mea ana, tērā ngā Tohu TK e waihangatia ana, ā, kei te whiriwhirihia tonutia tōna whakatinanatanga. Mō ētahi atu kōrero mō ngā Pānui Whakamārama TK, pāwhiritia i konei.",
         "languageTag": "mi",
         "language": "Māori"
+    },
+    {
+        "id": 10,
+        "noticeName": "Abierto a Colaboración",
+        "noticeType": "open_to_collaborate",
+        "noticeDefaultText": "Las colecciones y documentos en nuestra institución tienen atribuciones incompletas, imprecisas y/o faltantes. Utilizamos esta Notificación para identificar claramente este material y que pueda ser actualizado o corregido por las comunidades de origen. Nuestra institución está comprometida a llevar a cabo colaboraciones y alianzas para resolver este problema de atribuciones incorrectas o faltantes.",
+        "languageTag": "es",
+        "language": "Spanish"
+    },
+    {
+        "id": 11,
+        "noticeName": "Ouverts à la collaboration",
+        "noticeType": "open_to_collaborate",
+        "noticeDefaultText": "Notre institution s’engage à développer de nouveaux modes de collaboration, d’engagement et de partenariat avec les peuples autochtones pour la conservation et la gestion des collections patrimoniales passées et futures.",
+        "languageTag": "fr",
+        "language": "French"
+    },
+    {
+        "id": 12,
+        "noticeName": "Kaupapa Whakangātahi",
+        "noticeType": "open_to_collaborate",
+        "noticeDefaultText": "E whakaū ana tō mātou wānanga i a ia anō, ki te pono me te tōtika kia whakamātauria ngā ara hou, me ngā ara pai me te āta tautiaki i ngā kohinga iwi taketake o mua, ā, ki tua o anamata.",
+        "languageTag": "mi",
+        "language": "Māori"
     }
 ]

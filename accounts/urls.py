@@ -14,6 +14,11 @@ urlpatterns = [
         views.CustomSocialConnectionsView.as_view(),
         name='socialaccount_connections'
     ),
+    path(
+        "subscription-inquiry/",
+        views.subscription_inquiry,
+        name="subscription-inquiry",
+    ),
     path('activate/<uidb64>/<token>', views.ActivateAccountView.as_view(), name='activate'),
     path('verify/', views.verify, name='verify'),
     path('invite/', views.invite_user, name='invite'),
@@ -71,5 +76,9 @@ urlpatterns = [
         ),
         name="password_reset_complete"
     ),
-    path('apikey/', views.api_keys, name='api-key'),
+    path(
+        "subscription/<str:pk>/<str:account_type>/",
+        views.subscription,
+        name="subscription"
+    ),
 ]

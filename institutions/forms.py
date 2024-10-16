@@ -9,6 +9,7 @@ class CreateInstitutionForm(forms.ModelForm):
 
     class Meta:
         model = Institution
+        fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email',]
         fields = ['institution_name', 'ror_id', 'city_town', 'state_province_region', 'country', 'description', 'contact_name', 'contact_email', 'website']
         error_messages = {
             'institution_name': {
@@ -22,8 +23,8 @@ class CreateInstitutionForm(forms.ModelForm):
             'state_province_region': forms.TextInput(attrs={'id':'institutionStateProvRegion', 'class': 'w-100'}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
             'country': forms.TextInput(attrs={'id':'institutionCountry', 'class': 'w-100', }),
-            'contact_name': forms.TextInput(attrs={'class': 'w-100'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'w-100'}),
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
             'website': forms.TextInput(attrs={'class': 'w-100'}),
         }
 
@@ -39,6 +40,7 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
 
     class Meta:
         model = Institution
+        fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email',]
         fields = ['institution_name', 'city_town', 'state_province_region', 'country', 'description', 'is_ror', 'contact_name', 'contact_email', 'website']
         error_messages = {
             'institution_name': {
@@ -49,6 +51,10 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'institution_name': forms.TextInput(attrs={'name':'institution_name', 'class': 'w-100', 'autocomplete': 'off', 'required': True}),
             'city_town': forms.TextInput(attrs={'class': 'w-100'}),
             'state_province_region': forms.TextInput(attrs={'class': 'w-100'}),
+            'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2, 'required': True}),
+            'country': forms.TextInput(attrs={'class': 'w-100', }),            
+            'contact_name': forms.TextInput(attrs={'class': 'w-100', 'id': 'institutionContactNameField', 'required': True}),
+            'contact_email': forms.EmailInput(attrs={'class': 'w-100', 'id': 'institutionContactEmailField', 'required': True}),
             'description': forms.Textarea(attrs={'class': 'w-100', 'rows': 2,}),
             'country': forms.TextInput(attrs={'class': 'w-100', }),
             'contact_name': forms.TextInput(attrs={'class': 'w-100'}),

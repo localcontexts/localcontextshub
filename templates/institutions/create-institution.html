@@ -1,5 +1,16 @@
 {% extends 'register-base.html' %} {% block title %} Create Institution {% endblock %}{% load static %} {% block card %}
-
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+  </script>
 <div class="flex-this column account-registration-container">
     <div class="flex-this space-between">
         <div><h2 class="mt-0 mb-8">Institution Account</h2></div>
@@ -12,11 +23,23 @@
         Read more about our privacy standards <a class="default-a" href="https://localcontexts.org/privacy-policy/" target="_blank" rel="noopener">here <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i></a>
     </p>
 
-    <form id="createInstitutionForm" action="" method="POST" class="flex-this column w-100">
+    <form action="{% url 'create-institution' %}" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div id="ror-input-container" class="mt-16">
-            <label for="institution_name">Institution Name</label>
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ user_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
+
+        <div id="ror-input-container" class="mt-8">
+            <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ form.institution_name }}
             <div id="suggestionsContainer"></div>
             {% if form.institution_name.errors %}
@@ -40,9 +63,11 @@
             </div>
         </div>
 
-        <div class="mt-8">
-            <label class="pad-top-1-5" for="country">Country</label><br>
-            {{ form.country }}                
+        <div class="mt-8 w-100 flex-this">
+            <div class="w-100 mr-1p">
+                <label class="pad-top-1-5" for="country">Country</label><br>
+                {{ form.country }}
+            </div>
         </div>
 
         <div class="mt-8">
@@ -52,10 +77,28 @@
                 <div class="msg-red w-50"><small>{{ form.website.errors.as_text }}</small></div>
             {% endif %}
         </div>
-
+        <div class="w-100">
+            <div class="pad-top-1-5 radio-group mb-1p">
+                <label for="inquiry_type" class="inquiry-label">Subscription Type<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">An institution subscription type allows you to select the desired role for the subscription process.</span>
+                </div>
+                <br>
+                <div class="flex-this row">
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription">
+                        <span class="ml-5">Subscription</span>
+                    </label>
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription -- CC Notices Only">
+                        <span class="ml-5">Collections Care Notices</span>
+                    </label>
+                </div>
+            </div>
+        </div>
         <div class="w-100">
             <div class="pad-top-1-5">
-                <label for="description">Institution Description</label>
+                <label for="description">Institution Description<span class="orange-text required-label" title="">*</span></label>
                 <div class="tooltip">i
                     <span class="tooltiptext">An institution description allows you to share key public information about your institution or organization with other users on the Hub.</span>
                 </div>
@@ -70,33 +113,15 @@
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
 
-        <h2 class="mb-0">Institutional contact</h2>
-        <p>
-            A <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscription program</a>
-            for institution accounts will be launched in October 2024. 
-            After you submit this form, we will reach out to you, and any institutional contact 
-            you indicate below, to discuss which subscription tier is best for your organization.
-        </p>
-
-        <div class="flex-this space-between mb-16">
-            <div class="mr-8 w-100">
-                <label for="contact_name">
-                    Contact name
-                </label>
-                {{ form.contact_name }}<br>
-                {% if form.contact_name.errors %}
-                    <div class="msg-red w-50"><small>{{ form.contact_name.errors.as_text }}</small></div> 
-                {% endif %}
+        <div class="w-100 flex-this">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_name }}
             </div>
-    
-            <div class="w-100">
-                <label for="contact_email">
-                    Contact email
-                </label>
-                {{ form.contact_email }} <br>
-                {% if form.contact_email.errors %}
-                    <div class="msg-red w-50"><small>{{ form.contact_email.errors.as_text }}</small></div> 
-                {% endif %}
+
+            <div class="w-50">
+                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                {{ form.contact_email }}
             </div>
         </div>
 
@@ -104,6 +129,11 @@
            
             
             {{ form.ror_id }}
+            <input
+            type="hidden"
+            name="g-recaptcha-response"
+            id="g-recaptcha-response"
+            />
             <div class="flex-this creat-account__container-width__buttons">
                 <div class="mr-8">
                     <button id="clearFormBtn" class="primary-btn white-btn btn-width__clear-form mt-2p">Clear form <i class="fa-regular fa-eraser"></i></button>
@@ -117,5 +147,42 @@
     </form>
 
 </div>
-
+<script>
+    function disableButton() {
+      if (validateForm()) {
+        document.getElementById("createInstitutionBtn").style.display = "none";
+        document.getElementById("loading-spinner").classList.remove('hide');
+      }
+    }
+  
+    function validateForm() {
+      var isValid = true;
+      var inputs = document.getElementsByTagName("input");
+      var selects = document.getElementsByTagName("select");
+      for (var i = 0; i < inputs.length; i++) {
+          if (inputs[i].hasAttribute("required") && (inputs[i].value.trim() === "" )) {
+              isValid = false;
+              break;
+          }
+  
+          if (inputs[i].type === "email" && !isValidEmail(inputs[i].value.trim())) {
+              isValid = false;
+              break;
+          }
+  
+      }
+      for (var i = 0; i < selects.length; i++) {
+        if (selects[i].hasAttribute("required") && (selects[i].value.trim() === "" )) {
+                isValid = false;
+                break;
+          }
+      }
+      return isValid;
+    }
+  
+    function isValidEmail(email) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+  </script>
 {% endblock %}

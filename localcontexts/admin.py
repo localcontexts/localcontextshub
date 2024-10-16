@@ -2,48 +2,53 @@ import calendar
 import csv
 import itertools
 from datetime import datetime, timedelta, timezone
+from typing import Tuple
+from django.db.models.base import Model as Model
 from django.db.models.functions import Extract, Concat
 from django.db.models import Count, Q, Value, F, CharField, Case, When
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.urls import path
 from django.utils.translation import gettext as _
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from django.apps import apps
 from django.template.response import TemplateResponse
 from django.http import Http404, HttpRequest, HttpResponse
-from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db import models
-from django.db.models import Case, CharField, Count, F, Q, Value, When
-from django.db.models.functions import Concat, Extract
-from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
-from django.template.response import TemplateResponse
-from django.urls import path
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+
+from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
-from rest_framework_api_key.admin import APIKey, APIKeyModelAdmin
+from rest_framework_api_key.admin import APIKeyModelAdmin
+from api.models import AccountAPIKey
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.models import Group, User
+from django.contrib.admin.widgets import AdminFileWidget
 
 import helpers
-from accounts.models import (InactiveUser, Profile, SignUpInvitation, UserAffiliation)
+from accounts.models import (
+    InactiveUser, Profile, SignUpInvitation, UserAffiliation, ServiceProviderConnections
+)
 from accounts.utils import get_users_name
 from bclabels.models import BCLabel
 from communities.forms import CommunityModelForm
 from communities.models import Community, InviteMember, JoinRequest
+from helpers.models import *
+from helpers.utils import encrypt_api_key
 from helpers.models import (
     CollectionsCareNoticePolicy, EntitiesNotified, LabelTranslation, LabelTranslationVersion,
     LabelVersion, Notice, NoticeDownloadTracker, NoticeTranslation, OpenToCollaborateNoticeURL,
     ProjectStatus
 )
 from institutions.models import Institution
-from notifications.models import ActionNotification, UserNotification
+from researchers.utils import is_user_researcher
+from serviceproviders.models import ServiceProvider
+from notifications.models import UserNotification, ActionNotification
 from projects.forms import ProjectModelForm
 from projects.models import (
     Project, ProjectActivity, ProjectArchived, ProjectContributors, ProjectCreator, ProjectNote,
@@ -371,7 +376,7 @@ class AccountTypeFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return [
             ('institution', 'Institution'), ('researcher', 'Researcher'),
-            ('community', 'Community')
+            ('community', 'Community'), ('service_provider', 'Service Provider')
         ]
 
     def queryset(self, request, queryset):
@@ -411,6 +416,19 @@ class AccountTypeFilter(admin.SimpleListFilter):
             except:  # noqa
                 return queryset.none()
 
+        elif self.value() == "service_provider":
+            try:
+                qs = queryset.distinct().filter(service_provider_id__isnull=False)
+                return qs
+            except:
+                return queryset.none()
+
+        elif self.value() == "service_provider":
+            try:
+                qs = queryset.distinct().filter(service_provider_id__isnull=False)
+                return qs
+            except:
+                return queryset.none()
 
 class PrivacyTypeFilter(admin.SimpleListFilter):
     title = 'Privacy Type'
@@ -527,7 +545,6 @@ class DateRangeFilter(admin.SimpleListFilter):
 
     def choices(self, changelist):
         choices = list(super().choices(changelist))
-        print(choices)
         choices[0]['display'] = _('last 30 Days')
         return [choices[2], choices[0], choices[1]]
 
@@ -665,12 +682,12 @@ class InactiveAccountsAdmin(admin.ModelAdmin):
         ).values('id', 'account_name', 'days_count', 'account_type')
 
         inactive_institutions = Institution.objects.filter(
-            is_approved=False, created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
-        ).annotate(
-            days_count=datetime.now(tz=timezone.utc) - F('created'),
-            account_name=F('institution_name'),
-            account_type=Value('Institution', output_field=CharField())
-        ).values('id', 'account_name', 'days_count', 'account_type')
+            is_subscribed = False,
+            created__lte = datetime.now(tz = timezone.utc) - timedelta(days = 90)).annotate(
+                days_count = datetime.now(tz = timezone.utc) - F('created'),
+                account_name = F('institution_name'),
+                account_type = Value('Institution', output_field=CharField())
+            ).values('id', 'account_name', 'days_count', 'account_type')
 
         inactive_communities = Community.objects.filter(
             is_approved=False, created__lte=datetime.now(tz=timezone.utc) - timedelta(days=90)
@@ -716,7 +733,8 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ('name', 'view', 'added_by', 'datetime')
     search_fields = (
         'institution__institution_name', 'researcher__user__username',
-        'researcher__user__first_name', 'researcher__user__last_name', 'name'
+        'researcher__user__first_name', 'researcher__user__last_name', 'name',
+        'service_provider__name'
     )
     ordering = ('-added', )
     list_filter = (AccountTypeFilter, )
@@ -735,10 +753,14 @@ class OTCLinksAdmin(admin.ModelAdmin, ExportCsvMixin):
             account_id = obj.institution_id
             account_url = 'institutions/institution'
             account_name = obj.institution.institution_name
-        else:
+        elif obj.researcher_id:
             account_id = obj.researcher_id
             account_url = 'researchers/researcher'
             account_name = get_users_name(obj.researcher.user)
+        elif obj.service_provider_id:
+            account_id = obj.service_provider_id
+            account_url = 'serviceproviders/serviceprovider'
+            account_name = obj.service_provider.name
 
         return format_html(
             '<a href="/admin/{}/{}/change/">{} </a>', account_url, account_id, account_name
@@ -1409,16 +1431,34 @@ class ProfileAdmin(admin.ModelAdmin):
     readonly_fields = ('api_key', )
 
 
+class SubscriptionsAdmin(admin.ModelAdmin):
+    list_display = ('institution', 'community', 'researcher', 'date_last_updated')
+
 admin_site.register(Profile, ProfileAdmin)
 admin_site.register(UserAffiliation)
 admin_site.register(SignUpInvitation, SignUpInvitationAdmin)
+admin_site.register(Subscription, SubscriptionsAdmin)
 
 # admin_site.unregister(User)
 admin_site.register(User, UserAdminCustom)
 
 # API KEYS ADMIN
-admin_site.register(APIKey, APIKeyModelAdmin)
+class AccountAPIKeyAdmin(APIKeyModelAdmin):
+    def get_readonly_fields(self, request: HttpRequest, obj: Model = None) -> Tuple[str, ...]:
+        readonly_fields = super().get_readonly_fields(request, obj)
+        try:
+            if obj.encrypted_key:
+                readonly_fields = readonly_fields + ('encrypted_key',)
+        except:
+            pass
+        return readonly_fields
+    
+    def save_model(self, request, obj, form, change):
+        if obj.encrypted_key:
+            obj.encrypted_key = encrypt_api_key(obj.encrypted_key)
+        return super().save_model(request, obj, form, change)
 
+admin_site.register(AccountAPIKey, AccountAPIKeyAdmin)
 
 # AUTH ADMIN
 class MyGroupAdmin(GroupAdmin):
@@ -1459,7 +1499,7 @@ admin_site.register(BCLabel, BCLabelAdmin)
 class CommunityAdmin(admin.ModelAdmin):
     form = CommunityModelForm
     list_display = (
-        'community_name', 'community_creator', 'contact_name', 'contact_email', 'is_approved',
+        'community_name', 'community_creator', 'contact_name', 'contact_email', 'is_member',
         'created', 'country'
     )
     search_fields = (
@@ -1502,6 +1542,11 @@ class NoticeAdmin(admin.ModelAdmin):
         'project__title', 'notice_type', 'researcher__user__username',
         'institution__institution_name'
     )
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == 'notice_type':
+            kwargs['choices'] = [choice for choice in db_field.choices if choice[0] != 'open_to_collaborate']
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
 
 
 class OpenToCollaborateNoticeURLAdmin(admin.ModelAdmin):
@@ -1550,11 +1595,6 @@ class LabelTranslationVersionAdmin(admin.ModelAdmin):
     )
 
 
-class ProjectStatusAdmin(admin.ModelAdmin):
-    list_display = ('project', 'community', 'seen', 'status')
-    search_fields = ('project__title', 'community__community_name')
-
-
 class NoticeDownloadTrackerAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'institution', 'researcher', 'collections_care_notices',
@@ -1575,7 +1615,6 @@ class NoticeTranslationAdmin(admin.ModelAdmin):
     list_display = ('notice', 'notice_type', 'language')
 
 
-admin_site.register(ProjectStatus, ProjectStatusAdmin)
 admin_site.register(Notice, NoticeAdmin)
 admin_site.register(LabelVersion, LabelVersionAdmin)
 admin_site.register(LabelTranslationVersion, LabelTranslationVersionAdmin)
@@ -1591,15 +1630,11 @@ admin_site.register(NoticeTranslation, NoticeTranslationAdmin)
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = (
         'institution_name', 'institution_creator', 'contact_name', 'contact_email',
-        'is_approved', 'is_ror', 'created', 'country'
+        'is_subscribed', 'is_ror', 'created', 'country'
     )
     search_fields = (
-        'institution_name',
-        'institution_creator__username',
-        'contact_name',
-        'contact_email',
+        'institution_name', 'institution_creator__username', 'contact_name', 'contact_email',
     )
-
 
 admin_site.register(Institution, InstitutionAdmin)
 
@@ -1615,7 +1650,7 @@ class UserNotificationAdmin(admin.ModelAdmin):
 class ActionNotificationAdmin(admin.ModelAdmin):
     list_display = (
         'sender', 'community', 'institution', 'researcher', 'notification_type', 'title',
-        'created'
+         'service_provider', 'created'
     )
 
 
@@ -1638,7 +1673,6 @@ class ProjectAdmin(admin.ModelAdmin):
         'project_contact',
         'project_contact_email',
     )
-
 
 class ProjectContributorsAdmin(admin.ModelAdmin):
     list_display = ('project', )
@@ -1669,6 +1703,10 @@ class ProjectArchivedAdmin(admin.ModelAdmin):
 class ProjectNoteAdmin(admin.ModelAdmin):
     list_display = ('project', 'community')
 
+class ProjectStatusAdmin(admin.ModelAdmin):
+    list_display = ('project', 'community', 'seen', 'status')
+    search_fields = ('project__title', 'community__community_name')
+
 
 admin_site.register(Project, ProjectAdmin)
 admin_site.register(ProjectContributors, ProjectContributorsAdmin)
@@ -1677,6 +1715,7 @@ admin_site.register(ProjectCreator, ProjectCreatorAdmin)
 admin_site.register(ProjectActivity, ProjectActivityAdmin)
 admin_site.register(ProjectArchived, ProjectArchivedAdmin)
 admin_site.register(ProjectNote, ProjectNoteAdmin)
+admin_site.register(ProjectStatus, ProjectStatusAdmin)
 
 
 # RESEARCHERS ADMIN
@@ -1742,3 +1781,25 @@ class InactiveUserAdmin(admin.ModelAdmin):
 
 
 admin_site.register(InactiveUser, InactiveUserAdmin)
+
+# SERVICE PROVIDER ADMIN
+class ServiceProviderAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'account_creator', 'contact_name', 'contact_email', 'is_certified', 'created',
+    )
+    search_fields = ('name', 'account_creator__username', 'contact_name', 'contact_email',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.is_certified and 'is_certified' in form.changed_data and not obj.certified_by:
+            obj.certified_by = request.user
+        obj.save()
+
+
+class ServiceProviderConnectionsAdmin(admin.ModelAdmin):
+    list_display = (
+        'service_provider',
+    )
+    search_fields = ('service_provider',)
+
+admin_site.register(ServiceProvider, ServiceProviderAdmin)
+admin_site.register(ServiceProviderConnections, ServiceProviderConnectionsAdmin)

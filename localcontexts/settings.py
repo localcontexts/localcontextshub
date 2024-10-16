@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'api',
     'helpers',
     'notifications',
+    'serviceproviders',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -81,6 +82,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_api_key',
+    'drf_spectacular',
+    'django_filters',
     'corsheaders',
     'debug_toolbar',
     'dbbackup',
@@ -214,6 +217,11 @@ MAILGUN_BASE_URL = os.environ.get('MAILGUN_BASE_URL')
 MAILGUN_V4_BASE_URL = os.environ.get('MAILGUN_V4_BASE_URL')
 MAILGUN_TEMPLATE_URL = os.environ.get('MAILGUN_TEMPLATE_URL')
 
+# Sales force creds
+SALES_FORCE_CLIENT_ID = os.environ.get('SALES_FORCE_CLIENT_ID')
+SALES_FORCE_SECRET_ID = os.environ.get('SALES_FORCE_SECRET_ID')
+SALES_FORCE_BASE_URL = os.environ.get('SALES_FORCE_BASE_URL')
+
 # Config for sending out emails
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
@@ -222,6 +230,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 EMAIL_USE_TLS = True
+
+SF_VALID_USER_IDS = os.environ.get('SF_VALID_USER_IDS')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -240,9 +250,33 @@ STATICFILES_DIRS = [
 API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Local Contexts Hub API',
+    'DESCRIPTION': 'The Local Contexts Hub enables the customization of Labels and the application of Notices directly to Indigenous data. The Hub works in tandem with already existing information/collections management systems and tools, generating Labels and Notices.',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'AUTHENTICATION_WHITELIST': ['api.versioned.v2.views.APIKeyAuthentication'],
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]/',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
+    'CONTACT': {
+        'name': 'Local Contexts Tech Team',
+        'email': 'tech@localcontexts.org'
+    },
+    'TOS': 'https://localcontexts.org/terms-conditions/',
+    'LICENSE': {
+        'name': 'MIT License',
+        'url': 'https://github.com/localcontexts/localcontextshub?tab=License-1-ov-file#readme'
+    },
+    'EXTERNAL_DOCS': {
+        'description': 'Local Contexts GitHub Documentation',
+        'url': 'https://github.com/localcontexts/localcontextshub'
+    },
 }
 
 # Session expires after an hour of inactivity.

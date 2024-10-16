@@ -1,85 +1,145 @@
-{% load static %}
-<div class="dashcard">
-  <div class="flex-this space-between">
-    
-    <div class="flex-this">
-      <div class="researcher-img-container">
-        <img
-          loading="lazy"
-          class="profile-img"
-          src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}"
-          alt="{{ researcher.researcher_name }} image"
-        />
+{% load static %}{% load custom_project_tags %}
+<div class="dashcard" {% if '/view/' in request.path %}style="width: inherit;"{% endif %}>
+  <div class="flex-this">
+
+    <!-- Account Image -->
+    <div class="researcher-img-container">
+      <img
+        loading="lazy"
+        class="profile-img"
+        src=" {% if researcher.image %} {{ researcher.image.url }} {% else %} {% static 'images/placeholders/researcher-place.jpg' %} {% endif %}"
+        alt="{{ researcher.researcher_name }} image"
+      >
+    </div>
+
+    <!-- Account Information -->
+    <div class="flex-this column w-50">
+      <div class="subscribed-icon-wrapper">
+        <h3 class="dashcard-h3 darkteal-text">
+          {% firstof researcher.user.get_full_name researcher.user.username %}
+        </h3>
+        {% if researcher.is_subscribed %}
+          <i class="fa-sharp fa-solid fa-circle-check subscribed-icon fa-lg" title="Subscribed"></i>
+        {% endif %}
       </div>
-      <div class="flex-this column dashcard-text-container">
-        <div>
-          <h3 class="dashcard-h3 darkteal-text">
-            {% firstof researcher.user.get_full_name researcher.user.username %}
-          </h3>
-        </div>
-        <div>
-          <p class="dashcard-subheader">
-            Researcher | Location: {{ researcher.user.user_profile.get_location }}
-          </p>
-        </div>
-        <div>
-          <p class="dashcard-description description-sm">
-            {% if researcher.description %}{{ researcher.description }} {% else %}
-            No description provided. {% endif %}
-          </p>
-        </div>
+      <div>
+        <p class="dashcard-subheader">
+          Researcher
+          {% with researcher.user.user_profile.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
+        </p>
+      </div>
+      <div>
+        <p class="dashcard-description description-sm">
+          {% if researcher.description %}{{ researcher.description }}{% else %}No description provided.{% endif %}
+        </p>
       </div>
     </div>
 
-    <div class="dashcard-btn-container">
-
-      <div class="flex-this gap-half">
-        {% if '/registry/' in request.path %}
-            <div>
-                <div class="mb-16">
-                    <a 
-                        class="primary-btn action-btn"
-                        href="{% url 'public-researcher' researcher.id %}"                    
-                    >View public page</a>                        
-                </div>
-                {% if researcher.otc_researcher_url.all %}
-                    <div class="flex-this flex-end">
-                        <img class="pointer-event-none" src="{% static 'images/notices/ci-open-to-collaborate.png' %}" width="60px" alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle.">
-                    </div>
-                {% endif %}
-            </div>
-        {% endif %}
-
-        {% if '/dashboard/' in request.path %} 
-          <div class="flex-this gap-half">
-              <div>
-                <a
-                  class="primary-btn action-btn"
-                  href="{% if researcher.get_projects %}{% url 'researcher-projects' researcher.id %}{% else %}{% url 'researcher-notices' researcher.id %}{% endif %}"
-                  >View account</a
+    <!-- Buttons and OTC Notice -->
+    <div class="dashcard-btn-container ml-auto gap-half">
+      {% if '/registry/' in request.path or '/connections/' in request.path or '/service-providers/view/' in request.path %}
+        <!-- View Public Page -->
+        <div>
+          <a
+            class="primary-btn action-btn"
+            href="{% url 'public-researcher' researcher.id %}"
+          >
+            View public page
+          </a>
+          {% if '/registry/' in request.path %}
+            {% if researcher.otc_researcher_url.all %}
+              <!-- OTC Notice -->
+              <div class="flex-this flex-end mt-16">
+                <img
+                  class="pointer-event-none"
+                  src="{% static 'images/notices/ci-open-to-collaborate.png' %}"
+                  width="60px"
+                  alt="Open to Collaborate Notice icon. Black square with the top right corner folded and two white hands reaching toward each other from top to bottom over a white horizontal rectangle."
                 >
               </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endif %}
 
-              <div class="ml-8 flex-this gap-half">
-                <!-- Notification -->
-                {% include 'snippets/notifications.html' with scope=researcher.id %}
-                <!-- Settings -->
-                <div>
-                  <a
-                    href="{% url 'update-researcher' researcher.id %}"
-                    class="round-btn-small darkteal-text primary-btn white-btn"
-                  >
-                    <i class="m-0 fa fa-cog" aria-hidden="true"></i>
-                  </a>
-                </div>          
-              </div>
-          </div>
-        {% endif %}
+      {% if '/dashboard/' in request.path %}
+        <!-- View Account -->
+        <div>
+          <a
+            class="primary-btn action-btn"
+            href="{% if researcher.get_projects %}{% url 'researcher-projects' researcher.id %}{% else %}{% url 'researcher-notices' researcher.id %}{% endif %}"
+          >
+            View account
+          </a>
+        </div>
 
-        
-      </div>
+        <!-- Notification -->
+        {% include 'snippets/notifications.html' with scope=researcher.id %}
 
+        <!-- Settings -->
+        <div>
+          <a
+            href="{% url 'update-researcher' researcher.id %}"
+            class="round-btn-small darkteal-text primary-btn white-btn"
+          >
+            <i class="m-0 fa fa-cog" aria-hidden="true"></i>
+          </a>
+        </div>
+      {% endif %}
+
+      {% if '/connections/' in request.path %}
+        <div class="ml-8">
+          {% if service_provider%}
+            <button
+              name="disconnectAccountbtn"
+              data-name="{% firstof connected_researcher.user.get_full_name connected_researcher.user.username %}"
+              data-id="{{ connected_researcher.id }}_r"
+              class="primary-btn disconnect-btn"
+            >
+              Disconnect <i class="fa-solid fa-link-simple-slash"></i>
+            </button>
+          {% elif not service_provider %}
+            <!-- Show More Button -->
+            <span
+              id="{{ connected_researcher.id }}"
+              class="primary-btn white-btn"
+              onclick="showMore(this)"
+            >
+              Show More <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
-
   </div>
+
+  {% if '/connections/' in request.path %}
+    {% if not service_provider %}
+      <!-- Expanded Info -->
+      <div id="expand-div-{{ connected_researcher.id }}" class="hide">
+        <div class="border-bottom-dash-teal">
+          <p class="mb-0">
+            <span class="bold">Contact Email</span> | {% if connected_researcher.contact_email %}{{ connected_researcher.contact_email }}{% else %}{{ connected_researcher.user.email }}{% endif %}<br><br>
+          </p>
+        </div>
+
+        <div>
+          <h3> Projects</h3>
+          {% connections_collaborative_projects account researcher as projects %}
+          <table class="projects-table">
+            <tr>
+              <th><i class="fa-regular fa-line-columns"></i> Title</th>
+              <th><i class="fa-light fa-user"></i> Creator</th>
+              <th><i class="fa-light fa-calendar"></i> Last updated</th>
+              <th>Visibility</th>
+            </tr>
+
+            {% for project in projects %}
+              {% include 'projects/project-overview.html' %}
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
 </div>

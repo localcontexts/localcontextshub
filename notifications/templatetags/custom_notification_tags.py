@@ -5,6 +5,7 @@ from communities.models import Community
 from institutions.models import Institution
 from notifications.models import ActionNotification, UserNotification
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 register = template.Library()
 
@@ -24,6 +25,9 @@ def unread_notifications_exist(account):
         if isinstance(account, Community):
             return ActionNotification.objects.filter(community=account, viewed=False).exists()
 
+        if isinstance(account, ServiceProvider):
+            return ActionNotification.objects.filter(service_provider=account, viewed=False).exists()
+
         return False
 
 
@@ -41,5 +45,8 @@ def return_notifications(account):
 
         if isinstance(account, Community):
             return ActionNotification.objects.filter(community=account)
+
+        if isinstance(account, ServiceProvider):
+            return ActionNotification.objects.filter(service_provider=account)
 
         return None

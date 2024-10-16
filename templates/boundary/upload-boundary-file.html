@@ -1,0 +1,346 @@
+{% extends 'register-base.html' %} {% block title %} Add Community {% endblock %} {% load static %} {% block card %}
+    <style>
+        #define-community-top-text{
+            width: 94%;
+        }
+
+        #define-community-body{
+            position: relative;
+            height: 80%;
+        }
+        #browse-files-btn{
+            margin-left: 6px;
+        }
+        #navigate-to-option{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-weight: bold;
+        }
+
+        #browse-files-container{
+            margin-top: 20px;
+        }
+
+        #community-boundary-upload {
+            position: relative;
+            display: flex;
+        }
+
+        #community-boundary-upload input{
+            width: 60%;
+            padding: 24px;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        #community-boundary-search i{
+            position: absolute;
+            right: 10px;
+            top: 14px;
+        }
+
+        .feedback {
+            display: flex;
+            padding: 16px;
+            border-radius: 8px;
+            width: max-content;
+            margin-top: 8px;
+        }
+        .feedback i{
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        .failure {
+            color: #B01212;
+            background: #FBF3F3;
+            border: #B0120B 1px solid;
+        }
+        .success {
+            color: #166534;
+            background: #F2F7F4;
+            border: #166534 1px solid;
+        }
+
+        #buttonRow{
+            margin-top: 20px
+        }
+
+        a.disabled-btn{
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #skip-this-step{
+            margin-left: 20px;
+        }
+
+        #selected-title-wrapper{
+            position: relative;
+        }
+        #share-boundary-publicly-wrapper{
+            padding-top: 12px;
+
+        }
+        #can-change-in-settings-indication{
+            width: 75%;
+            font-style: italic;
+        }
+        #share-boundary-publicly-wrapper input{
+            transform: scale(2);
+        }
+        #selected-title{
+            padding: 12px;
+            border: 3px solid #007385;
+            background: aliceblue;
+            border-radius: 5px;
+            user-select: none;
+            width: 100%
+        }
+        #nld-link{
+            right: 8px;
+            position: absolute;
+            top: 14px;
+            font-weight: bold;
+            color: #007385;
+            cursor: pointer;
+        }
+        .hidden{
+            visibility: hidden;
+        }
+        .invisible{
+            display: none;
+        }
+    </style>
+    <div class="w-90" id="define-community-body">
+        <h2 class="mt-0">Upload Shapefile</h2>
+        <p id="define-community-top-text">
+            Add your community boundary by uploading a shapefile.
+            A shapefile is a vector data file format commonly used for geospatial analysis.
+            You can create shapefiles on third-party websites like ArcGIS and QGIS.
+        </p>
+        <div id="navigate-to-option">
+            Or <a class="default-a" href="{% url 'add-community-boundary' %}">search Native Land database</a>
+        </div>
+
+        <div id="browse-files-container">
+            <label class="pad-top-1-5">Upload shapefile (. zip)</label><br>
+            <div id="community-boundary-upload">
+                <input class="input-field" type="text"
+                       id="select-file-input"
+                       placeholder="Select file"
+                       readonly
+                       onclick="triggerShapeFileInput()"
+                >
+                <div
+                    id="browse-files-btn"
+                    class="primary-btn action-btn"
+                    onclick="triggerShapeFileInput()"
+                >
+                    Browse files
+                </div>
+                <input
+                    type="file" id="shapefile-input" name="shapefile" style="display: none"
+                    onchange="uploadShapeFileData(this)"
+                    accept=".zip"
+                >
+            </div>
+        </div>
+
+        <div id="selected-location" class="invisible">
+            <br>
+            <strong>
+                <label class="pad-top-1-5">Selected Location</label>
+            </strong><br>
+
+            {% if community_id %}
+            <div id="selected-title-wrapper">
+                <input id="selected-title" maxlength="60">
+                <a id="nld-link"
+                   href="{% url 'community-boundary-view' community_id %}"
+                   target="_blank">
+                    View map in new tab
+                    <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="feedback failure invisible">
+            <i class="fa fa-circle-exclamation"></i>
+            <div class="message">File not accepted. Please upload another file</div>
+        </div>
+        <div class="feedback success invisible">
+            <i class="fa fa-circle-check"></i>
+            <div class="message">File upload successfully</div>
+        </div>
+        <div id="share-boundary-publicly-wrapper" class="invisible">
+            <input type="checkbox" id="share-boundary-publicly" name="share-boundary-publicly">
+            <label for="share-boundary-publicly">Share Boundary Publicly</label>
+        </div>
+        <p id="can-change-in-settings-indication">
+            Your boundary and its visibility can be updated or removed in your account's settings.
+        </p>
+    </div>
+
+    <div class="flex-this w-90" id="buttonRow">
+
+        <div class="w-90 flex-this flex-start">
+            <div>
+                <a
+                    id="community-boundary-continue-btn"
+                    class="primary-btn action-btn disabled-btn"
+                    href="{% url 'dashboard' %}"
+                    onclick="updateBoundaryInformation(); event.preventDefault()"
+                >
+                    Confirm location <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="mr-8" id="skip-this-step">
+                <a class="primary-btn white-btn" href="{% url 'dashboard' %}">Skip this step <i class="fa fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      function enableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.remove('disabled-btn')
+      }
+      function disableContinueButton(){
+        document.querySelector('#community-boundary-continue-btn').classList.add('disabled-btn')
+      }
+      function triggerShapeFileInput() {
+        document.getElementById('shapefile-input').click()
+      }
+
+      async function registerBoundary(boundaryName, boundary, removePreexisting=true) {
+        const payload = {
+            source: 'shape-file',
+            name: boundaryName,
+            boundary: boundary,
+            remove_previous: removePreexisting
+        }
+
+        // do post call to set boundary in request
+        const registrationResponse = await fetch("{% url 'registration-boundary' %}", {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: {
+                  'X-CSRFToken': '{{csrf_token}}'
+                }
+            })
+
+        if (registrationResponse.status !== 201) {
+            throw new Error('Error Setting boundary')
+        }
+
+      }
+
+      async function resetboundary(){
+        // when setting boundary fails, the boundary are reset
+        await registerBoundary('No boundary', [], true)
+      }
+
+      async function uploadShapeFileData(self) {
+        var files = event.target.files
+        var file = files[0]
+        const successMessage = document.querySelector('.feedback.success')
+        const failureMessage = document.querySelector('.feedback.failure')
+        const sharePublicly = document.querySelector('#share-boundary-publicly-wrapper')
+
+        // hide feedback messages
+        successMessage.classList.add('invisible')
+        failureMessage.classList.add('invisible')
+        sharePublicly.classList.add('invisible')
+        document.querySelector('#selected-location').classList.add('invisible')
+
+        try {
+          const shapeFileData = await file.arrayBuffer()
+          const geoJsonData = await shp(shapeFileData)
+
+          // merge geoJson to get unique contours
+          let listOfFeatures = geoJsonData.features
+          let fileName = geoJsonData.fileName
+
+          if (geoJsonData.length) {
+            // flatten features from multiple geoJson objects
+            fileName = geoJsonData[0].fileName
+            listOfFeatures = []
+            for (const geoJsonObject of geoJsonData) {
+              for (const featureIndex in geoJsonObject.features) {
+                listOfFeatures.push(geoJsonObject.features[featureIndex])
+              }
+            }
+          }
+
+          const firstBoundaryGeometry = listOfFeatures[0]
+          let firstBoundary = [].concat(...firstBoundaryGeometry.geometry.coordinates).map(arr => arr)
+
+          if (firstBoundaryGeometry.geometry.type === 'MultiPolygon') {
+              // when polygon is made up of multiple polygons, use the first
+              firstBoundary = firstBoundary[0]
+            }
+
+          if(listOfFeatures.length > 1) {
+              alert('Warning:\nThere is more than 1 boundary present. Only the first will be used.')
+            }
+          const distinctBoundaryReordered = firstBoundary.map(function(coordinate){
+              // reverse so code extracts (lat-lon)'s
+              return [coordinate[1], coordinate[0]]
+            }
+          )
+
+        // upload shapefile to session for community
+        await registerBoundary(fileName, distinctBoundaryReordered, i === 0)
+        successMessage.classList.toggle('invisible')
+        sharePublicly.classList.toggle('invisible')
+        // show and label ui elements
+        document.querySelector('#selected-title').value = geoJsonData.fileName || 'Uploaded Shapefile'
+        document.querySelector('#selected-location').classList.remove('invisible')
+        enableContinueButton()
+
+      } catch (e) {
+        failureMessage.classList.toggle('invisible')
+        console.log('Error extracting boundary data from Shapefile', e)
+        disableContinueButton()
+        await resetboundary()
+      }
+        document.querySelector('#select-file-input').value = file.name
+        // set value to null so user can resubmit
+        // same file if needed
+        self.value = null
+        return false
+    }
+
+    async function updateBoundaryInformation() {
+            // Updates the boundary name and shareBoundaryPublicly attributes
+            try {
+                const payload = {
+                    share_boundary_publicly: document.getElementById("share-boundary-publicly").checked,
+                    name: document.getElementById("selected-title").value
+                }
+
+                // do post call to set boundary in request
+                const registrationResponse = await fetch("{% url 'registration-boundary' %}", {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        headers: {
+                          'X-CSRFToken': '{{csrf_token}}'
+                        }
+                    })
+
+                if (registrationResponse.status !== 201) {
+                    throw new Error('Error Setting boundary')
+                }
+
+                // relocate to the window href url
+              window.location.href = document.querySelector('#community-boundary-continue-btn').getAttribute('href')
+
+            } catch (error) {
+                console.error('Error Fetching boundary:', error)
+            }
+        }
+    </script>
+<script src="{% static 'javascript/shpjs.js' %}"></script>
+{% endblock %}

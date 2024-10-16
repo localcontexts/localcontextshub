@@ -11,6 +11,7 @@ exclude =
     conftest.py
     env
     .env
+    researchers/tests.py
     api/
     bclabels/
     communities/
@@ -20,6 +21,6 @@ exclude =
     localcontexts/
     projects/
     tklabels/
-    researchers/
     backups/
+    serviceproviders/
     

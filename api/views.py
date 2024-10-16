@@ -1,6 +1,63 @@
 from django.shortcuts import redirect
 current_version = '/api/v1/'
 
+
 def redirect_view(request):
     response = redirect(current_version)
     return response
+
+
+HELPTEXT_CHOICES = {
+    'institution': "An object containing information on an Institution.",
+    'researcher': "An object containing information on a Researcher.",
+    'community': "An object containing information on a Community.",
+    'id': "The Hub ID of an account.",
+    'account_name': "The name of an Institution, Community, or Researcher.",
+    'person_name': "The name of a person associated with a Project as a contact or non-Hub contributor.",
+    'name': "The name of a Notice or Label.",
+    'profile_url': "The URL of an account's public page in the Registry.",
+    'ror_id': "The URL of an Institution's ROR ID. If the Institution does not have a ROR ID, this field will be `NULL`.",
+    'orcid': "The URL of a Researcher's ORCID. If a Researcher has not linked an ORCID to their profile, this field will be `NULL`.",
+    'email': "The email of a Project's contact or non-Hub contributor.",
+    'institutions': "An array of `institution` objects.",
+    'communities': "An array of `community` objects.",
+    'researchers': "An array of `researcher` objects.",
+    'others': "An array of `others` objects.",
+    'created_by': "An array detailing who created a Project.",
+    'unique_id': "The unique_id of a Project or Label.",
+    'title': "The title of a Project.",
+    'project_privacy': "The privacy setting set for a Project.",
+    'date_added': "The date a Project was created in the Hub.",
+    'date_modified': "The date a Project was modified. If a Project was never modified, the date will be the same as `date_added`.",
+    'external_ids': "An object of external identifiers related to a Project.",
+    'providers_id': "An external identifier for a Project added by the user, like a catalog or accession number that is already being used in a different system from the Local Contexts Hub.",
+    'publication_doi': "A persistent, unique identifier commonly assigned to digital publications, such as ebooks and journal articles.",
+    'project_data_guid': "A Globally Unique Identifier, such as an ARK identifier.",
+    'contributors': "An array of objects detailing additional contributors to a project other than the Project Creator.",
+    'notice': "An array of objects containing Notice information.",
+    'bc_labels': "An array of objects containing BC Label information.",
+    'tk_labels': "An array of objects containing TK Label information.",
+    'project_contact': "An array of contact information for the person who should be contacted regarding a Project.",
+    'related_projects': "An array with `unique_id`s for all Related Projects connected to a Project. If no Related Projects are connected, this array will be empty.",
+    'sub_projects': "An array with `unique_id`s for all Sub Projects connected to a Project. If no Sub Projects are connected, this array will be empty.",
+    'label_type': "The type of Label.",
+    'language_tag': "The shortened indication of the language the text of a Label is written in. If left blank, this field will be a string with no characters in it.",
+    'language': "The full name of the language the text of a Label is written in. If left blank, this field will be a string with no characters in it.",
+    'label_text': "The customized text for a Label.",
+    'img_url': "The URL for a Notice or Label icon as a PNG image.",
+    'svg_url': "The URL for a Notice or Label icon as a SVG file.",
+    'audiofile': "The URL for an audio file for a Label. If an audio file was not added, then this field will be `NULL`.",
+    'translations': "An array with information on translation(s) of a Notice or Label. If no information is available, this array will be empty.",
+    'created': "The date a Notice or Label was added to a Project, or the date a Project was created. If previous Notice(s) or Label(s) are completely removed and replaced the created date will reflect when the new Notice(s) or Label(s) was placed.",
+    'updated': "The date a new Notice or Label was added/updated/removed from a Project.",
+    'notice_type': "The type of Notice.",
+    'default_text': "The default text for Notices.",
+    'source_project_uuid': "The `source_project_uuid` for a Project (only applicable to Sub Projects). If this Project is not a Sub Project, then the data type will be `NULL`.",
+    'project_page': "A URL link for a Project view page.",
+    'description': "The description of a Project.",
+    'project_type': "The type selected for a Project.",
+    'urls': "External links related to a Project.",
+    'project_boundary_geojson': "A GeoJSON array. GeoJSON is a format for encoding a variety of geographic data structures. If no information is available, this array will be empty.",
+    'translated_name': "The translated name of a Notice or Label.",
+    'translated_text': "The translated text of a Notice or Label.",
+}
