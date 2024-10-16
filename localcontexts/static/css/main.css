@@ -1845,3 +1845,7 @@ i[data-tooltip]:hover:after {
     background-color: #EF6C00;
     color: #fff;
 }
+
+.right-auto {
+    right: auto !important 
+}
