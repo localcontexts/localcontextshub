@@ -2,6 +2,7 @@ import requests
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.test import Client, TransactionTestCase
 
@@ -20,6 +21,9 @@ class TestFeatures(TransactionTestCase):
             password=pw
         )
         self.assertTrue(logged_in, 'Login failed')
+
+        # clear cache since view function modifies the cache
+        cache.clear()
 
     def test_error_raised_when_slug_is_not_defined_in_get_request(self):
         """
