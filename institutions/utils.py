@@ -19,8 +19,7 @@ def handle_institution_creation(request, form, subscription_form, env):
             data = form.save(commit=False)
             data.institution_creator = request.user
             data.save()
-            if env != 'SANDBOX':
-                handle_confirmation_and_subscription(request, subscription_form, data, env)
+            handle_confirmation_and_subscription(request, subscription_form, data, env)
             affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
             affiliation.institutions.add(data)
             affiliation.save()

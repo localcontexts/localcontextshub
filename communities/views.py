@@ -143,6 +143,7 @@ def create_community(request):
             # If in test site, approve immediately, skip confirmation step
             if env == 'SANDBOX':
                 data.is_approved = True
+                data.is_member = True
                 data.save()
 
                 # Add to user affiliations
