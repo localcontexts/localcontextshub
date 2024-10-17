@@ -16,10 +16,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='institution',
             name='show_sp_connection',
-            field=models.BooleanField(default=True),
+            field=models.BooleanField(default=True, null=True),
         ),
         migrations.AddConstraint(
             model_name='institution',
-            constraint=models.UniqueConstraint(django.db.models.functions.text.Lower('institution_name'), name='institution_name', violation_error_message='This institution is already on the Hub.'),
+            constraint=models.UniqueConstraint(
+                django.db.models.functions.text.Lower('institution_name'),
+                name='institution_name_unique'
+            ),
         ),
     ]
