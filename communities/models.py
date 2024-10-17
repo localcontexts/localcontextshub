@@ -1,4 +1,5 @@
 from django.contrib.postgres.fields import ArrayField
+from djgeojson.fields import MultiPolygonField
 from django.db import models
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
@@ -32,6 +33,7 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
+    polygons = MultiPolygonField()
 
     def get_coordinates(self, as_tuple=True):
         if as_tuple:
