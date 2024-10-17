@@ -5,6 +5,7 @@ from django_countries.fields import CountryField
 from django.core.validators import MaxLengthValidator
 import uuid
 import os
+from django.core.exceptions import ValidationError
 
 class SubscribedManager(models.Manager):
     def get_queryset(self):
@@ -51,6 +52,10 @@ class Institution(models.Model):
     # Managers
     objects = models.Manager()
     subscribed = SubscribedManager()
+
+    def clean(self):
+        if Institution.objects.filter(institution_name__iexact=self.institution_name).exclude(pk=self.pk).exists():
+            raise ValidationError("This institution is already on the Hub.")
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country]
@@ -99,8 +104,7 @@ class Institution(models.Model):
         constraints = [
             models.UniqueConstraint(
                 Lower('institution_name'),
-                name='institution_name',
-                violation_error_message='This institution is already on the Hub.'
+                name='institution_name_unique'
             ),
         ]
 
