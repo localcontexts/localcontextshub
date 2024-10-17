@@ -1,3 +1,4 @@
+from django.contrib.gis.geos import Polygon
 from django.contrib.postgres.fields import ArrayField
 from djgeojson.fields import MultiPolygonField
 from django.db import models
@@ -9,14 +10,17 @@ import uuid
 from itertools import chain
 import os
 
+
 class ApprovedManager(models.Manager):
     def get_queryset(self):
         return super(ApprovedManager, self).get_queryset().filter(is_approved=True)
+
 
 def get_file_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('communities/support-files', filename)
+
 
 def community_img_path(self, filename):
     ext = filename.split('.')[-1]
@@ -45,6 +49,16 @@ class Boundary(models.Model):
             [float(c[0]), float(c[1])]
             for c in self.coordinates
         ]
+
+    def get_first_polygon(self) -> list:
+        """
+        Returns the first polygon as a list
+        """
+        if self.polygons.count() == 0:
+            return []
+
+        first_polygon: Polygon = self.polygons.first()
+        return list(first_polygon)
 
 
 class Community(models.Model):
@@ -157,6 +171,7 @@ class InviteMember(models.Model):
         verbose_name = 'Member Invitation'
         verbose_name_plural = 'Member Invitations'
         ordering = ('-created',)
+
 
 class JoinRequest(models.Model):
     STATUS_CHOICES = (
