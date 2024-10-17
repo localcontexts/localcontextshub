@@ -11,7 +11,7 @@
             <div class='menu-button'></div>
         </label>
         <ul class="menu ul-no-bullets">
-            {% if not 'sandbox' in request.get_host %}
+            {% if 'sandbox' not in request.get_host %}
                 <li>
                     <a
                         class="{% if '/subscription-inquiry/' in request.path %} active-link bold {% endif %} white-text upper" 
