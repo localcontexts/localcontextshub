@@ -56,8 +56,8 @@ class Boundary(models.Model):
         """
         Returns the first polygon as a list or tuple
         """
-        list_transform = lambda _iterable: list(_iterable)
-        tuple_transform = lambda _iterable: tuple(_iterable)
+        def list_transform(_iterable): return list(_iterable)
+        def tuple_transform(_iterable): return tuple(_iterable)
         transformer = list_transform
 
         if as_tuple:
