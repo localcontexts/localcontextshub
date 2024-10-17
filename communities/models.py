@@ -38,7 +38,7 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
-    polygons = MultiPolygonField()
+    polygons = MultiPolygonField(null=True)
 
     def get_coordinates(self, as_tuple=True):
         if as_tuple:
