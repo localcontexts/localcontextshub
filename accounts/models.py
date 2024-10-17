@@ -209,3 +209,52 @@ class ServiceProviderConnections(models.Model):
         indexes = [models.Index(fields=["service_provider"])]
         verbose_name = "Service Provider Connection"
         verbose_name_plural = "Service Provider Connections"
+
+
+class BundleType(models.Model):
+    Bundle_Types = (
+        ('User', 'User Bundle'),
+        ('API', 'API Bundle'),
+        ('Project', 'Project Bundle'),
+        ('Notification', 'Notification Bundle'),
+    )
+    institution = models.ForeignKey(
+        Institution,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="institution_bundle",
+        blank=True,
+    )
+    community = models.ForeignKey(
+        Community,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="community_bundle",
+        blank=True,
+    )
+    researcher = models.ForeignKey(
+        Researcher,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="researcher_bundle",
+        blank=True,
+    )
+    service_provider = models.ForeignKey(
+        ServiceProvider,
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+        related_name="service_provider_bundle",
+        blank=True,
+    )
+    bundle_type = models.CharField(max_length=30, choices=Bundle_Types)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.bundle_type} - {self.created_at}"
+
+    class Meta:
+        ordering = ['-created_at']

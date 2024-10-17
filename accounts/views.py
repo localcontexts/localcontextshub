@@ -36,7 +36,7 @@ from helpers.emails import (
 from .forms import (
     RegistrationForm, ResendEmailActivationForm, CustomPasswordResetForm, UserCreateProfileForm,
     ProfileCreationForm, UserUpdateForm, ProfileUpdateForm, SignUpInvitationForm,
-    SubscriptionForm,
+    SubscriptionForm, BundleTypeForm
 )
 
 from .utils import (
@@ -48,9 +48,10 @@ from institutions.utils import get_institution
 from localcontexts.utils import dev_prod_or_local
 from researchers.utils import is_user_researcher
 from helpers.utils import (
-    accept_member_invite, validate_email, validate_recaptcha, check_member_role
+    accept_member_invite, validate_email, validate_recaptcha, check_member_role,
+    create_bundle_call, get_access_token_of_SF
 )
-from .models import SignUpInvitation, Profile, UserAffiliation, Subscription
+from .models import SignUpInvitation, Profile, UserAffiliation, Subscription, BundleType
 from helpers.models import HubActivity
 from projects.models import Project
 from communities.models import InviteMember, Community
@@ -912,6 +913,7 @@ def subscription(request, pk, account_type, related=None):
 
     renew = False
 
+    form = BundleTypeForm(request.POST or None)
     if account_type == 'institution' and (
         request.user in get_institution(pk).get_admins()
         or
@@ -926,6 +928,42 @@ def subscription(request, pk, account_type, related=None):
         if subscription is not None:
             if subscription.end_date and subscription.end_date < timezone.now():
                 renew = True
+
+        if request.method == "POST":
+            if form.is_valid():
+                try:
+                    access_token = get_access_token_of_SF(request)
+                    for bundle in form.cleaned_data['bundle_type']:
+                        bundle_data = BundleTypeForm().bundle_details[bundle]
+                        quantity = bundle_data['quantity']
+                        bundle_data = {
+                            "hubId": str(request.user.id) + "_i",
+                            "isBundle": True,
+                            "BundleType": bundle,
+                            "Quantity": quantity,
+                        }
+                        BundleType.objects.create(institution=institution, bundle_type=bundle)
+                        create_bundle_call(request, bundle_data, access_token)
+                    messages.add_message(
+                        request,
+                        messages.INFO,
+                        (
+                            "Thank you for your submission, "
+                            "our team will review and be in "
+                            "contact with the bundle contract. "
+                            "You will be notified once your "
+                            "request has been processed."
+                        ),
+                    )
+                    return redirect("subscription", institution.id, 'institution')
+                except Exception:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        "An unexpected error has occurred here."
+                        " Please contact support@localcontexts.org.",
+                    )
+                    return redirect("subscription", institution.id, 'institute')
         context = {
             "institution": institution,
             "subscription": subscription,
@@ -937,8 +975,9 @@ def subscription(request, pk, account_type, related=None):
             else None,
             "renew": renew,
             "member_role": member_role,
+            "form": form,
         }
-    if account_type == 'researcher':
+    elif account_type == 'researcher':
         researcher = Researcher.objects.get(id=pk)
         if researcher.is_subscribed:
             subscription = Subscription.objects.filter(researcher=researcher).first()
@@ -947,6 +986,42 @@ def subscription(request, pk, account_type, related=None):
         if subscription is not None:
             if subscription.end_date and subscription.end_date < timezone.now():
                 renew = True
+
+        if request.method == "POST":
+            if form.is_valid():
+                try:
+                    access_token = get_access_token_of_SF(request)
+                    for bundle in form.cleaned_data['bundle_type']:
+                        bundle_data = BundleTypeForm().bundle_details[bundle]
+                        quantity = bundle_data['quantity']
+                        bundle_data = {
+                            "hubId": str(request.user.id) + "_r",
+                            "isBundle": True,
+                            "BundleType": bundle,
+                            "Quantity": quantity,
+                        }
+                        BundleType.objects.create(researcher=researcher, bundle_type=bundle)
+                        create_bundle_call(request, bundle_data, access_token)
+                    messages.add_message(
+                        request,
+                        messages.INFO,
+                        (
+                            "Thank you for your submission, "
+                            "our team will review and be in "
+                            "contact with the bundle contract. "
+                            "You will be notified once your "
+                            "request has been processed."
+                        ),
+                    )
+                    return redirect("subscription", researcher.id, 'researcher')
+                except Exception:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        "An unexpected error has occurred here."
+                        " Please contact support@localcontexts.org.",
+                    )
+                    return redirect("subscription", researcher.id, 'researcher')
         context = {
             "researcher": researcher,
             "subscription": subscription,
@@ -956,7 +1031,8 @@ def subscription(request, pk, account_type, related=None):
             "end_date": subscription.end_date.strftime('%d %B %Y')
             if subscription and subscription.end_date is not None
             else None,
-            "renew": renew
+            "renew": renew,
+            "form": form,
         }
     return render(
         request, 'account_settings_pages/_subscription.html',

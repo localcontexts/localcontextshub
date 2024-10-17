@@ -2418,7 +2418,8 @@ if (window.location.href.includes('subscription-inquiry')) {
     }
 
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
-    })}
+    })
+};
 
 if (window.location.href.includes('subscription-form')) {
     document.addEventListener("DOMContentLoaded", function () {
@@ -2469,4 +2470,22 @@ if (window.location.href.includes('subscription-form')) {
         });
     })
 });
+};
+
+if (window.location.href.includes('/subscription/')) {
+    function openAddModalView() {
+        const addView = document.getElementById('bundleModal')
+        addView.classList.replace('hide', 'show')
+        event.stopPropagation()
+    }
+    
+    function closeBundleModal() {
+        const modalContent = document.getElementById('bundleModalContent')
+        const crossButton = document.getElementById('close-model-button')
+    
+        if (crossButton) {
+            const modal = document.getElementById('bundleModal');
+            modal.classList.replace('show', 'hide');
+        }
+    }
 };
