@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.contrib.gis.geos import Polygon
 from django.contrib.postgres.fields import ArrayField
 from djgeojson.fields import MultiPolygonField
@@ -50,15 +52,22 @@ class Boundary(models.Model):
             for c in self.coordinates
         ]
 
-    def get_first_polygon(self) -> list:
+    def get_first_polygon(self, as_tuple: bool) -> Union[list, tuple]:
         """
-        Returns the first polygon as a list
+        Returns the first polygon as a list or tuple
         """
+        list_transform = lambda _iterable: list(_iterable)
+        tuple_transform = lambda _iterable: tuple(_iterable)
+        transformer = list_transform
+
+        if as_tuple:
+            transformer = tuple_transform
+
         if self.polygons.count() == 0:
-            return []
+            return transformer([])
 
         first_polygon: Polygon = self.polygons.first()
-        return list(first_polygon)
+        return transformer(first_polygon)
 
 
 class Community(models.Model):
