@@ -41,6 +41,11 @@ class Boundary(models.Model):
     polygons = MultiPolygonField(null=True)
 
     def get_coordinates(self, as_tuple=True):
+        # when array-based coordinates don't exist,
+        # use the coordinates stored as geojson-based polygons
+        if len(self.coordinates) == 0:
+            return self.get_first_polygon_coordinates(as_tuple=as_tuple)
+
         if as_tuple:
             return [
                 (float(c[0]), float(c[1]))
@@ -51,7 +56,7 @@ class Boundary(models.Model):
             for c in self.coordinates
         ]
 
-    def get_first_polygon(self, as_tuple: bool) -> Union[list, tuple]:
+    def get_first_polygon_coordinates(self, as_tuple: bool) -> Union[list, tuple]:
         """
         Returns the first polygon as a list or tuple
         """
