@@ -1,6 +1,5 @@
 from typing import Union
 
-from django.contrib.gis.geos import Polygon
 from django.contrib.postgres.fields import ArrayField
 from djgeojson.fields import MultiPolygonField
 from django.db import models
@@ -66,7 +65,7 @@ class Boundary(models.Model):
         if self.polygons.count() == 0:
             return transformer([])
 
-        first_polygon: Polygon = self.polygons.first()
+        first_polygon: MultiPolygonField = self.polygons.first()
         return transformer(first_polygon)
 
 
