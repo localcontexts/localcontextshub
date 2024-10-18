@@ -142,10 +142,7 @@ def create_community(request):
 
             if subscription_form.is_valid():
                 handle_community_creation(request, data,  subscription_form, env)
-                if env == "SANDBOX":
-                    return redirect('dashboard')
-                else:
-                    return redirect('community-boundary')
+                return redirect('community-boundary')
     return render(request, 'communities/create-community.html', {'form': form, 'user_form': user_form})
 
 

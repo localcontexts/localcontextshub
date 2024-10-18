@@ -50,11 +50,11 @@ def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid
                 if env == 'PROD':
                     manage_researcher_mailing_list(request.user.email, True)
 
-                # Adds activity to Hub Activity
-                HubActivity.objects.create(
-                    action_user_id=request.user.id,
-                    action_type="New Researcher"
-                )
+            # Adds activity to Hub Activity
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Researcher"
+            )
     except Exception as e:
         messages.add_message(
             request,
