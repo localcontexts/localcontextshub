@@ -779,19 +779,24 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
         }
         if isinstance(user, Researcher):
             subscription_params['researcher'] = user
+            subscription_params['subscription_type'] = "individual"
             user.is_subscribed = True
 
         elif isinstance(user, Institution):
             subscription_params['institution'] = user
+            subscription_params['subscription_type'] = "small"
             user.is_subscribed = True
 
         elif isinstance(user, ServiceProvider):
             subscription_params['service_provider'] = user
+            subscription_params['subscription_type'] = "service_provide"
             user.is_certified = True
-        
+
         elif isinstance(user, Community):
             subscription_params['community'] = user
+            subscription_params['subscription_type'] = "member"
             user.is_member=True
+            user.is_approved = True
 
         user.save()
         response = Subscription.objects.create(**subscription_params)
