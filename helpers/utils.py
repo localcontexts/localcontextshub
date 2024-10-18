@@ -789,12 +789,12 @@ def handle_confirmation_and_subscription(request, subscription_form, user, env):
 
         elif isinstance(user, ServiceProvider):
             subscription_params['service_provider'] = user
-            subscription_params['subscription_type'] = "small"
+            subscription_params['subscription_type'] = "service_provide"
             user.is_certified = True
 
         elif isinstance(user, Community):
             subscription_params['community'] = user
-            subscription_params['subscription_type'] = "medium"
+            subscription_params['subscription_type'] = "member"
             user.is_member=True
             user.is_approved = True
 
