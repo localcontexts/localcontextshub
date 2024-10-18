@@ -140,20 +140,12 @@ def create_community(request):
             mutable_post_data.update(subscription_data)
             subscription_form = SubscriptionForm(mutable_post_data)
 
-            # If in test site, approve immediately, skip confirmation step
-            if env == 'SANDBOX':
-                data.is_approved = True
-                data.is_member = True
-                data.save()
-
-                # Add to user affiliations
-                affiliation = UserAffiliation.objects.prefetch_related('communities').get(user=request.user)
-                affiliation.communities.add(data)
-                affiliation.save()
-                return redirect('dashboard')
-            elif subscription_form.is_valid():
+            if subscription_form.is_valid():
                 handle_community_creation(request, data,  subscription_form, env)
-                return redirect('community-boundary')
+                if env == "SANDBOX":
+                    return redirect('dashboard')
+                else:
+                    return redirect('community-boundary')
     return render(request, 'communities/create-community.html', {'form': form, 'user_form': user_form})
 
 

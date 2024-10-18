@@ -24,12 +24,13 @@ def handle_institution_creation(request, form, subscription_form, env):
             affiliation.institutions.add(data)
             affiliation.save()
 
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Institution",
-                institution_id=data.id,
-                action_account_type="institution",
-            )
+            if env != 'SANDBOX':
+                HubActivity.objects.create(
+                    action_user_id=request.user.id,
+                    action_type="New Institution",
+                    institution_id=data.id,
+                    action_account_type="institution",
+                )
     except Exception as e:
         messages.add_message(
             request,

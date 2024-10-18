@@ -59,14 +59,15 @@ def handle_community_creation(request, data, subscription_form, env):
             affiliation.communities.add(data)
             affiliation.save()
 
-            # Adds activity to Hub Activity
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Community",
-                community_id=data.id,
-                action_account_type='community'
-            )
-            request.session['new_community_id'] = data.id
+            if env != 'SANDBOX':
+                # Adds activity to Hub Activity
+                HubActivity.objects.create(
+                    action_user_id=request.user.id,
+                    action_type="New Community",
+                    community_id=data.id,
+                    action_account_type='community'
+                )
+                request.session['new_community_id'] = data.id
             
     except Exception as e:
         messages.add_message(

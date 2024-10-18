@@ -40,20 +40,21 @@ def handle_researcher_creation(request, subscription_form, form, orcid_id, orcid
             request.user.user_profile.is_researcher = True
             request.user.user_profile.save()
 
-            # sends one email to the account creator
-            # and one to either site admin or support
-            send_researcher_email(request)
-            send_hub_admins_account_creation_email(request, data)
+            if env != 'SANDBOX':
+                # sends one email to the account creator
+                # and one to either site admin or support
+                send_researcher_email(request)
+                send_hub_admins_account_creation_email(request, data)
 
-            # Add researcher to mailing list
-            if env == 'PROD':
-                manage_researcher_mailing_list(request.user.email, True)
+                # Add researcher to mailing list
+                if env == 'PROD':
+                    manage_researcher_mailing_list(request.user.email, True)
 
-            # Adds activity to Hub Activity
-            HubActivity.objects.create(
-                action_user_id=request.user.id,
-                action_type="New Researcher"
-            )
+                # Adds activity to Hub Activity
+                HubActivity.objects.create(
+                    action_user_id=request.user.id,
+                    action_type="New Researcher"
+                )
     except Exception as e:
         messages.add_message(
             request,
