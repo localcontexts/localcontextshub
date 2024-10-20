@@ -38,40 +38,45 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
-    polygons = MultiPolygonField(null=True)
+    geometry = MultiPolygonField(null=True)
+
+    @staticmethod
+    def transform_coordinates(as_tuple: bool, coordinates: list):
+        if as_tuple:
+            return [
+                (float(c[0]), float(c[1]))
+                for c in coordinates
+            ]
+        return [
+            [float(c[0]), float(c[1])]
+            for c in coordinates
+        ]
 
     def get_coordinates(self, as_tuple=True):
         # when array-based coordinates don't exist,
         # use the coordinates stored as geojson-based polygons
-        if len(self.coordinates) == 0:
+        if not self.coordinates or len(self.coordinates) == 0:
             return self.get_first_polygon_coordinates(as_tuple=as_tuple)
 
-        if as_tuple:
-            return [
-                (float(c[0]), float(c[1]))
-                for c in self.coordinates
-            ]
-        return [
-            [float(c[0]), float(c[1])]
-            for c in self.coordinates
-        ]
+        return self.transform_coordinates(
+            as_tuple=as_tuple, coordinates=self.coordinates
+        )
 
     def get_first_polygon_coordinates(self, as_tuple: bool) -> Union[list, tuple]:
         """
         Returns the first polygon as a list or tuple
         """
-        def list_transform(_iterable): return list(_iterable)
-        def tuple_transform(_iterable): return tuple(_iterable)
-        transformer = list_transform
+        if (
+            self.geometry and
+            'polygons' in self.geometry and
+            len(self.geometry['polygons']) == 0
+        ):
+            return []
 
-        if as_tuple:
-            transformer = tuple_transform
-
-        if self.polygons.count() == 0:
-            return transformer([])
-
-        first_polygon: MultiPolygonField = self.polygons.first()
-        return transformer(first_polygon)
+        first_polygon: list = self.geometry['polygons'][0]
+        return self.transform_coordinates(
+            as_tuple=as_tuple, coordinates=first_polygon
+        )
 
 
 class Community(models.Model):
