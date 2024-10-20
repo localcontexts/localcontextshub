@@ -7,22 +7,59 @@
             <div class="w-60"><h2 class="mt-0">Local Contexts Projects</h2></div>
 
             {% if community or institution %}
-                {% if member_role == 'admin' or member_role == 'editor' %}
-                    <div class="flex-this align-center">
-                        <a class="primary-btn green-btn mt-2p "
-                            {% if community %} href="{% url 'create-project' community.id %}" {% endif %}
-                            {% if institution %} href="{% url 'inst-create-project' institution.id %}" {% endif %}
-                        >
-                            Create a Project <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </div>
-                {% endif %}
-            {% else %}
                 <div class="flex-this align-center">
-                    <a class="primary-btn green-btn mt-2p " href="{% url 'researcher-create-project' researcher.id %}">
+                    {% if member_role == 'admin' or member_role == 'editor' %}
+                        <div class="btn-with-helptext">
+                            {% if institution%}
+                                <a class="{% if not institution.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext{% else %} primary-btn green-btn mt-2p {% endif %}"
+                                    href="{% if institution.is_subscribed and subscription.project_count != 0 %} {% url 'inst-create-project' institution.id %} {% else %} javascript:void(0){% endif %}">
+                                    Create a Project <i class="fa fa-arrow-right"></i>
+                                </a>
+                            {% else %}
+                                <a class="primary-btn green-btn mt-2p "
+                                    href="{% url 'community-create-project' community.id %}">
+                                    Create a Project <i class="fa fa-arrow-right"></i>
+                                </a>
+                            {% endif %}
+                            {% if institution %}
+                                {% if not institution.is_subscribed or subscription.project_count == 0 %}
+                                    <span class="btn-help-text">
+                                        {% if institution.is_subscribed == False %}
+                                            The subscription process of your institution is not completed yet. Please wait for the completion of the subscription process.
+                                        {% else %}
+                                            Your institution has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+            <div class="btn-with-helptext">
+                {% if researcher%}
+                    <a class="{% if not researcher.is_subscribed or subscription.project_count == 0 %} primary-btn disabled-btn mt-2p helptext {% else %} primary-btn green-btn mt-2p {% endif %}"
+                        href="{% if researcher.is_subscribed and subscription.project_count != 0 %} {% url 'researcher-create-project' researcher.id %} {% else %} javascript:void(0) {% endif %}">
                         Create a Project <i class="fa fa-arrow-right"></i>
                     </a>
-                </div>
+                {% else %}
+                    <a class="primary-btn green-btn mt-2p "
+                        href="{% url 'researcher-create-project' researcher.id %}">
+                        Create a Project <i class="fa fa-arrow-right"></i>
+                    </a>
+                {% endif %}
+                {% if researcher %}
+                    {% if not researcher.is_subscribed or subscription.project_count == 0 %}
+                        <span class="btn-help-text">
+                            {% if researcher.is_subscribed == False %}
+                                The subscription process of your account is not completed yet. Please wait for the completion of the subscription process.
+                            {% else %}
+                                Your account has reached its Project limit. Please upgrade your subscription plan to create more Projects.
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                {% endif %}
+            </div>
             {% endif %}
         </div>
         <div class="w-70">
@@ -169,11 +206,15 @@
       </div>
 
     {% if not results and not items %}
-        <div class="w-100 center-text mt-16 mb-16" style="margin-top: 100px;">
-            <h2>There are no Projects yet</h2>
-            <h3>Let's create a Project!</h3>
-            <p>Click the button above to start.</p>
-        </div>  
+        <div class="dashcard w-100 center-text mt-16 mb-16">
+            <p class="center-text">
+                <strong>There are no Projects yet.</strong>
+                <br>
+                <small>
+                    Let's create a Project! Click the button above to start.
+                </small>
+            </p>
+        </div>
     {% endif %}
 
     {% include 'snippets/pagination.html' %}

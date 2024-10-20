@@ -16,8 +16,9 @@ import requests
 from .models import NoticeDownloadTracker
 from institutions.models import Institution
 from researchers.models import Researcher
-from .utils import retrieve_native_land_all_slug_data
-
+from serviceproviders.models import ServiceProvider
+from .utils import validate_is_subscribed, retrieve_native_land_all_slug_data
+from .exceptions import UnsubscribedAccountException
 
 def restricted_view(request, exception=None):
     return render(request, '403.html', status=403)
@@ -36,26 +37,48 @@ def delete_member_invite(request, pk):
 
     if '/communities/' in request.META.get('HTTP_REFERER'):
         return redirect('member-requests', invite.community.id)
+    elif '/service-providers/' in request.META.get('HTTP_REFERER'):
+        return redirect('service-provider-member-intives', invite.service_provider.id)
     else:
         return redirect('institution-member-requests', invite.institution.id)
 
 
 @login_required(login_url='login')
-def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None):
+def download_open_collaborate_notice(request, perm, researcher_id=None, institution_id=None, service_provider_id=None):
     # perm will be a 1 or 0
     has_permission = bool(perm)
     if dev_prod_or_local(request.get_host()) == 'SANDBOX' or not has_permission:
         return redirect('restricted')
     else:
         if researcher_id:
-            researcher = get_object_or_404(Researcher, id=researcher_id)
-            NoticeDownloadTracker.objects.create(researcher=researcher, user=request.user,open_to_collaborate_notice=True)
+            entity = get_object_or_404(Researcher, id=researcher_id)
+            entity_type = 'researcher'
+        if institution_id:
+            entity = get_object_or_404(Institution, id=institution_id)
+            entity_type = 'institution'
+        if service_provider_id:
+            entity = get_object_or_404(ServiceProvider, id=service_provider_id)
+            entity_type = 'service_provider'
 
-        elif institution_id:
-            institution = get_object_or_404(Institution, id=institution_id)
-            NoticeDownloadTracker.objects.create(institution=institution, user=request.user, open_to_collaborate_notice=True)
+        if not service_provider_id and entity.is_subscribed:
+            entity_field = {entity_type: entity}
+            entity_field['user'] = request.user
+            entity_field['open_to_collaborate_notice'] = True
+            NoticeDownloadTracker.objects.create(**entity_field)
+            return download_otc_notice(request)
+        elif service_provider_id and entity.is_certified:
+            entity_field = {entity_type: entity}
+            entity_field['user'] = request.user
+            entity_field['open_to_collaborate_notice'] = True
+            NoticeDownloadTracker.objects.create(**entity_field)
+            return download_otc_notice(request)
+        else:
+            if service_provider_id:
+                message = 'Account Is Not Certified'
+            else:
+                message = 'Account Is Not Subscribed'
+            raise UnsubscribedAccountException(message)
 
-        return download_otc_notice(request)
 
 
 @login_required(login_url='login')

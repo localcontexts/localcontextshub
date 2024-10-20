@@ -7,6 +7,7 @@ from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from institutions.models import Institution
+from serviceproviders.models import ServiceProvider
 import uuid
 from itertools import chain
 import os
@@ -80,6 +81,11 @@ class Boundary(models.Model):
 
 
 class Community(models.Model):
+    PRIVACY_LEVEL = (
+        ('public', 'Public/Contributor'),
+        ('all', 'All'),
+    )
+
     community_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     community_name = models.CharField(max_length=80, null=True, unique=True)
     community_entity = models.CharField(max_length=200, null=True, blank=True)
@@ -87,7 +93,7 @@ class Community(models.Model):
     contact_email = models.EmailField(max_length=254, null=True, blank=True)
     image = models.ImageField(upload_to=community_img_path, blank=True, null=True)
     support_document = models.FileField(upload_to=get_file_path, blank=True, null=True)
-    description = models.TextField(null=True, blank=True, validators=[MaxLengthValidator(200)])
+    description = models.TextField(null=True, validators=[MaxLengthValidator(200)])
     city_town = models.CharField(max_length=80, blank=True, null=True)
     state_province_region = models.CharField(verbose_name='state or province', max_length=100, blank=True, null=True)
     country = CountryField(blank=True, null=True)
@@ -98,11 +104,15 @@ class Community(models.Model):
     is_approved = models.BooleanField(default=False, null=True)
     approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="community_approver")
     created = models.DateTimeField(auto_now_add=True, null=True)
+    is_member = models.BooleanField(default=False)
 
     source_of_boundary = models.CharField(max_length=400, blank=True, null=True)
     name_of_boundary = models.CharField(max_length=200, blank=True, null=True)
-    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, null=True)
+    boundary = models.ForeignKey(Boundary,  on_delete=models.CASCADE, blank=True, null=True)
     share_boundary_publicly = models.BooleanField(default=True)
+
+    show_sp_connection = models.BooleanField(default=True, null=True)
+    sp_privacy = models.CharField(max_length=20, default='all', choices=PRIVACY_LEVEL, null=True)
 
     # Managers
     objects = models.Manager()
@@ -110,7 +120,7 @@ class Community(models.Model):
 
     def get_location(self):
         components = [self.city_town, self.state_province_region, self.country.name]
-        location = ', '.join(filter(None, components)) or 'None specified'
+        location = ', '.join(filter(None, components)) or None
         return location
 
     def get_member_count(self):
@@ -166,6 +176,7 @@ class InviteMember(models.Model):
     )
 
     ROLES = (
+        ("", "---------"),
         ('admin', 'admin'),
         ('editor', 'editor'),
         ('viewer', 'viewer'),
@@ -175,6 +186,7 @@ class InviteMember(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='community_invitation', null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name='institution_invitation', null=True, blank=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name='service_provider_invitation', null=True, blank=True)
     role = models.CharField(max_length=8, choices=ROLES, null=True)
     message = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='sent', blank=True)
@@ -185,7 +197,7 @@ class InviteMember(models.Model):
         return f"{self.sender}-{self.receiver}-{self.status}"
 
     class Meta:
-        indexes = [models.Index(fields=['sender', 'receiver', 'community', 'institution'])]
+        indexes = [models.Index(fields=['sender', 'receiver', 'community', 'institution', 'service_provider'])]
         verbose_name = 'Member Invitation'
         verbose_name_plural = 'Member Invitations'
         ordering = ('-created',)

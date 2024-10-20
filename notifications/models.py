@@ -4,6 +4,7 @@ from django.db import models
 from communities.models import Community
 from institutions.models import Institution
 from researchers.models import Researcher
+from serviceproviders.models import ServiceProvider
 
 
 class UserNotification(models.Model):
@@ -33,6 +34,7 @@ class UserNotification(models.Model):
     notification_type = models.CharField(max_length=10, choices=TYPES, null=True, blank=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, null=True, blank=True)
     role = models.CharField(max_length=8, choices=ROLES, null=True, blank=True)
     reference_id = models.CharField(max_length=20, null=True, blank=True)
     viewed = models.BooleanField(default=False, blank=True)
@@ -68,6 +70,7 @@ class ActionNotification(models.Model):
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True, blank=True)
     researcher = models.ForeignKey(Researcher, on_delete=models.CASCADE, null=True, blank=True)
+    service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, null=True, blank=True)
     reference_id = models.CharField(max_length=50, null=True, blank=True)
     viewed = models.BooleanField(default=False, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)

@@ -22,7 +22,7 @@ class TestCommunity(TestCase):
         community.state_province_region = None
         community.country = None
         community.save()
-        expected_result = "None specified"
+        expected_result = None
         result = community.get_location()
         assert result == expected_result
 

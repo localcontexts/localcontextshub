@@ -13,6 +13,12 @@ if (passwordField) {
     passwordField.addEventListener('focusout', (event) => { helpTextDiv.style.display = 'none' })
 }
 
+// Email validation function
+function isValidEmail(email) {
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 var registerUserBtn = document.getElementById('registerUserBtn')
 if (registerUserBtn) { registerUserBtn.addEventListener('click', () => disableSubmitRegistrationBtn()) }
 
@@ -96,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const url = window.location.href;
-    const createPages = ['create-community', 'create-institution', 'connect-researcher'];
-    const updatePages = ['communities/update', 'institutions/update', 'researchers/update'];
+    const createPages = ['create-community', 'create-institution', 'connect-researcher', 'create-service-provider'];
+    const updatePages = ['communities/update', 'institutions/update', 'researchers/update', 'service-providers/update'];
 
     if (createPages.some(page => url.includes(page)) || updatePages.some(page => url.includes(page))) {
         initializeCharacterCounter('id_description', 'charCount', 200);
@@ -1022,6 +1028,7 @@ if (projectTypeSelect) {
     })
 }
 
+let selectedDivCount = 0; 
 // PROJECTS: NOTIFY communities - select desired communities
 function selectCommunities() {
     let select = document.getElementById('communities-select')
@@ -1033,10 +1040,12 @@ function selectCommunities() {
         let selectedCommunityDiv = document.getElementById(`selected-community-${option.id}`)
         let div = document.getElementById(`comm-id-input-${option.id}`)
 
-        if (option.selected) {
+        if (option.selected  && !selectedCommunityDiv.classList.contains('show')) {
+            selectedDivCount++;
             selectedCommunityDiv.classList.replace('hide', 'show')
             div.innerHTML = `<input type="hidden" value="${option.id}" name="selected_communities">`
         }
+        select.disabled = notification_count > 1 && selectedDivCount >= notification_count;
     })
 }
 
@@ -1045,12 +1054,19 @@ function cancelCommunitySelection(elem) {
     let id = elem.id
     let matches = id.match(/(\d+)/)
     let targetNum = matches[0]
-
     let divToClose = document.getElementById(`selected-community-${targetNum}`)
     let inputDivToRemove = document.getElementById(`comm-id-input-${targetNum}`)
+    var select = document.getElementById('communities-select')
 
     divToClose.classList.replace('show', 'hide')
     inputDivToRemove.innerHTML = ``
+    if (selectedDivCount > 0) {
+        selectedDivCount--;
+    }
+    if (selectedDivCount < notification_count) {
+        select.disabled = false;
+    }
+    
 }
 
 
@@ -1605,8 +1621,24 @@ if (window.location.href.includes('newsletter/preferences/') ) {
     }
 }
 
+// Add API Key Modals
+if (window.location.href.includes('api-key')) {
+    const generateAPIKeymodal = document.getElementById('generateAPIKeymodal')
+    const generateAPIKeybtn = document.getElementById('generateAPIKeybtn')
+    const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
+
+    generateAPIKeybtn.addEventListener('click', () => {
+        if (generateAPIKeymodal.classList.contains('hide')) { generateAPIKeymodal.classList.replace('hide', 'show')}
+    })
+    const closegenerateAPIKeymodal = document.getElementById('closegenerateAPIKeymodal')
+    closegenerateAPIKeymodal.addEventListener('click', function() { generateAPIKeymodal.classList.replace('show', 'hide')})
+
+    const closedeleteAPIKeymodal = document.getElementById('closedeleteAPIKeymodal')
+    closedeleteAPIKeymodal.addEventListener('click', function() { deleteAPIKeymodal.classList.replace('show', 'hide')})
+}
+
 // REGISTRY FILTERING AND JOIN REQUESTS / CONTACT MODAL
-if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') ) {
+if (window.location.href.includes('communities/view/') || window.location.href.includes('institutions/view/') || window.location.href.includes('researchers/view/') || window.location.href.includes('service-providers/view/') ) {
 
     // Join request modal and form
     const openRequestToJoinModalBtn = document.getElementById('openRequestToJoinModalBtn') 
@@ -1660,6 +1692,19 @@ if (window.location.href.includes('communities/view/') || window.location.href.i
     }
 }
 
+if (
+    window.location.href.includes('/invitations/')
+) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var disabledDiv = document.querySelector('.disabled-btn');
+        if (disabledDiv) {
+            disabledDiv.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+        }
+    });
+}    
 //  ONBOARDING MODAL: Shows up in dashboard if there isn't a localstorage item saved and onboarding_on is set to true
 if (window.location.href.includes('dashboard')) {
     const hiddenInput = document.getElementById('openOnboarding')
@@ -1732,10 +1777,12 @@ if (window.location.href.includes('notices')) {
     const closeAddURLModal = document.getElementById('closeAddURLModal')
     closeAddURLModal.addEventListener('click', function() { OTCModal.classList.replace('show', 'hide')})
 
-    // Share OTC Notice Modal
-    shareBtn.addEventListener('click', () => {
-        if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
-    })
+    if (shareBtn){
+        // Share OTC Notice Modal
+        shareBtn.addEventListener('click', () => {
+            if (shareOTCNoticeModal.classList.contains('hide')) { shareOTCNoticeModal.classList.replace('hide', 'show')}
+        })
+    }
     const closeshareOTCNoticeModal = document.getElementById('closeshareOTCNoticeModal')
     closeshareOTCNoticeModal.addEventListener('click', function() { shareOTCNoticeModal.classList.replace('show', 'hide')})
 
@@ -1897,6 +1944,7 @@ function shareToSocialsBtnAction(btnElem) {
 }
 
 function openModal(modalId, closeBtnId) {
+    console.log(modalId)
     const modal = document.getElementById(modalId)
     modal.classList.replace('hide', 'show')
 
@@ -1907,14 +1955,15 @@ function openModal(modalId, closeBtnId) {
     })
 }
 
-function toggleProjectInfo(self, idToToggle) {
+function toggleSectionInfo(self, idToToggle) {
     let div = document.getElementById(idToToggle)
-    let allDivs = document.querySelectorAll('.project-header-div')
+    let allDivs = document.querySelectorAll('.section-header-div')
     let lastDiv = allDivs[allDivs.length - 1]
 
     if (div.style.height == "0px") {
         self.innerHTML = '<i class="fa-solid fa-minus fa-xl darkteal-text"></i>'
         div.style.height = 'auto'
+        div.style.overflow = 'visible'
         self.parentElement.classList.add('border-bottom-solid-teal')
 
         if (self.parentElement != lastDiv) {
@@ -1922,6 +1971,7 @@ function toggleProjectInfo(self, idToToggle) {
         }
     } else {
         div.style.height = '0px'
+        div.style.overflow = 'hidden'
         self.innerHTML = '<i class="fa-solid fa-plus fa-xl darkteal-text"></i>'
         self.parentElement.classList.remove('border-bottom-solid-teal')
 
@@ -1994,6 +2044,8 @@ if (window.location.href.includes('create-institution') && !window.location.href
     const createInstitutionBtn = document.getElementById('createInstitutionBtn')
     const clearFormBtn = document.getElementById('clearFormBtn')
     const descriptionField = document.getElementById('id_description')
+    const contactNameField = document.getElementById('institutionContactNameField')
+    const contactEmailField = document.getElementById('institutionContactEmailField')
 
     let characterCounter = document.getElementById('charCount')
     let delayTimer
@@ -2033,6 +2085,8 @@ if (window.location.href.includes('create-institution') && !window.location.href
         stateProvRegionInputField.value = ''
         countryInputField.value = ''
         descriptionField.value = ''
+        contactNameField.value = ''
+        contactEmailField.value = ''
 
         characterCounter.textContent = '200/200'
     })
@@ -2078,8 +2132,8 @@ if (window.location.href.includes('create-institution') && !window.location.href
     function clearSuggestions() { suggestionsContainer.innerHTML = '' }
 }
 
-if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/')) {
-    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn')
+if (window.location.href.includes('/institutions/update/') || window.location.href.includes('/communities/update/') || window.location.href.includes('/researchers/update/') || window.location.href.includes('/service-providers/update/')) {
+    const realImageUploadBtn = document.getElementById('institutionImgUploadBtn') || document.getElementById('communityImgUploadBtn') || document.getElementById('researcherImgUploadBtn') || document.getElementById('serviceProviderImgUploadBtn')
     const customImageUploadBtn = document.getElementById('altImageUploadBtn')
     const imagePreviewContainer = document.getElementById('imagePreviewContainer')
 
@@ -2114,29 +2168,6 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
     })
  }
 
- if (window.location.href.includes('/confirm-community/')) {
-    const realFileUploadBtn = document.getElementById('communitySupportLetterUploadBtn')
-    const customFileUploadBtn = document.getElementById('customFileUploadBtn')
-    const form = document.querySelector('#confirmationForm')
-    const contactEmailInput = document.getElementById('communityContactEmailField')
-
-    function showFileName() {
-        const selectedFile = realFileUploadBtn.files[0]
-        customFileUploadBtn.innerHTML = `${selectedFile.name} <i class="fa-solid fa-check"></i>`
-    }
-
-    customFileUploadBtn.addEventListener('click', function(e) {
-        e.preventDefault()
-        realFileUploadBtn.click()
-    })
-
-    form.addEventListener('submit', function(e) {
-        if (realFileUploadBtn.files.length === 0 && contactEmailInput.value.trim() === '') {
-            e.preventDefault()
-            alert('Please either enter a contact email or upload a support file')
-        }
-    })
- }
 
  if (window.location.href.includes('institutions/notices/')) {
     const realFileUploadBtn = document.getElementById('ccNoticePolicyUploadBtn')
@@ -2181,18 +2212,20 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
 
     // Collections Care Button Download
     const ccNoticeDownloadBtn = document.getElementById('ccNoticeDownloadBtn')
-    ccNoticeDownloadBtn.addEventListener('click', function() {    
-        let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
-        ccNoticeDownloadBtn.setAttribute('disabled', true)
-        ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader ml-8"></div>'
+    if (ccNoticeDownloadBtn){
+        ccNoticeDownloadBtn.addEventListener('click', function() {    
+            let oldValue = 'Download Notices <i class="fa-solid fa-download"></i>'
+            ccNoticeDownloadBtn.setAttribute('disabled', true)
+            ccNoticeDownloadBtn.innerHTML = 'Downloading <div class="custom-loader ml-8"></div>'
 
-        // Re-enable the button after a certain timeout
-        // re-enable it after a while, assuming an average download duration
-        setTimeout(function() {
-            ccNoticeDownloadBtn.innerHTML = oldValue
-            ccNoticeDownloadBtn.removeAttribute('disabled')
-        }, 15000)
-    })
+            // Re-enable the button after a certain timeout
+            // re-enable it after a while, assuming an average download duration
+            setTimeout(function() {
+                ccNoticeDownloadBtn.innerHTML = oldValue
+                ccNoticeDownloadBtn.removeAttribute('disabled')
+            }, 15000)
+        })
+    }
  }
 
  if (window.location.href.includes('/communities/labels/customize/') || window.location.href.includes('/communities/labels/edit/')) {
@@ -2234,7 +2267,7 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
 
  }
 
- if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/')) {
+ if (window.location.href.includes('communities/members/') ||  window.location.href.includes('institutions/members/') || window.location.href.includes('service-providers/members/')) {
 
     // Add member modal
     function openAddModalView() {
@@ -2273,3 +2306,167 @@ if (window.location.href.includes('/institutions/update/') || window.location.hr
         }
     }
  }
+
+if (window.location.href.includes('subscription-inquiry')) {
+    function cancelDisclaimer() {
+        var joinAlert = document.getElementById('disclaimerAlert');
+        joinAlert.style.display = 'none';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+    const nameInputField = document.getElementById('organizationInput')
+    const suggestionsContainer = document.getElementById('suggestionsContainer')
+
+    let delayTimer
+
+    nameInputField.addEventListener('input', () => {
+        clearTimeout(delayTimer)
+
+        const inputValue = nameInputField.value.trim()
+        if (inputValue.length >= 3) { // Minimum characters required before making a request
+            let queryURL = 'https://api.ror.org/organizations?query='
+
+            delayTimer = setTimeout(() => {
+
+                var matchingInstitutions = nonRorInstitutes.filter(function(item) {
+                    return item.fields.institution_name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+                var matchingCommunities = communities.filter(function(item){
+                    return item.fields.community_name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+                var matchingServiceProviders = serviceProviders.filter(function(item){
+                    return item.fields.name.toLowerCase().includes(inputValue.toLowerCase());
+                });
+
+                fetch(`${queryURL}${encodeURIComponent(inputValue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showSuggestions(data.items, matchingInstitutions, matchingCommunities, matchingServiceProviders, inputValue)
+
+                    })
+                    .catch(error => { console.error(error)})
+
+            }, 300) // Delay in milliseconds before making the request
+        } else { clearSuggestions() }
+    })
+
+    function showSuggestions(items, matchingInstitutions, matchingCommunities, matchingServiceProviders, userInput) {
+        // Clear previous suggestions
+        clearSuggestions()
+        // Get the first 5 most relevant itemss
+        const combinedItems = [...matchingInstitutions, ...matchingCommunities, ...matchingServiceProviders, ...items];
+
+        const filteredItems = combinedItems.filter(item =>
+            (typeof item === 'object' && item.name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase().includes(userInput.toLowerCase())) ||
+            (typeof item === 'object' && item.fields?.name?.toLowerCase().includes(userInput.toLowerCase()))
+        );
+
+        // Check if any item exactly matches the user input
+        const exactMatch = combinedItems.some(item =>
+            (typeof item === 'object' && item.name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.institution_name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.community_name?.toLowerCase() === userInput.toLowerCase()) ||
+            (typeof item === 'object' && item.fields?.name?.toLowerCase() === userInput.toLowerCase())
+        );
+        const relevantItems = filteredItems.slice(0, 5);
+        // If no exact match, show 'not found in ROR List' message
+        if (!exactMatch) {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.classList.add('suggestion-item');
+            suggestionItem.innerHTML = `${userInput} (Not in List)`;
+            suggestionItem.addEventListener('click', () => {
+                nameInputField.value = userInput;
+                clearSuggestions();
+                });
+                suggestionsContainer.appendChild(suggestionItem);
+        }
+        displaySuggestions(relevantItems);
+
+    }
+
+      function displaySuggestions(items) {
+        items.forEach(item => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.classList.add('suggestion-item');
+
+          let displayName = '';
+          let displayDetails = '';
+
+          if (typeof item === 'object' && item.hasOwnProperty('name')) {
+            displayName = item.name;
+            displayDetails = `${item.types.join(", ")}, ${item.country.country_name} Institution`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "institutions.institution") {
+            displayName = item.fields.institution_name;
+            displayDetails = `${item.fields.country ? item.fields.country + " " : ""}Institution`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "communities.community") {
+            displayName = item.fields.community_name;
+            displayDetails = `${item.fields.country ? item.fields.country + " " : ""}Community`;
+        } else if (typeof item === 'object' && item.hasOwnProperty('fields') && item.model === "serviceproviders.serviceprovider") {
+            displayName = item.fields.name;
+            displayDetails = `Service Provider`;
+        }
+          suggestionItem.innerHTML = `${displayName} <br> <small>${displayDetails}</small>`;
+
+          suggestionItem.addEventListener('click', () => {
+            nameInputField.value = displayName;
+            clearSuggestions();
+          });
+
+          suggestionsContainer.appendChild(suggestionItem);
+        });
+    }
+
+    function clearSuggestions() { suggestionsContainer.innerHTML = '' }
+    })}
+
+if (window.location.href.includes('subscription-form')) {
+    document.addEventListener("DOMContentLoaded", function () {
+        const firstNameInput = document.querySelector('input[name="first_name"]');
+        const lastNameInput = document.querySelector('input[name="last_name"]');
+        const emailInput = document.querySelector('input[type="email"]');
+        const organizationInput = document.querySelector('input[name="organization_name"]');
+        const inquiryTypeRadios = document.querySelectorAll('input[name="inquiry_type"]');
+        const submitButton = document.getElementById("createSubscription");
+        const clearFormBtn = document.getElementById('clearFormBtn')
+        
+        validateForm()
+        submitButton.addEventListener("click", disableButton)
+        firstNameInput.addEventListener("input", validateForm);
+        emailInput.addEventListener("input", validateForm);
+        if (inquiryTypeRadios.length > 0) {
+            inquiryTypeRadios.forEach(radio => radio.addEventListener("change", validateForm));
+        }
+        
+    function validateForm() {
+        const firstNameFilled = firstNameInput.value.trim() !== "";
+        const emailFilled = emailInput.value.trim() !== "" && isValidEmail(emailInput.value.trim());
+        const inquiryTypeSelected = inquiryTypeRadios.length > 0
+            ? Array.from(inquiryTypeRadios).some(radio => radio.checked)
+            : true;
+        // Enable the button if all fields are valid
+        if (firstNameFilled && emailFilled && inquiryTypeSelected) {
+          submitButton.disabled = false;
+        } else {
+          submitButton.disabled = true;
+        }
+    }
+
+    function disableButton() {
+          document.getElementById("createSubscription").style.display = "none";
+          document.getElementById("loading-spinner").classList.remove('hide');
+      }
+    
+    clearFormBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        firstNameInput.value = ''
+        submitButton.disabled = true
+
+        lastNameInput.value = ''
+        emailInput.value = ''
+        inquiryTypeRadios.forEach(radio => {
+            radio.checked = false;
+        });
+    })
+});
+};

@@ -11,8 +11,8 @@
         {% if restricted %}
             <div class="flex-this w-100">
                 <div class="ml-8 mr-8 m-auto" style="display: inherit;">
-                    <a 
-                        href="https://localcontexts.org" 
+                    <a
+                        href="https://localcontexts.org"
                         style="display: inline-flex;">
                         <img style="width:60px;" loading="lazy" src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" alt="404 Local Contexts round logo">
                     </a>
@@ -31,10 +31,10 @@
                         {% for notice in notices %}
                             <div id="notice" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                 <div id="notice-icon" style="padding-right: 12px;">
-                                    <img 
-                                        loading="lazy" 
+                                    <img
+                                        loading="lazy"
                                         class="pointer"
-                                        src="{{ notice.img_url }}" 
+                                        src="{{ notice.img_url }}"
                                         {% if layout == "3"%}
                                             width="100px"
                                         {% else %}
@@ -69,7 +69,7 @@
                                             {% endif %}
                                         </h4>
                                     </div>
-                                
+
                                 {% elif layout == "3" %}
                                     <div id="notice-text">
                                         <h3 class="mt-0 mb-0">
@@ -118,8 +118,8 @@
                     {% elif otc_notices %}
                         <div id="notice" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                             <div id="notice-icon" style="padding-left: 12px;padding-right: 12px;">
-                                <img 
-                                    loading="lazy" 
+                                <img
+                                    loading="lazy"
                                     class="pointer"
                                     src="/static/images/notices/ci-open-to-collaborate.png"
                                     {% if layout == "3"%}
@@ -146,6 +146,8 @@
                                             {{ institution.institution_name }}
                                         {% elif researcher %}
                                             {% firstof researcher.user.get_full_name researcher.user.username %}
+                                        {% elif service_provider %}
+                                            {{ service_provider.name }}
                                         {% endif %}
                                         is committed to the development of new modes of collaboration, engagement, and partnership with Indigenous peoples for the care and stewardship of past and future heritage collections.
                                     </p>
@@ -166,10 +168,10 @@
                                     {% if tklabel.language_tag == 'en' %}
                                         <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
-                                                <img 
-                                                    loading="lazy" 
+                                                <img
+                                                    loading="lazy"
                                                     class="pointer"
-                                                    src="{{ tklabel.img_url }}" 
+                                                    src="{{ tklabel.img_url }}"
                                                     {% if layout == "3" %}
                                                         width="100px"
                                                     {% else %}
@@ -179,11 +181,11 @@
                                                     alt=""
                                                 >
                                             </div>
-                                            
+
                                             <div id="label-details">
                                                 {% if layout == "2" %}
                                                     <h4>{{ tklabel.name }}</h4>
-                                                
+
                                                 {% elif layout == "3" %}
                                                     <h3 class="mt-0 mb-0">{{ tklabel.name }}</h3>
                                                     <h4 class="mt-10 mb-10">English</h4>
@@ -191,16 +193,16 @@
                                                 {% endif %}
                                             </div>
 
-                                        </div>       
+                                        </div>
                                     {% endif %}
 
                                 {% elif lang == tklabel.language_tag %}
                                     <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
-                                            <img 
-                                                loading="lazy" 
+                                            <img
+                                                loading="lazy"
                                                 class="pointer"
-                                                src="{{ tklabel.img_url }}" 
+                                                src="{{ tklabel.img_url }}"
                                                 {% if layout == "3" %}
                                                     width="100px"
                                                 {% else %}
@@ -210,11 +212,11 @@
                                                 alt=""
                                             >
                                         </div>
-                                        
+
                                         <div id="label-details">
                                             {% if layout == "2" %}
                                                 <h4>{{ tklabel.name }}</h4>
-                                            
+
                                             {% elif layout == "3" %}
                                                 <h3 class="mt-0  mb-0">{{ tklabel.name }}</h3>
                                                 <h4 class="mt-10 mb-10">{{ tklabel.language }}</h4>
@@ -223,16 +225,16 @@
                                         </div>
 
                                     </div>
-                                
+
                                 {% else %}
                                     {% for translation in tklabel.tklabel_translation.all %}
                                         {% if lang == translation.language_tag %}
                                             <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
-                                                    <img 
-                                                        loading="lazy" 
+                                                    <img
+                                                        loading="lazy"
                                                         class="pointer"
-                                                        src="{{ tklabel.img_url }}" 
+                                                        src="{{ tklabel.img_url }}"
                                                         {% if layout == "3" %}
                                                             width="100px"
                                                         {% else %}
@@ -266,10 +268,10 @@
                                     {% if bclabel.language_tag == 'en' %}
                                         <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                             <div id="label-icon" style="padding-right: 12px;">
-                                                <img 
-                                                    loading="lazy" 
+                                                <img
+                                                    loading="lazy"
                                                     class="pointer"
-                                                    src="{{ bclabel.img_url }}" 
+                                                    src="{{ bclabel.img_url }}"
                                                     {% if layout == "3" %}
                                                         width="100px"
                                                     {% else %}
@@ -279,11 +281,11 @@
                                                     alt=""
                                                 >
                                             </div>
-                                            
+
                                             <div id="label-details">
                                                 {% if layout == "2" %}
                                                     <h4>{{ bclabel.name }}</h4>
-                                                
+
                                                 {% elif layout == "3" %}
                                                     <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
                                                     <h4 class="mt-10 mb-10">English</h4>
@@ -291,16 +293,16 @@
                                                 {% endif %}
                                             </div>
 
-                                        </div>       
+                                        </div>
                                     {% endif %}
 
                                 {% elif lang == bclabel.language_tag %}
                                     <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                         <div id="label-icon" style="padding-right: 12px;">
-                                            <img 
-                                                loading="lazy" 
+                                            <img
+                                                loading="lazy"
                                                 class="pointer"
-                                                src="{{ bclabel.img_url }}" 
+                                                src="{{ bclabel.img_url }}"
                                                 {% if layout == "3" %}
                                                     width="100px"
                                                 {% else %}
@@ -310,11 +312,11 @@
                                                 alt=""
                                             >
                                         </div>
-                                        
+
                                         <div id="label-details">
                                             {% if layout == "2" %}
                                                 <h4>{{ bclabel.name }}</h4>
-                                            
+
                                             {% elif layout == "3" %}
                                                 <h3 class="mt-0 mb-0">{{ bclabel.name }}</h3>
                                                 <h4 class="mt-10 mb-10">{{ bclabel.language }}</h4>
@@ -323,16 +325,16 @@
                                         </div>
 
                                     </div>
-                                
+
                                 {% else %}
                                     {% for translation in bclabel.bclabel_translation.all %}
                                         {% if lang == translation.language_tag %}
                                             <div id="label" class="m-8{% if layout == '2' %} flex-this align-center{% endif %}{% if layout == '3' %} flex-this w-100 border-bottom-not-last{% endif %}">
                                                 <div id="label-icon" style="padding-right: 12px;">
-                                                    <img 
-                                                        loading="lazy" 
+                                                    <img
+                                                        loading="lazy"
                                                         class="pointer"
-                                                        src="{{ bclabel.img_url }}" 
+                                                        src="{{ bclabel.img_url }}"
                                                         {% if layout == "3" %}
                                                             width="100px"
                                                         {% else %}
@@ -369,28 +371,30 @@
             <!-- Logo and Page Link -->
             <div class="flex-this w-100 {% if align == 'right' %}flex-end{% else %}flex-start{% endif%}" style="padding: 12px; padding-top: 0px;">
                 <div class="ml-8 mr-8 m-auto" style="display: inherit;">
-                    <a 
-                        href="https://localcontexts.org" 
+                    <a
+                        href="https://localcontexts.org"
                         style="display: inline-flex;">
-                        <img 
-                            style="width:30px;" 
-                            src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png" 
+                        <img
+                            style="width:30px;"
+                            src="https://localcontexts.org/wp-content/uploads/2023/04/White-Background.png"
                             alt="Local Contexts Icon"
                         >
                     </a>
                 </div>
                 <div class="font-size-14 align-center flex-this mr-8">
-                    <a 
-                        class="darkteal-text underline-hover bold pointer" 
-                        href="{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif project %}{{project.project_page}}{% endif %}" 
-                        target="_top" 
+                    <a
+                        class="darkteal-text underline-hover bold pointer"
+                        href="{% if institution %}{% url 'public-institution' institution.id %}{% elif researcher %}{% url 'public-researcher' researcher.id %}{% elif service_provider %}{% url 'public-service-provider' service_provider.id %}{% elif project %}{{project.project_page}}{% endif %}"
+                        target="_top"
                         rel="noopener noreferrer"
                     >
-                            Local Contexts {% if project %}Project{% else %}Profile{% endif %}: 
+                            Local Contexts {% if project %}Project{% else %}Profile{% endif %}:
                             {% if institution %}
                                 {{ institution.institution_name }}
                             {% elif researcher %}
                                 {% firstof researcher.user.get_full_name researcher.user.username %}
+                            {% elif service_provider %}
+                                {{ service_provider.name }}
                             {% elif project %}
                                 {{project.title}}
                             {% endif %}

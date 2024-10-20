@@ -1,7 +1,7 @@
 {% load static %} {% load custom_project_tags %}
 {% if request.user.is_authenticated %}
     {% if 'projects/actions/' in request.path %}
-        <div class="project-header-div border-top-solid-teal flex-this space-between">
+        <div class="section-header-div border-top-solid-teal flex-this space-between">
             <h2>Project comments
                 <div class="tooltip ml-5">i
                     <span class="tooltiptext">
@@ -12,7 +12,7 @@
                     </span>
                 </div> 
             </h2>
-            <h2 class="mr-8 pointer" onclick="toggleProjectInfo(this, 'projectMessageDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
+            <h2 class="mr-8 pointer" onclick="toggleSectionInfo(this, 'projectMessageDiv')"><i class="fa-solid fa-plus fa-xl darkteal-text"></i></h2>
         </div>
         <div id="projectMessageDiv" style="height: 0px; overflow: hidden;">
             <div>

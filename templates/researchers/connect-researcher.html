@@ -1,5 +1,17 @@
 {% extends 'register-base.html' %} {% block title %} Connect {% endblock %} {% load static %} {% block card %}
-    <!-- import ORCiD Widget -->
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+  </script>    
+<!-- import ORCID Widget -->
     <script src="{% static 'javascript/orcid-widget.js' %}" type="text/javascript" defer></script>
 
     <div class="flex-this column w-90">
@@ -16,9 +28,9 @@
 
             <div>
                 <div class="flex-this space-between">
-                    <div class="w-50"><p>We encourage you to have an ORCiD ID. <br>You can <a class="default-a" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCiD here</a>.</p></div>
+                    <div class="w-50"><p>We encourage you to have an ORCID ID. <br>You can <a class="default-a" href="https://orcid.org/" target="_blank" rel="noopener">read more about ORCID here</a>.</p></div>
 
-                    <!-- Show ORCiD widget based on hostname -->
+                    <!-- Show ORCID widget based on hostname -->
                     <div 
                         id="orcidWidget" 
                         {% if env == "PROD" %}
@@ -39,12 +51,23 @@
                 </div>
 
                 {% if env == "DEV" or env == "SANDBOX" %}
-                    <small class="bold">Please note that since this is a test site, the ORCiD used will be the <a class="default-a" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
+                    <small class="bold">Please note that since this is a test site, the ORCID used will be the <a class="default-a" href="https://sandbox.orcid.org/">sandbox version</a>.</small><br>
                 {% endif %}            
             </div>
 
+        <div class="w-100 flex-this space-between mt-2p">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ user_form.first_name }}
+            </div>
 
-            <div class="mb-8">
+            <div class="w-50 margin-left-1">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
+        <div class="flex-this w-100 space-between mt-2p">
+            <div class='w-100 mr-1p'>
                 <label for="primary_institution">Primary Institution</label>
                 <div class="tooltip">i
                     <span class="tooltiptext">If you are associated with an institution, please list your primary institution.</span>
@@ -55,14 +78,19 @@
                 {% endif %}
             </div>
 
-            <div class="mb-8">
-                <label>Researcher Website</label>
-                {{ form.website }}
+        </div>
+        <div class="flex-this w-100 space-between mt-2p">
+            <div class='w-100 mr-1p'>
+                <div class="mb-8">
+                    <label>Researcher Website</label>
+                    {{ form.website }}
+                </div>
             </div>
+        </div>
 
-            <div>
-                <div>
-                    <label for="description">Researcher Description</label>
+            <div class="w-100">
+                <div class="pad-top-1-5">
+                    <label for="description">Researcher Description<span class="orange-text required-label" title="">*</span></label>
                     <div class="tooltip">i
                         <span class="tooltiptext">This is a place for you to share your research interests and expertise.</span>
                     </div>
@@ -81,6 +109,11 @@
                     {% include 'partials/_alerts.html' %}
                 </div>
         
+                <input
+                type="hidden"
+                name="g-recaptcha-response"
+                id="g-recaptcha-response"
+                />
                 <div class="mt-8">
                     <button id="submitResearcher" class="primary-btn action-btn mt-2p">Get Started <i class="fa fa-arrow-right"></i></button>
                 </div>

@@ -1,0 +1,176 @@
+{% extends 'account-settings-base.html' %}{% load static %}
+
+{% block account_settings %}
+<div class="flex-this space-between">
+    <div><h3 class="mt-0">API Key Manager</h3></div>
+</div>
+{% include 'partials/_alerts.html' %}
+<p class="mt-0">Generating API Keys enables access to the Local Contexts Hub database. Keep these keys confidential. For more information see our <a class="default-a" href="https://localcontexts.org/api-guide/" target="_blank">API Guide</a>.</p>
+
+<div class="flex-this">
+    <p class="subscription-counter"><span class="bold">API Keys Remaining:</span>
+        {% if institution and institution.is_subscribed %}
+            {% if remaining_api_key_count == -1 %}Unlimited{% else %}{{ remaining_api_key_count }}{% endif %}
+        {% elif researcher and researcher.is_subscribed %}
+            {% if remaining_api_key_count == -1 %}Unlimited{% else %}{{ remaining_api_key_count }}{% endif %}
+        {% elif service_provider and service_provider.is_certified %}
+            {% if remaining_api_key_count == 1 %}{{ remaining_api_key_count }}{% else %}{{ remaining_api_key_count }}{% endif %}
+        {% elif community and community.is_approved %}Unlimited
+        {% else %}0
+        {% endif %}
+    </p>
+</div>
+
+{% if account_keys %}
+    <table class="projects-table">
+        <tr>
+            <th>Name</th>
+            <th>API Key</th>
+            <th>Copy</th>
+            <th>Delete</th>
+        </tr>
+
+        {% for id, name, key in account_keys %}
+            <tr>
+                <td class="bold">{{ name }}</td>
+                <td id="{{ id }}">{{ key }}</td>
+                <td><a id="copy-key" data-target="{{ id }}"><i class="fa-regular fa-clone pointer"></i></a></td>
+                <td><a id="delete-key" data-target="{{ id }}" data-name="{{ name }}"><i class="fa-regular fa-trash pointer"></i></a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% elif not account_keys %}
+    <p class="mt-0">You do not have an API key. Click the button below to generate one.</p>
+{% endif %}
+
+<div class="flex-this mt-2p">
+    {% if remaining_api_key_count != 0 and institution.is_subscribed %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and researcher.is_subscribed %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and community.is_approved %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% elif remaining_api_key_count != 0 and service_provider.is_certified %}
+        <div>
+            <button id="generateAPIKeybtn" class="primary-btn action-btn mt-2p">Generate API Key</button>
+        </div>
+    {% else %}
+        <div class="btn-with-helptext">
+            <button id="generateAPIKeybtn" class="primary-btn mt-2p disabled-btn" disabled>Generate API Key</button>
+            <span class="btn-help-text" style="left: 5px;right: 0px;">
+                {% if institution and not institution.is_subscribed %}
+                    The subscription process for your institution is not completed yet.
+                {% elif researcher and not researcher.is_subscribed %}
+                    The subscription process for your account is not completed yet.
+                {% elif service_provider and not service_provider.is_certified %}
+                    The certification process for your account is not completed yet. Please contact us for assistance.
+                {% elif community and not community.is_approved %}
+                    The confirmation process for your account is not completed yet.
+                {% elif institution.is_subscribed or researcher.is_subscribed and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete an existing key or upgrade your subscription to add more keys.
+                {% elif service_provider.is_certified and remaining_api_key_count == 0 %}Your account has reached its API Key limit. Please delete your existing key to generate a new one or contact us for assistance.
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Generate API Key Modal -->
+<div id="generateAPIKeymodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Generate API Key</h2>
+            </div>
+            <div>
+                <div id='closegenerateAPIKeymodal' class="close-modal-btn pointer"><i class="fa-regular fa-xmark fa-xl"></i></div>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <p class="mt-0">It's essential to keep your API keys secure and not share them publicly. Please note you will not be able to change the name of this key. Once created, you can only copy or delete this key.</p>
+
+            <form id="apiKeyGeneratorForm" method="POST">
+            {% csrf_token %}
+
+            <div class="flex-this column w-100">
+                <div class="mb-16">
+                    <label>API Key Name</label><br>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="msg-red w-50"><small>{{ form.name.errors.as_text }}</small></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex-this space-between w-100">
+                <div class="w-100">
+                    <button type="submit" class="primary-btn action-btn mt-2p w-100" name="generate_api_key">Generate API Key</button>
+                </div>
+            </div>
+
+        </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete API Key Modal -->
+<div id="deleteAPIKeymodal" class="modal hide">
+
+    <div class="modal-defaults share-modal flex-this column w-100">
+
+        <div class="flex-this space-between">
+            <div class="flex-this">
+                <h2 class="primary-black-text mt-0">Are you sure?</h2>
+            </div>
+        </div>
+
+        <div class="w-100">
+            <div>
+                <p class="mt-0">Are you sure you want to delete the API key: <span id="deleteKeyname" class="bold"></span>? This key will no longer be able to connect to the API and can effect your applications using this API key.</p>
+            </div>
+
+            <div class="flex-this">
+                <form id="deleteAPIKeyForm" method="POST">
+                    {% csrf_token %}
+                    <button id="continueAPIKeyDeletionBtn" class="primary-btn white-btn" name="delete_api_key" value="">Yes, delete this API Key.</button>
+                </form>
+                <div id="closedeleteAPIKeymodal" class="primary-btn action-btn ml-8">Cancel</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const copyBtns = document.querySelectorAll('#copy-key');
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            copyToClipboard(btn.dataset.target);
+            btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-regular fa-clone pointer"></i>`
+            }, 1000);
+        });
+    });
+
+    const deleteBtns = document.querySelectorAll('#delete-key');
+    const deleteAPIKeymodal = document.getElementById('deleteAPIKeymodal')
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (deleteAPIKeymodal.classList.contains('hide')) {
+                deleteAPIKeymodal.classList.replace('hide', 'show');
+                continueAPIKeyDeletionBtn.value = btn.dataset.target;
+                deleteKeyname.innerHTML = btn.dataset.name;
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% autoescape off %}
+<h3>
+    {{ data.first_name}} {% if data.first_name != data.last_name %} {{ data.last_name }} {% endif %}
+    has tried to apply for a subscription for an 
+    {% if data.account_type == 'institution_account' %} Institution account.
+    {% elif data.account_type == 'researcher_account' %} Researcher account.
+    {% elif data.account_type == 'service_provider_account' %} Service Provider account.
+    {% endif %}
+</h3>
+
+<h4>
+    {{ reason }}
+</h4>
+<p>
+    Contact Name: {{ data.first_name }}<br>
+    Contact Email: {{ data.email }}<br>
+    Institution Name: {{ data.organization_name }}<br>
+    <br><br>
+    URL in which the error occur: <strong> {{ request.get_full_path }}</strong><br>
+    File in which error occur : {{ error_file }} on line <strong>{{ error_line }} {{error_syntax}}.</strong> 
+</p>
+
+{% endautoescape %}

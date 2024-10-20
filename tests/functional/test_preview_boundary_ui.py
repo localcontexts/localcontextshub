@@ -89,7 +89,7 @@ class TestProjectBoundaryPreviewFeatures(UiFeatureHelper):
             self.live_server_url, reverse(
                 'researcher-edit-project',
                 kwargs={
-                    'researcher_id': self.researcher.id,
+                    'pk': self.researcher.id,
                     'project_uuid': self.researcher_project.unique_id,
                 }
             )

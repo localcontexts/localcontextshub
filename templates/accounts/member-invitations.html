@@ -1,7 +1,9 @@
 {% extends 'auth-base.html' %} {% block title %} Member Invitations {% endblock %}{% load static %}{% load custom_acct_tags %} {% block main %}
 
     {% include 'partials/infocards/_user-dashcard.html' %}
-
+    <div class="flex-this justify-center">
+    {% include 'partials/_alerts.html' %}
+    </div>
     <section>
         {% if member_invites %}
             {% for invite in member_invites %}
@@ -10,8 +12,8 @@
                     <div class="dashcard">
                         <div class="flex-this">
                             <div class="dashcard-img-container">
-                                <img loading="lazy" 
-                                    class="profile-img" 
+                                <img loading="lazy"
+                                    class="profile-img"
                                     src="{% if invite.institution.image %} {{ invite.institution.image.url }} {% else %} {% static 'images/placeholders/institution-place.jpg' %}{% endif %}" 
                                     alt="{{ invite.institution.invite.institution_name }} image"
                                 >
@@ -20,7 +22,7 @@
 
                                 <div class="flex-this space-between">
                                     <div><h3 class="dashcard-h3 darkteal-text">{{ invite.institution }}</h3></div>
- 
+
                                     <div class="dashcard-btn-container">
                                         <div class="mr-16 mt-8">
                                             <a href="{% url 'delete-member-invitation' invite.id %}" class="default-a">Delete invite</a>
@@ -29,20 +31,29 @@
                                             <form method="POST" action="">
                                                 {% csrf_token %}
                                                 <input value="{{ invite.id }}" type="hidden" name="invite_id">
-                                                <button class="action-btn primary-btn">Accept invite</button>
+                                                {% if invite.has_zero_user_count %}
+                                                <div class="btn-with-helptext">
+                                                    <button class="primary-btn disabled-btn">Accept invite</button>
+                                                    <span class="btn-help-text">
+                                                            The editor and admin limit for this institution has been reached.
+                                                        </span>
+                                                    </div>
+                                                {% else %}
+                                                <button class="{% if invite.has_zero_user_count %}  primary-btn disabled-btn helptext {% else %} action-btn primary-btn {% endif %}">Accept invite
+                                                </button>
+                                                {% endif %}
                                             </form>
                                         </div>
-                                    </div>                                 
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <p class="dashcard-subheader">Institution | Members: {% if invite.institution.get_member_count < 10 %}0{{ invite.institution.get_member_count }}{% else %}{{ invite.institution.get_member_count }}{% endif %} | 
-                                        Location: {{ invite.institution.get_location }}
+                                    <p class="dashcard-subheader">Institution | Members: {% if invite.institution.get_member_count < 10 %}0{{ invite.institution.get_member_count }}{% else %}{{ invite.institution.get_member_count }}{% endif %} {% with invite.institution.get_location as location %}{% if location %} | Location: {{ location }}{% endif %}{% endwith %}
                                     </p>
-                                </div>  
+                                </div>
 
                                 <div><p class="dashcard-description description-sm">{% if invite.institution.description %}{{ invite.institution.description }} {% else %} No description provided. {% endif %}</p></div>
-                                
+
                                 <div>
                                     <p class="w-70">
                                         <span class="bold primary-black-text">Invitation Sent By:</span> {% display_name invite.sender %}<br>
@@ -70,8 +81,8 @@
 
                         <div class="flex-this">
                             <div class="dashcard-img-container">
-                                <img loading="lazy" 
-                                    class="profile-img" 
+                                <img loading="lazy"
+                                    class="profile-img"
                                     src="{% if invite.community.image %} {{ invite.community.image.url }} {% else %} {% static 'images/placeholders/community-place.jpg' %}{% endif %}" 
                                     alt="{{ invite.community.invite.community_name }} image"
                                 >
@@ -89,17 +100,16 @@
                                                 {% csrf_token %}
                                                 <input value="{{ invite.id }}" type="hidden" name="invite_id">
                                                 <button class="action-btn primary-btn">Accept invite</button>
-                                            </form>                                            
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <p class="dashcard-subheader">Community | Members: {% if invite.community.get_member_count < 10 %}0{{ invite.community.get_member_count }}{% else %}{{ invite.community.get_member_count }}{% endif %} | 
-                                        Location: {{ invite.community.get_location }}
+                                    <p class="dashcard-subheader">Community | Members: {% if invite.community.get_member_count < 10 %}0{{ invite.community.get_member_count }}{% else %}{{ invite.community.get_member_count }}{% endif %}{% with invite.community.get_location as location %}{% if location %} | {{ location }}{% endif %}{% endwith %}
                                     </p>
                                 </div>
-                                
+
                                 <div><p class="dashcard-description description-sm">{% if invite.community.description %}{{ invite.community.description }} {% else %} No description provided. {% endif %}</p></div>
 
                                 <div>
@@ -109,7 +119,65 @@
                                         <i>
                                             {% if invite.role == 'viewer' %} Viewer {% endif %}
                                             {% if invite.role == 'editor' %} Editor {% endif %}
-                                            {% if invite.role == 'Admin' %} Administrator {% endif %}
+                                            {% if invite.role == 'admin' %} Administrator {% endif %}
+                                        </i>
+                                        <br>
+
+                                        {% if invite.message %}
+                                            <span class="bold primary-black-text">Message:</span>
+                                            {{ invite.message|linebreaks }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endif %}
+
+                {% if invite.service_provider %}
+                    <div class="dashcard">
+
+                        <div class="flex-this">
+                            <div class="dashcard-img-container">
+                                <img loading="lazy"
+                                    class="profile-img"
+                                    src="{% if invite.service_provider.image %} {{ invite.service_provider.image.url }} {% else %} {% static 'images/placeholders/service-provider-place.jpg' %}{% endif %}" 
+                                    alt="{{ invite.service_provider.invite.name }} image"
+                                >
+                            </div>
+                            <div class="flex-this column w-100">
+
+                                <div class="flex-this space-between">
+                                    <div><h3 class="dashcard-h3 darkteal-text">{{ invite.service_provider }}</h3></div>
+                                    <div class="dashcard-btn-container">
+                                        <div class="mr-16 mt-8">
+                                            <a href="{% url 'delete-member-invitation' invite.id %}" class="default-a mr-8 mt-8">Delete invite</a>
+                                        </div>
+                                        <div>
+                                            <form method="POST" action="">
+                                                {% csrf_token %}
+                                                <input value="{{ invite.id }}" type="hidden" name="invite_id">
+                                                <button class="action-btn primary-btn">Accept invite</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="dashcard-subheader">Service Provider</p>
+                                </div>
+
+                                <div><p class="dashcard-description description-sm">{% if invite.service_provider.description %}{{ invite.service_provider.description }} {% else %} No description provided. {% endif %}</p></div>
+
+                                <div>
+                                    <p>
+                                        <span class="bold primary-black-text">Sent By:</span> {% display_name invite.sender %}<br>
+                                        <span class="bold primary-black-text">Responsibility:</span>
+                                        <i>
+                                            {% if invite.role == 'viewer' %} Viewer {% endif %}
+                                            {% if invite.role == 'editor' %} Editor {% endif %}
+                                            {% if invite.role == 'admin' %} Administrator {% endif %}
                                         </i>
                                         <br>
 
@@ -127,9 +195,17 @@
 
             {% endfor %}
         {% else %}
-            <p class="center-text">You currently have no new invitations. <br><small>Invitations appear when someone from a community or institution invites you to join their account.</small></p>
+            <div class="dashcard w-100 center-text mt-16 mb-16">
+                <p class="center-text">
+                    <strong>You currently have no new invitations.</strong>
+                    <br>
+                    <small>
+                        Invitations appear when someone from a community or institution invites you to join their account.
+                    </small>
+                </p>
+            </div>
         {% endif %}
-        
+
     </section>
 
 {% endblock %}

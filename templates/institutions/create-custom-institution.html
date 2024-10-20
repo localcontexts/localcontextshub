@@ -1,4 +1,16 @@
 {% extends 'register-base.html' %} {% block title %} Create Institution {% endblock %}{% load static %} {% block card %}
+<script src="https://www.google.com/recaptcha/api.js?render=6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U"></script>
+<script>
+    grecaptcha.ready(function () {
+      grecaptcha
+        .execute("6LchglYpAAAAAABKj7CtiTlfvmPVN5eU2DzTVl2U", {
+          action: "subscription",
+        })
+        .then(function (token) {
+          document.getElementById("g-recaptcha-response").value = token;
+        });
+    });
+</script>
 
 <div class="flex-this column account-registration-container">
     <div class="flex-this space-between">
@@ -16,8 +28,20 @@
     <form action="" method="POST" class="flex-this column w-100">
         {% csrf_token %}
 
-        <div class="mt-16 w-100">
-            <label for="institution_name">Institution Name</label>
+        <div class="w-100 flex-this mt-16">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" >First Name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ user_form.first_name }}
+            </div>
+
+            <div class="w-50">
+                <label>Last Name</label><br>
+                {{ user_form.last_name }}
+            </div>
+        </div>
+
+        <div class="mt-8 w-100">
+            <label for="institution_name">Institution Name<span class="orange-text required-label" title="">*</span></label>
             {{ noror_form.institution_name }}
             <div class="w-100 mt-1p">
 
@@ -46,7 +70,7 @@
             <div class="w-50">
                 <label for="state_province_region">State, Province, or Region</label>
                 <div class="tooltip">i
-                    <span class="tooltiptext">By stating your location we will be able to connect your Projects with communities associated with this location.</span>
+                    <span class="tooltiptext left-tooltip">By stating your location we will be able to connect your Projects with communities associated with this location.</span>
                 </div>
                 
                 <br>
@@ -54,9 +78,30 @@
             </div>
         </div>
 
-        <div class="pad-top-1-5">
-            <label for="country">Country</label><br>
-            {{ noror_form.country }}                
+        <div class="mt-8 w-100 flex-this">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5" for="country">Country</label><br>
+                {{ noror_form.country }}
+            </div>
+        </div>
+        <div class="w-100">
+            <div class="pad-top-1-5 radio-group mb-1p">
+                <label for="inquiry_type" class="inquiry-label">Subscription Type<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
+                    <span class="tooltiptext">An institution subscription type allows you to select the desired role for the subscription process.</span>
+                </div>
+                <br>
+                <div class="flex-this row ">
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription">
+                        <span class="ml-5">Subscription</span>
+                    </label>
+                    <label class="radio-container w-50 mt-2p">
+                        <input class="pointer" type="radio" name="inquiry_type" value="Subscription -- CC Notices Only">
+                        <span class="ml-5">Collections Care Notices</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div class="mt-8">
@@ -69,8 +114,8 @@
 
         <div class="w-100">
             <div class="pad-top-1-5">
-                <label for="description">Institution Description</label>
-                <div class="tooltip">i
+                <label for="description">Institution Description<span class="orange-text required-label" title="">*</span></label>
+                <div class="tooltip"><strong>i</strong>
                     <span class="tooltiptext">An institution description allows you to share key public information about your institution or organization with other users on the Hub.</span>
                 </div>
 
@@ -84,38 +129,25 @@
             <small id="charCount" class="block text-align-right">200/200</small>
         </div>
 
-        <h2 class="mb-0">Institutional contact</h2>
-        <p>
-            A <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscription program</a>
-            for institution accounts will be launched in October 2024. 
-            After you submit this form, we will reach out to you, and any institutional contact 
-            you indicate below, to discuss which subscription tier is best for your organization.
-        </p>
-
-        <div class="flex-this space-between mb-16">
-            <div class="mr-8 w-100">
-                <label for="contact_name">
-                    Contact name
-                </label>
-                {{ noror_form.contact_name }}<br>
-                {% if noror_form.contact_name.errors %}
-                    <div class="msg-red w-50"><small>{{ noror_form.contact_name.errors.as_text }}</small></div> 
-                {% endif %}
+        <div class="w-100 flex-this">
+            <div class="w-50 mr-1p">
+                <label class="pad-top-1-5">Contact name<span class="orange-text required-label" title="">*</span></label><br>
+                {{ noror_form.contact_name }}
             </div>
-    
-            <div class="w-100">
-                <label for="contact_email">
-                    Contact email
-                </label>
-                {{ noror_form.contact_email }} <br>
-                {% if noror_form.contact_email.errors %}
-                    <div class="msg-red w-50"><small>{{ noror_form.contact_email.errors.as_text }}</small></div> 
-                {% endif %}
+
+            <div class="w-50">
+                <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
+                {{ noror_form.contact_email }}
             </div>
         </div>
 
         <div class="flex-this flex-end">
             
+            <input
+            type="hidden"
+            name="g-recaptcha-response"
+            id="g-recaptcha-response"
+            />
             <div class="mt-8">
                 <button class="primary-btn action-btn mt-2p" name="create-institution-btn">Continue <i class="fa fa-arrow-right"></i></button>
             </div>

@@ -142,18 +142,57 @@
                 </p>
             {% endif %}
         {% endif %}
+
+        {% if service_provider %}
+            {% if environment == "SANDBOX" %}
+                <h2 class="mt-0">Creating a service provider account on the sandbox Hub</h2>
+                <p class="bold">
+                    Please note the following before creating a service provider account:
+                </p>
+                <p>
+                    <strong>01 Accounts created in the sandbox Hub can be created without the agreements that are needed on the live Hub.</strong> 
+                    The sandbox Hub can be used for testing Hub workflows. Accounts created in the sandbox Hub have limited functionality to protect the integrity of the Labels and Notices.
+                    <br><br>
+
+                    <strong>02 An institution account is for a cultural or research institution, data repository, or other organization that will use Notices. </strong>
+                    An archive, library, museum, historical society, gallery, data repository, university, research lab, or media production company 
+                    might create an institution account. This account will represent your organization on the Hub and potentially in relationships 
+                    with sovereign Indigenous communities. If you are an Indigenous institution and plan to use Labels on behalf of your community, 
+                    a community account may be a better fit. Please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>
+                    if you have any questions.
+                    <br><br>
+
+                    <strong>03 As the creator of this new account, you will become the main administrator by default.</strong>
+                    As the main administrator, you will be the point of contact for the account and responsible for adding other 
+                    users to the account. If you would like to change the account contact or your role after creating your account, 
+                    please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                </p>
+            {% else %}
+                <h2 class="mt-0">Creating a Service Provider Account</h2>
+                <p class="bold">
+                    Please note the following before creating a service provider account:
+                </p>
+                <p>
+                    <strong>
+                        1. A service provider account is for an organization that integrates a connection to the Local Contexts Hub into their platforms to enable other account types to access their Labels and Notices.
+                    </strong>
+                    A service provider could be a collections management system, repository workflow platform, or information aggregator. Service providers allow Members and Subscribers to easily integrate Labels and Notices into local workflows and systems.
+                    <br><br>
+
+                    <strong>
+                        2. As the creator of this new account, you will become the main administrator by default.
+                    </strong>
+                    As the main administrator, you will be the point of contact for the account and responsible for adding other users to the account. If you would like to change the account contact or your role after creating your account, please <a class="default-a" href="mailto:support@localcontexts.org" target="_blank" rel="noopener">contact us</a>.
+                    <br><br>
+
+                    <strong>3. A certification program for service provider accounts was launched in October 2024.</strong>
+                    More information about this program is available on our <a class="default-a" href="https://localcontexts.org/generational-sustainability-of-local-contexts/" target="_blank" rel="noopener">website blog</a> and <a class="default-a" href="https://localcontexts.org/members-subscribers-and-service-providers/" target="_blank" rel="noopener">subscribers page</a>. You will have limited account functionality until completion of the certification program and service provider agreement. We will reach out to you, and any contacts you indicate, to discuss the service provider program. If we do not hear from you within 90 days, this incomplete account will be deleted.
+                </p>
+            {% endif %}
+        {% endif %}
     </div>
 
     <div class="flex-this w-90">
-        {% if community and not environment == "SANDBOX" %}
-            <div class="w-60">
-                <a 
-                    href="{% url 'download-community-support-letter' %}"
-                    class="primary-btn blue-btn"
-                > Download letter template <i class="fa-solid fa-download"></i>
-                </a>
-            </div>
-        {% endif %}
 
         <div class="w-100 flex-this flex-end">
             <div class="mr-8">
@@ -170,6 +209,9 @@
                     {% endif %}
                     {% if researcher %}
                         href="{% url 'connect-researcher' %}"
+                    {% endif %}
+                    {% if service_provider %}
+                        href="{% url 'create-service-provider' %}"
                     {% endif %}
                 >
                     Continue <i class="fa fa-arrow-right"></i>

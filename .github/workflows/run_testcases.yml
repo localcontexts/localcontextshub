@@ -46,6 +46,7 @@ jobs:
           DB_USER: ${{ secrets.TEST_DB_USER }}
           DB_PASS: ${{ secrets.TEST_DB_PASS }}
           DB_HOST: ${{ secrets.TEST_DB_HOST }}
+          SF_VALID_USER_IDS: ${{ secrets.SF_VALID_USER_IDS }}
           DB_PORT: ${{ secrets.TEST_DB_PORT }}
           CSRF_COOKIE_DOMAIN: ${{ secrets.CSRF_COOKIE_DOMAIN }}
           EMAIL_HOST: ${{ secrets.EMAIL_HOST }}

@@ -1,10 +1,48 @@
+from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.contrib import messages
 from .models import Institution
+from accounts.models import Subscription, UserAffiliation
+from helpers.utils import change_member_role, handle_confirmation_and_subscription
+from institutions.models import Institution
+from helpers.models import HubActivity
+from django.db import transaction
+
 
 def get_institution(pk):
     return Institution.objects.select_related('institution_creator').prefetch_related('admins', 'editors', 'viewers').get(id=pk)
 
+
+def handle_institution_creation(request, form, subscription_form, env):
+    try:
+        with transaction.atomic():
+            data = form.save(commit=False)
+            data.institution_creator = request.user
+            data.save()
+            if env != 'SANDBOX':
+                handle_confirmation_and_subscription(request, subscription_form, data, env)
+            affiliation = UserAffiliation.objects.prefetch_related("institutions").get(user=request.user)
+            affiliation.institutions.add(data)
+            affiliation.save()
+
+            HubActivity.objects.create(
+                action_user_id=request.user.id,
+                action_type="New Institution",
+                institution_id=data.id,
+                action_account_type="institution",
+            )
+    except Exception as e:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "An unexpected error has occurred here."
+            " Please contact support@localcontexts.org.",
+        )
+        return redirect('dashboard')
+
 # This is for retroactively adding ROR IDs to Institutions.
 # Currently not being used anywhere.
+
 def set_ror_id(institution):
     import requests
 
@@ -23,3 +61,30 @@ def set_ror_id(institution):
             print('No matching institution found.')
     else:
         print('Error:', response.status_code)
+
+def check_subscription_and_then_change_role(request, institution, member, current_role, new_role):
+    try:
+        subscription = Subscription.objects.get(institution=institution)
+    except:
+        subscription = None
+
+    if new_role not in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        if subscription.users_count >= 0:
+            subscription.users_count += 1
+            subscription.save()
+    elif new_role in ('editor', 'administrator', 'admin') and current_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+    elif subscription is not None and (subscription.users_count > 0 or subscription.users_count == -1) and new_role in ('editor', 'administrator', 'admin'):
+        change_member_role(institution, member, current_role, new_role)
+        if subscription.users_count >= 0:
+            subscription.users_count -=1
+            subscription.save()
+    elif subscription is None:
+        messages.add_message(request, messages.ERROR, 
+                           'The subscription process of your institution is not completed yet. '
+                           'Please wait for the completion of subscription process.')
+    else:
+        messages.add_message(request, messages.ERROR, 
+                            'Your institution has reached its editors and admins limit. '
+                            'Please upgrade your subscription plan to add more editors and admins.')
