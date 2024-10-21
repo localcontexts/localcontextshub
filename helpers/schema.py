@@ -54,3 +54,7 @@ class MultiPolygonSchema(BaseSchema):
         required=True,
         metadata=dict(example=GEOJSON_MULTI_POLYGON["coordinates"]),
     )
+
+
+def validate_multipolygon(value):
+    MultiPolygonSchema().load(value)

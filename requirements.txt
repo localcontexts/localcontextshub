@@ -75,6 +75,7 @@ lazy-object-proxy==1.4.3
 lxml==5.3.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
+marshmallow==3.22.0
 mccabe==0.7.0
 mdurl==0.1.2
 oauthlib==3.2.2

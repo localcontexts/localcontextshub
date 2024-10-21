@@ -6,6 +6,8 @@ from django.db import models
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+
+from helpers.schema import validate_multipolygon
 from institutions.models import Institution
 from serviceproviders.models import ServiceProvider
 import uuid
@@ -39,7 +41,10 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
-    geometry = MultiPolygonField(null=True)
+    geometry = MultiPolygonField(
+        null=True,
+        validators=[validate_multipolygon]
+    )
 
     @staticmethod
     def transform_coordinates(as_tuple: bool, coordinates: list):
