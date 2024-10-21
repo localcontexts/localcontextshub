@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from helpers.schema import GEOJSON_MULTI_POLYGON_TYPE
 from projects.models import Boundary
 from helpers.exceptions import UnconfirmedAccountException
 from .models import Project, ProjectContributors, ProjectCreator
@@ -138,13 +139,18 @@ def reset_project_boundary(request, pk):
         project.name_of_boundary = ''
         project.source_of_boundary = ''
 
+        geometry = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [[]]
+            ],
+        }
         if project.boundary:
             # update boundary when it exists
-            project.boundary.coordinates = []
+            project.boundary.geometry = geometry
             project.boundary.save()
         else:
             # create boundary when it does not exist
-            project.boundary = Boundary(coordinates=[])
+            project.boundary = Boundary(geometry=geometry)
 
         project.save()
         return HttpResponse(status=204)
