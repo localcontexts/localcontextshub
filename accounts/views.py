@@ -934,7 +934,7 @@ def subscription(request, pk, account_type, related=None):
                 try:
                     access_token = get_access_token_of_SF(request)
                     for bundle in form.cleaned_data['bundle_type']:
-                        bundle_data = BundleTypeForm().bundle_details[bundle]
+                        bundle_data = form.bundle_details[bundle]
                         quantity = bundle_data['quantity']
                         bundle_data = {
                             "hubId": str(request.user.id) + "_i",

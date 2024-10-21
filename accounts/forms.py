@@ -294,10 +294,26 @@ class BundleTypeForm(forms.Form):
         super(BundleTypeForm, self).__init__(*args, **kwargs)
 
         self.bundle_details = {
-            'User': {'label': 'User Bundle  5 @ US$1500', 'quantity': 5},
-            'API': {'label': 'API Bundle  3 @ US$1500', 'quantity': 3},
-            'Project': {'label': 'Project Bundle  10 @ US$1500', 'quantity': 10},
-            'Notification': {'label': 'Notification Bundle  10 @ US$1500', 'quantity': 10},
+            'User': {
+                'label': 'User Bundle',
+                'description': 'Add 5 more users to this account.',
+                'quantity': 5
+                },
+            'API': {
+                'label': 'API Bundle',
+                'description': 'Add 3 more API keys to this account.',
+                'quantity': 3
+                },
+            'Project': {
+                'label': 'Project Bundle',
+                'description': 'Add 10 more projects to this account.',
+                'quantity': 10
+                },
+            'Notification': {
+                'label': 'Notification Bundle',
+                'description': 'Add 10 more notifications to this account.',
+                'quantity': 10
+                },
         }
 
         self.fields['bundle_type'].choices = [

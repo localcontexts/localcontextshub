@@ -1845,3 +1845,13 @@ i[data-tooltip]:hover:after {
     background-color: #EF6C00;
     color: #fff;
 }
+
+.bundle-modal {
+    width: 690px;
+}
+
+input[type="checkbox"]:focus {
+    background: none;
+    border: none;
+    box-shadow: none;
+}

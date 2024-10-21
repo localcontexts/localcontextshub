@@ -55,7 +55,10 @@
     {% include 'partials/_alerts.html' %}
     <div class="flex-this">
       <div>
-          <button type="submit" class="primary-btn action-btn" name="generatebtn" onclick="openAddModalView()">Update Subscription</button>
+          <button type="submit" class="primary-btn action-btn" name="generatebtn" onclick="openAddModalView()">Add a bundle<i class="fa-solid fa-plus"></i></button>
+      </div>   
+      <div class="ml-2p">
+        <button type="submit" class="primary-btn action-btn" name="generatebtn">Edit Subscription<i class="fa-solid fa-pen-line"></i></button>
       </div>        
       <div class="ml-2p">
         <button type="submit" class="primary-btn white-btn" name="generatebtn">Cancel Subscription</button>
@@ -70,32 +73,40 @@
 
 <div id="bundleModal" class="modal hide">
   <span id="bundleModalContent">
-      <!-- ADD MEMBER MODAL VIEW -->
-      <div id="addMemberModalView" class="modal-defaults add-member-modal flex-this column w-100">
-        <div class="flex-this space-between">
-          <div>
-              <h2 class="mt-0">Bundles</h2>
-                  <p class="mb-2p">
-                    Add Bundles to increase your resources.
-                  </p>
-          </div>
+    <div class="modal-defaults bundle-modal flex-this column w-100">
+      <div class="flex-this space-between">
+        <div>
+          <h2 class="mt-0">Add a Bundle</h2>
+            <p class="mb-2p">
+              Upgrade your subscription to unlock additional features. Choose from the available bundles below and submit your request to enhance your experience.
+            </p>
+        </div>
+        <div id='close-model-button' onClick="closeBundleModal()">
+            <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
+        </div>
+    </div>
 
-          <div id='close-model-button' onClick="closeBundleModal()">
-              <div class="close-modal-btn"><i class="fa-regular fa-xmark fa-xl"></i></div>
-          </div>
-      </div>  
-        
-        <div class="w-100 flex-this column">
-              <form id="addBundleForm" method="POST" action="">
-                  {% csrf_token %}
+    <div class="w-100 flex-this column">
+      <form method="POST" action="{% if institution %}{% url 'subscription' institution.id 'institution' %}{% else %}{% url 'subscription' researcher.id 'researcher' %}{% endif %}">
+        {% csrf_token %}
+        <div id="labelsContainer">
+            {% for key, bundle in form.bundle_details.items %}
+            <div class="flex-this flex-start">
+                <input class="mr-10" type="checkbox" id="label_{{ key }}" name="bundle_type" value="{{ key }}">
+                <div class="flex-this column ml-16 mt-2p">
+                    <label class="bold" for="label_{{ key }}">{{ bundle.label }}</label>
+                    <p class="mt-0">{{ bundle.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <button type="submit" class="primary-btn action-btn w-100 mb-2p">Submit request</button>
+        <button class="primary-btn white-btn w-100 darkteal-text" onClick="closeBundleModal()">Cancel</button>
+    </form>
+    </div>
 
-                  {{ form.as_p }} 
-                  <button type="submit" class="primary-btn action-btn">Submit</button>
-
-              </form>
-          </div>
-
-      </div>
+  </div>
   </span>
 </div>
 
