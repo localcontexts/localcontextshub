@@ -112,14 +112,14 @@ class CommunityModelForm(forms.ModelForm):
         # update current boundary
         updated_boundary = self.supplementary_boundary_data.get('current_boundary')
         if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
-            # self.instance.boundary.coordinates = updated_boundary['value']
+            self.instance.boundary.coordinates = updated_boundary['value']
 
-
-            self.instance.boundary.coordinates = {
-                'type': 'MULTIPOLYGON', 'polygons': [
-                    updated_boundary['value']
-                ],
-            }
+            # todo: will save in boundary geometry
+            # self.instance.boundary.geometry = {
+            #     'type': 'MULTIPOLYGON', 'polygons': [
+            #         updated_boundary['value']
+            #     ],
+            # }
             self.instance.boundary.save()
             return
 
