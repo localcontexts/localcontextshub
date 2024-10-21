@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from helpers.exceptions import UnconfirmedAccountException
+from helpers.schema import GEOJSON_MULTI_POLYGON_TYPE
 from institutions.models import Institution
 from communities.models import Community, Boundary
 from researchers.models import Researcher
@@ -118,13 +119,18 @@ class Project(models.Model):
 
     def create_or_update_boundary(self, boundary_coordinates):
         boundary_coordinates = boundary_coordinates if boundary_coordinates else []
+        geometry = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [boundary_coordinates]
+            ],
+        }
 
         if self.boundary:
             # update boundary when it exists
-            self.boundary.coordinates = boundary_coordinates
+            self.boundary.geometry = geometry
         else:
             # create boundary when it does not exist
-            self.boundary = Boundary(coordinates=boundary_coordinates)
+            self.boundary = Boundary(geometry=geometry)
 
         self.boundary.save()
 
