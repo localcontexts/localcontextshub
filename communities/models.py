@@ -7,7 +7,7 @@ from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 
-from helpers.schema import validate_multipolygon
+from helpers.schema import MultiPolygonSchema, GEOJSON_MULTI_POLYGON_TYPE
 from institutions.models import Institution
 from serviceproviders.models import ServiceProvider
 import uuid
@@ -41,13 +41,17 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
-    geometry = MultiPolygonField(
-        null=True, validators=[validate_multipolygon]
-    )
+    geometry = MultiPolygonField(null=True)
+
+    def validate_geometry(self):
+        if not self.geometry:
+            return
+        MultiPolygonSchema().load(self.geometry)
 
     def save(self, *args, **kwargs):
         # added so validators are run before saving
-        self.full_clean()
+        # self.full_clean()
+        self.validate_geometry()
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -159,13 +163,18 @@ class Community(models.Model):
 
     def create_or_update_boundary(self, boundary_coordinates):
         boundary_coordinates = boundary_coordinates if boundary_coordinates else []
+        geometry = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [boundary_coordinates]
+            ],
+        }
 
         if self.boundary:
             # update boundary when it exists
-            self.boundary.coordinates = boundary_coordinates
+            self.boundary.geometry = geometry
         else:
             # create boundary when it does not exist
-            self.boundary = Boundary(coordinates=boundary_coordinates)
+            self.boundary = Boundary(geometry=geometry)
 
         self.boundary.save()
 
