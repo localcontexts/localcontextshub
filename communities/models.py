@@ -42,9 +42,13 @@ class Boundary(models.Model):
         blank=True, null=True
     )
     geometry = MultiPolygonField(
-        null=True,
-        validators=[validate_multipolygon]
+        null=True, validators=[validate_multipolygon]
     )
+
+    def save(self, *args, **kwargs):
+        # added so validators are run before saving
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     @staticmethod
     def transform_coordinates(as_tuple: bool, coordinates: list):
@@ -72,17 +76,13 @@ class Boundary(models.Model):
         """
         Returns the first polygon as a list or tuple
         """
-        if (
-            self.geometry and
-            'polygons' in self.geometry and
-            len(self.geometry['polygons']) == 0
-        ):
+        try:
+            first_polygon: list = self.geometry['coordinates'][0][0]
+            return self.transform_coordinates(
+                as_tuple=as_tuple, coordinates=first_polygon
+            )
+        except (IndexError, KeyError):
             return []
-
-        first_polygon: list = self.geometry['polygons'][0]
-        return self.transform_coordinates(
-            as_tuple=as_tuple, coordinates=first_polygon
-        )
 
 
 class Community(models.Model):

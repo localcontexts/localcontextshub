@@ -6,7 +6,10 @@ from marshmallow.validate import Range
 from marshmallow.fields import List, Str, Tuple
 from marshmallow.validate import OneOf
 
-from schema_examples import GEOJSON_MULTI_POLYGON
+from .schema_examples import GEOJSON_MULTI_POLYGON_EXAMPLE
+
+
+GEOJSON_MULTI_POLYGON_TYPE = 'MultiPolygon'
 
 
 lon = Number(
@@ -38,7 +41,7 @@ class MultiPolygonSchema(BaseSchema):
     type = Str(
         required=True,
         validate=OneOf(
-            ['MULTI_POLYGON'],
+            [GEOJSON_MULTI_POLYGON_TYPE],
             error="Invalid multi polygon type",
         ),
     )
@@ -52,7 +55,7 @@ class MultiPolygonSchema(BaseSchema):
             required=True,
         ),
         required=True,
-        metadata=dict(example=GEOJSON_MULTI_POLYGON["coordinates"]),
+        metadata=dict(example=GEOJSON_MULTI_POLYGON_EXAMPLE["coordinates"]),
     )
 
 
