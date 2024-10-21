@@ -88,3 +88,23 @@ class TestStoringCoordinatesAsGeoJson(TestCase):
 
         assert e.value.args[0]['coordinates'][0][0][0][1] == ['Latitude must be between -90, 90']
         assert e.value.args[0]['coordinates'][0][0][1][0] == ['Longitude must be between -180, 180']
+
+    def test_non_geojson_coordinate_values_override_geojson_one(self):
+        """
+        This ensures that until preexisting community accounts data have been
+        migrated, the preexisting non-geojson coordinates will be used
+        when get_coordinates() is called.
+        """
+        geojson_coordinates = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [[(9, 9), (9, 9), (9, 9), (9, 9)]],
+            ],
+        }
+        non_geojson_coordinates = [(0, 0), (0, 0), (0, 0), (0, 0)]
+        boundary = Boundary(
+            coordinates=non_geojson_coordinates,
+            geometry=geojson_coordinates,
+        )
+
+        boundary_coordinates_read = boundary.get_coordinates()
+        assert boundary_coordinates_read == non_geojson_coordinates
