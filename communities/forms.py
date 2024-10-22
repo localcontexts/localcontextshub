@@ -174,5 +174,5 @@ class JoinRequestForm(forms.ModelForm):
         fields = ['role', 'message']
         widgets = {
             'role': forms.Select(attrs={'class': 'w-100'}),
-            'message': forms.Textarea(attrs={'rows': 3, 'class':'w-100'}),
+            'message': forms.Textarea(attrs={'rows': 3, 'class':'w-100', 'style': 'resize: vertical;'}),
         }
