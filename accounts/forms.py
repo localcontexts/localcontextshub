@@ -151,7 +151,8 @@ class ContactOrganizationForm(forms.Form):
         widget=forms.Textarea(attrs={
             "rows": 4,
             "cols": 65,
-            'class': 'w-100'
+            'class': 'w-100',
+            'style': 'resize: vertical;'
         })
     )
 
