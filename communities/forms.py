@@ -29,6 +29,9 @@ class CreateCommunityForm(forms.ModelForm):
             'community_name': {
                 'unique': _("A community by that name already exists."),
             },
+            'contact_email': {
+                'invalid': _("Please use a valid email."),
+            }
         }
 
 

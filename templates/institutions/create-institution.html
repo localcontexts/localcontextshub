@@ -122,6 +122,9 @@
             <div class="w-50">
                 <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
                 {{ form.contact_email }}
+                {% if form.contact_email.errors %}
+                    <div class="msg-red w-50"><small>{{ form.contact_email.errors.as_text }}</small></div>
+                {% endif %}
             </div>
         </div>
 

@@ -100,6 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
         countCharacters();
         textArea.addEventListener('input', countCharacters);
     };
+    
+    const clearInputFields = () => {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], textarea');
+        inputs.forEach(input => {
+            if (input.name !== 'first_name' && input.name !== 'last_name') {
+                input.value = '';
+            }
+        });
+    };
+
+    clearInputFields();
 
     const url = window.location.href;
     const createPages = ['create-community', 'create-institution', 'connect-researcher', 'create-service-provider'];

@@ -99,14 +99,14 @@
             <div class="w-50">
                 <label>Contact Email<span class="orange-text required-label" title="">*</span></label><br>
                 {{ form.contact_email }}
+                {% if form.contact_email.errors %}
+                    <div class="msg-red w-50"><small>{{ form.contact_email.errors.as_text }}</small></div>
+                {% endif %}
             </div>
         </div>
 
         <div class="flex-this space-between">
             <div>
-                {% if form.errors %}
-                    <small class="red-text">{{ form.errors }}</small>
-                {% endif %}
                 {% include 'partials/_alerts.html' %}
             </div>
     
