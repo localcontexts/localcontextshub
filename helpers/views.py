@@ -165,7 +165,7 @@ def native_land_data(request):
     """
     slug = request.GET.get('slug')
     if slug is None:
-        return Http404('Slug Variable Is Not Defined In Request')
+        raise Http404('Slug Variable Is Not Defined In Request')
 
     # get all slug data from cache
     all_slug_data = cache.get('all_slug_data')
@@ -179,11 +179,11 @@ def native_land_data(request):
             requests.exceptions.ConnectionError,
             requests.exceptions.HTTPError
         ):
-            return Http404('Unable to Retrieve All NLD Slug Data')
+            raise Http404('Unable to Retrieve All NLD Slug Data')
         cache.set('all_slug_data', all_slug_data)
 
     slug_data = all_slug_data.get(slug)
     if slug_data is None:
-        return Http404(f'Unable to Retrieve Specific NLD Slug Data for {slug}')
+        raise Http404(f'Unable to Retrieve Specific NLD Slug Data for {slug}')
 
     return JsonResponse(slug_data)
