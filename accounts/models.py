@@ -104,7 +104,7 @@ class Subscription(models.Model):
         ('cc_notice_only', 'CC Notice Only'),
         ('cc_notices', 'CC Notices'),
         ('member', 'Member'),
-        ('service_provide', 'Service Provider'),
+        ('service_provider', 'Service Provider'),
         ('founding_supporter', 'Founding Supporter')
     ]
 
