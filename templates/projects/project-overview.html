@@ -13,7 +13,19 @@
                         href="{% url 'view-project' project.unique_id %}" 
                     {% endif %}
                 >
-                    {{ project.title }}
+                    <div class="flex-this row">
+                        {% if project.source_project_uuid %}
+                        <div class="btn-with-helptext mr-2p">
+                            <i class="fa-regular fa-diagram-subtask"></i>
+                            <span class="btn-help-text mr-55p right-auto">
+                            This is a Sub project.
+                            </span>
+                        </div>
+                        {% endif %}
+                        <div>  
+                            {{ project.title }}
+                        </div>
+                    </div>
                 </a>
             </td>
             <td>
