@@ -12,7 +12,7 @@ from functional.ui_feature_testcase_base import UiFeatureHelper
 
 from communities.models import Community
 
-@pytest.mark.skip(reason="disable until NLD update")
+
 @pytest.mark.usefixtures("py")
 class TestFeatures(UiFeatureHelper):
     def setUp(self):
@@ -134,7 +134,7 @@ class TestFeatures(UiFeatureHelper):
         assert created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be True'
         assert created_community.name_of_boundary == selected_territory
         assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas'
-        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
+        assert created_community.boundary.geometry is not None, 'Territory Should Have Coordinates'
 
     def test_select_native_land_digital_territory_without_share_publicly(self):
         self.navigate_to_search_native_land_digital_database_page()
@@ -155,7 +155,7 @@ class TestFeatures(UiFeatureHelper):
         assert not created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be False'
         assert created_community.name_of_boundary == selected_territory
         assert created_community.source_of_boundary == 'https://native-land.ca/maps/territories/panamakas'
-        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
+        assert created_community.boundary.geometry is not None, 'Territory Should Have Coordinates'
 
     def test_clicking_upload_shapefile_on_nld_page_navigates_to_upload_shapefile_page(self):
         self.navigate_to_search_native_land_digital_database_page()
@@ -207,7 +207,7 @@ class TestFeatures(UiFeatureHelper):
         assert created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be True'
         assert created_community.name_of_boundary == selected_territory
         assert created_community.source_of_boundary == 'shape-file'
-        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
+        assert created_community.boundary.geometry is not None, 'Territory Should Have Coordinates'
 
     def test_select_shapefile_without_share_publicly(self):
         self.navigate_to_upload_shapefile_page()
@@ -236,7 +236,7 @@ class TestFeatures(UiFeatureHelper):
         assert not created_community.share_boundary_publicly, 'Share Boundary Publicly Should Be False'
         assert created_community.name_of_boundary == selected_territory
         assert created_community.source_of_boundary == 'shape-file'
-        assert len(created_community.boundary.coordinates) > 0, 'Territory Should Have At Least One Coordinate'
+        assert created_community.boundary.geometry is not None, 'Territory Should Have Coordinates'
 
     def test_clicking_select_by_nld_on_upload_shapefile_page_navigates_to_select_by_nld_page(self):
         self.navigate_to_upload_shapefile_page()

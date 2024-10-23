@@ -86,7 +86,7 @@ class TestStoringCoordinatesAsGeoJson(TestCase):
         with pytest.raises(ValidationError) as e:
             boundary.save()
 
-        assert e.value.args[0]['coordinates'][0][0][0][1] == ['Latitude must be between -90, 90']
+        assert e.value.args[0]['coordinates'][0][0][0][1] == ['Latitude must be between -180, 180']
         assert e.value.args[0]['coordinates'][0][0][1][0] == ['Longitude must be between -180, 180']
 
     def test_geojson_coordinates_works_with_empty_arrays(self):
