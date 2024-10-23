@@ -123,7 +123,7 @@
         </div>
 
         <!-- Boundary Section -->
-        {% if community.share_boundary_publicly and community.boundary.coordinates %}
+        {% if community.share_boundary_publicly and (community.boundary.coordinates or community.boundary.geometry) %}
             <div>
                 <h3>Community Location</h3>
                 <iframe src="{% url 'community-boundary-view' community.id %}" data-testid="community-boundary-iframe"
