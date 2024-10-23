@@ -3,15 +3,19 @@ from django.test import Client, TransactionTestCase
 from factories.communities_factories import CommunityFactory
 from factories.communities_factories import CommunityBoundaryFactory
 
+from helpers.schema import GEOJSON_MULTI_POLYGON_TYPE
+
 
 class TestFeatures(TransactionTestCase):
     def setUp(self):
         self.client = Client()
         self.community_with_boundary = CommunityFactory(
             boundary=CommunityBoundaryFactory(
-                coordinates=[
-                    [0, 0], [0, 1], [0, 2]
-                ]
+                geometry={
+                    'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                        [[0, 0], [0, 1], [0, 2]]
+                    ],
+                }
             )
         )
 

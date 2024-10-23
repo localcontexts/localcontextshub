@@ -12,7 +12,6 @@ from institutions.models import Institution
 from projects.models import Project
 
 
-@pytest.mark.skip(reason="disable until NLD update")
 @pytest.mark.usefixtures("py")
 class TestBoundaryClearedFeatures(UiFeatureHelper):
     def setUp(self):
@@ -20,7 +19,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
         self.original_source_of_boundary = 'native-land.ca'
         self.original_name_of_boundary = 'placeholder-boundary-name'
         self.original_boundary_coordinates = [
-                [0, 0], [0, 1], [0, 2]
+            [0, 0], [0, 1], [0, 2]
         ]
         self.community_project = None
         self.institution_project = None
