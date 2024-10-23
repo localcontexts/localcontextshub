@@ -22,7 +22,7 @@ from django.contrib.auth.models import Group, User
 from django.db import models
 from django.shortcuts import redirect, render
 
-from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription
+from accounts.models import Profile, UserAffiliation, SignUpInvitation, Subscription, BundleType
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 from rest_framework_api_key.admin import APIKeyModelAdmin
 from api.models import AccountAPIKey
@@ -1434,10 +1434,14 @@ class ProfileAdmin(admin.ModelAdmin):
 class SubscriptionsAdmin(admin.ModelAdmin):
     list_display = ('institution', 'community', 'researcher', 'date_last_updated')
 
+class BundleTypeAdmin(admin.ModelAdmin):
+    list_display = ('institution', 'community', 'researcher', 'bundle_type')
+
 admin_site.register(Profile, ProfileAdmin)
 admin_site.register(UserAffiliation)
 admin_site.register(SignUpInvitation, SignUpInvitationAdmin)
 admin_site.register(Subscription, SubscriptionsAdmin)
+admin_site.register(BundleType, BundleTypeAdmin)
 
 # admin_site.unregister(User)
 admin_site.register(User, UserAdminCustom)

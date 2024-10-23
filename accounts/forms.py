@@ -281,3 +281,25 @@ class SubscriptionForm(forms.Form):
         if not inquiry_type:
             raise ValidationError("Please select an inquiry type.")
         return inquiry_type
+
+
+class BundleTypeForm(forms.Form):
+    bundle_type = forms.MultipleChoiceField(
+        choices=[],
+        widget=forms.CheckboxSelectMultiple,
+        label="Bundle Types",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(BundleTypeForm, self).__init__(*args, **kwargs)
+
+        self.bundle_details = {
+            'User': {'label': 'User Bundle  5 @ US$1500', 'quantity': 5},
+            'API': {'label': 'API Bundle  3 @ US$1500', 'quantity': 3},
+            'Project': {'label': 'Project Bundle  10 @ US$1500', 'quantity': 10},
+            'Notification': {'label': 'Notification Bundle  10 @ US$1500', 'quantity': 10},
+        }
+
+        self.fields['bundle_type'].choices = [
+            (key, details['label']) for key, details in self.bundle_details.items()
+        ]

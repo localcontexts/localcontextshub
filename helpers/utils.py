@@ -630,7 +630,7 @@ def retrieve_native_land_all_slug_data() -> dict:
     return response.json()
 
 
-def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=True):
+def get_access_token_of_SF(request, data=None):
     salesforce_token_url = f"{settings.SALES_FORCE_BASE_URL}/oauth2/token"
     salesforce_token_params = {
         "grant_type": "client_credentials",
@@ -645,50 +645,54 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
         salesforce_token_response = urllib.request.urlopen(salesforce_token_req)
         salesforce_token_result = json.loads(salesforce_token_response.read().decode())
         access_token = salesforce_token_result["access_token"]
-
-        lead_data = {
-            "hubId": hubId,
-            "companyName": data["organization_name"],
-            "email": data["email"],
-            "firstname": data["first_name"],
-            "lastName": data["last_name"],
-            "oppName": data["organization_name"],
-            "inquiryType": data["inquiry_type"],
-            "isBusinessTrue": isbusiness,
-        }
-
-        # Make API call to create lead in Salesforce
-        create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        }
-        create_lead_req = urllib.request.Request(
-            create_lead_url, data=json.dumps(lead_data).encode(), headers=headers
-        )
-        try:
-            create_lead_response = urllib.request.urlopen(create_lead_req)
-            return True
-
-        except urllib.error.HTTPError as e:
-            reason= "Failed to create lead in Salesforce."
-            subject= "Subscription failed"
-            traceback_info = traceback.format_exc()
-            error = extract_error_line(traceback_info)
-            error_file, error_line, error_syntax = error[0], error[1], error[3]
-            context= { 
-                    "data" : data,
-                    "request": request,
-                    "reason": reason,
-                    "error_file": error_file,
-                    "error_line": error_line,
-                    "error_syntax": error_syntax,
-                }
-            template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
-            send_subscription_fail_email(request, subject, template)
-            raise Exception(reason)
+        return access_token
     except urllib.error.HTTPError as e:
         reason= "Unable to get token of access from Salesforce"
+        subject= "Acquiring Access token failed"
+        traceback_info = traceback.format_exc()
+        error = extract_error_line(traceback_info)
+        error_file, error_line, error_syntax = error[0], error[1], error[3]
+        context= { 
+                "data" : data,
+                "request": request,
+                "reason": reason,
+                "error_file": error_file,
+                "error_line": error_line,
+                "error_syntax": error_syntax,
+            }
+        template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
+        send_subscription_fail_email(request, subject, template)
+        raise Exception(reason)
+
+
+def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=True):
+    access_token = get_access_token_of_SF(request, data)
+    lead_data = {
+        "hubId": hubId,
+        "companyName": data["organization_name"],
+        "email": data["email"],
+        "firstname": data["first_name"],
+        "lastName": data["last_name"],
+        "oppName": data["organization_name"],
+        "inquiryType": data["inquiry_type"],
+        "isBusinessTrue": isbusiness,
+    }
+
+    # Make API call to create lead in Salesforce
+    create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/createAccountOrLeadWithRelatedContactAndOpportunity"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    create_lead_req = urllib.request.Request(
+        create_lead_url, data=json.dumps(lead_data).encode(), headers=headers
+    )
+    try:
+        create_lead_response = urllib.request.urlopen(create_lead_req)
+        return True
+
+    except urllib.error.HTTPError as e:
+        reason= "Failed to create lead in Salesforce."
         subject= "Subscription failed"
         traceback_info = traceback.format_exc()
         error = extract_error_line(traceback_info)
@@ -705,7 +709,39 @@ def create_salesforce_account_or_lead(request, hubId="", data="", isbusiness=Tru
         send_subscription_fail_email(request, subject, template)
         raise Exception(reason)
 
-        
+
+def create_bundle_call(request, bundle_data, access_token):
+    create_lead_url =  f"{settings.SALES_FORCE_BASE_URL}/apexrest/CreateBundleOpportunity"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    create_lead_req = urllib.request.Request(
+        create_lead_url, data=json.dumps(bundle_data).encode(), headers=headers
+    )
+    try:
+        create_lead_response = urllib.request.urlopen(create_lead_req)
+        return True
+
+    except urllib.error.HTTPError as e:
+        reason= "Failed to apply for bundle reqeust  in Salesforce."
+        subject= "Subscription failed"
+        traceback_info = traceback.format_exc()
+        error = extract_error_line(traceback_info)
+        error_file, error_line, error_syntax = error[0], error[1], error[3]
+        context= { 
+                "data" : request,
+                "request": request,
+                "reason": reason,
+                "error_file": error_file,
+                "error_line": error_line,
+                "error_syntax": error_syntax,
+            }
+        template = render_to_string('snippets/emails/internal/subscription-failed-info.html', context)
+        send_subscription_fail_email(request, subject, template)
+        raise Exception(reason)
+
+
 def validate_is_subscribed(
         account: Union[Researcher, Institution, ServiceProvider],
         bypass_validation: bool = False
