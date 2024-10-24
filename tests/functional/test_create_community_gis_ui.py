@@ -48,6 +48,7 @@ class TestFeatures(UiFeatureHelper):
         # submit form
         time.sleep(10)
         self.py.get(".primary-btn").click()
+        time.sleep(30)
 
     def select_native_land_method_and_submit(self):
         # pick NLD add boundary radio button
