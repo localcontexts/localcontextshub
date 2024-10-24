@@ -124,6 +124,7 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#community-boundary-continue-btn").click()
 
         # verify user is on the confirm community page
+        time.sleep(5)
         # assert self.dashboard in self.get_current_url()
 
         # verify community and boundary exists with the expected values
