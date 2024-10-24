@@ -124,7 +124,7 @@ def create_community(request):
     env = dev_prod_or_local(request.get_host())
 
     if request.method == "POST":
-        if form.is_valid() and user_form.is_valid() and validate_recaptcha(request):
+        if form.is_valid() and user_form.is_valid():
             data = form.save(commit=False)
             data.community_creator = request.user
             mutable_post_data = request.POST.copy()
