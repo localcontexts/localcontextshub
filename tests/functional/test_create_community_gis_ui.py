@@ -102,7 +102,7 @@ class TestFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
-        time.sleep(5) # wait for response
+        time.sleep(15) # wait for response
 
         # verify user is on select add boundary method page
         # assert self.select_add_boundary_method_path in self.get_current_url()
