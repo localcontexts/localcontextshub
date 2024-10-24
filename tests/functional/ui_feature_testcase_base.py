@@ -1,4 +1,5 @@
 import os
+import time
 import urllib.parse
 
 import pytest
@@ -33,3 +34,19 @@ class UiFeatureHelper(StaticLiveServerTestCase):
 
         # submit login
         self.py.get("[class~='signin-btn']").click()
+
+    def get_current_url(self, wait_seconds: int = 8) -> str:
+        """
+        * Switches to the most recent window
+        * Waits for a couple of seconds to make sure preexisting
+          actions have completed
+
+        * returns the url on the most active window
+        """
+        driver = self.py.webdriver
+        current_window = driver.window_handles[-1]
+        driver.switch_to.window(current_window)
+
+        time.sleep(wait_seconds)
+
+        return driver.current_url
