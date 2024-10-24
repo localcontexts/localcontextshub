@@ -15,6 +15,9 @@ class CreateInstitutionForm(forms.ModelForm):
             'institution_name': {
                 'unique': _("This institution is already on the Hub."),
             },
+            'contact_email': {
+                'invalid': _("Please use a valid email."),
+            }
         }
         widgets = {
             'institution_name': forms.TextInput(attrs={'id':'organizationInput', 'name':'institution_name', 'class': 'w-100', 'autocomplete': 'off', 'required': True, 'placeholder': 'Search ROR institutions...'}),
@@ -46,6 +49,9 @@ class CreateInstitutionNoRorForm(forms.ModelForm):
             'institution_name': {
                 'unique': _("This institution is already on the Hub."),
             },
+            'contact_email': {
+                'invalid': _("Please use a valid email."),
+            }
         }
         widgets = {
             'institution_name': forms.TextInput(attrs={'name':'institution_name', 'class': 'w-100', 'autocomplete': 'off', 'required': True}),
