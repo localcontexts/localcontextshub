@@ -35,15 +35,15 @@ class TestFeatures(UiFeatureHelper):
         self.community_name = self.fake.name()
 
         # fill out form
-        self.py.get("[name='first_name']").type('test')
-        self.py.get("[name='last_name']").type('account')
-        self.py.get("[name='community_name']").type(self.community_name)
-        self.py.get("[name='community_entity']").type('a')
-        self.py.get("[name='state_province_region']").type('a')
+        self.py.get("[name='first_name']").type(self.community_name)
+        self.py.get("[name='last_name']").type(self.fake.name())
+        self.py.get("[name='community_name']").type(self.fake.name())
+        self.py.get("[name='community_entity']").type(self.fake.name())
+        self.py.get("[name='state_province_region']").type(self.fake.name())
         self.py.get("[name='country']").type('Antartica')
         self.py.get("#id_description").type('a')
         self.py.get("[name='contact_name']").type('Test User')
-        self.py.get("#communityContactEmailField").type('Test@test.com')
+        self.py.get("#communityContactEmailField").type(self.fake.email())
 
         # submit form
         time.sleep(10)
@@ -84,7 +84,7 @@ class TestFeatures(UiFeatureHelper):
         # click accept cookies button
         time.sleep(5)   # wait for accept banner to appear
         self.accept_cookies()
-
+        time.sleep(15)
         self.fill_out_and_submit_account_creation_form()
 
         # verify user is on select add boundary method page
@@ -100,11 +100,10 @@ class TestFeatures(UiFeatureHelper):
         self.py.visit(create_community_url)
 
         # click accept cookies button
-        time.sleep(5)   # wait for accept banner to appear
+        time.sleep(20)   # wait for accept banner to appear
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
-        time.sleep(5) # wait for response
 
         # verify user is on select add boundary method page
         assert self.select_add_boundary_method_path in self.get_current_url()
