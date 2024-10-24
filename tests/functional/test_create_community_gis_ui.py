@@ -9,6 +9,7 @@ from django.urls import reverse
 from selenium.webdriver.common.alert import Alert
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
+from selenium.webdriver.common.by import By
 
 from communities.models import Community
 
@@ -46,9 +47,11 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#communityContactEmailField").type(self.fake.email())
 
         # submit form
-        time.sleep(10)
+        element = self.py.webdriver.find_element(By.CLASS_NAME, "primary-btn")
+        element.location_once_scrolled_into_view
+
         self.py.get(".primary-btn").click()
-        time.sleep(30)
+        time.sleep(10)
 
     def select_native_land_method_and_submit(self):
         # pick NLD add boundary radio button
