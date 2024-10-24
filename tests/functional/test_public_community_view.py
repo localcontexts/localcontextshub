@@ -18,7 +18,9 @@ class TestFeatures(StaticLiveServerTestCase):
             boundary=CommunityBoundaryFactory(
                 geometry={
                     'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
-                        [[0, 0], [0, 1], [0, 2]]
+                        [
+                            [[0, 0], [0, 1], [0, 2]]
+                        ]
                     ],
                 }
             ),

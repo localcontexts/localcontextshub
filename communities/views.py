@@ -1477,7 +1477,13 @@ def update_community_boundary_data(request, pk):
     community.name_of_boundary = data.get('name')
     community.source_of_boundary = data.get('source')
     boundary_data = data.get('boundary')
-    community.create_or_update_boundary(boundary_data)
+
+    if 'share_boundary_publicly' in data:
+        community.share_boundary_publicly = data.get('share_boundary_publicly')
+
+    if 'should_update_coordinates' in data and data['should_update_coordinates']:
+        community.create_or_update_boundary(boundary_data)
+
     community.save()
     return HttpResponse(status=204)
 
