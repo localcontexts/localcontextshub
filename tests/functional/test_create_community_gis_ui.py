@@ -250,4 +250,4 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#skip-this-step a").click()
 
         # verify user is on the dashbaord page
-        # assert self.dashboard in self.get_current_url()
+        assert self.dashboard in self.get_current_url(15)
