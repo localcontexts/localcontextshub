@@ -1,26 +1,26 @@
 import time
 import urllib
 
-import pytest
 from django.urls import reverse
 
 from functional.ui_feature_testcase_base import UiFeatureHelper
 from factories.projects_factories import ProjectFactory
 from communities.models import Community, Boundary
+from helpers.schema import GEOJSON_MULTI_POLYGON_TYPE
 from institutions.models import Institution
 from projects.models import Project
 
 
-@pytest.mark.skip(reason="disable until NLD update")
-@pytest.mark.usefixtures("py")
 class TestBoundaryClearedFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
         self.original_source_of_boundary = 'native-land.ca'
         self.original_name_of_boundary = 'placeholder-boundary-name'
-        self.original_boundary_coordinates = [
-                [0, 0], [0, 1], [0, 2]
-        ]
+        self.original_boundary_coordinates = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [[(0, 0), (0, 1), (0, 2)]],
+            ],
+        }
         self.community_project = None
         self.institution_project = None
         self.community = None
@@ -42,7 +42,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
         )
         self.community.save()
         boundary = Boundary(
-            coordinates=self.original_boundary_coordinates
+            geometry=self.original_boundary_coordinates
         )
         boundary.save()
         self.community_project = ProjectFactory(
@@ -60,7 +60,7 @@ class TestBoundaryClearedFeatures(UiFeatureHelper):
         )
         self.institution.save()
         boundary = Boundary(
-            coordinates=self.original_boundary_coordinates
+            geometry=self.original_boundary_coordinates
         )
         boundary.save()
         self.institution_project = ProjectFactory(

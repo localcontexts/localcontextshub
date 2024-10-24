@@ -4,6 +4,7 @@ import sys
 from django import forms
 from django.forms.utils import ErrorList
 
+from helpers.schema import GEOJSON_MULTI_POLYGON_TYPE
 from .models import Community, InviteMember, JoinRequest, Boundary
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -112,7 +113,12 @@ class CommunityModelForm(forms.ModelForm):
         # update current boundary
         updated_boundary = self.supplementary_boundary_data.get('current_boundary')
         if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
-            self.instance.boundary.coordinates = updated_boundary['value']
+
+            self.instance.boundary.geometry = {
+                'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                    [updated_boundary['value']]
+                ],
+            }
             self.instance.boundary.save()
             return
 

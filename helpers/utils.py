@@ -50,6 +50,8 @@ import re
 from django.http import HttpResponseForbidden
 from django.utils import timezone
 
+from .schema import GEOJSON_MULTI_POLYGON_TYPE
+
 
 def check_member_role(user, organization):
     # Check for creator roles
@@ -606,13 +608,18 @@ def create_or_update_boundary(post_data: dict, entity: Union['Community', 'Proje
         entity.source_of_boundary = source
 
     boundary_coordinates = boundary_data if boundary_data else []
+    geometry = {
+        'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+            [boundary_coordinates]
+        ],
+    }
     if entity.boundary:
         if should_update_coordinates:
             # update boundary when it exists and should be updated
-            entity.boundary.coordinates = boundary_coordinates
+            entity.boundary.geometry = geometry
     else:
         # create boundary when it does not exist
-        entity.boundary = Boundary(coordinates=boundary_coordinates)
+        entity.boundary = Boundary(geometry=geometry)
     entity.boundary.save()
 
 

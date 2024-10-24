@@ -189,7 +189,12 @@ class ProjectModelForm(forms.ModelForm):
         # update current boundary
         updated_boundary = self.supplementary_boundary_data.get('current_boundary')
         if updated_boundary and self.instance.boundary.id == int(updated_boundary['id']):
-            self.instance.boundary.coordinates = updated_boundary['value']
+            geometry = {
+                'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                    [updated_boundary['value']]
+                ],
+            }
+            self.instance.boundary.geometry = geometry
             self.instance.boundary.save()
             return
 

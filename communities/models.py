@@ -1,22 +1,30 @@
+from typing import Union
+
 from django.contrib.postgres.fields import ArrayField
+from djgeojson.fields import MultiPolygonField
 from django.db import models
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+
+from helpers.schema import MultiPolygonSchema, GEOJSON_MULTI_POLYGON_TYPE
 from institutions.models import Institution
 from serviceproviders.models import ServiceProvider
 import uuid
 from itertools import chain
 import os
 
+
 class ApprovedManager(models.Manager):
     def get_queryset(self):
         return super(ApprovedManager, self).get_queryset().filter(is_approved=True)
+
 
 def get_file_path(self, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (str(uuid.uuid4()), ext)
     return os.path.join('communities/support-files', filename)
+
 
 def community_img_path(self, filename):
     ext = filename.split('.')[-1]
@@ -33,17 +41,52 @@ class Boundary(models.Model):
         ),
         blank=True, null=True
     )
+    geometry = MultiPolygonField(null=True)
 
-    def get_coordinates(self, as_tuple=True):
+    def validate_geometry(self):
+        if not self.geometry:
+            return
+        MultiPolygonSchema().load(self.geometry)
+
+    def save(self, *args, **kwargs):
+        # added so validators are run before saving
+        # self.full_clean()
+        self.validate_geometry()
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def transform_coordinates(as_tuple: bool, coordinates: list):
         if as_tuple:
             return [
                 (float(c[0]), float(c[1]))
-                for c in self.coordinates
+                for c in coordinates
             ]
         return [
             [float(c[0]), float(c[1])]
-            for c in self.coordinates
+            for c in coordinates
         ]
+
+    def get_coordinates(self, as_tuple=True):
+        # when array-based coordinates don't exist,
+        # use the coordinates stored as geojson-based polygons
+        if not self.coordinates or len(self.coordinates) == 0:
+            return self.get_first_polygon_coordinates(as_tuple=as_tuple)
+
+        return self.transform_coordinates(
+            as_tuple=as_tuple, coordinates=self.coordinates
+        )
+
+    def get_first_polygon_coordinates(self, as_tuple: bool) -> Union[list, tuple]:
+        """
+        Returns the first polygon as a list or tuple
+        """
+        try:
+            first_polygon: list = self.geometry['coordinates'][0][0]
+            return self.transform_coordinates(
+                as_tuple=as_tuple, coordinates=first_polygon
+            )
+        except (IndexError, KeyError):
+            return []
 
 
 class Community(models.Model):
@@ -120,13 +163,18 @@ class Community(models.Model):
 
     def create_or_update_boundary(self, boundary_coordinates):
         boundary_coordinates = boundary_coordinates if boundary_coordinates else []
+        geometry = {
+            'type': GEOJSON_MULTI_POLYGON_TYPE, 'coordinates': [
+                [boundary_coordinates]
+            ],
+        }
 
         if self.boundary:
             # update boundary when it exists
-            self.boundary.coordinates = boundary_coordinates
+            self.boundary.geometry = geometry
         else:
             # create boundary when it does not exist
-            self.boundary = Boundary(coordinates=boundary_coordinates)
+            self.boundary = Boundary(geometry=geometry)
 
         self.boundary.save()
 
@@ -167,6 +215,7 @@ class InviteMember(models.Model):
         verbose_name = 'Member Invitation'
         verbose_name_plural = 'Member Invitations'
         ordering = ('-created',)
+
 
 class JoinRequest(models.Model):
     STATUS_CHOICES = (
