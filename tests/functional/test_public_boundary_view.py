@@ -36,4 +36,9 @@ class TestFeatures(TransactionTestCase):
         }
         response = self.client.get(reverse('community-boundary-view', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context.get('boundary'), self.community_with_boundary.boundary.coordinates)
+
+        expected_boundary_coordinates = [[0.0, 0.0], [0.0, 1.0], [0.0, 2.0]]
+        self.assertEqual(
+            response.context.get('boundary'),
+            expected_boundary_coordinates
+        )
