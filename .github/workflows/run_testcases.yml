@@ -64,4 +64,4 @@ jobs:
         run: |
           python manage.py migrate
           flake8 accounts notifications localcontexts
-          pytest -k test_clicking_skip_this_step_on_upload_shapefile_page_navigates_to_confirm_page
+          pytest --cov=.  --cov-report=term-missing --cov-fail-under=15
