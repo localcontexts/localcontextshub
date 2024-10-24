@@ -13,7 +13,6 @@ from functional.ui_feature_testcase_base import UiFeatureHelper
 from communities.models import Community
 
 
-@pytest.mark.usefixtures("py")
 class TestFeatures(UiFeatureHelper):
     def setUp(self):
         self.login()
