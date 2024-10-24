@@ -85,7 +85,7 @@ class TestFeatures(UiFeatureHelper):
         self.accept_cookies()
 
         self.fill_out_and_submit_account_creation_form()
-        time.sleep(10) # wait for response
+        time.sleep(5) # wait for response
 
         # verify user is on select add boundary method page
         assert self.select_add_boundary_method_path in self.py.url()
@@ -93,6 +93,7 @@ class TestFeatures(UiFeatureHelper):
         self.select_native_land_method_and_submit()
 
         # verify user is on select boundary by nld page
+        time.sleep(4)
         assert self.select_nld_add_boundary_method_path in self.py.url()
 
     def navigate_to_upload_shapefile_page(self):
@@ -112,6 +113,7 @@ class TestFeatures(UiFeatureHelper):
         self.select_upload_shapefile_and_submit()
 
         # verify user is on select boundary by upload shapefile page
+        time.sleep(4)
         assert self.select_upload_boundary_file_method_path in self.py.url()
 
     def test_select_native_land_digital_territory_with_share_publicly(self):
@@ -164,6 +166,7 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#navigate-to-option a").click()
 
         # verify user is on the upload shapefile page
+        time.sleep(4)
         assert self.select_upload_boundary_file_method_path in self.py.url()
 
     def test_clicking_skip_this_step_on_nld_page_navigates_to_confirm_page(self):
@@ -172,6 +175,7 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#skip-this-step a").click()
 
         # verify user is on the dashboard page after skipping
+        time.sleep(4)
         assert self.dashboard in self.py.url()
 
     def click_okay_on_alert_dialog(self):
@@ -245,6 +249,7 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#navigate-to-option a").click()
 
         # verify user is on the select by nld page
+        time.sleep(4)
         assert self.select_nld_add_boundary_method_path in self.py.url()
 
     def test_clicking_skip_this_step_on_upload_shapefile_page_navigates_to_confirm_page(self):
@@ -253,4 +258,5 @@ class TestFeatures(UiFeatureHelper):
         self.py.get("#skip-this-step a").click()
 
         # verify user is on the dashbaord page
+        time.sleep(4)
         assert self.dashboard in self.py.url()
